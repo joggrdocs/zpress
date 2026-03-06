@@ -1,0 +1,55 @@
+/**
+ * Home page overrides — hero image sizing, Rspress card/code tweaks.
+ */
+
+/* ── Rspress home hero image sizing ──────────────────────── */
+html .rp-home-hero__image {
+  flex: none;
+  width: 548px;
+  margin-left: 24px;
+}
+
+html .rp-home-hero__image-img {
+  width: 548px;
+  height: auto;
+}
+
+/* ── Rspress home hero container ────────────────────────── */
+html .rp-home-hero {
+  gap: 16px !important;
+}
+
+/* ── Rspress home hero text sizing & spacing ───────────── */
+html .rp-home-hero__name {
+  font-size: 1.25rem !important;
+}
+
+html .rp-home-hero__text {
+  font-size: 2.5rem !important;
+  margin-bottom: 8px !important;
+}
+
+html .rp-home-hero__tagline {
+  padding-bottom: 16px !important;
+}
+
+@media (max-width: 1000px) {
+  html .rp-home-hero__image {
+    width: 400px;
+    margin-left: 0;
+    margin-top: 32px;
+  }
+
+  html .rp-home-hero__image-img {
+    width: 400px;
+  }
+}
+
+/* ── Code blocks ─────────────────────────────────────────── */
+div[class*='language-'] {
+  border-radius: var(--rp-radius) !important;
+}
+
+code:not(pre code) {
+  border-radius: var(--rp-radius-small);
+}

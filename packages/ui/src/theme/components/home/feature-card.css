@@ -1,0 +1,89 @@
+/**
+ * Feature Card — layout and typography (base card styles from home-card.css).
+ */
+
+/* ── Feature grid ───────────────────────────────────────────── */
+.feature-grid {
+  --feature-grid-gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--feature-grid-gap);
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 0 0 64px;
+}
+
+/* ── Grid item + span system ────────────────────────────────── */
+.feature-card__item {
+  width: 100%;
+  position: relative;
+}
+
+.feature-card__item-wrapper {
+  position: relative;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .feature-card__item--span-2,
+  .feature-card__item--span-4,
+  .feature-card__item--span-6 {
+    width: calc(50% - var(--feature-grid-gap));
+  }
+}
+
+@media (min-width: 768px) {
+  .feature-card__item--span-2,
+  .feature-card__item--span-4 {
+    width: calc(50% - var(--feature-grid-gap));
+  }
+
+  .feature-card__item--span-3,
+  .feature-card__item--span-6 {
+    width: calc((100% - 2 * var(--feature-grid-gap)) / 3);
+  }
+}
+
+@media (min-width: 960px) {
+  .feature-card__item--span-3 {
+    width: calc((100% - 3 * var(--feature-grid-gap)) / 4);
+  }
+
+  .feature-card__item--span-4 {
+    width: calc((100% - 2 * var(--feature-grid-gap)) / 3);
+  }
+
+  .feature-card__item--span-6 {
+    width: calc(50% - var(--feature-grid-gap));
+  }
+}
+
+/* ── Feature card layout ───────────────────────────────────── */
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+
+/* Row 1: icon + title */
+.feature-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-title {
+  font-family: 'Geist Pixel Square', var(--rp-font-family-base, sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rp-c-text-1, var(--zp-c-text-1, #fbfbfb));
+  line-height: 1.4;
+}
+
+/* Row 2: description */
+.feature-desc {
+  font-size: 16px;
+  color: var(--rp-c-text-2, var(--zp-c-text-2, rgba(251, 251, 251, 0.72)));
+  line-height: 1.5;
+}

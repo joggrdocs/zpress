@@ -1,0 +1,141 @@
+/**
+ * Workspace grid, card layout, deploy badge, and tech tags.
+ * Base card styles (container, hover, icons) from home-card.css.
+ */
+
+/* ── Workspace section ───────────────────────────────────── */
+.workspace-section {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 0 0 64px;
+}
+
+.workspace-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: var(--zp-c-text-2);
+}
+
+.workspace-group-desc {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--zp-c-text-3);
+  line-height: 1.5;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+/* ── Workspace card layout ───────────────────────────────── */
+.workspace-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.workspace-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workspace-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.workspace-scope {
+  font-family: var(--zp-font-family-mono);
+  font-size: 11px;
+  color: var(--zp-c-text-3);
+}
+
+.workspace-name {
+  font-family: var(--zp-font-family-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--zp-c-text-1);
+}
+
+.workspace-desc {
+  font-size: 13px;
+  color: var(--zp-c-text-2);
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* ── Deploy badge ────────────────────────────────────────── */
+.deploy-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: var(--zp-c-bg);
+  border: 1px solid var(--zp-c-divider);
+}
+
+.deploy-logo {
+  height: 16px;
+  width: auto;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+.home-card:hover .deploy-logo {
+  opacity: 1;
+}
+
+/* ── Tech tags ───────────────────────────────────────────── */
+.workspace-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.workspace-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--zp-font-family-mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--rp-radius-small);
+  background: var(--zp-c-bg);
+  color: var(--zp-c-text-3);
+  border: 1px solid var(--zp-c-divider);
+}
+
+.workspace-tag svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .workspace-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

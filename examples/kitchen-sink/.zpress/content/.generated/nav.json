@@ -1,0 +1,62 @@
+[
+  {
+    "text": "Getting Started",
+    "link": "/getting-started",
+    "icon": "pixelarticons:speed-fast"
+  },
+  {
+    "text": "Architecture",
+    "link": "/architecture",
+    "icon": "pixelarticons:layout-header"
+  },
+  {
+    "text": "Guides",
+    "link": "/guides/adding-a-package",
+    "icon": "pixelarticons:book-open"
+  },
+  {
+    "text": "Apps",
+    "link": "/apps",
+    "icon": "pixelarticons:device-laptop",
+    "items": [
+      {
+        "text": "Web",
+        "link": "/apps/web"
+      },
+      {
+        "text": "API",
+        "link": "/apps/api"
+      }
+    ]
+  },
+  {
+    "text": "Packages",
+    "link": "/packages",
+    "icon": "pixelarticons:archive",
+    "items": [
+      {
+        "text": "UI",
+        "link": "/packages/ui"
+      },
+      {
+        "text": "DB",
+        "link": "/packages/db"
+      },
+      {
+        "text": "Config",
+        "link": "/packages/config"
+      }
+    ]
+  },
+  {
+    "text": "Integrations",
+    "link": "/integrations",
+    "icon": "pixelarticons:integration",
+    "items": [
+      {
+        "text": "Stripe",
+        "link": "/integrations/stripe"
+      }
+    ]
+  }
+]

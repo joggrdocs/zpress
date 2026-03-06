@@ -1,0 +1,32 @@
+{
+  "/": [
+    {
+      "text": "Getting Started",
+      "link": "/getting-started",
+      "icon": "pixelarticons:speed-fast"
+    },
+    {
+      "text": "API Reference",
+      "link": "/api-reference",
+      "icon": "pixelarticons:book-open"
+    },
+    {
+      "text": "Guides",
+      "items": [
+        {
+          "text": "Configuration",
+          "link": "/guides/configuration"
+        },
+        {
+          "text": "Installation",
+          "link": "/guides/installation"
+        },
+        {
+          "text": "Usage Patterns",
+          "link": "/guides/usage"
+        }
+      ],
+      "icon": "pixelarticons:article"
+    }
+  ]
+}

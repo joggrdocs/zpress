@@ -1,0 +1,25 @@
+/**
+ * Dark scrollbar overrides.
+ */
+
+.rp-dark ::-webkit-scrollbar,
+html[data-dark='true'] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.rp-dark ::-webkit-scrollbar-track,
+html[data-dark='true'] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rp-dark ::-webkit-scrollbar-thumb,
+html[data-dark='true'] ::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 3px;
+}
+
+.rp-dark ::-webkit-scrollbar-thumb:hover,
+html[data-dark='true'] ::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a;
+}

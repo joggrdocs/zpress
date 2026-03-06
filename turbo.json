@@ -1,0 +1,21 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "inputs": ["src/**", "rslib.config.ts", "package.json"],
+      "outputs": ["dist/**"],
+      "dependsOn": ["^build"]
+    },
+    "typecheck": {
+      "inputs": ["src/**", "tsconfig.json", "package.json"],
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

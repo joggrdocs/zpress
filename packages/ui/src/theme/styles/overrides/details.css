@@ -1,0 +1,61 @@
+/**
+ * <details> accordion styling.
+ */
+
+details {
+  border: 1px solid var(--zp-c-border);
+  border-radius: 8px;
+  padding: 0;
+  margin: 0;
+  background: var(--zp-c-bg-soft);
+}
+
+details summary {
+  cursor: pointer;
+  padding: 0 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--zp-c-text-1);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+details summary:hover {
+  color: var(--zp-c-brand-1);
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+details[open] summary {
+  border-bottom: none;
+}
+
+details > :not(summary) {
+  padding: 0 12px;
+}
+
+details > :last-child:not(summary) {
+  padding-bottom: 6px;
+}

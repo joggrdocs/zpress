@@ -1,0 +1,9 @@
+/* ── Transitions (960px–1439px) ──────────────────────────── */
+
+@media (min-width: 960px) and (max-width: 1439px) {
+  .rspress-sidebar {
+    transition:
+      width 0.3s ease,
+      min-width 0.3s ease;
+  }
+}

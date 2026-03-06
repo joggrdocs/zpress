@@ -1,0 +1,122 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "import", "vitest", "promise", "node", "oxc"],
+  "jsPlugins": [
+    "eslint-plugin-security",
+    "eslint-plugin-functional",
+    {
+      "name": "jsdoc-js",
+      "specifier": "eslint-plugin-jsdoc"
+    }
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "pedantic": "warn",
+    "perf": "error",
+    "style": "warn"
+  },
+  "rules": {
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    "security/detect-child-process": "error",
+    "security/detect-eval-with-expression": "error",
+    "security/detect-non-literal-fs-filename": "error",
+    "security/detect-non-literal-regexp": "error",
+    "security/detect-possible-timing-attacks": "warn",
+    "security/detect-unsafe-regex": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+    "no-ternary": "error",
+    "no-console": "off",
+    "curly": "error",
+    "eqeqeq": "error",
+    "func-style": ["error", "declaration"],
+    "functional/no-let": "error",
+    "functional/no-classes": "error",
+    "functional/no-this-expressions": "error",
+    "functional/no-throw-statements": "error",
+    "functional/no-loop-statements": "error",
+    "unicorn/no-null": "off",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/no-unreadable-iife": "error",
+    "unicorn/no-array-for-each": "error",
+    "unicorn/prefer-array-flat-map": "error",
+    "typescript/consistent-type-imports": "error",
+    "sort-imports": "off",
+    "no-duplicate-imports": "off",
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
+    "import/no-named-export": "off",
+    "import/no-nodejs-modules": "off",
+    "import/exports-last": "off",
+    "import/group-exports": "off",
+    "oxc/no-optional-chaining": [
+      "error",
+      {
+        "message": "Use explicit null checks (if/else or ts-pattern match) instead of optional chaining."
+      }
+    ],
+    "jsdoc-js/multiline-blocks": [
+      "error",
+      {
+        "noSingleLineBlocks": true
+      }
+    ],
+    "vitest/prefer-called-times": "off",
+    "sort-keys": "off",
+    "id-length": "off",
+    "no-magic-numbers": "off",
+    "no-inline-comments": "off",
+    "capitalized-comments": "off",
+    "max-statements": "off",
+    "max-params": "off",
+    "max-lines": "off",
+    "max-lines-per-function": "off",
+    "unicorn/prefer-ternary": "off",
+    "unicorn/no-object-as-default-parameter": "off",
+    "unicorn/no-array-callback-reference": "off",
+    "import/prefer-default-export": "off",
+    "import/max-dependencies": "off",
+    "promise/prefer-await-to-then": "off",
+    "promise/avoid-new": "off",
+    "security/detect-object-injection": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.spec.ts", "**/__tests__/**"],
+      "rules": {
+        "no-unused-vars": "off",
+        "functional/no-let": "off",
+        "functional/no-throw-statements": "off",
+        "functional/no-classes": "off",
+        "security/detect-object-injection": "off",
+        "security/detect-non-literal-fs-filename": "off"
+      }
+    },
+    {
+      "files": ["packages/core/src/sync/**", "packages/cli/src/**"],
+      "rules": {
+        "security/detect-non-literal-fs-filename": "off"
+      }
+    },
+    {
+      "files": ["scripts/**"],
+      "rules": {
+        "security/detect-non-literal-fs-filename": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".claude",
+    ".vitepress",
+    ".zpress",
+    "**/*.d.ts"
+  ]
+}

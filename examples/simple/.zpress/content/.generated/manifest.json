@@ -1,0 +1,39 @@
+{
+  "files": {
+    "getting-started.md": {
+      "source": "docs/getting-started.md",
+      "sourceMtime": 1773092087530.2668,
+      "contentHash": "feffa383281d3db1c1f63c8656d4b5737e5372f1fa859e3a8d5b8e7d5b0613ca",
+      "outputPath": "getting-started.md"
+    },
+    "api-reference.md": {
+      "source": "docs/api-reference.md",
+      "sourceMtime": 1773092087530.1782,
+      "contentHash": "8a896d116fe790e530800a5354c0c89d1b759a42cc345093553be70bc8ca2493",
+      "outputPath": "api-reference.md"
+    },
+    "guides/configuration.md": {
+      "source": "docs/guides/configuration.md",
+      "sourceMtime": 1773092087509.9753,
+      "contentHash": "7177d684881552155ed148a04792d3ac43ba8567870389c4315340d461490fd3",
+      "outputPath": "guides/configuration.md"
+    },
+    "guides/installation.md": {
+      "source": "docs/guides/installation.md",
+      "sourceMtime": 1773090696847.475,
+      "contentHash": "c78b151e82bc67c65b4859622fed22fb8bc3c29318831fe3d702083b27d35257",
+      "outputPath": "guides/installation.md"
+    },
+    "guides/usage.md": {
+      "source": "docs/guides/usage.md",
+      "sourceMtime": 1773092087533.7253,
+      "contentHash": "970cc70d9845018c21eb509a5e7c370f075ebca7ae43425a139b1e2ef6864d54",
+      "outputPath": "guides/usage.md"
+    },
+    "index.md": {
+      "contentHash": "742ea6372772e94953ad4e1c3cfbe793512fdc7c878bd92506984ecfb52cd9d4",
+      "outputPath": "index.md"
+    }
+  },
+  "timestamp": 1773102037424
+}

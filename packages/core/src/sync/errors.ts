@@ -1,0 +1,97 @@
+/**
+ * Domain-specific error types for the sync engine.
+ *
+ * All sync operations return `Result<T, SyncError>` instead of throwing.
+ * Config validation returns `Result<T, ConfigError>`.
+ */
+
+// ── Sync errors ─────────────────────────────────────────────
+
+/**
+ * Error produced by the sync engine during entry resolution, page copy, or sidebar generation.
+ */
+export interface SyncError {
+  readonly _tag: 'SyncError'
+  readonly type: 'missing_from' | 'missing_link' | 'file_not_found' | 'missing_content' | 'internal'
+  readonly message: string
+}
+
+/**
+ * Convenience alias for sync operation results.
+ *
+ * Named `SyncOutcome` to avoid collision with the `SyncResult` interface
+ * in `sync/index.ts` (which represents the aggregate return value of a full sync pass).
+ */
+export type SyncOutcome<T> = readonly [SyncError, null] | readonly [null, T]
+
+/**
+ * Create a `SyncError` value.
+ *
+ * @param type - Error classification
+ * @param message - Human-readable description
+ * @returns A frozen `SyncError` object
+ */
+export function syncError(type: SyncError['type'], message: string): SyncError {
+  return Object.freeze({ _tag: 'SyncError' as const, type, message })
+}
+
+// ── Config errors ───────────────────────────────────────────
+
+/**
+ * Error produced during config validation in `defineConfig`.
+ */
+export interface ConfigError {
+  readonly _tag: 'ConfigError'
+  readonly type:
+    | 'empty_sections'
+    | 'missing_field'
+    | 'duplicate_prefix'
+    | 'invalid_icon'
+    | 'invalid_entry'
+    | 'missing_nav_icon'
+  readonly message: string
+}
+
+/**
+ * Convenience alias for config validation results.
+ */
+export type ConfigResult<T> = readonly [ConfigError, null] | readonly [null, T]
+
+/**
+ * Create a `ConfigError` value.
+ *
+ * @param type - Error classification
+ * @param message - Human-readable description
+ * @returns A frozen `ConfigError` object
+ */
+export function configError(type: ConfigError['type'], message: string): ConfigError {
+  return Object.freeze({ _tag: 'ConfigError' as const, type, message })
+}
+
+// ── Utilities ───────────────────────────────────────────────
+
+/**
+ * Collect results from an array, short-circuiting on the first error.
+ *
+ * @param results - Array of Result tuples to collect
+ * @returns Either the first error encountered, or an array of all success values
+ */
+export function collectResults<T, E>(
+  results: readonly (readonly [E, null] | readonly [null, T])[]
+): readonly [E, null] | readonly [null, readonly T[]] {
+  return results.reduce<readonly [E, null] | readonly [null, readonly T[]]>(
+    (acc, result) => {
+      const [accErr] = acc
+      if (accErr !== null) {
+        return acc
+      }
+      const [err, val] = result
+      if (err !== null) {
+        return [err, null] as const
+      }
+      const [, prevValues] = acc as readonly [null, readonly T[]]
+      return [null, [...prevValues, val as T]] as const
+    },
+    [null, []] as const
+  )
+}

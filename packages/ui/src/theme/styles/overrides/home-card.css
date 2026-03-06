@@ -1,0 +1,125 @@
+/**
+ * Shared base card — container, hover, icon system, and divider.
+ * Consumed by feature-card.css and workspace-card.css.
+ */
+
+/* ── Base card container ─────────────────────────────────────── */
+.home-card {
+  padding: 16px 18px;
+  border-radius: var(--rp-radius);
+  border: 1px solid var(--zp-c-border);
+  background: var(--zp-c-bg-soft);
+  text-decoration: none !important;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.home-card:hover {
+  border-color: var(--zp-c-brand-1);
+  background: var(--zp-c-bg-elv);
+  box-shadow: 0 2px 12px rgba(167, 139, 250, 0.08);
+  text-decoration: none !important;
+}
+
+.home-card--clickable {
+  cursor: pointer;
+}
+
+/* ── Shared icon box (36×36, 4px radius, 18px SVG) ───────────── */
+.home-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.home-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Icon color variants ─────────────────────────────────────── */
+.home-card-icon--purple {
+  background: rgba(167, 139, 250, 0.12);
+  color: #a78bfa;
+}
+
+.home-card-icon--purple svg {
+  color: #a78bfa;
+}
+
+.home-card-icon--blue {
+  background: rgba(96, 165, 250, 0.12);
+  color: #60a5fa;
+}
+
+.home-card-icon--blue svg {
+  color: #60a5fa;
+}
+
+.home-card-icon--green {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+
+.home-card-icon--green svg {
+  color: #34d399;
+}
+
+.home-card-icon--amber {
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+}
+
+.home-card-icon--amber svg {
+  color: #fbbf24;
+}
+
+.home-card-icon--red {
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+}
+
+.home-card-icon--red svg {
+  color: #f87171;
+}
+
+.home-card-icon--slate {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+}
+
+.home-card-icon--slate svg {
+  color: #94a3b8;
+}
+
+.home-card-icon--cyan {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0ea5e9;
+}
+
+.home-card-icon--cyan svg {
+  color: #0ea5e9;
+}
+
+.home-card-icon--pink {
+  background: rgba(244, 114, 182, 0.12);
+  color: #f472b6;
+}
+
+.home-card-icon--pink svg {
+  color: #f472b6;
+}
+
+/* ── Divider between features and workspaces ─────────────────── */
+.home-card-divider {
+  max-width: 1152px;
+  margin: 0 auto 48px;
+  border: none;
+  border-top: 1px solid var(--zp-c-divider);
+}
