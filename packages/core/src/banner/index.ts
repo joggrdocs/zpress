@@ -9,6 +9,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { composeBanner } from './svg-banner.ts'
+import { composeIcon } from './svg-icon.ts'
 import { composeLogo } from './svg-logo.ts'
 import { GENERATED_MARKER } from './svg-shared.ts'
 import { assetError } from './types.ts'
@@ -56,6 +57,26 @@ export function generateLogoSvg(config: AssetConfig): AssetResult<GeneratedAsset
     {
       filename: 'logo.svg',
       content: composeLogo({ title: config.title }),
+    },
+  ]
+}
+
+/**
+ * Generate an icon (favicon) SVG from the project config.
+ *
+ * @param config - Title (first character is used for the icon glyph)
+ * @returns Result containing the generated asset or an error
+ */
+export function generateIconSvg(config: AssetConfig): AssetResult<GeneratedAsset> {
+  if (config.title.trim().length === 0) {
+    return [assetError('empty_title', 'Cannot generate icon: title is empty'), null]
+  }
+
+  return [
+    null,
+    {
+      filename: 'icon.svg',
+      content: composeIcon({ title: config.title }),
     },
   ]
 }
@@ -135,6 +156,7 @@ export async function generateAssets(
   const generators: readonly (() => AssetResult<GeneratedAsset>)[] = [
     () => generateBannerSvg(params.config),
     () => generateLogoSvg(params.config),
+    () => generateIconSvg(params.config),
   ]
 
   const written = await generators.reduce<Promise<readonly string[]>>(

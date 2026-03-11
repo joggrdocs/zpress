@@ -590,6 +590,12 @@ export interface ZpressConfig {
   readonly description?: string
 
   /**
+   * Path to a custom favicon file served from `.zpress/public/`.
+   * When omitted, defaults to the auto-generated `/icon.svg`.
+   */
+  readonly icon?: string
+
+  /**
    * Hero tagline displayed below the headline on the home page.
    * When omitted, the tagline is not rendered.
    */
