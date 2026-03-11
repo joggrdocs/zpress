@@ -34,7 +34,12 @@ export type { SyncError, SyncOutcome, ConfigError, ConfigResult } from './sync/e
 export { syncError, configError } from './sync/errors.ts'
 
 // Banner / asset generation
-export { generateAssets, generateBannerSvg, generateLogoSvg } from './banner/index.ts'
+export {
+  generateAssets,
+  generateBannerSvg,
+  generateIconSvg,
+  generateLogoSvg,
+} from './banner/index.ts'
 export type { AssetConfig, AssetError, AssetResult, GeneratedAsset } from './banner/index.ts'
 
 // Paths

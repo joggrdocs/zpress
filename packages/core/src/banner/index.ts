@@ -1,5 +1,5 @@
 /**
- * Auto-generated SVG banner and logo assets.
+ * Auto-generated SVG banner, logo, and icon assets.
  *
  * Produces committable SVG files from the project title so users
  * get branded assets with zero manual work.
@@ -138,7 +138,7 @@ interface GenerateAssetsParams {
 }
 
 /**
- * Generate banner and logo SVGs, writing them to the public directory.
+ * Generate banner, logo, and icon SVGs, writing them to the public directory.
  *
  * For each asset:
  * 1. If the file is missing or has the zpress-generated marker → write it

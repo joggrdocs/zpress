@@ -19,13 +19,13 @@ function buildAssetConfig(config: {
 }
 
 /**
- * Standalone command to generate branded banner and logo SVGs.
+ * Standalone command to generate branded banner, logo, and icon SVGs.
  *
  * Reads the project config, generates assets from the configured title,
  * and writes them to `.zpress/public/`.
  */
 export const generateCommand = command({
-  description: 'Generate banner and logo SVG assets from project title',
+  description: 'Generate banner, logo, and icon SVG assets from project title',
   handler: async (ctx) => {
     ctx.logger.intro('zpress generate')
 

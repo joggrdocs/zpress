@@ -23,7 +23,11 @@ const ICON_SIZE = 512
 const ICON_RADIUS = 32
 const ICON_PADDING = 64
 const FIGLET_ROWS = 6
-const FALLBACK_FONT_SIZE = 320
+/**
+ * Font size for the single-character fallback — larger than banner/logo
+ * to fill the 512px square.
+ */
+const ICON_FALLBACK_FONT_SIZE = 320
 
 // ── Builders ────────────────────────────────────────────────
 
@@ -70,7 +74,7 @@ function buildFigletIcon(params: {
 
 function buildFallbackIcon(params: { readonly char: string }): string {
   const centerX = ICON_SIZE / 2
-  const centerY = ICON_SIZE / 2 + FALLBACK_FONT_SIZE * 0.35
+  const centerY = ICON_SIZE / 2 + ICON_FALLBACK_FONT_SIZE * 0.35
   const escaped = escapeXml(params.char)
 
   return [
@@ -87,7 +91,7 @@ function buildFallbackIcon(params: { readonly char: string }): string {
     `  <rect width="${ICON_SIZE}" height="${ICON_SIZE}" rx="${ICON_RADIUS}" ry="${ICON_RADIUS}" fill="${COLORS.base}" />`,
     '',
     '  <!-- Fallback letter -->',
-    `  <text class="text brand" font-size="${FALLBACK_FONT_SIZE}" x="${centerX}" y="${centerY}" text-anchor="middle">${escaped}</text>`,
+    `  <text class="text brand" font-size="${ICON_FALLBACK_FONT_SIZE}" x="${centerX}" y="${centerY}" text-anchor="middle">${escaped}</text>`,
     '</svg>',
   ].join('\n')
 }

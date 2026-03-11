@@ -100,7 +100,7 @@ export const setupCommand = command({
     fs.writeFileSync(configPath, buildConfigTemplate(title), 'utf8')
     ctx.logger.success(`Created ${CONFIG_FILENAME} (title: "${title}")`)
 
-    // Generate initial banner and logo assets
+    // Generate initial banner, logo, and icon assets
     await fsPromises.mkdir(paths.publicDir, { recursive: true })
     const [assetErr, written] = await generateAssets({
       config: { title, tagline: undefined },
