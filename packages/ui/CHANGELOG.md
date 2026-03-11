@@ -12,3 +12,11 @@
 
 - Updated dependencies [77adac6]
   - @zpress/core@0.2.0
+
+## 0.1.0
+
+### Minor Changes
+
+- 04d2e2b: Initial release
+
+  Rspress plugin and theme with Catppuccin-themed UI, workspace cards, section grids, sidebar icons via Iconify, technology tag mappings, and custom font integration (Geist Sans, Geist Mono, Geist Pixel).
