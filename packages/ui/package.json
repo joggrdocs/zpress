@@ -1,6 +1,7 @@
 {
   "name": "@zpress/ui",
   "version": "0.2.0",
+  "description": "Rspress plugin, theme components, and styles for zpress",
   "license": "MIT",
   "repository": {
     "type": "git",

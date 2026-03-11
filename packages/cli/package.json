@@ -1,6 +1,7 @@
 {
   "name": "@zpress/cli",
   "version": "0.1.1",
+  "description": "CLI for building and serving zpress documentation sites",
   "license": "MIT",
   "repository": {
     "type": "git",
