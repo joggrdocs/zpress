@@ -109,7 +109,7 @@ function buildFallbackIcon(params: { readonly char: string }): string {
  * @returns Complete SVG markup string with generated marker
  */
 export function composeIcon(params: { readonly title: string }): string {
-  const firstChar = params.title.trimStart().charAt(0)
+  const [firstChar = 'Z'] = [...params.title.trimStart()]
   const figlet = renderFigletText(firstChar)
   const hasFigletGlyph = figlet.lines.some((line) => line.trim().length > 0)
 
