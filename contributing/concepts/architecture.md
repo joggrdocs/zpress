@@ -15,7 +15,7 @@ packages/
 ├── core/            # Sync engine, config loading, sidebar/nav generation
 ├── cli/             # CLI commands (sync, dev, build, serve, clean)
 ├── ui/              # Rspress plugin, theme components, styles
-└── zpress/       # Public wrapper (re-exports core + ui + cli)
+└── zpress/       # @zpress/kit — public wrapper (re-exports core + ui + cli)
 ```
 
 | Package        | Purpose                                                        |
@@ -23,19 +23,18 @@ packages/
 | `@zpress/core` | Config loading, entry resolution, sync engine, sidebar/nav gen |
 | `@zpress/cli`  | CLI commands: sync, dev, build, serve, clean, setup, dump      |
 | `@zpress/ui`   | Rspress plugin, React theme components, CSS overrides          |
-| `zpress`       | Public package: re-exports everything + provides the CLI bin   |
+| `@zpress/kit`  | Public package: re-exports everything + provides the CLI bin   |
 
-### `zpress` (wrapper)
+### `@zpress/kit` (wrapper)
 
-The public-facing package. Three entry points:
+The public-facing package. Two entry points and a CLI bin:
 
 | Entry      | Purpose                                   |
 | ---------- | ----------------------------------------- |
 | `.`        | Full API: core types + sync + UI + plugin |
 | `./config` | Lightweight: just `defineConfig` + types  |
-| `./cli`    | Passthrough to `@zpress/cli` (bin target) |
 
-Users import `defineConfig` from `zpress` (or `zpress/config`) in their config file. The CLI bin resolves to `zpress/cli`.
+The `zpress` CLI bin is provided by this package and delegates to `@zpress/cli`. Users import `defineConfig` from `@zpress/kit` (or `@zpress/kit/config`) in their config file.
 
 ## Layers
 
