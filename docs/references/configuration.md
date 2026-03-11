@@ -8,7 +8,7 @@ description: Complete reference for zpress.config.ts fields, entry shapes, and w
 All configuration lives in `zpress.config.ts` at your repo root. Use `defineConfig` for type safety and autocompletion.
 
 ```ts
-import { defineConfig } from 'zpress'
+import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'My Docs',

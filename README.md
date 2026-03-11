@@ -3,7 +3,7 @@
   <p><strong>An opinionated documentation framework for monorepos. Just point it at your code.</strong></p>
 
 <a href="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml"><img src="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-<a href="https://www.npmjs.com/package/zpress"><img src="https://img.shields.io/npm/v/zpress" alt="npm version" /></a>
+<a href="https://www.npmjs.com/package/@zpress/kit"><img src="https://img.shields.io/npm/v/@zpress/kit" alt="npm version" /></a>
 <a href="https://github.com/joggrdocs/zpress/blob/main/LICENSE"><img src="https://img.shields.io/github/license/joggrdocs/zpress" alt="License" /></a>
 
 </div>
@@ -19,7 +19,7 @@
 ## Install
 
 ```bash
-npm install zpress
+npm install @zpress/kit
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ npm install zpress
 
 ```ts
 // zpress.config.ts
-import { defineConfig } from 'zpress'
+import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'my-project',
@@ -60,6 +60,10 @@ npx zpress dev       # start dev server with hot reload
 npx zpress build     # build for production
 npx zpress serve     # preview production build
 ```
+
+## Why `@zpress/kit`?
+
+The package is published as `@zpress/kit` because npm's moniker rules reserve bare names like `zpress` for npm users who hold that username. Scoping the package under `@zpress/` avoids the restriction and keeps all zpress packages under one org.
 
 ## License
 

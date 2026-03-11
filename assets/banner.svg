@@ -98,7 +98,7 @@
   <text class="ln" x="469" y="412">12</text>
 
   <!-- Line 1: import { defineConfig } from 'zpress' -->
-  <text class="code" x="487" y="236"><tspan class="kw">import</tspan><tspan class="op"> { </tspan><tspan class="fn">defineConfig</tspan><tspan class="op"> } </tspan><tspan class="kw">from</tspan><tspan class="st"> 'zpress'</tspan></text>
+  <text class="code" x="487" y="236"><tspan class="kw">import</tspan><tspan class="op"> { </tspan><tspan class="fn">defineConfig</tspan><tspan class="op"> } </tspan><tspan class="kw">from</tspan><tspan class="st"> '@zpress/kit'</tspan></text>
 
   <!-- Line 2: (empty) -->
 

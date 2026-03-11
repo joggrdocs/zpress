@@ -58,7 +58,7 @@ function deriveTitle(cwd: string): string {
  */
 function buildConfigTemplate(title: string): string {
   const escaped = title.replaceAll("'", String.raw`\'`)
-  return `import { defineConfig } from 'zpress'
+  return `import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: '${escaped}',

@@ -1,6 +1,6 @@
 {
   "name": "example-simple",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,6 @@
     "docs:serve": "zpress serve"
   },
   "dependencies": {
-    "zpress": "workspace:*"
+    "@zpress/kit": "workspace:*"
   }
 }
