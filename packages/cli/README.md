@@ -16,16 +16,16 @@ npm install @zpress/cli
 
 ## Commands
 
-| Command    | Description                          |
-| ---------- | ------------------------------------ |
-| `dev`      | Start dev server with hot reload     |
-| `build`    | Build for production                 |
-| `serve`    | Preview production build             |
-| `sync`     | Sync config to documentation output  |
-| `clean`    | Remove generated output              |
-| `dump`     | Dump resolved config for debugging   |
-| `setup`    | Scaffold a new zpress project        |
-| `generate` | Generate assets (banners, icons)     |
+| Command    | Description                         |
+| ---------- | ----------------------------------- |
+| `dev`      | Start dev server with hot reload    |
+| `build`    | Build for production                |
+| `serve`    | Preview production build            |
+| `sync`     | Sync config to documentation output |
+| `clean`    | Remove generated output             |
+| `dump`     | Dump resolved config for debugging  |
+| `setup`    | Scaffold a new zpress project       |
+| `generate` | Generate assets (banners, icons)    |
 
 ## Usage
 

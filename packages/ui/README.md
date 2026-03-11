@@ -16,24 +16,28 @@ npm install @zpress/ui
 
 ## Exports
 
-| Path             | Description                          |
-| ---------------- | ------------------------------------ |
-| `@zpress/ui`     | Rspress plugin and config builder    |
-| `@zpress/ui/theme` | Theme components (React)           |
-| `@zpress/ui/icons` | Icon components                    |
+| Path               | Description                       |
+| ------------------ | --------------------------------- |
+| `@zpress/ui`       | Rspress plugin and config builder |
+| `@zpress/ui/theme` | Theme components (React)          |
+| `@zpress/ui/icons` | Icon components                   |
 
 ## API
 
-| Export               | Description                              |
-| -------------------- | ---------------------------------------- |
+| Export                | Description                                |
+| --------------------- | ------------------------------------------ |
 | `createRspressConfig` | Build an Rspress config from zpress config |
-| `zpressPlugin`        | Rspress plugin for zpress integration     |
+| `zpressPlugin`        | Rspress plugin for zpress integration      |
 
 ## Usage
 
 ```ts
 import { createRspressConfig, zpressPlugin } from '@zpress/ui'
 ```
+
+## Raw Source Exports
+
+The `./theme` and `./icons` exports ship raw `.tsx`/`.ts` source files (not compiled output). This is intentional — Rspress theme components must be bundled by the consuming Rspress build pipeline to work correctly with its module resolution and hot-reload system.
 
 ## License
 

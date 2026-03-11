@@ -1,3 +1,10 @@
 packages:
   - 'packages/*'
   - 'examples/*'
+
+catalog:
+  '@rslib/core': ^0.20.0
+  '@rspress/core': ^2.0.5
+  typescript: ^5.9.3
+  ts-pattern: ^5.9.0
+  es-toolkit: ^1.45.1

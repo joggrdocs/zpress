@@ -25,27 +25,27 @@ npm install @zpress/core
 
 ### Sync Engine
 
-| Export           | Description                            |
-| ---------------- | -------------------------------------- |
-| `sync`           | Run the full sync pipeline             |
-| `resolveEntries` | Resolve glob patterns to page entries  |
-| `loadManifest`   | Load a previously written manifest     |
+| Export           | Description                           |
+| ---------------- | ------------------------------------- |
+| `sync`           | Run the full sync pipeline            |
+| `resolveEntries` | Resolve glob patterns to page entries |
+| `loadManifest`   | Load a previously written manifest    |
 
 ### Assets
 
-| Export              | Description                     |
-| ------------------- | ------------------------------- |
-| `generateAssets`    | Generate all asset files        |
-| `generateBannerSvg` | Generate banner SVG             |
-| `generateIconSvg`   | Generate icon SVG               |
-| `generateLogoSvg`   | Generate logo SVG               |
+| Export              | Description              |
+| ------------------- | ------------------------ |
+| `generateAssets`    | Generate all asset files |
+| `generateBannerSvg` | Generate banner SVG      |
+| `generateIconSvg`   | Generate icon SVG        |
+| `generateLogoSvg`   | Generate logo SVG        |
 
 ### Utilities
 
-| Export         | Description                    |
-| -------------- | ------------------------------ |
-| `createPaths`  | Build resolved path helpers    |
-| `hasGlobChars` | Check if a string has globs    |
+| Export         | Description                 |
+| -------------- | --------------------------- |
+| `createPaths`  | Build resolved path helpers |
+| `hasGlobChars` | Check if a string has globs |
 
 ## Usage
 

@@ -63,8 +63,8 @@ npx zpress serve     # preview production build
 
 ## Packages
 
-| Package                         | Description                              |
-| ------------------------------- | ---------------------------------------- |
+| Package                                                      | Description                         |
+| ------------------------------------------------------------ | ----------------------------------- |
 | [`@zpress/core`](https://www.npmjs.com/package/@zpress/core) | Config loading, sync engine, assets |
 | [`@zpress/cli`](https://www.npmjs.com/package/@zpress/cli)   | CLI commands and file watcher       |
 | [`@zpress/ui`](https://www.npmjs.com/package/@zpress/ui)     | Rspress plugin, theme, and styles   |

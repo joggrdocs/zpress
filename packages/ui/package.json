@@ -2,6 +2,15 @@
   "name": "@zpress/ui",
   "version": "0.2.0",
   "description": "Rspress plugin, theme components, and styles for zpress",
+  "keywords": [
+    "react",
+    "rspress",
+    "theme",
+    "ui",
+    "zpress"
+  ],
+  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/ui#readme",
+  "bugs": "https://github.com/joggrdocs/zpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,7 +24,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
     },
     "./theme": {
@@ -44,21 +53,26 @@
     "@iconify-json/simple-icons": "^1.2.73",
     "@iconify-json/skill-icons": "^1.2.4",
     "@iconify/react": "^6.0.2",
-    "@rspress/core": "2.0.5",
     "@zpress/core": "workspace:*",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "ts-pattern": "^5.9.0"
+    "ts-pattern": "catalog:"
   },
   "devDependencies": {
     "@iconify-json/logos": "^1.2.10",
     "@iconify-json/material-icon-theme": "^1.2.55",
     "@iconify-json/vscode-icons": "^1.2.45",
-    "@rslib/core": "^0.20.0",
+    "@rslib/core": "catalog:",
+    "@rspress/core": "catalog:",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "geist": "^1.7.0",
-    "typescript": "^5.9.3"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@rspress/core": "catalog:",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "engines": {
     "node": ">=24.0.0"
