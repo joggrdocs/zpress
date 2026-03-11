@@ -63,7 +63,7 @@ npx zpress serve     # preview production build
 
 ## Why `@zpress/kit`?
 
-The package is published as `@zpress/kit` because npm's moniker rules reserve bare names like `zpress` for npm users who hold that username. Scoping the package under `@zpress/` avoids the restriction and keeps all zpress packages under one org.
+The package is published as `@zpress/kit` because npm's moniker rules are overly aggressive and ban names that are similar in anyway to existing packages, we will fix once we get npm to allow us to push to that namespace.
 
 ## License
 
