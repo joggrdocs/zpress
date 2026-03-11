@@ -59,6 +59,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     title: config.title ?? 'zpress',
     description: config.description ?? 'Documentation',
 
+    icon: config.icon ?? '/icon.svg',
     logo: '/logo.svg',
     logoText: '',
 
