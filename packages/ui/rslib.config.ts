@@ -8,6 +8,7 @@ export default defineConfig({
       syntax: 'esnext',
       autoExtension: false,
       autoExternal: true,
+      dts: { bundle: true },
       source: {
         entry: {
           index: './src/index.ts',

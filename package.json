@@ -25,14 +25,15 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
+    "@microsoft/api-extractor": "^7.57.7",
     "@types/node": "^25.4.0",
     "eslint-plugin-functional": "^9.0.4",
     "eslint-plugin-jsdoc": "^62.7.1",
     "eslint-plugin-security": "^4.0.0",
     "laufen": "^1.1.0",
-    "oxfmt": "^0.37.0",
-    "oxlint": "^1.52.0",
-    "turbo": "^2.8.15",
+    "oxfmt": "^0.38.0",
+    "oxlint": "^1.53.0",
+    "turbo": "^2.8.16",
     "typescript": "^5.9.3"
   },
   "engines": {
