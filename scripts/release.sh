@@ -16,6 +16,22 @@ ok()    { printf "${GREEN}✓ %s${NC}\n" "$1"; }
 warn()  { printf "${YELLOW}⚠ %s${NC}\n" "$1"; }
 fail()  { printf "${RED}✗ %s${NC}\n" "$1"; exit 1; }
 
+readonly PACKAGES=(packages/core packages/ui packages/cli packages/zpress)
+
+# ── cleanup trap (registered early) ──────────
+
+cleanup() {
+  if [[ -f .npmrc.bak ]]; then
+    mv .npmrc.bak .npmrc
+  fi
+  for pkg in "${PACKAGES[@]}"; do
+    if [[ -f "$pkg/package.json.bak" ]]; then
+      mv "$pkg/package.json.bak" "$pkg/package.json"
+    fi
+  done
+}
+trap cleanup EXIT
+
 # ── pre-flight checks ──────────────────────────
 
 info "Running pre-flight checks..."
@@ -27,8 +43,15 @@ info "Running pre-flight checks..."
 branch="$(git branch --show-current)"
 [[ "$branch" == "main" ]] || warn "Not on main branch (currently on '$branch')"
 
+# Clean working tree (version bump will create changes)
+[[ -z "$(git status --porcelain)" ]] || fail "Working tree is dirty — commit or stash changes first"
+
 # Require pnpm
 command -v pnpm &>/dev/null || fail "pnpm is not installed"
+
+# Require npm auth (local publish uses ~/.npmrc credentials)
+npm_user="$(npm whoami 2>/dev/null)" || fail "Not logged in to npm — run 'npm login' first"
+info "Authenticated as npm user: $npm_user"
 
 ok "Pre-flight checks passed"
 
@@ -42,7 +65,7 @@ ok "Quality checks passed"
 
 info "Applying changeset versions..."
 
-if ls .changeset/*.md &>/dev/null 2>&1; then
+if compgen -G ".changeset/*.md" >/dev/null; then
   pnpm changeset version
   ok "Versions bumped"
 
@@ -64,29 +87,23 @@ ok "Build complete"
 
 info "Publishing packages to npm..."
 
-# Strip the CI auth token from .npmrc so local npm login is used
+# Replace .npmrc with a minimal version that npm understands.
+# The repo .npmrc has pnpm-specific settings (auto-install-peers) and a
+# CI-only auth token (${NPM_TOKEN}). Neither works for local npm publish.
+# Local auth comes from ~/.npmrc (set by `npm login`).
 cp .npmrc .npmrc.bak
-grep -v '_authToken' .npmrc.bak > .npmrc || true
+printf "# Temporary .npmrc for local publish (restored after release)\n" > .npmrc
 
-# Strip provenance from package.json files (only works in CI)
-readonly PACKAGES=(packages/core packages/ui packages/cli packages/zpress)
+# Strip provenance from package.json files (only works in CI with OIDC)
 for pkg in "${PACKAGES[@]}"; do
   cp "$pkg/package.json" "$pkg/package.json.bak"
   node -e "
     const fs = require('fs');
-    const pkg = JSON.parse(fs.readFileSync('$pkg/package.json', 'utf8'));
-    delete pkg.publishConfig.provenance;
-    fs.writeFileSync('$pkg/package.json', JSON.stringify(pkg, null, 2) + '\n');
+    const p = JSON.parse(fs.readFileSync('$pkg/package.json', 'utf8'));
+    if (p.publishConfig) { delete p.publishConfig.provenance; }
+    fs.writeFileSync('$pkg/package.json', JSON.stringify(p, null, 2) + '\n');
   "
 done
-
-cleanup() {
-  mv .npmrc.bak .npmrc
-  for pkg in "${PACKAGES[@]}"; do
-    mv "$pkg/package.json.bak" "$pkg/package.json"
-  done
-}
-trap cleanup EXIT
 
 pnpm changeset publish
 ok "Packages published"
