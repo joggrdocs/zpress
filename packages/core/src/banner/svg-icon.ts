@@ -47,7 +47,7 @@ function buildFigletIcon(params: {
   const textLines = params.lines
     .map((line, i) => {
       const y = i * ART_LINE_HEIGHT
-      return `      <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
+      return `      <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${escapeXml(line)}</text>`
     })
     .join('\n')
 
@@ -109,7 +109,7 @@ function buildFallbackIcon(params: { readonly char: string }): string {
  * @returns Complete SVG markup string with generated marker
  */
 export function composeIcon(params: { readonly title: string }): string {
-  const firstChar = params.title.charAt(0)
+  const firstChar = params.title.trimStart().charAt(0)
   const figlet = renderFigletText(firstChar)
   const hasFigletGlyph = figlet.lines.some((line) => line.trim().length > 0)
 
