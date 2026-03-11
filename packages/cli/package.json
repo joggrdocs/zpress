@@ -52,9 +52,6 @@
     "@rslib/core": "catalog:",
     "typescript": "catalog:"
   },
-  "peerDependencies": {
-    "@rspress/core": "catalog:"
-  },
   "engines": {
     "node": ">=24.0.0"
   }

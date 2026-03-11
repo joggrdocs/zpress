@@ -204,6 +204,9 @@ importers:
 
   packages/zpress:
     dependencies:
+      '@rspress/core':
+        specifier: 'catalog:'
+        version: 2.0.5(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
       '@zpress/cli':
         specifier: workspace:*
         version: link:../cli
@@ -213,6 +216,12 @@ importers:
       '@zpress/ui':
         specifier: workspace:*
         version: link:../ui
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.2.4
+        version: 19.2.4(react@19.2.4)
     devDependencies:
       '@rslib/core':
         specifier: 'catalog:'
