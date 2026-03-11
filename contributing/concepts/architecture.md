@@ -204,7 +204,7 @@ zpress generates a multi-sidebar structure for Rspress. Root entries share the `
 The config file (`zpress.config.ts`) is the single source of truth for the entire documentation site:
 
 ```ts
-import { defineConfig } from 'zpress'
+import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'My Docs',

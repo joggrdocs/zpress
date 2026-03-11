@@ -1,5 +1,5 @@
 {
-  "name": "zpress",
+  "name": "@zpress/kit",
   "version": "0.1.0",
   "description": "Documentation framework powered by Rspress with a config-driven information architecture",
   "license": "MIT",

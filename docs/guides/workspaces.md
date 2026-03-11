@@ -10,7 +10,7 @@ The `apps` and `packages` arrays define metadata for your monorepo's services an
 ## Defining workspace items
 
 ```ts
-import { defineConfig } from 'zpress'
+import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   apps: [

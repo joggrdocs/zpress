@@ -9,6 +9,6 @@
     "docs:serve": "zpress serve"
   },
   "dependencies": {
-    "zpress": "workspace:*"
+    "@zpress/kit": "workspace:*"
   }
 }

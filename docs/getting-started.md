@@ -22,7 +22,7 @@ There are excellent documentation tools out there — [VitePress](https://vitepr
 ## Install
 
 ```bash
-pnpm add zpress
+pnpm add @zpress/kit
 ```
 
 ## Initialize
@@ -30,7 +30,7 @@ pnpm add zpress
 Run `zpress setup` or create a `zpress.config.ts` at your repo root:
 
 ```ts
-import { defineConfig } from 'zpress'
+import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'My Project',

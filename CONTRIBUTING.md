@@ -70,7 +70,7 @@ packages/
 ├── cli/              # @zpress/cli — CLI commands, watcher, Rspress integration
 ├── core/             # @zpress/core — config loading, sync engine, sidebar/nav generation
 ├── ui/               # @zpress/ui — Rspress plugin, theme components, and styles
-└── zpress/           # zpress — public wrapper package (CLI + config re-exports)
+└── zpress/           # @zpress/kit — public wrapper package (CLI + config re-exports)
 ```
 
 ## Code Style

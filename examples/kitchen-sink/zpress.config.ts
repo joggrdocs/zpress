@@ -1,4 +1,4 @@
-import { defineConfig } from 'zpress'
+import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'Acme Platform',

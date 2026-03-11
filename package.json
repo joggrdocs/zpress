@@ -21,7 +21,7 @@
     "dev:playground": "pnpm build && pnpm --filter @zpress/ui dev"
   },
   "dependencies": {
-    "zpress": "workspace:*"
+    "@zpress/kit": "workspace:*"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
