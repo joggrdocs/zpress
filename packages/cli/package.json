@@ -1,6 +1,6 @@
 {
   "name": "@zpress/cli",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "CLI for building and serving zpress documentation sites",
   "keywords": [
     "cli",

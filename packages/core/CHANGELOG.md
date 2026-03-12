@@ -1,5 +1,26 @@
 # @zpress/core
 
+## 0.4.0
+
+### Minor Changes
+
+- 83cc277: Add `zpress check` command for config validation and deadlink detection
+
+  Introduces a standalone `check` command that validates the zpress config and
+  detects broken internal links by running a silent Rspress build. The `build`
+  command now includes checks by default (`--check` flag, opt out with
+  `--no-check`). Config validation is moved from `defineConfig` (which was
+  calling `process.exit`) into `loadConfig`, returning structured `Result` tuples
+  so the CLI can present friendly error messages.
+
+### Patch Changes
+
+- d1e2b76: Restore optional `icon` field on `Entry` for home page feature cards
+
+  The sidebar icon removal in #9 inadvertently dropped the `icon` property from
+  `Entry`, which broke auto-generated feature card icons on the home page. This
+  adds the field back as optional — sections without an icon are unaffected.
+
 ## 0.3.0
 
 ### Minor Changes
