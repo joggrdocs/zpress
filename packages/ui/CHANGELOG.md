@@ -1,5 +1,35 @@
 # @zpress/ui
 
+## 0.3.0
+
+### Minor Changes
+
+- 37c2ec6: Enable clean URLs and remove sidebar icon concept
+  - Enable `route.cleanUrls` in Rspress config so prod builds produce clean URLs (e.g. `/guides/foo` instead of `/guides/foo.html`)
+  - Remove `Entry.icon`, `NavItem.icon`, `SidebarItem.icon`, and all icon-map threading through sidebar/nav generation
+  - Remove `validateNav`/`validateNavItem` and `missing_nav_icon` error type
+  - Icons on `CardConfig`, `WorkspaceItem`, `WorkspaceGroup`, and `Feature` are unchanged
+
+### Patch Changes
+
+- aea7b38: Fix branch tag rendering in navbar on home page
+  - Replace `globalUIComponents` + DOM manipulation with Rspress `beforeNavMenu` layout slot
+  - Add custom `Layout` override that injects `BranchTag` via the slot prop
+  - Remove `useEffect`/`useRef` DOM relocation from `BranchTag`, making it a pure render component
+
+- d1b4ad5: Fix mobile layout issues on home page
+  - Add horizontal padding to feature grid, workspace section, and card divider so cards don't touch screen edges
+  - Override hero image `max-width` from `50vw` to `90vw` on mobile for full-width display
+  - Add `padding-bottom` to hero when layout wraps at 1000px breakpoint
+  - Reduce hero container gap to `8px` on mobile
+  - Scale down hero title, subtitle, and tagline font sizes for mobile
+  - Add horizontal padding to hero content on mobile
+  - Reduce hero actions gap from `1.5rem` to `1.25rem`
+  - Fix hero container gap override to target correct class (`__container` instead of root)
+
+- Updated dependencies [37c2ec6]
+  - @zpress/core@0.3.0
+
 ## 0.2.2
 
 ### Patch Changes
