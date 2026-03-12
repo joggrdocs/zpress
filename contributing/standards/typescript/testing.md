@@ -167,7 +167,7 @@ describe('loadConfig', () => {
     expect(config).toMatchObject({ title: 'My Site' })
   })
 
-  it('should return error for missing file', async () => {
+  it('should return error for missing field', async () => {
     const [error, config] = await loadConfig('/missing')
     expect(config).toBeNull()
     expect(error).toMatchObject({

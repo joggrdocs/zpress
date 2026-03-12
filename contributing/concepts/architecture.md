@@ -23,7 +23,7 @@ packages/
 | `@zpress/core` | Config loading, entry resolution, sync engine, sidebar/nav gen      |
 | `@zpress/cli`  | CLI commands: sync, dev, build, serve, clean, setup, dump, generate |
 | `@zpress/ui`   | Rspress plugin, React theme components, CSS overrides               |
-| `@zpress/kit`  | Public package: re-exports everything + provides the CLI bin        |
+| `@zpress/kit`  | Public package: `.` and `./config` entry points + `zpress` CLI bin  |
 
 ### `@zpress/kit` (wrapper)
 

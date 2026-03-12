@@ -61,7 +61,7 @@ pnpm typecheck      # Type check (tsc --noEmit)
 - TypeScript: `target: ESNext`, `module: ESNext`, `moduleResolution: bundler`, `strict: true`
 - Explicit return types on all exported functions
 - All public properties `readonly`
-- Config validated at boundaries
+- Config validated with Zod at module boundaries
 
 ## Standards
 

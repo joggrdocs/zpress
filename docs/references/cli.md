@@ -8,7 +8,7 @@ description: Reference for all zpress CLI commands, flags, and behavior.
 All commands are run from your repo root where `zpress.config.ts` lives.
 
 ```bash
-npx zpress <command> [flags]
+zpress <command> [flags]
 ```
 
 ## setup
