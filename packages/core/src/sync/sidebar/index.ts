@@ -4,16 +4,15 @@ import type { ZpressConfig, NavItem } from '../../types.ts'
 import type { ResolvedEntry, SidebarItem } from '../types.ts'
 
 /**
- * Build a SidebarItem from a resolved entry with optional icon.
+ * Build a SidebarItem from a resolved entry.
  */
-function buildSidebarEntry(entry: ResolvedEntry, icon: string | undefined): SidebarItem {
+function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
   if (entry.items && entry.items.length > 0) {
     return {
       text: entry.text,
       items: generateSidebar(entry.items),
       ...maybeCollapsed(entry.collapsible),
       ...maybeLink(entry.link),
-      ...maybeIcon(icon),
     }
   }
 
@@ -25,7 +24,6 @@ function buildSidebarEntry(entry: ResolvedEntry, icon: string | undefined): Side
   return {
     text: entry.text,
     link: entry.link,
-    ...maybeIcon(icon),
   }
 }
 
@@ -35,34 +33,26 @@ function buildSidebarEntry(entry: ResolvedEntry, icon: string | undefined): Side
  * Leaf pages are placed before sections (directories) at every level.
  *
  * @param entries - Resolved entry tree from the sync engine
- * @param icons - Optional map of section text to Iconify identifier (applied to top-level items only)
- * @returns Rspress sidebar items with optional icon identifier attached
+ * @returns Rspress sidebar items
  */
-export function generateSidebar(
-  entries: readonly ResolvedEntry[],
-  icons?: Map<string, string>
-): SidebarItem[] {
+export function generateSidebar(entries: readonly ResolvedEntry[]): SidebarItem[] {
   const visible = entries.filter((e) => !e.hidden)
   const pages = visible.filter((e) => !e.items || e.items.length === 0)
   const sections = visible.filter((e) => e.items && e.items.length > 0)
 
-  return [...pages, ...sections].map((entry) => {
-    const icon = resolveIcon(icons, entry.text)
-    return buildSidebarEntry(entry, icon)
-  })
+  return [...pages, ...sections].map(buildSidebarEntry)
 }
 
 /**
- * Build a NavItem from a resolved entry with optional icon.
+ * Build a NavItem from a resolved entry.
  */
-function buildNavEntry(entry: ResolvedEntry, icon: string | undefined): NavItem {
+function buildNavEntry(entry: ResolvedEntry): NavItem {
   const link = resolveLink(entry)
   const children = resolveChildren(entry)
 
   return {
     text: entry.text,
     link,
-    ...maybeIcon(icon),
     ...maybeChildren(children),
   }
 }
@@ -75,14 +65,9 @@ function buildNavEntry(entry: ResolvedEntry, icon: string | undefined): NavItem 
  *
  * @param config - zpress config (provides explicit nav or `"auto"`)
  * @param resolved - Resolved entry tree from the sync engine
- * @param icons - Map of section text to raw Iconify icon identifiers
  * @returns Rspress nav items array
  */
-export function generateNav(
-  config: ZpressConfig,
-  resolved: readonly ResolvedEntry[],
-  icons: Map<string, string>
-): NavItem[] {
+export function generateNav(config: ZpressConfig, resolved: readonly ResolvedEntry[]): NavItem[] {
   if (config.nav !== 'auto' && config.nav !== undefined) {
     return [...config.nav]
   }
@@ -93,9 +78,7 @@ export function generateNav(
   const nonIsolated = visible.filter((e) => !e.isolated).slice(0, 3)
   const isolated = visible.filter((e) => e.isolated)
 
-  return [...nonIsolated, ...isolated]
-    .map((entry) => buildNavEntry(entry, icons.get(entry.text)))
-    .filter((item) => item.link !== undefined)
+  return [...nonIsolated, ...isolated].map(buildNavEntry).filter((item) => item.link !== undefined)
 }
 
 /**
@@ -125,20 +108,6 @@ function maybeLink(link: string | undefined): { link?: string } {
     return { link }
   }
   return {}
-}
-
-function maybeIcon(icon: string | undefined): { icon?: string } {
-  if (icon) {
-    return { icon }
-  }
-  return {}
-}
-
-function resolveIcon(icons: Map<string, string> | undefined, text: string): string | undefined {
-  if (icons) {
-    return icons.get(text)
-  }
-  return undefined
 }
 
 function resolveLink(entry: ResolvedEntry): string | undefined {
