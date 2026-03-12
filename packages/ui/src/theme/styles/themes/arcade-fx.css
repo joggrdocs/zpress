@@ -156,8 +156,8 @@ html[data-zp-theme='arcade'] .rp-codeblock__content::after {
     to bottom,
     transparent 0px,
     transparent 3px,
-    rgba(0, 255, 136, 0.1) 3px,
-    rgba(0, 255, 136, 0.1) 4px
+    rgba(0, 255, 136, 0.08) 3px,
+    rgba(0, 255, 136, 0.08) 4px
   );
   animation: arcade-scanline 8s linear infinite;
   pointer-events: none;
