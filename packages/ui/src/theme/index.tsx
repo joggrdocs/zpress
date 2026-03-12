@@ -12,6 +12,10 @@
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
 import './styles/overrides/rspress.css'
+// Theme color palettes — scoped via [data-zp-theme] selectors
+import './styles/themes/base.css'
+import './styles/themes/midnight.css'
+import './styles/themes/arcade.css'
 import './styles/overrides/details.css'
 import './styles/overrides/scrollbar.css'
 import './styles/overrides/sidebar.css'

@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'zpress',
   description: 'Beautiful Docs, Zero Config',
   tagline: 'An opinionated documentation framework for monorepos. Just point it at your code.',
+  theme: { switcher: true },
   sections: [
     {
       text: 'Getting Started',
