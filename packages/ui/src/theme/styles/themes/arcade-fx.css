@@ -141,8 +141,8 @@ html[data-zp-theme='arcade'] .rp-codeblock__content::after {
     to bottom,
     transparent 0px,
     transparent 3px,
-    rgba(0, 255, 136, 0.03) 3px,
-    rgba(0, 255, 136, 0.03) 4px
+    rgba(0, 255, 136, 0.06) 3px,
+    rgba(0, 255, 136, 0.06) 4px
   );
   animation: arcade-scanline 8s linear infinite;
   pointer-events: none;
@@ -180,6 +180,7 @@ html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor) {
 
 html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
   background-size: 100% 1.5px;
+  border-bottom: none;
   text-shadow:
     0 0 6px rgba(0, 255, 136, 0.5),
     0 0 12px rgba(0, 255, 136, 0.2);
@@ -195,6 +196,10 @@ html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
  * It already has position: relative. Uses ::after because
  * ::before is used by Rspress for group-item line indicators.
  */
+html[data-zp-theme='arcade'] .rp-sidebar-item--active {
+  overflow: visible;
+}
+
 html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
   content: '';
   position: absolute;
