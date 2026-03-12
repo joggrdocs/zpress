@@ -84,16 +84,43 @@ html[data-zp-theme='arcade'] .section-card:hover {
 /* ── 2. Neon pulse — buttons ─────────────────────────────── */
 
 /*
- * Brand buttons use a bright green gradient background that
- * has poor contrast with white text. Override to dark text.
+ * Replace the default gradient with a solid neon brand color,
+ * dark text for contrast, and a subtle border glow on hover.
  */
 html[data-zp-theme='arcade'] .rp-button--brand {
+  background: var(--zp-c-brand-1);
   color: var(--zp-c-bg);
+  border: 1px solid var(--zp-c-brand-1);
   opacity: 1;
 }
 
 html[data-zp-theme='arcade'] .rp-button--brand:hover {
+  background: transparent;
+  color: var(--zp-c-brand-1);
+  border-color: var(--zp-c-brand-1);
   opacity: 1;
+  box-shadow:
+    0 0 8px rgba(0, 255, 136, 0.4),
+    inset 0 0 8px rgba(0, 255, 136, 0.1);
+}
+
+/*
+ * Alt button — outlined style with neon border.
+ */
+html[data-zp-theme='arcade'] .rp-button--alt {
+  background: transparent;
+  color: var(--zp-c-text-1);
+  border: 1px solid var(--zp-c-border);
+}
+
+html[data-zp-theme='arcade'] .rp-button--alt:hover {
+  border-color: var(--zp-c-brand-1);
+  color: var(--zp-c-brand-1);
+  opacity: 1;
+  background: transparent;
+  box-shadow:
+    0 0 8px rgba(0, 255, 136, 0.3),
+    inset 0 0 8px rgba(0, 255, 136, 0.06);
 }
 
 /*
