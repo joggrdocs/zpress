@@ -16,7 +16,7 @@ export const checkCommand = command({
     // returns a Result tuple. No process.exit, no process overrides.
     ctx.logger.step('Validating config...')
     const [configErr, config] = await loadConfig(paths.repoRoot)
-    const configResult = runConfigCheck(config, configErr)
+    const configResult = runConfigCheck({ config, loadError: configErr })
 
     // If config is invalid, present the error and bail — sync/build need valid config
     if (configErr || !config) {

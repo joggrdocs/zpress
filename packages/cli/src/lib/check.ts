@@ -10,6 +10,7 @@
 import path from 'node:path'
 
 import type { CliLogger } from '@kidd-cli/core/logger'
+import { configError } from '@zpress/core'
 import type { ConfigError, Paths, ZpressConfig } from '@zpress/core'
 
 import { buildSiteForCheck } from './rspress.ts'
@@ -66,6 +67,11 @@ function stripAnsi(text: string): string {
 
 // ── Config validation ──────────────────────────────────────────
 
+interface RunConfigCheckParams {
+  readonly config: ZpressConfig | null
+  readonly loadError: ConfigError | null
+}
+
 /**
  * Wrap a config load result into a structured check result.
  *
@@ -73,16 +79,16 @@ function stripAnsi(text: string): string {
  * `ConfigResult` tuple. This function translates that into the
  * `ConfigCheckResult` shape used by the presentation layer.
  *
- * @param config - The loaded config (may be null if load failed)
- * @param loadError - The error from `loadConfig`, if any
+ * @param params - The loaded config and any load error
  * @returns A `ConfigCheckResult` with pass/fail status and any errors
  */
-export function runConfigCheck(
-  config: ZpressConfig | null,
-  loadError: ConfigError | null
-): ConfigCheckResult {
+export function runConfigCheck(params: RunConfigCheckParams): ConfigCheckResult {
+  const { config, loadError } = params
   if (loadError) {
     return { passed: false, errors: [loadError] }
+  }
+  if (!config) {
+    return { passed: false, errors: [configError('empty_sections', 'Config is missing')] }
   }
   return { passed: true, errors: [] }
 }
@@ -111,18 +117,29 @@ function toError(value: unknown): Error {
 
 /**
  * Create an interceptor that captures writes and swallows them.
+ *
+ * Invokes any callback passed via Node's overloaded `write` signature
+ * so callers that rely on write-completion callbacks are not left hanging.
  */
 function createInterceptor(chunks: string[]): typeof process.stdout.write {
   return function interceptWrite(
     chunk: Uint8Array | string,
     // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- matching Node's overloaded write signature
-    _encodingOrCb?: any,
+    encodingOrCb?: any,
     // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- matching Node's overloaded write signature
-    _maybeCb?: any
+    maybeCb?: any
   ): boolean {
     const text = chunkToString(chunk)
     // oxlint-disable-next-line functional/immutable-data -- accumulating captured output
     chunks.push(text)
+    // Invoke callback if provided (matches Node's write signature overloads)
+    if (typeof encodingOrCb === 'function') {
+      // oxlint-disable-next-line eslint-plugin-promise/prefer-await-to-callbacks -- invoking Node's write callback, not an async pattern
+      encodingOrCb()
+    } else if (typeof maybeCb === 'function') {
+      // oxlint-disable-next-line eslint-plugin-promise/prefer-await-to-callbacks -- invoking Node's write callback, not an async pattern
+      maybeCb()
+    }
     return true
   } as typeof process.stdout.write
 }

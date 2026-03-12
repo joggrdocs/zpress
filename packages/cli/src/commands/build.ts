@@ -41,7 +41,7 @@ export const buildCommand = command({
     if (check) {
       // Checked build: validate config, sync, then run deadlink-detecting build
       ctx.logger.step('Validating config...')
-      const configResult = runConfigCheck(config, configErr)
+      const configResult = runConfigCheck({ config, loadError: configErr })
 
       ctx.logger.step('Syncing content...')
       await sync(config, { paths, quiet: true })
