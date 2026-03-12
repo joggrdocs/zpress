@@ -41,7 +41,7 @@ const summary = match(result)
 
 ### Use type-fest for Common Utilities
 
-Use [type-fest](https://github.com/sindresorhus/type-fest) for type utilities not included in TypeScript's standard library.
+[type-fest](https://github.com/sindresorhus/type-fest) provides type utilities not included in TypeScript's standard library. Note: `type-fest` is not currently installed in this project. When installed, prefer its utilities for the use cases below. If `type-fest` is not available, use TypeScript's built-in utility types (see [Use Built-in Utility Types](#use-built-in-utility-types)).
 
 | Utility             | Description                    | Example                       |
 | ------------------- | ------------------------------ | ----------------------------- |

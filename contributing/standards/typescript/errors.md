@@ -21,15 +21,19 @@ Construct success and failure tuples directly:
 const success: Result<Config, ParseError> = [null, config]
 
 // Failure
-const failure: Result<Config, ParseError> = [{ type: 'parse_error', message: 'Invalid JSON' }, null]
+const failure: Result<Config, ParseError> = [
+  { _tag: 'ParseError', type: 'parse_error', message: 'Invalid JSON' },
+  null,
+]
 ```
 
-For CLI handlers, use the `HandlerResult` specialization with `ok()` and `fail()` constructors from `src/lib/result.ts`:
+For CLI handlers, use the `HandlerResult` specialization with `ok()` and `fail()` constructors. Note: This pattern is planned but not yet implemented in the codebase.
 
 ```ts
 type HandlerResult<T = void> = Result<T, HandlerError>
 
 interface HandlerError {
+  readonly _tag: 'HandlerError'
   readonly message: string
   readonly hint?: string
   readonly exitCode?: number
@@ -51,6 +55,7 @@ Use `Result<T, E>` for operations that can fail in expected ways such as parsing
 import type { Result } from '../lib/result.ts'
 
 interface ParseError {
+  readonly _tag: 'ParseError'
   type: 'parse_error' | 'validation_error'
   message: string
 }
@@ -60,7 +65,7 @@ function parseConfig(json: string): Result<Config, ParseError> {
     const data = JSON.parse(json)
     return [null, data]
   } catch {
-    return [{ type: 'parse_error', message: 'Invalid JSON' }, null]
+    return [{ _tag: 'ParseError', type: 'parse_error', message: 'Invalid JSON' }, null]
   }
 }
 
@@ -124,6 +129,7 @@ Create type aliases for consistency within a domain. This keeps function signatu
 ```ts
 // types.ts
 interface ConfigError {
+  readonly _tag: 'ConfigError'
   type: 'invalid_toml' | 'missing_field' | 'unknown_workspace'
   message: string
   details?: unknown
@@ -199,7 +205,12 @@ function parse(json: string): Result<Data, ParseError> {
   if (!json) {
     return [{ type: 'parse_error', message: 'Empty input' }, null]
   }
-  return [null, JSON.parse(json)]
+
+  try {
+    return [null, JSON.parse(json)]
+  } catch {
+    return [{ type: 'parse_error', message: 'Invalid JSON' }, null]
+  }
 }
 ```
 

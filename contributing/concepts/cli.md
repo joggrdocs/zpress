@@ -4,7 +4,7 @@ Overview of the zpress CLI -- commands, the dev server, file watching, and the b
 
 ## Overview
 
-zpress uses [yargs](https://yargs.js.org) for command routing and [`@clack/prompts`](https://www.clack.cc) for styled terminal output. The CLI entry point is in `packages/cli/src/`, which registers all commands. Each command is a standalone module that orchestrates the core sync engine and Rspress build APIs.
+zpress uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing and `@kidd-cli/core/logger` for styled terminal output. The CLI entry point is in `packages/cli/src/`, which registers all commands. Each command is a standalone module that orchestrates the core sync engine and Rspress build APIs.
 
 ## Commands
 
@@ -47,7 +47,7 @@ The `--clean` flag removes cache, content, and dist before starting.
 
 #### File Watching
 
-The watcher (`packages/cli/src/watcher.ts`) monitors:
+The watcher (`packages/cli/src/lib/watcher.ts`) monitors:
 
 - **Glob entries** -- Parent directories of glob patterns (chokidar handles recursion)
 - **Single-file entries** -- Individual source files
@@ -131,7 +131,7 @@ All functions receive a Rspress config object built by `createRspressConfig()` f
 ### `zpress dev` (detailed)
 
 ```
-1. Parse args (yargs)
+1. Parse args (@kidd-cli/core)
 2. Create paths (.zpress/)
 3. Load config (c12)
 4. Clean (optional: remove cache/content/dist)
@@ -152,7 +152,7 @@ All functions receive a Rspress config object built by `createRspressConfig()` f
 ### `zpress build` (detailed)
 
 ```
-1. Parse args (yargs)
+1. Parse args (@kidd-cli/core)
 2. Create paths (.zpress/)
 3. Load config (c12)
 4. Clean (optional)
@@ -168,7 +168,7 @@ All functions receive a Rspress config object built by `createRspressConfig()` f
 CLI errors are handled at the command boundary:
 
 - **Config errors** -- `defineConfig()` exits with a descriptive message via `process.exit(1)`
-- **Sync errors** -- Result tuples propagate up; the CLI reports them via `@clack/prompts`
+- **Sync errors** -- Result tuples propagate up; the CLI reports them via `@kidd-cli/core/logger`
 - **Rspress errors** -- Build/dev failures are caught and reported
 
 No command calls `process.exit` directly except through the config validation boundary. All user-facing error formatting is centralized in the CLI layer.

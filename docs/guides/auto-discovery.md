@@ -57,11 +57,13 @@ This only applies to auto-discovered children. Entries with explicit `text` are 
 
 ## Sorting
 
-| Strategy      | Behavior                               |
-| ------------- | -------------------------------------- |
-| `'alpha'`     | Alphabetical by derived text (default) |
-| `'filename'`  | Alphabetical by filename               |
-| `(a, b) => n` | Custom comparator on `ResolvedPage`    |
+| Strategy      | Behavior                            |
+| ------------- | ----------------------------------- |
+| `'alpha'`     | Alphabetical by derived text        |
+| `'filename'`  | Alphabetical by filename            |
+| `(a, b) => n` | Custom comparator on `ResolvedPage` |
+
+When `sort` is omitted, entries appear in glob discovery order.
 
 ```ts
 {
@@ -90,3 +92,8 @@ Global excludes in the top-level `exclude` field apply to all sections.
 ## Deduplication
 
 When combining `items` with `from`, explicit entries win. If an explicit entry has the same slug as a glob-discovered file, the glob match is dropped.
+
+## References
+
+- [Configuration — Entry fields](/reference/configuration#entry-fields)
+- [Sections and pages](/guides/sections-and-pages)

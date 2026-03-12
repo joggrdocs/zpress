@@ -169,15 +169,19 @@ const fileName = kebabCase(moduleName) // 'config-loader'
 
 ### Avoid es-toolkit for Trivial Operations
 
-Do not import es-toolkit for checks that are clearer as one-liners. Reserve it for operations that are genuinely hard to get right.
+For standalone null checks, prefer inline comparison over importing `isNil`. Reserve es-toolkit type guards for composed or predicate contexts where they add clarity, such as callbacks to `omitBy`, `filter`, or other higher-order functions.
 
 #### Correct
 
 ```ts
-// Simple null check - inline is clearer
+// Standalone null check - inline is clearer
 if (x != null) {
   // ...
 }
+
+// Predicate context - isNil is idiomatic here
+const cleanConfig = omitBy(rawConfig, isNil)
+const validItems = items.filter((item) => !isNil(item.value))
 
 // Complex grouping - use es-toolkit
 const grouped = groupBy(scripts, 'workspace')
@@ -189,7 +193,7 @@ const batches = chunk(workspaces, 100)
 ```ts
 import { isNil } from 'es-toolkit'
 
-// Overkill for a simple null check
+// For standalone null checks, prefer inline comparison
 if (!isNil(x)) {
   // ...
 }

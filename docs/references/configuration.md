@@ -21,19 +21,20 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 
 ## Top-level fields
 
-| Field         | Type                  | Default    | Description                                          |
-| ------------- | --------------------- | ---------- | ---------------------------------------------------- |
-| `title`       | `string`              | —          | Site title shown in browser tab and home page        |
-| `description` | `string`              | —          | Meta description and home page hero headline         |
-| `tagline`     | `string`              | —          | Hero tagline below the headline on the home page     |
-| `sections`    | `Entry[]`             | (required) | Information architecture tree                        |
-| `nav`         | `'auto' \| NavItem[]` | `'auto'`   | Top navigation bar                                   |
-| `features`    | `Feature[]`           | —          | Explicit home page feature cards (replaces auto-gen) |
-| `apps`        | `WorkspaceItem[]`     | —          | Monorepo app metadata for home/landing pages         |
-| `packages`    | `WorkspaceItem[]`     | —          | Monorepo package metadata for home/landing pages     |
-| `workspaces`  | `WorkspaceGroup[]`    | —          | Custom named groups of workspace items               |
-| `openapi`     | `OpenAPIConfig`       | —          | OpenAPI spec integration for interactive API docs    |
-| `exclude`     | `string[]`            | —          | Glob patterns excluded globally across all sources   |
+| Field         | Type                  | Default    | Description                                                                                    |
+| ------------- | --------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| `title`       | `string`              | —          | Site title shown in browser tab and home page                                                  |
+| `description` | `string`              | —          | Meta description and home page hero headline                                                   |
+| `tagline`     | `string`              | —          | Hero tagline below the headline on the home page                                               |
+| `sections`    | `Entry[]`             | (required) | Information architecture tree                                                                  |
+| `nav`         | `'auto' \| NavItem[]` | `'auto'`   | Top navigation bar                                                                             |
+| `features`    | `Feature[]`           | —          | Explicit home page feature cards (replaces auto-gen)                                           |
+| `apps`        | `WorkspaceItem[]`     | —          | Monorepo app metadata for home/landing pages                                                   |
+| `packages`    | `WorkspaceItem[]`     | —          | Monorepo package metadata for home/landing pages                                               |
+| `workspaces`  | `WorkspaceGroup[]`    | —          | Custom named groups of workspace items                                                         |
+| `openapi`     | `OpenAPIConfig`       | —          | OpenAPI spec integration for interactive API docs                                              |
+| `exclude`     | `string[]`            | —          | Glob patterns excluded globally across all sources                                             |
+| `icon`        | `string`              | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
 
 ## Entry
 
@@ -77,26 +78,26 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 
 ### Entry fields
 
-| Field           | Type                                       | Description                                     |
-| --------------- | ------------------------------------------ | ----------------------------------------------- |
-| `text`          | `string`                                   | Display name in sidebar and nav                 |
-| `link`          | `string`                                   | Output URL path                                 |
-| `from`          | `string`                                   | Source file path or glob pattern                |
-| `prefix`        | `string`                                   | URL prefix for glob-discovered children         |
-| `content`       | `string \| () => Promise<string>`          | Inline or generated markdown content            |
-| `items`         | `Entry[]`                                  | Explicit child entries                          |
-| `collapsible`   | `boolean`                                  | Make sidebar section collapsible                |
-| `exclude`       | `string[]`                                 | Exclude globs scoped to this entry              |
-| `hidden`        | `boolean`                                  | Hide from sidebar (page still routable)         |
-| `frontmatter`   | `Frontmatter`                              | Injected YAML frontmatter                       |
-| `textFrom`      | `'filename' \| 'heading' \| 'frontmatter'` | Text derivation for discovered children         |
-| `textTransform` | `(text, slug) => string`                   | Transform derived text                          |
-| `sort`          | `'alpha' \| 'filename' \| comparator`      | Sort order for discovered children              |
-| `recursive`     | `boolean`                                  | Directory-based nesting for recursive globs     |
-| `indexFile`     | `string`                                   | Section header filename (default: `"overview"`) |
-| `icon`          | `string`                                   | Iconify identifier for sidebar icon rail        |
-| `card`          | `CardConfig`                               | Landing page card metadata                      |
-| `isolated`      | `boolean`                                  | Separate sidebar namespace (requires `link`)    |
+| Field           | Type                                          | Description                                     |
+| --------------- | --------------------------------------------- | ----------------------------------------------- |
+| `text`          | `string`                                      | Display name in sidebar and nav                 |
+| `link`          | `string`                                      | Output URL path                                 |
+| `from`          | `string`                                      | Source file path or glob pattern                |
+| `prefix`        | `string`                                      | URL prefix for glob-discovered children         |
+| `content`       | `string \| (() => string \| Promise<string>)` | Inline or generated markdown content            |
+| `items`         | `Entry[]`                                     | Explicit child entries                          |
+| `collapsible`   | `boolean`                                     | Make sidebar section collapsible                |
+| `exclude`       | `string[]`                                    | Exclude globs scoped to this entry              |
+| `hidden`        | `boolean`                                     | Hide from sidebar (page still routable)         |
+| `frontmatter`   | `Frontmatter`                                 | Injected YAML frontmatter                       |
+| `textFrom`      | `'filename' \| 'heading' \| 'frontmatter'`    | Text derivation for discovered children         |
+| `textTransform` | `(text, slug) => string`                      | Transform derived text                          |
+| `sort`          | `'alpha' \| 'filename' \| comparator`         | Sort order for discovered children              |
+| `recursive`     | `boolean`                                     | Directory-based nesting for recursive globs     |
+| `indexFile`     | `string`                                      | Section header filename (default: `"overview"`) |
+| `icon`          | `string`                                      | Iconify identifier for sidebar icon rail        |
+| `card`          | `CardConfig`                                  | Landing page card metadata                      |
+| `isolated`      | `boolean`                                     | Separate sidebar namespace (requires `link`)    |
 
 ## WorkspaceItem
 
@@ -148,13 +149,13 @@ Custom named groups beyond the built-in `apps` and `packages`. Each group receiv
 }
 ```
 
-| Field         | Type              | Description                                           |
-| ------------- | ----------------- | ----------------------------------------------------- |
-| `name`        | `string`          | Group display name                                    |
-| `description` | `string`          | Short description                                     |
-| `icon`        | `string`          | Iconify identifier                                    |
-| `items`       | `WorkspaceItem[]` | Workspace items in this group                         |
-| `link`        | `string`          | URL prefix override (defaults to `/${slugify(name)}`) |
+| Field         | Type              | Required | Description                                           |
+| ------------- | ----------------- | -------- | ----------------------------------------------------- |
+| `name`        | `string`          | Yes      | Group display name                                    |
+| `description` | `string`          | Yes      | Short description                                     |
+| `icon`        | `string`          | Yes      | Iconify identifier                                    |
+| `items`       | `WorkspaceItem[]` | Yes      | Workspace items in this group                         |
+| `link`        | `string`          | No       | URL prefix override (defaults to `/${slugify(name)}`) |
 
 ## CardConfig
 

@@ -12,13 +12,13 @@ zpress builds to static HTML — deploy it anywhere that serves static files.
 Generate the production site:
 
 ```bash
-zpress build
+npx @zpress/kit build
 ```
 
 Output is written to `.zpress/dist/`. Pass `--clean` to remove previous build artifacts first:
 
 ```bash
-zpress build --clean
+npx @zpress/kit build --clean
 ```
 
 ## Preview
@@ -26,7 +26,7 @@ zpress build --clean
 Preview the production build locally before deploying:
 
 ```bash
-zpress serve
+npx @zpress/kit serve
 ```
 
 This starts a local static file server pointed at `.zpress/dist/`. The browser opens automatically (use `--no-open` to disable).
@@ -37,12 +37,12 @@ Point your hosting provider at the `.zpress/dist/` directory. zpress produces a 
 
 Common providers:
 
-| Provider     | Build command  | Output directory |
-| ------------ | -------------- | ---------------- |
-| Vercel       | `zpress build` | `.zpress/dist`   |
-| Netlify      | `zpress build` | `.zpress/dist`   |
-| GitHub Pages | `zpress build` | `.zpress/dist`   |
-| Cloudflare   | `zpress build` | `.zpress/dist`   |
+| Provider     | Build command             | Output directory |
+| ------------ | ------------------------- | ---------------- |
+| Vercel       | `npx @zpress/kit build`   | `.zpress/dist`   |
+| Netlify      | `npx @zpress/kit build`   | `.zpress/dist`   |
+| GitHub Pages | `npx @zpress/kit build`   | `.zpress/dist`   |
+| Cloudflare   | `npx @zpress/kit build`   | `.zpress/dist`   |
 
 ## CI/CD
 
@@ -65,6 +65,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # In CI with pnpm, use `pnpm zpress <command>` instead of `npx`
       - run: pnpm zpress build
       - uses: actions/upload-pages-artifact@v3
         with:

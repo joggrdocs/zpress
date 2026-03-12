@@ -14,7 +14,7 @@ Set up your local environment to contribute to zpress.
 ### 1. Fork and clone
 
 ```bash
-gh repo fork joggr/zpress --clone
+gh repo fork joggrdocs/zpress --clone
 cd zpress
 ```
 
@@ -26,11 +26,13 @@ pnpm install
 
 ### 3. Verify the build
 
-Run the full CI check suite to confirm everything works:
+Run a full build and check suite to confirm everything works:
 
 ```bash
-pnpm lint && pnpm format && pnpm typecheck
+pnpm build && pnpm check
 ```
+
+> Build must run first so that workspace packages have compiled output for cross-package type checking.
 
 ### 4. Run the dev server
 
@@ -66,8 +68,10 @@ The repo includes built-in configuration for Claude Code:
 Confirm all checks pass:
 
 ```bash
-pnpm lint && pnpm format && pnpm typecheck
+pnpm build && pnpm check
 ```
+
+> Build must run first so that workspace packages have compiled output for cross-package type checking.
 
 ## Troubleshooting
 

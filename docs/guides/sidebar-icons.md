@@ -61,3 +61,11 @@ export default defineConfig({
 - Icons only appear on top-level sections (depth 0). Nested sections ignore `icon`.
 - Clicking an icon scrolls the sidebar to that section.
 - Icons are resolved at build time using the Iconify API and inlined as SVGs.
+
+## References
+
+- [Configuration — Entry fields](/reference/configuration#entry-fields)
+
+## Resources
+
+- [Iconify Icon Sets](https://icon-sets.iconify.design/) — Browse available icons
