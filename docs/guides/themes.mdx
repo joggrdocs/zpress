@@ -1,0 +1,147 @@
+---
+title: Themes
+description: Customize the look and feel of your documentation with built-in themes and color overrides.
+---
+
+import { BrowserWindow } from '@zpress/ui/theme'
+
+# Themes
+
+zpress ships with three built-in themes. Each theme provides a complete set of color tokens for both light and dark modes, and can be further customized with color overrides.
+
+## Built-in themes
+
+### Base
+
+The default theme. A clean purple/violet palette with full dark/light mode toggle support.
+
+<BrowserWindow url="localhost:3000">
+
+![Base theme](./images/theme-base.png)
+
+</BrowserWindow>
+
+**Default color mode:** `toggle` (users can switch between light and dark)
+
+### Midnight
+
+A super-dark, high-contrast theme with blue-tinted brand colors. Both light and dark variants use very dark backgrounds — light mode is "less dark" and dark mode is near-black.
+
+<BrowserWindow url="localhost:3000">
+
+![Midnight theme](./images/theme-midnight.png)
+
+</BrowserWindow>
+
+**Default color mode:** `dark`
+
+### Arcade
+
+A retro neon theme inspired by arcade cabinets and CRT monitors. Vibrant neon green brand color with deep indigo backgrounds. Includes custom hover animations: border tracing on cards, CRT scanlines on code blocks, neon pulse on buttons, and glow effects on sidebar items.
+
+<BrowserWindow url="localhost:3000">
+
+![Arcade theme](./images/theme-arcade.png)
+
+</BrowserWindow>
+
+**Default color mode:** `dark`
+
+## Configuration
+
+Set the theme in your `zpress.config.ts`:
+
+```ts
+import { defineConfig } from '@zpress/kit'
+
+export default defineConfig({
+  title: 'My Docs',
+  theme: {
+    name: 'arcade',
+  },
+  sections: [
+    /* ... */
+  ],
+})
+```
+
+### Options
+
+| Property     | Type                               | Default           | Description                                  |
+| ------------ | ---------------------------------- | ----------------- | -------------------------------------------- |
+| `name`       | `'base' \| 'midnight' \| 'arcade'` | `'base'`          | Built-in theme to use                        |
+| `colorMode`  | `'dark' \| 'light' \| 'toggle'`    | Per-theme default | Force a color mode or allow toggling         |
+| `switcher`   | `boolean`                          | `false`           | Show a theme switcher dropdown in the navbar |
+| `colors`     | `ThemeColors`                      | —                 | Override base/light mode colors              |
+| `darkColors` | `ThemeColors`                      | —                 | Override dark mode colors                    |
+
+### Color mode
+
+Each theme has a default color mode. You can override it:
+
+```ts
+theme: {
+  name: 'base',
+  colorMode: 'dark', // force dark mode even though base defaults to toggle
+}
+```
+
+| Value    | Behavior                                     |
+| -------- | -------------------------------------------- |
+| `toggle` | Users can switch between light and dark mode |
+| `dark`   | Dark mode is forced, toggle is hidden        |
+| `light`  | Light mode is forced, toggle is hidden       |
+
+### Theme switcher
+
+Enable the theme switcher to let users switch between all three built-in themes at runtime:
+
+```ts
+theme: {
+  switcher: true,
+}
+```
+
+The switcher appears as a paint bucket icon in the navigation bar. Theme selection persists across page loads via `localStorage`.
+
+## Color overrides
+
+Override individual color tokens without creating a full custom theme. Overrides are applied as inline CSS custom properties and take precedence over the theme defaults.
+
+```ts
+theme: {
+  name: 'midnight',
+  colors: {
+    brand: '#ff6b6b',
+    brandDark: '#cc5555',
+  },
+  darkColors: {
+    bg: '#000000',
+  },
+}
+```
+
+### Available color tokens
+
+| Token        | Description                       |
+| ------------ | --------------------------------- |
+| `brand`      | Primary brand color               |
+| `brandLight` | Lighter brand variant             |
+| `brandDark`  | Darker brand variant              |
+| `brandSoft`  | Soft/tinted brand for backgrounds |
+| `bg`         | Main background                   |
+| `bgAlt`      | Alternate background              |
+| `bgElv`      | Elevated surface background       |
+| `bgSoft`     | Soft background                   |
+| `text1`      | Primary text                      |
+| `text2`      | Secondary text                    |
+| `text3`      | Tertiary/muted text               |
+| `divider`    | Divider lines                     |
+| `border`     | Border color                      |
+| `homeBg`     | Home page background              |
+
+Color values must be valid CSS hex (`#xxx` or `#xxxxxx`) or `rgba()` values.
+
+## Accessibility
+
+The arcade theme respects the `prefers-reduced-motion` media query. When reduced motion is enabled, all continuous animations (border tracing, CRT scanlines, neon pulse, glow bar) are disabled.

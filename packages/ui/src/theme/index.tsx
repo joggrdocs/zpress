@@ -12,6 +12,11 @@
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
 import './styles/overrides/rspress.css'
+// Theme color palettes — scoped via [data-zp-theme] selectors
+import './styles/themes/base.css'
+import './styles/themes/midnight.css'
+import './styles/themes/arcade.css'
+import './styles/themes/arcade-fx.css'
 import './styles/overrides/details.css'
 import './styles/overrides/scrollbar.css'
 import './styles/overrides/sidebar.css'
@@ -43,6 +48,8 @@ export type { TechTagProps } from './components/shared/tech-tag'
 export { TechIconTable } from './components/shared/tech-icon-table'
 export type { TechIconEntry, TechIconTableProps } from './components/shared/tech-icon-table'
 export { Icon } from './components/shared/icon'
+export { BrowserWindow } from './components/shared/browser-window'
+export type { BrowserWindowProps } from './components/shared/browser-window'
 
 // Home page overrides — shadow the wildcard re-exports from theme-original
 export { HomeFeature } from './components/home/feature'

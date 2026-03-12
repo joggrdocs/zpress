@@ -3,7 +3,8 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import type { UserConfig } from '@rspress/core'
-import type { Paths, ZpressConfig } from '@zpress/core'
+import { resolveDefaultColorMode } from '@zpress/core'
+import type { Paths, ThemeColors, ThemeName, ZpressConfig } from '@zpress/core'
 
 import { zpressPlugin } from './plugin.ts'
 
@@ -40,6 +41,56 @@ function detectGitBranch(): string {
 }
 
 /**
+ * Resolve the theme name from config, defaulting to 'base'.
+ */
+function resolveThemeName(config: ZpressConfig): ThemeName {
+  if (config.theme && config.theme.name) {
+    return config.theme.name
+  }
+  return 'base'
+}
+
+/**
+ * Resolve the color mode from config, defaulting to the theme's natural mode.
+ */
+function resolveColorMode(config: ZpressConfig, themeName: ThemeName): string {
+  if (config.theme && config.theme.colorMode) {
+    return config.theme.colorMode
+  }
+  return resolveDefaultColorMode(themeName)
+}
+
+/**
+ * Resolve whether the theme switcher is enabled.
+ */
+function resolveThemeSwitcher(config: ZpressConfig): boolean {
+  if (config.theme && config.theme.switcher) {
+    return config.theme.switcher
+  }
+  return false
+}
+
+/**
+ * Resolve theme color overrides, defaulting to empty object.
+ */
+function resolveThemeColors(config: ZpressConfig): ThemeColors {
+  if (config.theme && config.theme.colors) {
+    return config.theme.colors
+  }
+  return {}
+}
+
+/**
+ * Resolve dark mode color overrides, defaulting to empty object.
+ */
+function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
+  if (config.theme && config.theme.darkColors) {
+    return config.theme.darkColors
+  }
+  return {}
+}
+
+/**
  * Translate zpress config + sync engine output into a complete
  * Rspress configuration object.
  */
@@ -50,6 +101,12 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const nav = loadGenerated(paths.contentDir, 'nav.json', [])
   const workspaces = loadGenerated(paths.contentDir, 'workspaces.json', [])
   const gitBranch = detectGitBranch()
+
+  const themeName = resolveThemeName(config)
+  const colorMode = resolveColorMode(config, themeName)
+  const themeSwitcher = resolveThemeSwitcher(config)
+  const themeColors = resolveThemeColors(config)
+  const themeDarkColors = resolveThemeDarkColors(config)
 
   return {
     root: paths.contentDir,
@@ -87,6 +144,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       source: {
         define: {
           __ZPRESS_GIT_BRANCH__: JSON.stringify(gitBranch),
+          __ZPRESS_THEME_NAME__: JSON.stringify(themeName),
+          __ZPRESS_COLOR_MODE__: JSON.stringify(colorMode),
+          __ZPRESS_THEME_COLORS__: JSON.stringify(JSON.stringify(themeColors)),
+          __ZPRESS_THEME_DARK_COLORS__: JSON.stringify(JSON.stringify(themeDarkColors)),
+          __ZPRESS_THEME_SWITCHER__: JSON.stringify(themeSwitcher),
         },
       },
       output: {
@@ -99,7 +161,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     themeConfig: {
       sidebar,
       nav,
-      darkMode: true,
+      darkMode: colorMode === 'toggle',
       search: true,
       // Custom zpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
