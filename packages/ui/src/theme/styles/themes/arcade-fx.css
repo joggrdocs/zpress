@@ -89,20 +89,20 @@ html[data-zp-theme='arcade'] .section-card:hover {
  * dark text for contrast, and a subtle border glow on hover.
  */
 html[data-zp-theme='arcade'] .rp-button--brand {
-  background: var(--zp-c-brand-1);
-  color: var(--zp-c-bg);
-  border: 1px solid var(--zp-c-brand-1);
+  background: #7c3aed;
+  color: #fff;
+  border: 1px solid #7c3aed;
   opacity: 1;
 }
 
 html[data-zp-theme='arcade'] .rp-button--brand:hover {
   background: transparent;
-  color: var(--zp-c-brand-1);
-  border-color: var(--zp-c-brand-1);
+  color: #a78bfa;
+  border-color: #a78bfa;
   opacity: 1;
   box-shadow:
-    0 0 8px rgba(0, 255, 136, 0.4),
-    inset 0 0 8px rgba(0, 255, 136, 0.1);
+    0 0 8px rgba(124, 58, 237, 0.5),
+    inset 0 0 8px rgba(124, 58, 237, 0.15);
 }
 
 /*
@@ -115,13 +115,13 @@ html[data-zp-theme='arcade'] .rp-button--alt {
 }
 
 html[data-zp-theme='arcade'] .rp-button--alt:hover {
-  border-color: var(--zp-c-brand-1);
-  color: var(--zp-c-brand-1);
+  border-color: #a78bfa;
+  color: #a78bfa;
   opacity: 1;
   background: transparent;
   box-shadow:
-    0 0 8px rgba(0, 255, 136, 0.3),
-    inset 0 0 8px rgba(0, 255, 136, 0.06);
+    0 0 8px rgba(124, 58, 237, 0.3),
+    inset 0 0 8px rgba(124, 58, 237, 0.06);
 }
 
 /*
@@ -145,18 +145,18 @@ html[data-zp-theme='arcade'] .rp-button--big:hover {
 @keyframes arcade-neon-pulse {
   0% {
     box-shadow:
-      0 0 4px rgba(0, 255, 136, 0.6),
-      0 0 0 0 rgba(0, 255, 136, 0.4);
+      0 0 4px rgba(124, 58, 237, 0.6),
+      0 0 0 0 rgba(124, 58, 237, 0.4);
   }
   70% {
     box-shadow:
-      0 0 8px rgba(0, 255, 136, 0.3),
-      0 0 0 12px rgba(0, 255, 136, 0);
+      0 0 8px rgba(124, 58, 237, 0.3),
+      0 0 0 12px rgba(124, 58, 237, 0);
   }
   100% {
     box-shadow:
-      0 0 4px rgba(0, 255, 136, 0.6),
-      0 0 0 0 rgba(0, 255, 136, 0);
+      0 0 4px rgba(124, 58, 237, 0.6),
+      0 0 0 0 rgba(124, 58, 237, 0);
   }
 }
 
@@ -316,6 +316,26 @@ html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
     height: 60%;
     top: 20%;
   }
+}
+
+/* ── 7. Search results — readable highlight ────────────── */
+
+/*
+ * The default search highlight uses --rp-c-brand (#00ff88)
+ * as a background, which is too bright for white text.
+ * Override to a darker green that maintains the neon feel
+ * while ensuring legibility.
+ */
+html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__link {
+  background-color: #007a42;
+}
+
+html[data-zp-theme='arcade'] .rp-suggest-item__mark {
+  color: #00ff88;
+}
+
+html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__mark {
+  color: #fff;
 }
 
 /* ── Reduced motion ──────────────────────────────────────── */
