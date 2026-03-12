@@ -100,12 +100,6 @@ export interface NavItem {
   readonly link?: UrlPath
   readonly items?: readonly NavItem[]
   readonly activeMatch?: string
-  /**
-   * Iconify icon identifier for nav bar display.
-   * Format: `"prefix:name"` (e.g., `"pixelarticons:folder"`, `"devicon:typescript"`).
-   * Required on top-level nav items when nav is explicit (validated at config boundary).
-   */
-  readonly icon?: string
 }
 
 // ── Card — display metadata for parent landing pages ─────────
@@ -454,13 +448,6 @@ export interface Entry {
    * @default "overview"
    */
   readonly indexFile?: string
-
-  /**
-   * Iconify icon identifier for sidebar icon rail display.
-   * Format: `"prefix:name"` (e.g., `"pixelarticons:folder"`, `"devicon:typescript"`).
-   * Only meaningful on top-level sections — ignored on leaf pages.
-   */
-  readonly icon?: string
 
   /**
    * Card display metadata for the parent section's auto-generated landing page.

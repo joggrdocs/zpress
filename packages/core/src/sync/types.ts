@@ -143,8 +143,4 @@ export interface SidebarItem {
    */
   readonly collapsed?: boolean
   readonly items?: readonly SidebarItem[]
-  /**
-   * Iconify identifier for sidebar icon rail. Only present on top-level sections.
-   */
-  readonly icon?: string
 }

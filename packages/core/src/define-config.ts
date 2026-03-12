@@ -1,14 +1,7 @@
 import { hasGlobChars } from './glob.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
-import type {
-  ZpressConfig,
-  Entry,
-  Feature,
-  NavItem,
-  WorkspaceItem,
-  WorkspaceGroup,
-} from './types.ts'
+import type { ZpressConfig, Entry, Feature, WorkspaceItem, WorkspaceGroup } from './types.ts'
 
 /**
  * Type-safe config helper with validation.
@@ -79,11 +72,6 @@ function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig> {
   const [featErr] = validateFeatures(config.features)
   if (featErr) {
     return [featErr, null]
-  }
-
-  const [navErr] = validateNav(config.nav)
-  if (navErr) {
-    return [navErr, null]
   }
 
   return [null, config]
@@ -310,51 +298,6 @@ function validateFeature(feature: Feature): ConfigError | null {
     return configError(
       'invalid_icon',
       `Feature "${feature.text}": icon must be an Iconify identifier (e.g. "pixelarticons:speed-fast")`
-    )
-  }
-
-  return null
-}
-
-/**
- * Validate top-level nav items have icons when nav is an explicit array.
- *
- * Auto-generated nav (`"auto"` or omitted) is not validated here — icons
- * are populated from `Entry.icon` during generation.
- */
-function validateNav(nav: ZpressConfig['nav']): ConfigResult<true> {
-  if (nav === 'auto' || nav === undefined) {
-    return [null, true]
-  }
-
-  const navError = nav.reduce<ConfigError | null>((acc, item) => {
-    if (acc) {
-      return acc
-    }
-    return validateNavItem(item)
-  }, null)
-
-  if (navError) {
-    return [navError, null]
-  }
-  return [null, true]
-}
-
-/**
- * Validate a single top-level nav item requires an icon with valid Iconify format.
- */
-function validateNavItem(item: NavItem): ConfigError | null {
-  if (!item.icon) {
-    return configError(
-      'missing_nav_icon',
-      `NavItem "${item.text}": top-level nav items require an "icon" (Iconify identifier)`
-    )
-  }
-
-  if (!item.icon.includes(':')) {
-    return configError(
-      'invalid_icon',
-      `NavItem "${item.text}": icon must be an Iconify identifier (e.g. "pixelarticons:folder")`
     )
   }
 

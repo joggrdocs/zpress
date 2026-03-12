@@ -48,7 +48,6 @@ export interface ConfigError {
     | 'duplicate_prefix'
     | 'invalid_icon'
     | 'invalid_entry'
-    | 'missing_nav_icon'
   readonly message: string
 }
 
