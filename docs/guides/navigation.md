@@ -16,19 +16,16 @@ export default defineConfig({
   sections: [
     {
       text: 'Getting Started',
-      icon: 'pixelarticons:speed-fast',
       link: '/getting-started',
       from: 'docs/getting-started.md',
     },
     {
       text: 'Guides',
-      icon: 'pixelarticons:book-open',
       prefix: '/guides',
       from: 'docs/guides/*.md',
     },
     {
       text: 'Reference',
-      icon: 'pixelarticons:list-box',
       prefix: '/reference',
       from: 'docs/reference/*.md',
     },

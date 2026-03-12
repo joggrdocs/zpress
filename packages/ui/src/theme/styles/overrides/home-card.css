@@ -120,6 +120,7 @@
 .home-card-divider {
   max-width: 1152px;
   margin: 0 auto 48px;
+  padding: 0 16px;
   border: none;
   border-top: 1px solid var(--zp-c-divider);
 }

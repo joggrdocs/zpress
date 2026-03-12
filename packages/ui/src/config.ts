@@ -55,6 +55,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     root: paths.contentDir,
     outDir: paths.distDir,
 
+    route: { cleanUrls: true },
+
     llms: true,
 
     title: config.title ?? 'zpress',

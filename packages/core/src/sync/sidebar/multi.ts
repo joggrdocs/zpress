@@ -12,18 +12,16 @@ import { generateSidebar } from './index.ts'
  *
  * @param resolved - Fully resolved entry tree
  * @param openapiSidebar - Flat sidebar items from OpenAPI sync (currently unused)
- * @param icons - Map of section text to Iconify identifier for sidebar icon rail
  * @returns Sorted sidebar record ready for JSON serialization
  */
 export function buildMultiSidebar(
   resolved: readonly ResolvedEntry[],
-  openapiSidebar: readonly SidebarItem[],
-  icons: Map<string, string>
+  openapiSidebar: readonly SidebarItem[]
 ): Record<string, unknown[]> {
   const rootEntries = resolved.filter((e) => !e.isolated)
   const isolatedEntries = resolved.filter((e) => e.isolated && e.link)
 
-  const docsSidebar = generateSidebar(rootEntries, icons)
+  const docsSidebar = generateSidebar(rootEntries)
 
   // Pre-compute children per isolated entry for building grouped sidebars
   const childrenByLink = new Map<string, SidebarItem[]>(
@@ -38,7 +36,6 @@ export function buildMultiSidebar(
     isolatedEntries.flatMap((entry) => {
       const entryLink = entry.link as string
       const children = resolveChildrenByLink(childrenByLink, entryLink)
-      const icon = icons.get(entry.text)
 
       // Discover sibling isolated sections that are children of this entry's parent
       const parentLink = resolveParentLink(entryLink)
@@ -51,18 +48,15 @@ export function buildMultiSidebar(
       const landing: SidebarItem = {
         text: entry.text,
         link: entryLink,
-        ...maybeIcon(icon),
       }
 
       const sidebarItems = match(isChild)
         .with(true, () => {
           const pe = parentEntry as ResolvedEntry
           const peLink = pe.link as string
-          const parentIcon = icons.get(pe.text)
           const parentLanding: SidebarItem = {
             text: pe.text,
             link: peLink,
-            ...maybeIcon(parentIcon),
           }
 
           const siblings = isolatedEntries.filter((sib) => {
@@ -145,13 +139,6 @@ function resolveParentLink(entryLink: string): string | null {
     return segments
   }
   return null
-}
-
-function maybeIcon(icon: string | undefined): { icon?: string } {
-  if (icon) {
-    return { icon }
-  }
-  return {}
 }
 
 function buildSidebarGroup(
