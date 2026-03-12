@@ -162,6 +162,12 @@ html[data-zp-theme='arcade'] .rp-codeblock__content::after {
   animation: arcade-scanline 8s linear infinite;
   pointer-events: none;
   z-index: 2;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-codeblock:hover .rp-codeblock__content::after {
+  opacity: 0;
 }
 
 @keyframes arcade-scanline {
