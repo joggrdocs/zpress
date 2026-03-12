@@ -19,20 +19,20 @@ You are a strict functional programmer. You write pure, immutable, declarative T
 
 ## Tech Stack
 
-| Tool                                                        | Purpose                 | Docs                                                   |
-| ----------------------------------------------------------- | ----------------------- | ------------------------------------------------------ |
-| [Rspress](https://rspress.dev)                              | Documentation framework | [GitHub](https://github.com/web-infra-dev/rspress)     |
-| [React](https://react.dev)                                  | UI framework            | [GitHub](https://github.com/facebook/react)            |
-| [es-toolkit](https://es-toolkit.sh)                         | Functional utilities    | [GitHub](https://github.com/toss/es-toolkit)           |
-| [ts-pattern](https://github.com/gvergnaud/ts-pattern)       | Pattern matching        | [GitHub](https://github.com/gvergnaud/ts-pattern)      |
-| [yargs](https://yargs.js.org)                               | CLI argument parsing    | [GitHub](https://github.com/yargs/yargs)               |
-| [@clack/prompts](https://www.clack.cc)                      | CLI prompts & output    | [GitHub](https://github.com/bombshell-dev/clack)       |
-| [c12](https://github.com/unjs/c12)                          | Config loading          | [GitHub](https://github.com/unjs/c12)                  |
-| [chokidar](https://github.com/paulmillr/chokidar)           | File watching           | [GitHub](https://github.com/paulmillr/chokidar)        |
-| [gray-matter](https://github.com/jonschlinkert/gray-matter) | Frontmatter parsing     | [GitHub](https://github.com/jonschlinkert/gray-matter) |
-| [Rslib](https://lib.rsbuild.dev)                            | Bundler                 | [llms-full.txt](https://lib.rsbuild.dev/llms-full.txt) |
-| [OXC](https://oxc.rs) (oxlint + oxfmt)                      | Linting & formatting    | [llms.txt](https://oxc.rs/llms.txt)                    |
-| [Turborepo](https://turbo.build)                            | Monorepo orchestration  | [Docs](https://turbo.build/repo/docs)                  |
+| Tool                                                         | Purpose                      | Docs                                                   |
+| ------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------ |
+| [Rspress](https://rspress.dev)                               | Documentation framework      | [GitHub](https://github.com/web-infra-dev/rspress)     |
+| [React](https://react.dev)                                   | UI framework                 | [GitHub](https://github.com/facebook/react)            |
+| [es-toolkit](https://es-toolkit.sh)                          | Functional utilities         | [GitHub](https://github.com/toss/es-toolkit)           |
+| [ts-pattern](https://github.com/gvergnaud/ts-pattern)        | Pattern matching             | [GitHub](https://github.com/gvergnaud/ts-pattern)      |
+| [@kidd-cli/core](https://github.com/kidd-framework/kidd-cli) | CLI framework                | [GitHub](https://github.com/kidd-framework/kidd-cli)   |
+| [@clack/prompts](https://www.clack.cc)                       | Sync engine prompts & output | [GitHub](https://github.com/bombshell-dev/clack)       |
+| [c12](https://github.com/unjs/c12)                           | Config loading               | [GitHub](https://github.com/unjs/c12)                  |
+| [chokidar](https://github.com/paulmillr/chokidar)            | File watching                | [GitHub](https://github.com/paulmillr/chokidar)        |
+| [gray-matter](https://github.com/jonschlinkert/gray-matter)  | Frontmatter parsing          | [GitHub](https://github.com/jonschlinkert/gray-matter) |
+| [Rslib](https://lib.rsbuild.dev)                             | Bundler                      | [llms-full.txt](https://lib.rsbuild.dev/llms-full.txt) |
+| [OXC](https://oxc.rs) (oxlint + oxfmt)                       | Linting & formatting         | [llms.txt](https://oxc.rs/llms.txt)                    |
+| [Turborepo](https://turbo.build)                             | Monorepo orchestration       | [Docs](https://turbo.build/repo/docs)                  |
 
 ## Commands
 
@@ -61,7 +61,7 @@ pnpm typecheck      # Type check (tsc --noEmit)
 - TypeScript: `target: ESNext`, `module: ESNext`, `moduleResolution: bundler`, `strict: true`
 - Explicit return types on all exported functions
 - All public properties `readonly`
-- Config validated with Zod at boundaries
+- Config validated at boundaries
 
 ## Standards
 
@@ -101,10 +101,11 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/) format: `typ
 | `chore`    | Build, deps, config           |
 | `perf`     | Optimization                  |
 | `security` | Vulnerability patches         |
+| `release`  | Automated version bumps       |
 
 #### Scopes
 
-Use directory-style paths for packages: `packages/cli`, `packages/core`, `packages/zpress`. Use short labels for cross-cutting: `deps`, `ci`, `repo`.
+Use directory-style paths for packages: `packages/cli`, `packages/core`, `packages/ui`, `packages/zpress`. Use short labels for cross-cutting: `deps`, `ci`, `repo`.
 
 #### Format
 

@@ -74,3 +74,9 @@ Cards display:
 Sections with children but no explicit page source automatically get a generated landing page. When workspace metadata matches, the landing page uses workspace-style cards. Without workspace metadata, sections use simpler section cards with descriptions extracted from child page frontmatter.
 
 See the [Landing Pages guide](/guides/landing-pages) for details on auto-generated pages, section cards, and overview file promotion.
+
+## Custom workspace groups
+
+The `workspaces` config field accepts `WorkspaceGroup[]` for defining custom named groups beyond the built-in `apps` and `packages` arrays. Each group has a `name`, `description`, `icon`, and `items` array of `WorkspaceItem` entries. Custom groups receive the same card and landing page treatment as the built-in groups, letting you organize workspace metadata into any number of categories.
+
+See the [Configuration reference — WorkspaceGroup](/reference/configuration#workspacegroup) for the full field reference.

@@ -48,13 +48,15 @@ git commit -m "feat(packages/core): added workspace support"
 
 Scopes identify what part of the codebase changed. Use directory-style paths for packages and short labels for cross-cutting concerns.
 
-| Scope           | Description               |
-| --------------- | ------------------------- |
-| `packages/core` | The core zpress package   |
-| `packages/cli`  | The CLI companion package |
-| `deps`          | Dependency updates        |
-| `ci`            | CI/CD workflow changes    |
-| `repo`          | Workspace/monorepo config |
+| Scope             | Description                       |
+| ----------------- | --------------------------------- |
+| `packages/core`   | The core zpress package           |
+| `packages/cli`    | The CLI companion package         |
+| `packages/ui`     | The UI plugin and theme package   |
+| `packages/zpress` | The public-facing wrapper package |
+| `deps`            | Dependency updates                |
+| `ci`              | CI/CD workflow changes            |
+| `repo`            | Workspace/monorepo config         |
 
 #### Correct
 

@@ -13,17 +13,17 @@ The codebase follows a functional, immutable, composition-first design. There ar
 ```
 packages/
 ├── core/            # Sync engine, config loading, sidebar/nav generation
-├── cli/             # CLI commands (sync, dev, build, serve, clean)
+├── cli/             # CLI commands (sync, dev, build, serve, clean, setup, dump, generate)
 ├── ui/              # Rspress plugin, theme components, styles
 └── zpress/       # @zpress/kit — public wrapper (re-exports core + ui + cli)
 ```
 
-| Package        | Purpose                                                        |
-| -------------- | -------------------------------------------------------------- |
-| `@zpress/core` | Config loading, entry resolution, sync engine, sidebar/nav gen |
-| `@zpress/cli`  | CLI commands: sync, dev, build, serve, clean, setup, dump      |
-| `@zpress/ui`   | Rspress plugin, React theme components, CSS overrides          |
-| `@zpress/kit`  | Public package: re-exports everything + provides the CLI bin   |
+| Package        | Purpose                                                             |
+| -------------- | ------------------------------------------------------------------- |
+| `@zpress/core` | Config loading, entry resolution, sync engine, sidebar/nav gen      |
+| `@zpress/cli`  | CLI commands: sync, dev, build, serve, clean, setup, dump, generate |
+| `@zpress/ui`   | Rspress plugin, React theme components, CSS overrides               |
+| `@zpress/kit`  | Public package: re-exports everything + provides the CLI bin        |
 
 ### `@zpress/kit` (wrapper)
 
@@ -62,6 +62,9 @@ flowchart TB
         BUILD(["build"])
         SERVE(["serve"])
         CLEAN(["clean"])
+        SETUP(["setup"])
+        DUMP(["dump"])
+        GENERATE(["generate"])
     end
 
     subgraph core ["Core Layer"]
@@ -97,7 +100,7 @@ flowchart TB
     classDef agent fill:#313244,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
     classDef external fill:#313244,stroke:#f5c2e7,stroke-width:2px,color:#cdd6f4
 
-    class SYNC,DEV,BUILD,SERVE,CLEAN external
+    class SYNC,DEV,BUILD,SERVE,CLEAN,SETUP,DUMP,GENERATE external
     class CONFIG,RESOLVE,COPY,SIDEBAR,NAV,HOME,MANIFEST core
     class PLUGIN,THEME,RSPRESS_CFG agent
     class CONTENT,GENERATED,DIST gateway
@@ -112,7 +115,7 @@ flowchart TB
 
 **Package:** `@zpress/cli`
 
-The command-line interface. Uses yargs for argument parsing and `@clack/prompts` for styled terminal output. Commands orchestrate the core sync engine and Rspress build APIs.
+The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing and `@kidd-cli/core/logger` for styled terminal output. Commands orchestrate the core sync engine and Rspress build APIs.
 
 ### Core Layer
 
@@ -120,20 +123,30 @@ The command-line interface. Uses yargs for argument parsing and `@clack/prompts`
 
 The sync engine and config system. This is where the information architecture is resolved:
 
-| Module                   | Purpose                                                   |
-| ------------------------ | --------------------------------------------------------- |
-| `config.ts`              | Config file discovery and loading via c12                 |
-| `define-config.ts`       | Config validation at the boundary                         |
-| `paths.ts`               | Path constants for `.zpress/` output structure            |
-| `sync/index.ts`          | Main sync pipeline orchestrator                           |
-| `sync/resolve/index.ts`  | Entry tree resolution (globs, text derivation, sorting)   |
-| `sync/copy.ts`           | Page writing with frontmatter injection and hash tracking |
-| `sync/sidebar/index.ts`  | Sidebar and nav JSON generation                           |
-| `sync/sidebar/multi.ts`  | Multi-sidebar namespace building                          |
-| `sync/sidebar/inject.ts` | Virtual landing page generation (MDX)                     |
-| `sync/home.ts`           | Default home page generation                              |
-| `sync/workspace.ts`      | Workspace item synthesis and card enrichment              |
-| `sync/manifest.ts`       | Incremental sync tracking via content hashes              |
+| Module                      | Purpose                                                   |
+| --------------------------- | --------------------------------------------------------- |
+| `config.ts`                 | Config file discovery and loading via c12                 |
+| `define-config.ts`          | Config validation at the boundary                         |
+| `paths.ts`                  | Path constants for `.zpress/` output structure            |
+| `sync/index.ts`             | Main sync pipeline orchestrator                           |
+| `sync/errors.ts`            | SyncError and ConfigError definitions                     |
+| `sync/types.ts`             | Sync-specific type definitions                            |
+| `sync/copy.ts`              | Page writing with frontmatter injection and hash tracking |
+| `sync/home.ts`              | Default home page generation                              |
+| `sync/manifest.ts`          | Incremental sync tracking via content hashes              |
+| `sync/planning.ts`          | Planning page discovery from `.planning/` directory       |
+| `sync/rewrite-links.ts`     | Relative link rewriting during copy                       |
+| `sync/strip-xml.ts`         | XML tag stripping for planning documents                  |
+| `sync/workspace.ts`         | Workspace item synthesis and card enrichment              |
+| `sync/resolve/index.ts`     | Entry tree resolution (globs, text derivation, sorting)   |
+| `sync/resolve/path.ts`      | Path resolution utilities                                 |
+| `sync/resolve/recursive.ts` | Recursive directory resolution                            |
+| `sync/resolve/sort.ts`      | Entry sorting strategies                                  |
+| `sync/resolve/text.ts`      | Text derivation from filename/heading/frontmatter         |
+| `sync/sidebar/index.ts`     | Sidebar and nav JSON generation                           |
+| `sync/sidebar/multi.ts`     | Multi-sidebar namespace building                          |
+| `sync/sidebar/inject.ts`    | Virtual landing page generation (MDX)                     |
+| `sync/sidebar/landing.ts`   | Landing page MDX generation                               |
 
 ### UI Layer
 
@@ -159,16 +172,20 @@ The sync engine is the heart of zpress. It transforms a config file into a compl
 The `sync()` function in `packages/core/src/sync/index.ts` runs this pipeline:
 
 1. **Setup** -- Create output directories, seed default assets, load previous manifest
-2. **Workspace synthesis** -- Convert `apps`/`packages`/`workspaces` into entry sections
-3. **Resolve entries** -- Walk the config tree, resolve globs, derive text, merge frontmatter
-4. **Enrich cards** -- Attach workspace metadata (icon, scope, tags, badge) to matched entries
-5. **Inject landing pages** -- Generate virtual MDX pages for sections with children but no page
-6. **Collect pages** -- Flatten the resolved tree into a flat page list
-7. **Generate home** -- Create default home page from config metadata (when no explicit index.md)
-8. **Copy pages** -- Write all pages with injected frontmatter, track SHA256 hashes
-9. **Generate sidebar + nav** -- Build multi-sidebar JSON and nav array
-10. **Clean stale files** -- Remove files present in old manifest but absent in new
-11. **Save manifest** -- Record file hashes for incremental sync on next run
+2. **Asset seeding/generation** -- Generate branded SVG assets (banner, logo) from config title
+3. **Workspace synthesis** -- Convert `apps`/`packages`/`workspaces` into entry sections
+4. **Resolve entries** -- Walk the config tree, resolve globs, derive text, merge frontmatter
+5. **Planning page discovery** -- Discover and resolve pages from `.planning/` directory
+6. **Enrich cards** -- Attach workspace metadata (icon, scope, tags, badge) to matched entries
+7. **Inject landing pages** -- Generate virtual MDX pages for sections with children but no page
+8. **Collect pages** -- Flatten the resolved tree into a flat page list
+9. **Source map building** -- Build source-to-output path map for relative link rewriting
+10. **Generate home** -- Create default home page from config metadata (when no explicit index.md)
+11. **Copy pages** -- Write all pages with injected frontmatter, rewrite links, track SHA256 hashes
+12. **Public asset copying** -- Copy static assets to `.zpress/public/`
+13. **Generate sidebar + nav** -- Build multi-sidebar JSON and nav array
+14. **Clean stale files** -- Remove files present in old manifest but absent in new
+15. **Save manifest** -- Record file hashes for incremental sync on next run
 
 Returns: `{ pagesWritten, pagesSkipped, pagesRemoved, elapsed }`
 
@@ -319,11 +336,11 @@ sequenceDiagram
 
 zpress uses the `Result<T, E>` tuple pattern for expected failures:
 
-| Layer     | Strategy                      | Type                               |
-| --------- | ----------------------------- | ---------------------------------- |
-| Core/sync | `Result<T, E>` tuples         | `[error, null]` or `[null, value]` |
-| Config    | Validate-and-exit at boundary | `process.exit(1)` with message     |
-| CLI       | Catch and report              | `@clack/prompts` error display     |
+| Layer     | Strategy                      | Type                                  |
+| --------- | ----------------------------- | ------------------------------------- |
+| Core/sync | `Result<T, E>` tuples         | `[error, null]` or `[null, value]`    |
+| Config    | Validate-and-exit at boundary | `process.exit(1)` with message        |
+| CLI       | Catch and report              | `@kidd-cli/core/logger` error display |
 
 **Result tuples** are used for operations that can fail (config parsing, file I/O, glob resolution):
 

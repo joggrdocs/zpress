@@ -119,7 +119,7 @@ Closes #123
 
 See [Pull Request Standards](../standards/git-pulls.md) for the full review and merge process.
 
-CI runs: lint, format, typecheck, test.
+CI runs: lint, format, typecheck.
 
 ### 8. Address review feedback
 

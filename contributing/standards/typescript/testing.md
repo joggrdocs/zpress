@@ -150,6 +150,34 @@ it('should return error result for missing config', async () => {
 })
 ```
 
+### Test Result-Returning Functions
+
+When testing functions that return `Result<T, E>` tuples, destructure the tuple and assert on both the error and value elements. Verify that the error is `null` on success and that the value is `null` on failure.
+
+#### Correct
+
+```ts
+import { describe, it, expect } from 'vitest'
+import { loadConfig } from './config'
+
+describe('loadConfig', () => {
+  it('should return config on success', async () => {
+    const [error, config] = await loadConfig('/valid/path')
+    expect(error).toBeNull()
+    expect(config).toMatchObject({ title: 'My Site' })
+  })
+
+  it('should return error for missing file', async () => {
+    const [error, config] = await loadConfig('/missing')
+    expect(config).toBeNull()
+    expect(error).toMatchObject({
+      _tag: 'ConfigError',
+      type: 'missing_field',
+    })
+  })
+})
+```
+
 ### Avoid Testing Anti-patterns
 
 | Don't                       | Do Instead             |

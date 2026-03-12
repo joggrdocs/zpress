@@ -111,10 +111,10 @@ Output includes `text`, `link`, `collapsible`, `hidden`, `isolated`, and nested 
 
 ## generate
 
-Generate branded banner and logo SVG assets from the project title.
+Generate branded banner, logo, and icon SVG assets from the project title.
 
 ```bash
 zpress generate
 ```
 
-Reads the `title` (and optional `tagline`) from `zpress.config.ts`, generates banner and logo SVGs, and writes them to `.zpress/public/`. If no `title` is configured, asset generation is skipped. Files that have been manually customized are not overwritten.
+Reads the `title` (and optional `tagline`) from `zpress.config.ts`, generates banner, logo, and icon SVGs, and writes them to `.zpress/public/`. If no `title` is configured, asset generation is skipped. Files that have been manually customized are not overwritten.
