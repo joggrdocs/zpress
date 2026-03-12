@@ -10,9 +10,11 @@ export default defineConfig({
       text: 'Getting Started',
       link: '/getting-started',
       from: 'docs/getting-started.md',
+      icon: 'pixelarticons:speed-fast',
     },
     {
       text: 'Guides',
+      icon: 'pixelarticons:book-open',
       prefix: '/guides',
       items: [
         {
@@ -43,6 +45,7 @@ export default defineConfig({
     },
     {
       text: 'Reference',
+      icon: 'pixelarticons:list-box',
       items: [
         {
           text: 'Configuration',
@@ -118,6 +121,7 @@ export default defineConfig({
     },
     {
       text: 'Contributing',
+      icon: 'pixelarticons:git-merge',
       items: [
         {
           text: 'Overview',

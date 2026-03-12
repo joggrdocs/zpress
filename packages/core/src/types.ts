@@ -452,6 +452,12 @@ export interface Entry {
   readonly indexFile?: string
 
   /**
+   * Iconify icon identifier (e.g. `"pixelarticons:speed-fast"`).
+   * Used on home page feature cards when auto-generated from sections.
+   */
+  readonly icon?: string
+
+  /**
    * Card display metadata for the parent section's auto-generated landing page.
    *
    * When present on child entries, the parent's landing page uses
