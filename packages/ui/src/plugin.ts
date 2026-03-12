@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import type { RspressPlugin } from '@rspress/core'
 
 /**
@@ -7,14 +5,11 @@ import type { RspressPlugin } from '@rspress/core'
  *
  * Global styles are loaded via the theme entry (theme/index.tsx)
  * CSS import — not through the plugin globalStyles property.
- * Custom UI components are registered here as globalUIComponents so
- * Rspress renders them on every page.
+ * Nav-level components (e.g. BranchTag) are injected via layout
+ * slot props in the custom Layout component, not globalUIComponents.
  */
 export function zpressPlugin(): RspressPlugin {
-  const componentsDir = path.resolve(import.meta.dirname, 'theme', 'components')
-
   return {
     name: 'zpress',
-    globalUIComponents: [path.resolve(componentsDir, 'nav', 'branch-tag.tsx')],
   }
 }
