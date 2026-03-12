@@ -1,12 +1,18 @@
 # @zpress/cli
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [f4d5388]
+  - @zpress/ui@0.2.2
+
 ## 0.1.2
 
 ### Patch Changes
 
 - 2e43a80: Add README files to all packages and update license copyright to Joggr, Inc.
 - 2e43a80: Fix type exports and dependency declarations
-
   - Generate bundled `.d.ts` declaration files via Rslib `dts.bundle` (previously no declaration files were emitted)
   - Point `exports.types` to generated `dist/*.d.ts` instead of raw source files
   - Move `react`, `react-dom`, and `@rspress/core` to `peerDependencies` in `@zpress/ui`
