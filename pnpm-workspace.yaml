@@ -1,6 +1,7 @@
 packages:
   - 'packages/*'
   - 'examples/*'
+  - 'extensions/*'
 
 catalog:
   '@rslib/core': ^0.20.0
