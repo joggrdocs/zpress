@@ -1,5 +1,11 @@
 # @zpress/core
 
+## 0.5.0
+
+### Minor Changes
+
+- 7255aa3: Add built-in theme support with three color palettes (base, midnight, arcade), configurable color mode, user color overrides, and an optional theme switcher dropdown in the navbar
+
 ## 0.4.0
 
 ### Minor Changes
