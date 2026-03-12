@@ -40,7 +40,7 @@ export default defineConfig({
           link: '/guides/dynamic-content',
           from: 'docs/guides/dynamic-content.md',
         },
-        { text: 'Themes', link: '/guides/themes', from: 'docs/guides/themes.md' },
+        { text: 'Themes', link: '/guides/themes', from: 'docs/guides/themes.mdx' },
         { text: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
       ],
     },

@@ -48,6 +48,8 @@ export type { TechTagProps } from './components/shared/tech-tag'
 export { TechIconTable } from './components/shared/tech-icon-table'
 export type { TechIconEntry, TechIconTableProps } from './components/shared/tech-icon-table'
 export { Icon } from './components/shared/icon'
+export { BrowserWindow } from './components/shared/browser-window'
+export type { BrowserWindowProps } from './components/shared/browser-window'
 
 // Home page overrides — shadow the wildcard re-exports from theme-original
 export { HomeFeature } from './components/home/feature'
