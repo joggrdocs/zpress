@@ -167,9 +167,8 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     .otherwise(() => Promise.resolve(0))
 
   // 6. Generate sidebar + nav
-  const icons = buildIconMap(allSections)
-  const sortedSidebar = buildMultiSidebar(resolved, openapiSidebar, icons)
-  const nav = generateNav(config, resolved, icons)
+  const sortedSidebar = buildMultiSidebar(resolved, openapiSidebar)
+  const nav = generateNav(config, resolved)
 
   await fs.writeFile(
     path.resolve(outDir, '.generated/sidebar.json'),
@@ -319,24 +318,6 @@ async function copyAll(src: string, dest: string): Promise<void> {
       await fs.copyFile(srcPath, destPath)
     }
   }, Promise.resolve())
-}
-
-/**
- * Build a map of section text to Iconify identifier from entry icon fields.
- * Used by both the sidebar generator (icon rail) and the nav generator.
- *
- * @param sections - All sections (config + synthesized workspace sections)
- * @returns Map of section text to Iconify identifier string
- */
-function buildIconMap(sections: readonly Entry[]): Map<string, string> {
-  return new Map(
-    sections.flatMap((section): [string, string][] => {
-      if (section.icon) {
-        return [[section.text, section.icon]]
-      }
-      return []
-    })
-  )
 }
 
 function resolveQuiet(quiet: boolean | undefined | null): boolean {

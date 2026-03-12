@@ -69,25 +69,21 @@ export default defineConfig({
       text: 'Getting Started',
       link: '/getting-started',
       from: 'docs/getting-started.md',
-      icon: 'pixelarticons:speed-fast',
     },
     {
       text: 'Architecture',
       link: '/architecture',
       from: 'docs/architecture.md',
-      icon: 'pixelarticons:layout-header',
     },
     {
       text: 'Guides',
       prefix: '/guides',
       from: 'docs/guides/*.md',
-      icon: 'pixelarticons:book-open',
       textFrom: 'frontmatter',
       sort: 'alpha',
     },
     {
       text: 'Contributing',
-      icon: 'pixelarticons:git-merge',
       items: [
         {
           text: 'Overview',
