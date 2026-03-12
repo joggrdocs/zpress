@@ -37,12 +37,12 @@ Point your hosting provider at the `.zpress/dist/` directory. zpress produces a 
 
 Common providers:
 
-| Provider     | Build command             | Output directory |
-| ------------ | ------------------------- | ---------------- |
-| Vercel       | `npx @zpress/kit build`   | `.zpress/dist`   |
-| Netlify      | `npx @zpress/kit build`   | `.zpress/dist`   |
-| GitHub Pages | `npx @zpress/kit build`   | `.zpress/dist`   |
-| Cloudflare   | `npx @zpress/kit build`   | `.zpress/dist`   |
+| Provider     | Build command           | Output directory |
+| ------------ | ----------------------- | ---------------- |
+| Vercel       | `npx @zpress/kit build` | `.zpress/dist`   |
+| Netlify      | `npx @zpress/kit build` | `.zpress/dist`   |
+| GitHub Pages | `npx @zpress/kit build` | `.zpress/dist`   |
+| Cloudflare   | `npx @zpress/kit build` | `.zpress/dist`   |
 
 ## CI/CD
 
