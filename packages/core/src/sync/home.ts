@@ -318,7 +318,7 @@ function buildFeatures(
     sections.slice(0, 3).map(async (section, index) => {
       const link = section.link ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
-      const iconId = null
+      const iconId = section.icon ?? null
       const iconColor: IconColor = ICON_COLORS[index % ICON_COLORS.length]
       return { title: section.text, details, link, iconId, iconColor }
     })
