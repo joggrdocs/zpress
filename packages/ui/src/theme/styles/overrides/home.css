@@ -15,7 +15,7 @@ html .rp-home-hero__image-img {
 }
 
 /* ── Rspress home hero container ────────────────────────── */
-html .rp-home-hero {
+html .rp-home-hero__container {
   gap: 16px !important;
 }
 
@@ -33,7 +33,15 @@ html .rp-home-hero__tagline {
   padding-bottom: 16px !important;
 }
 
+html .rp-home-hero__actions {
+  gap: 1.25rem !important;
+}
+
 @media (max-width: 1000px) {
+  html .rp-home-hero {
+    padding-bottom: 24px !important;
+  }
+
   html .rp-home-hero__image {
     width: 400px;
     margin-left: 0;
@@ -42,6 +50,42 @@ html .rp-home-hero__tagline {
 
   html .rp-home-hero__image-img {
     width: 400px;
+  }
+}
+
+/* ── Mobile overrides ────────────────────────────────────── */
+@media (max-width: 768px) {
+  html .rp-home-hero__container {
+    gap: 8px !important;
+  }
+
+  html .rp-home-hero__image {
+    width: 100%;
+    max-width: 90vw !important;
+    margin-left: 0;
+    margin-top: 24px;
+  }
+
+  html .rp-home-hero__image-img {
+    width: 100%;
+    max-width: 90vw !important;
+  }
+
+  html .rp-home-hero__content {
+    padding: 0 8px;
+  }
+
+  html .rp-home-hero__name {
+    font-size: 1.125rem !important;
+  }
+
+  html .rp-home-hero__text {
+    font-size: 2rem !important;
+  }
+
+  html .rp-home-hero__tagline {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
   }
 }
 
