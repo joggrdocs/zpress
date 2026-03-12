@@ -4,37 +4,27 @@ import type { ConfigError, ConfigResult } from './sync/errors.ts'
 import type { ZpressConfig, Entry, Feature, WorkspaceItem, WorkspaceGroup } from './types.ts'
 
 /**
- * Type-safe config helper with validation.
+ * Type-safe config helper for user config files.
  *
- * Validates the config structure and exits with a clear error message
- * if any issues are found. This is the primary entry point for user-
- * provided config — validation happens at the boundary.
- *
- * `defineConfig` is called in user config files (e.g. `zpress.config.ts`)
- * where the return value is consumed by the c12 config loader, which
- * expects a plain `ZpressConfig` object — not a `Result` tuple.
- * Because this is the outermost user-facing boundary (not a library
- * function), `process.exit(1)` is acceptable here: the user must fix
- * their config before any downstream code can run.
+ * This is a passthrough that provides type safety and editor
+ * autocompletion in `zpress.config.ts`. Validation is deferred to
+ * `loadConfig` at CLI runtime, so errors surface with structured
+ * feedback rather than a raw `process.exit`.
  *
  * @param config - Raw zpress config object
- * @returns The validated config (unchanged)
+ * @returns The config (unchanged)
  */
 export function defineConfig(config: ZpressConfig): ZpressConfig {
-  const [err] = validateConfig(config)
-  if (err) {
-    // Boundary exit — c12 expects a plain config object, so we cannot
-    // return a Result tuple here. The user must fix their config.
-    process.stderr.write(`[zpress] ${err.message}\n`)
-    process.exit(1)
-  }
   return config
 }
 
 /**
  * Validate the entire config, returning the first error found.
+ *
+ * @param config - Raw zpress config object to validate
+ * @returns A `ConfigResult` tuple — `[null, config]` on success or `[ConfigError, null]` on failure
  */
-function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig> {
+export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig> {
   if (!config.sections || config.sections.length === 0) {
     return [configError('empty_sections', 'config.sections must have at least one entry'), null]
   }

@@ -15,7 +15,7 @@ export type {
 } from './types.ts'
 
 // Config
-export { defineConfig } from './define-config.ts'
+export { defineConfig, validateConfig } from './define-config.ts'
 export { loadConfig } from './config.ts'
 
 // Sync engine
