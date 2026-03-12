@@ -314,7 +314,7 @@ function validateFeature(feature: Feature): ConfigError | null {
  * Validate a single ThemeColors object.
  */
 function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<true> {
-  const colorPattern = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$|^rgba?\(/
+  const colorPattern = /^(?:#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgba?\([^)]*\))$/
   const keys: readonly (keyof ThemeColors)[] = [
     'brand',
     'brandLight',

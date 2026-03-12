@@ -54,6 +54,7 @@ html[data-zp-theme='arcade'] .section-card::before {
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
   transition: opacity 0.3s;
@@ -314,5 +315,26 @@ html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
   to {
     height: 60%;
     top: 20%;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+
+/*
+ * Disable all continuous and hover-triggered animations when
+ * the user has opted into reduced motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html[data-zp-theme='arcade'] .home-card:hover::before,
+  html[data-zp-theme='arcade'] .section-card:hover::before,
+  html[data-zp-theme='arcade'] .rp-codeblock__content::after,
+  html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
+    animation: none;
+  }
+
+  html[data-zp-theme='arcade'] .rp-button--medium:hover,
+  html[data-zp-theme='arcade'] .rp-button--big:hover {
+    animation: none;
+    transform: none;
   }
 }

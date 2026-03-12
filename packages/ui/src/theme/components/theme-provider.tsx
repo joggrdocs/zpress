@@ -63,6 +63,17 @@ function clearColorOverrides(html: HTMLElement): void {
 }
 
 /**
+ * Safe localStorage read — returns null if storage is unavailable.
+ */
+function safeGetItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+/**
  * Parse a JSON build-time define, returning an empty object on failure.
  */
 function parseColors(raw: string): Record<string, string> {
@@ -85,8 +96,7 @@ function parseColors(raw: string): Record<string, string> {
 export function ThemeProvider(): React.ReactElement | null {
   useEffect(() => {
     const html = document.documentElement
-    const storedTheme = localStorage.getItem('zpress-theme')
-    const themeName = storedTheme || __ZPRESS_THEME_NAME__
+    const themeName = safeGetItem('zpress-theme') || __ZPRESS_THEME_NAME__
     const colorMode = __ZPRESS_COLOR_MODE__
     const colors = parseColors(__ZPRESS_THEME_COLORS__)
     const darkColors = parseColors(__ZPRESS_THEME_DARK_COLORS__)

@@ -53,16 +53,16 @@ function applyTheme(theme: ThemeOption): void {
  * Only renders when `__ZPRESS_THEME_SWITCHER__` build-time define is true.
  */
 export function ThemeSwitcher(): React.ReactElement | null {
-  if (!__ZPRESS_THEME_SWITCHER__) {
-    return null
-  }
-
   const [isOpen, setIsOpen] = useState(false)
   const [activeTheme, setActiveTheme] = useState(() => {
     if (typeof globalThis === 'undefined') {
       return 'base'
     }
-    return localStorage.getItem('zpress-theme') || 'base'
+    try {
+      return localStorage.getItem('zpress-theme') || 'base'
+    } catch {
+      return 'base'
+    }
   })
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -97,6 +97,10 @@ export function ThemeSwitcher(): React.ReactElement | null {
       document.removeEventListener('keydown', handleEscape)
     }
   }, [])
+
+  if (!__ZPRESS_THEME_SWITCHER__) {
+    return null
+  }
 
   return (
     <div className="theme-switcher" ref={containerRef}>
