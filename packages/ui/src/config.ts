@@ -10,6 +10,7 @@ import { zpressPlugin } from './plugin.ts'
 interface CreateRspressConfigOptions {
   readonly config: ZpressConfig
   readonly paths: Paths
+  readonly logLevel?: 'info' | 'warn' | 'error' | 'silent'
 }
 
 /**
@@ -43,7 +44,7 @@ function detectGitBranch(): string {
  * Rspress configuration object.
  */
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
-  const { config, paths } = options
+  const { config, paths, logLevel } = options
 
   const sidebar = loadGenerated(paths.contentDir, 'sidebar.json', {})
   const nav = loadGenerated(paths.contentDir, 'nav.json', [])
@@ -68,6 +69,12 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     plugins: [zpressPlugin()],
 
     builderConfig: {
+      ...(() => {
+        if (logLevel) {
+          return { logLevel }
+        }
+        return {}
+      })(),
       resolve: {
         alias: {
           // Allow generated MDX files in .zpress/content/ to import
