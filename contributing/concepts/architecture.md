@@ -171,21 +171,22 @@ The sync engine is the heart of zpress. It transforms a config file into a compl
 
 The `sync()` function in `packages/core/src/sync/index.ts` runs this pipeline:
 
-1. **Setup** -- Create output directories, seed default assets, load previous manifest
-2. **Asset seeding/generation** -- Generate branded SVG assets (banner, logo) from config title
-3. **Workspace synthesis** -- Convert `apps`/`packages`/`workspaces` into entry sections
-4. **Resolve entries** -- Walk the config tree, resolve globs, derive text, merge frontmatter
-5. **Planning page discovery** -- Discover and resolve pages from `.planning/` directory
-6. **Enrich cards** -- Attach workspace metadata (icon, scope, tags, badge) to matched entries
-7. **Inject landing pages** -- Generate virtual MDX pages for sections with children but no page
-8. **Collect pages** -- Flatten the resolved tree into a flat page list
-9. **Source map building** -- Build source-to-output path map for relative link rewriting
+1. **Setup** -- Create output directories, seed default assets
+2. **Asset generation** -- Generate branded SVG assets (banner, logo, icon) from config title
+3. **Public asset copying** -- Copy `.zpress/public/` into content dir for Rspress resolution
+4. **Load manifest** -- Load previous sync manifest for incremental diffing
+5. **Workspace synthesis** -- Convert `apps`/`packages`/`workspaces` into entry sections
+6. **Resolve entries** -- Walk the config tree, resolve globs, derive text, merge frontmatter
+7. **Enrich cards** -- Attach workspace metadata (icon, scope, tags, badge) to matched entries
+8. **Inject landing pages** -- Generate virtual MDX pages for sections with children but no page
+9. **Collect pages** -- Flatten the resolved tree into a flat page list
 10. **Generate home** -- Create default home page from config metadata (when no explicit index.md)
-11. **Copy pages** -- Write all pages with injected frontmatter, rewrite links, track SHA256 hashes
-12. **Public asset copying** -- Copy static assets to `.zpress/public/`
-13. **Generate sidebar + nav** -- Build multi-sidebar JSON and nav array
-14. **Clean stale files** -- Remove files present in old manifest but absent in new
+11. **Planning page discovery** -- Discover and resolve pages from `.planning/` directory
+12. **Copy pages** -- Build source map, write all pages with injected frontmatter, rewrite links, track SHA256 hashes
+13. **Clean stale files** -- Remove files present in old manifest but absent in new
+14. **Generate sidebar + nav** -- Build multi-sidebar JSON and nav array
 15. **Save manifest** -- Record file hashes for incremental sync on next run
+16. **Write README** -- Generate bare-bones README in `.zpress/` root
 
 Returns: `{ pagesWritten, pagesSkipped, pagesRemoved, elapsed }`
 
