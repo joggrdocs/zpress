@@ -9,12 +9,10 @@ export default defineConfig({
       text: 'Getting Started',
       link: '/getting-started',
       from: 'docs/getting-started.md',
-      icon: 'pixelarticons:speed-fast',
     },
     {
       text: 'Guides',
       prefix: '/guides',
-      icon: 'pixelarticons:book-open',
       items: [
         {
           text: 'Sections and Pages',
@@ -27,11 +25,6 @@ export default defineConfig({
           from: 'docs/guides/auto-discovery.md',
         },
         { text: 'Frontmatter', link: '/guides/frontmatter', from: 'docs/guides/frontmatter.md' },
-        {
-          text: 'Sidebar Icons',
-          link: '/guides/sidebar-icons',
-          from: 'docs/guides/sidebar-icons.md',
-        },
         { text: 'Workspaces', link: '/guides/workspaces', from: 'docs/guides/workspaces.md' },
         { text: 'Navigation', link: '/guides/navigation', from: 'docs/guides/navigation.md' },
         {
@@ -49,7 +42,6 @@ export default defineConfig({
     },
     {
       text: 'Reference',
-      icon: 'pixelarticons:list-box',
       items: [
         {
           text: 'Configuration',
@@ -125,7 +117,6 @@ export default defineConfig({
     },
     {
       text: 'Contributing',
-      icon: 'pixelarticons:git-merge',
       items: [
         {
           text: 'Overview',
@@ -148,7 +139,6 @@ export default defineConfig({
         },
         {
           text: 'Standards',
-          icon: 'pixelarticons:check',
           items: [
             {
               text: 'TypeScript',

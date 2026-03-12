@@ -95,7 +95,6 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 | `sort`          | `'alpha' \| 'filename' \| comparator`         | Sort order for discovered children              |
 | `recursive`     | `boolean`                                     | Directory-based nesting for recursive globs     |
 | `indexFile`     | `string`                                      | Section header filename (default: `"overview"`) |
-| `icon`          | `string`                                      | Iconify identifier for sidebar icon rail        |
 | `card`          | `CardConfig`                                  | Landing page card metadata                      |
 | `isolated`      | `boolean`                                     | Separate sidebar namespace (requires `link`)    |
 
@@ -192,13 +191,12 @@ nav: [
 ]
 ```
 
-| Field         | Type        | Description                                               |
-| ------------- | ----------- | --------------------------------------------------------- |
-| `text`        | `string`    | Display text                                              |
-| `link`        | `string`    | Target URL path                                           |
-| `items`       | `NavItem[]` | Dropdown children                                         |
-| `activeMatch` | `string`    | Regex pattern for active state matching                   |
-| `icon`        | `string`    | Iconify identifier (required on top-level explicit items) |
+| Field         | Type        | Description                             |
+| ------------- | ----------- | --------------------------------------- |
+| `text`        | `string`    | Display text                            |
+| `link`        | `string`    | Target URL path                         |
+| `items`       | `NavItem[]` | Dropdown children                       |
+| `activeMatch` | `string`    | Regex pattern for active state matching |
 
 Set `nav: 'auto'` to generate one nav item per non-isolated top-level section.
 

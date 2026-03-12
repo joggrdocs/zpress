@@ -168,7 +168,6 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
         text: 'Apps',
         link: '/apps',
         isolated: true,
-        icon: 'pixelarticons:device-laptop',
         frontmatter: {
           description: 'Deployable applications that make up the platform.',
         },
@@ -186,7 +185,6 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
         text: 'Packages',
         link: '/packages',
         isolated: true,
-        icon: 'pixelarticons:archive',
         frontmatter: {
           description: 'Shared libraries and utilities consumed across apps and services.',
         },
@@ -206,7 +204,6 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
       text: group.name,
       link,
       isolated: true,
-      icon: group.icon,
       frontmatter: {
         description: group.description,
       },
