@@ -9,6 +9,8 @@
  *   2. Neon pulse  — expanding glow ring on buttons
  *   3. CRT scanlines — subtle scrolling overlay on code blocks
  *   4. Link glow — neon underline sweep on hover
+ *   5. Sidebar + navbar hover — neon underline sweep
+ *   6. Sidebar active glow bar
  */
 
 /* ── @property for animatable gradient angle ─────────────── */
@@ -82,6 +84,19 @@ html[data-zp-theme='arcade'] .section-card:hover {
 /* ── 2. Neon pulse — buttons ─────────────────────────────── */
 
 /*
+ * Brand buttons use a bright green gradient background that
+ * has poor contrast with white text. Override to dark text.
+ */
+html[data-zp-theme='arcade'] .rp-button--brand {
+  color: var(--zp-c-bg);
+  opacity: 1;
+}
+
+html[data-zp-theme='arcade'] .rp-button--brand:hover {
+  opacity: 1;
+}
+
+/*
  * On hover, hero action buttons emit an expanding ring pulse
  * using box-shadow animation. The ring fades out as it expands.
  */
@@ -141,8 +156,8 @@ html[data-zp-theme='arcade'] .rp-codeblock__content::after {
     to bottom,
     transparent 0px,
     transparent 3px,
-    rgba(0, 255, 136, 0.06) 3px,
-    rgba(0, 255, 136, 0.06) 4px
+    rgba(0, 255, 136, 0.1) 3px,
+    rgba(0, 255, 136, 0.1) 4px
   );
   animation: arcade-scanline 8s linear infinite;
   pointer-events: none;
@@ -186,7 +201,54 @@ html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
     0 0 12px rgba(0, 255, 136, 0.2);
 }
 
-/* ── 5. Sidebar active glow bar ──────────────────────────── */
+/* ── 5. Sidebar + navbar link hover — neon underline sweep ── */
+
+/*
+ * Same sweep effect as doc content links, adapted for
+ * sidebar items (.rp-sidebar-item) and navbar menu items
+ * (.rp-nav-menu__item). Uses a background-image gradient
+ * that expands from 0% to 100% width on hover.
+ */
+html[data-zp-theme='arcade'] .rp-sidebar-item {
+  text-decoration: none;
+  background-image: linear-gradient(#00ff88, #00ff88);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition:
+    color 0.15s,
+    background-color 0.15s,
+    background-size 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-sidebar-item:hover {
+  background-size: 100% 1.5px;
+  text-shadow:
+    0 0 6px rgba(0, 255, 136, 0.5),
+    0 0 12px rgba(0, 255, 136, 0.2);
+}
+
+html[data-zp-theme='arcade'] .rp-nav-menu__item {
+  text-decoration: none;
+  background-image: linear-gradient(#00ff88, #00ff88);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition:
+    color 0.25s,
+    background-size 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-nav-menu__item:hover {
+  background-size: 100% 1.5px;
+  text-shadow:
+    0 0 6px rgba(0, 255, 136, 0.5),
+    0 0 12px rgba(0, 255, 136, 0.2);
+}
+
+/* ── 6. Sidebar active glow bar ──────────────────────────── */
 
 /*
  * The active sidebar item gets a left-border glow that
