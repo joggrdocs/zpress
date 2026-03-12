@@ -123,13 +123,17 @@ html[data-zp-theme='arcade'] .rp-button--big:hover {
  * A repeating linear-gradient of thin semi-transparent lines
  * scrolls slowly down code blocks, simulating a CRT monitor.
  * pointer-events: none keeps the overlay non-interactive.
+ *
+ * Rspress wraps code blocks in .rp-codeblock which already
+ * has position: relative. The overlay targets .rp-codeblock__content
+ * (the inner container with the background color) so it sits
+ * above the code but below the title bar and button group.
  */
-html[data-zp-theme='arcade'] div[class*='language-'] {
+html[data-zp-theme='arcade'] .rp-codeblock__content {
   position: relative;
-  overflow: hidden;
 }
 
-html[data-zp-theme='arcade'] div[class*='language-']::after {
+html[data-zp-theme='arcade'] .rp-codeblock__content::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -142,7 +146,7 @@ html[data-zp-theme='arcade'] div[class*='language-']::after {
   );
   animation: arcade-scanline 8s linear infinite;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 @keyframes arcade-scanline {
@@ -159,8 +163,11 @@ html[data-zp-theme='arcade'] div[class*='language-']::after {
 /*
  * Content links get a neon underline that sweeps in from the
  * left on hover, paired with a subtle text-shadow glow.
+ *
+ * Rspress uses a.rp-link for content links inside .rp-doc.
+ * Header anchors use .rp-header-anchor and are excluded.
  */
-html[data-zp-theme='arcade'] .rp-doc a:not(.home-card):not(.section-card) {
+html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor) {
   text-decoration: none;
   background-image: linear-gradient(#00ff88, #00ff88);
   background-size: 0% 1.5px;
@@ -171,7 +178,7 @@ html[data-zp-theme='arcade'] .rp-doc a:not(.home-card):not(.section-card) {
     text-shadow 0.3s ease;
 }
 
-html[data-zp-theme='arcade'] .rp-doc a:not(.home-card):not(.section-card):hover {
+html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
   background-size: 100% 1.5px;
   text-shadow:
     0 0 6px rgba(0, 255, 136, 0.5),
@@ -183,12 +190,12 @@ html[data-zp-theme='arcade'] .rp-doc a:not(.home-card):not(.section-card):hover 
 /*
  * The active sidebar item gets a left-border glow that
  * scales in vertically, simulating a neon indicator light.
+ *
+ * Rspress uses .rp-sidebar-item--active (BEM double hyphen).
+ * It already has position: relative. Uses ::after because
+ * ::before is used by Rspress for group-item line indicators.
  */
-html[data-zp-theme='arcade'] .rspress-sidebar .rp-sidebar-item-active {
-  position: relative;
-}
-
-html[data-zp-theme='arcade'] .rspress-sidebar .rp-sidebar-item-active::before {
+html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
   content: '';
   position: absolute;
   left: 0;
