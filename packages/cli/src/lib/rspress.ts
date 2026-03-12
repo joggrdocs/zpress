@@ -50,6 +50,26 @@ export async function buildSite(options: ServerOptions): Promise<void> {
 }
 
 /**
+ * Build the Rspress site for check/validation purposes.
+ *
+ * Uses the standard Rspress build (no log-level suppression) so that
+ * `remarkLink`'s deadlink diagnostics are written to stderr and can be
+ * captured by the calling code. The caller is responsible for swallowing
+ * stderr output so it doesn't reach the terminal.
+ *
+ * @param options - Build configuration including config and paths
+ * @returns A promise that resolves when the build completes
+ */
+export async function buildSiteForCheck(options: ServerOptions): Promise<void> {
+  const rspressConfig = createRspressConfig(options)
+  await build({
+    docDirectory: options.paths.contentDir,
+    config: rspressConfig,
+    configFilePath: '',
+  })
+}
+
+/**
  * Serve the built Rspress site (static preview).
  *
  * @param options - Serve configuration including config and paths

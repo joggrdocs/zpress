@@ -12,6 +12,7 @@
 import { cli } from '@kidd-cli/core'
 
 import { buildCommand } from './commands/build.ts'
+import { checkCommand } from './commands/check.ts'
 import { cleanCommand } from './commands/clean.ts'
 import { devCommand } from './commands/dev.ts'
 import { dumpCommand } from './commands/dump.ts'
@@ -30,6 +31,7 @@ await cli({
     sync: syncCommand,
     dev: devCommand,
     build: buildCommand,
+    check: checkCommand,
     serve: serveCommand,
     clean: cleanCommand,
     dump: dumpCommand,
