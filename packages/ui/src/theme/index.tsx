@@ -23,6 +23,9 @@ import './styles/overrides/section-card.css'
 // (theme-original avoids circular resolution when used inside a themeDir)
 export * from '@rspress/core/theme-original'
 
+// Layout override — inject zpress nav components via layout slots
+export { Layout } from './components/nav/layout'
+
 // zpress components
 export { FeatureCard, FeatureGrid } from './components/home/feature-card'
 export type { FeatureCardProps, FeatureItem, IconColor } from './components/home/feature-card'

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import type React from 'react'
 
 import './branch-tag.css'
 import { Icon } from '../shared/icon.tsx'
@@ -17,32 +17,12 @@ function resolveBranch(): string {
 }
 
 /**
- * Git branch tag — pill-shaped badge positioned in the nav bar.
- * Hidden when on `main` (production). Uses the pixelarticons:git-branch icon.
+ * Git branch tag — pill-shaped badge rendered via the `beforeNavMenu`
+ * layout slot. Hidden when on `main` (production).
+ * Uses the pixelarticons:git-branch icon.
  */
 export function BranchTag(): React.ReactElement | null {
   const branch = resolveBranch()
-  const rootRef = useRef<HTMLAnchorElement>(null)
-
-  useEffect(() => {
-    if (!branch || branch === 'main' || !rootRef.current) {
-      return
-    }
-
-    const node = rootRef.current
-
-    // Relocate into the search container so it sits beside the search button.
-    // No Rspress API exists for injecting into the nav bar, so direct DOM
-    // manipulation is the only option for this placement.
-    const searchContainer = document.querySelector('.rspress-nav-search')
-    if (searchContainer) {
-      searchContainer.append(node)
-    }
-
-    return () => {
-      node.remove()
-    }
-  }, [branch])
 
   if (!branch || branch === 'main') {
     return null
@@ -51,7 +31,6 @@ export function BranchTag(): React.ReactElement | null {
   return (
     <a
       className="branch-tag"
-      ref={rootRef}
       href={`https://github.com/joggrdocs/zpress/tree/${branch}`}
       target="_blank"
       rel="noopener noreferrer"
