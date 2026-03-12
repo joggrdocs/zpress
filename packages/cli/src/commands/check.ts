@@ -20,7 +20,7 @@ export const checkCommand = command({
 
     // If config is invalid, present the error and bail — sync/build need valid config
     if (configErr || !config) {
-      const buildResult = { passed: true, deadlinks: [] } as const
+      const buildResult = { status: 'skipped' } as const
       presentResults({ configResult, buildResult, logger: ctx.logger })
       ctx.logger.outro('Checks failed')
       process.exit(1)

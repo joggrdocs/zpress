@@ -26,10 +26,11 @@ interface ConfigCheckResult {
   readonly errors: readonly ConfigError[]
 }
 
-interface BuildCheckResult {
-  readonly passed: boolean
-  readonly deadlinks: readonly DeadlinkInfo[]
-}
+type BuildCheckResult =
+  | { readonly status: 'passed' }
+  | { readonly status: 'failed'; readonly deadlinks: readonly DeadlinkInfo[] }
+  | { readonly status: 'skipped' }
+  | { readonly status: 'error'; readonly message: string }
 
 interface CaptureResult<T> {
   readonly result: T | null
@@ -261,17 +262,14 @@ export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildC
       links: info.links,
     }))
     if (deadlinks.length > 0) {
-      return { passed: false, deadlinks }
+      return { status: 'failed', deadlinks }
     }
 
     // Non-deadlink build error — surface as a generic failure
-    return {
-      passed: false,
-      deadlinks: [{ file: 'build', links: [error.message] }],
-    }
+    return { status: 'error', message: error.message }
   }
 
-  return { passed: true, deadlinks: [] }
+  return { status: 'passed' }
 }
 
 // ── ANSI helpers ───────────────────────────────────────────────
@@ -318,8 +316,12 @@ export function presentResults(params: PresentResultsParams): boolean {
     })
   }
 
-  if (buildResult.passed) {
+  if (buildResult.status === 'passed') {
     logger.success('No broken links')
+  } else if (buildResult.status === 'skipped') {
+    // Build was skipped (e.g. config invalid) — nothing to report
+  } else if (buildResult.status === 'error') {
+    logger.error(`Build failed: ${buildResult.message}`)
   } else {
     const totalLinks = buildResult.deadlinks.reduce((sum, info) => sum + info.links.length, 0)
     logger.error(`Found ${totalLinks} broken link(s):`)
@@ -327,5 +329,5 @@ export function presentResults(params: PresentResultsParams): boolean {
     logger.message(block)
   }
 
-  return configResult.passed && buildResult.passed
+  return configResult.passed && buildResult.status === 'passed'
 }
