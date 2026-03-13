@@ -19,6 +19,7 @@
     "vscode:prepublish": "node esbuild.mjs",
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
+    "watch:tsc": "tsc --noEmit --watch",
     "typecheck": "tsc --noEmit",
     "package": "vsce package --no-git-tag-version",
     "publish": "vsce publish --no-git-tag-version"
@@ -33,11 +34,13 @@
     "commands": [
       {
         "command": "zpress.start",
-        "title": "zpress: Start Dev Server"
+        "title": "zpress: Start Dev Server",
+        "icon": "$(debug-start)"
       },
       {
         "command": "zpress.stop",
-        "title": "zpress: Stop Dev Server"
+        "title": "zpress: Stop Dev Server",
+        "icon": "$(debug-stop)"
       },
       {
         "command": "zpress.toggle",
@@ -55,6 +58,11 @@
       {
         "command": "zpress.restart",
         "title": "zpress: Restart Dev Server"
+      },
+      {
+        "command": "zpress.openInBrowser",
+        "title": "zpress: Open in Browser",
+        "icon": "$(link-external)"
       }
     ],
     "menus": {
@@ -62,6 +70,23 @@
         {
           "command": "zpress.preview",
           "when": "resourceLangId == markdown && zpress:isTrackedFile && zpress:serverReady",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "zpress.start",
+          "when": "view =~ /^zpress\\.(loading|section)/ && !zpress:serverReady && !zpress:serverStarting",
+          "group": "navigation"
+        },
+        {
+          "command": "zpress.stop",
+          "when": "view =~ /^zpress\\.(loading|section)/ && (zpress:serverReady || zpress:serverStarting)",
+          "group": "navigation"
+        },
+        {
+          "command": "zpress.openInBrowser",
+          "when": "view =~ /^zpress\\.(loading|section)/ && zpress:serverReady",
           "group": "navigation"
         }
       ]
@@ -78,7 +103,13 @@
     "viewsWelcome": [
       {
         "view": "zpress.loading",
-        "contents": "$(sync~spin) Starting zpress dev server..."
+        "contents": "$(sync~spin) Starting zpress dev server...",
+        "when": "zpress:serverStarting"
+      },
+      {
+        "view": "zpress.loading",
+        "contents": "zpress dev server is stopped.\n[Start Server](command:zpress.start)",
+        "when": "zpress:serverStopped"
       }
     ],
     "views": {
@@ -91,49 +122,49 @@
         {
           "id": "zpress.section.0",
           "name": "Section",
-          "when": "zpress:section.0",
+          "when": "zpress:section.0 && zpress:serverReady",
           "visibility": "visible"
         },
         {
           "id": "zpress.section.1",
           "name": "Section",
-          "when": "zpress:section.1",
+          "when": "zpress:section.1 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.2",
           "name": "Section",
-          "when": "zpress:section.2",
+          "when": "zpress:section.2 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.3",
           "name": "Section",
-          "when": "zpress:section.3",
+          "when": "zpress:section.3 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.4",
           "name": "Section",
-          "when": "zpress:section.4",
+          "when": "zpress:section.4 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.5",
           "name": "Section",
-          "when": "zpress:section.5",
+          "when": "zpress:section.5 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.6",
           "name": "Section",
-          "when": "zpress:section.6",
+          "when": "zpress:section.6 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.7",
           "name": "Section",
-          "when": "zpress:section.7",
+          "when": "zpress:section.7 && zpress:serverReady",
           "visibility": "collapsed"
         }
       ]

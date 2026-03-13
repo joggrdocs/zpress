@@ -35,9 +35,12 @@ export const devCommand = command({
     // Initial sync
     await sync(config, { paths, quiet })
 
-    // Start watcher
+    // Start Rspress dev server and get config reload callback
+    const onConfigReload = await startDevServer({ config, paths })
+
+    // Start watcher with config reload callback
     const { createWatcher } = await import('../lib/watcher.ts')
-    const watcher = createWatcher(config, paths)
+    const watcher = createWatcher(config, paths, onConfigReload)
 
     function cleanup(): void {
       if (watcher) {
@@ -47,8 +50,5 @@ export const devCommand = command({
 
     process.on('SIGINT', cleanup)
     process.on('SIGTERM', cleanup)
-
-    // Start Rspress dev server
-    await startDevServer({ config, paths })
   },
 })

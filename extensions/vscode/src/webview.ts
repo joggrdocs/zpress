@@ -2,8 +2,11 @@ import crypto from 'node:crypto'
 
 import type { Disposable, Uri, WebviewPanel, WebviewPanelOptions, WebviewOptions } from 'vscode'
 
+type ServerStatus = 'stopped' | 'starting' | 'running' | 'stopping'
+
 interface PreviewPanel extends Disposable {
   readonly open: (url: string) => void
+  readonly updateStatus: (status: ServerStatus) => void
 }
 
 interface PreviewPanelDeps {
@@ -26,7 +29,64 @@ function escapeHtml(str: string): string {
     .replaceAll('>', '&gt;')
 }
 
-function getHtml(serverUri: string, cspSource: string): string {
+function getStoppedHtml(_cspSource: string): string {
+  const nonce = crypto.randomBytes(16).toString('hex')
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; style-src 'nonce-${nonce}';"
+  >
+  <style nonce="${nonce}">
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--vscode-editor-background); color: var(--vscode-foreground); font-family: var(--vscode-font-family); display: flex; align-items: center; justify-content: center; }
+    .zp-message { text-align: center; max-width: 400px; }
+    .zp-message h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
+    .zp-message p { font-size: 13px; color: var(--vscode-descriptionForeground); margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="zp-message">
+    <h2>zpress dev server is not running</h2>
+    <p>Click the start button in the sidebar to begin.</p>
+  </div>
+</body>
+</html>`
+}
+
+function getStartingHtml(_cspSource: string): string {
+  const nonce = crypto.randomBytes(16).toString('hex')
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; style-src 'nonce-${nonce}';"
+  >
+  <style nonce="${nonce}">
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--vscode-editor-background); color: var(--vscode-foreground); font-family: var(--vscode-font-family); display: flex; align-items: center; justify-content: center; }
+    .zp-message { text-align: center; max-width: 400px; }
+    .zp-message h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
+    .zp-message p { font-size: 13px; color: var(--vscode-descriptionForeground); margin: 0; }
+    .zp-spinner { margin: 0 auto 16px; width: 32px; height: 32px; border: 3px solid var(--vscode-progressBar-background); border-top-color: var(--vscode-button-background); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="zp-message">
+    <div class="zp-spinner"></div>
+    <h2>Starting dev server...</h2>
+    <p>This may take a moment.</p>
+  </div>
+</body>
+</html>`
+}
+
+function getRunningHtml(serverUri: string, cspSource: string): string {
   const nonce = crypto.randomBytes(16).toString('hex')
 
   const separator = (() => {
@@ -51,13 +111,10 @@ function getHtml(serverUri: string, cspSource: string): string {
   >
   <style nonce="${nonce}">
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-    .zp-address-bar { display: flex; align-items: center; gap: 6px; font: 12px/1 monospace; padding: 4px 8px; background: var(--vscode-editor-background); color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--vscode-panel-border); }
-    .zp-address-bar span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; color: var(--vscode-input-foreground); }
-    iframe { border: none; width: 100%; height: calc(100vh - 28px); display: block; }
+    iframe { border: none; width: 100%; height: 100vh; display: block; }
   </style>
 </head>
 <body>
-  <div class="zp-address-bar">&#9679; <span>${safeUrl}</span></div>
   <!--
     allow-same-origin is safe here: the VS Code webview and the iframe are
     cross-origin, so same-origin access between them is already blocked. The
@@ -77,15 +134,36 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
    * VS Code extension state: mutable panel reference is unavoidable
    * when reusing a single webview panel across multiple opens.
    */
-  const state = { panel: null as WebviewPanel | null }
+  const state = {
+    panel: null as WebviewPanel | null,
+    currentUrl: null as string | null,
+    currentStatus: 'stopped' as ServerStatus,
+  }
+
+  function updatePanel(): void {
+    if (!state.panel) {
+      return
+    }
+
+    const { cspSource } = state.panel.webview
+
+    if (state.currentStatus === 'stopped' || state.currentStatus === 'stopping') {
+      state.panel.webview.html = getStoppedHtml(cspSource)
+    } else if (state.currentStatus === 'starting') {
+      state.panel.webview.html = getStartingHtml(cspSource)
+    } else if (state.currentStatus === 'running' && state.currentUrl) {
+      state.panel.webview.html = getRunningHtml(state.currentUrl, cspSource)
+    }
+  }
 
   function open(url: string): void {
     function showPanel(serverUri: Uri): void {
       const uriString = serverUri.toString()
+      state.currentUrl = uriString
 
       if (state.panel) {
         state.panel.reveal()
-        state.panel.webview.html = getHtml(uriString, state.panel.webview.cspSource)
+        updatePanel()
         return
       }
 
@@ -95,7 +173,7 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
         localResourceRoots: [],
       })
 
-      state.panel.webview.html = getHtml(uriString, state.panel.webview.cspSource)
+      updatePanel()
       state.panel.onDidDispose(() => {
         state.panel = null
       })
@@ -115,8 +193,14 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
     })
   }
 
+  function updateStatus(status: ServerStatus): void {
+    state.currentStatus = status
+    updatePanel()
+  }
+
   return {
     open,
+    updateStatus,
     dispose: (): void => {
       if (state.panel) {
         state.panel.dispose()
