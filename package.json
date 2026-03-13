@@ -6,7 +6,7 @@
   "scripts": {
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean",
+    "clean": "lauf run clean",
     "format": "oxfmt",
     "format:fix": "oxfmt --write",
     "lint": "oxlint --ignore-pattern node_modules",
@@ -33,6 +33,7 @@
     "laufen": "^1.1.0",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.55.0",
+    "rimraf": "^6.1.3",
     "turbo": "^2.8.16",
     "typescript": "^5.9.3"
   },

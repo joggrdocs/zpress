@@ -41,6 +41,7 @@
     "es-toolkit": "catalog:",
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
+    "jiti": "^2.6.1",
     "ts-pattern": "catalog:"
   },
   "devDependencies": {
