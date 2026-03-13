@@ -24,7 +24,6 @@ features:
     iconColor: blue
   - title: Guides
     details: 'Step-by-step walkthroughs covering setup, workflows, and common tasks.'
-    link: /guides
     icon: 'pixelarticons:book-open'
     iconColor: green
 ---

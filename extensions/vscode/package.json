@@ -1,0 +1,155 @@
+{
+  "name": "zpress-vscode",
+  "displayName": "zpress",
+  "version": "0.1.0",
+  "description": "Run zpress dev server and preview documentation from VS Code",
+  "icon": "resources/icon.png",
+  "categories": [
+    "Other"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joggrdocs/zpress.git",
+    "directory": "extensions/vscode"
+  },
+  "publisher": "joggr",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "node esbuild.mjs",
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package --no-git-tag-version",
+    "publish": "vsce publish --no-git-tag-version"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.110.0",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.27.4",
+    "typescript": "catalog:"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "zpress.start",
+        "title": "zpress: Start Dev Server"
+      },
+      {
+        "command": "zpress.stop",
+        "title": "zpress: Stop Dev Server"
+      },
+      {
+        "command": "zpress.toggle",
+        "title": "zpress: Toggle Dev Server"
+      },
+      {
+        "command": "zpress.preview",
+        "title": "zpress: Preview Page",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "zpress.openPage",
+        "title": "zpress: Open Page"
+      },
+      {
+        "command": "zpress.restart",
+        "title": "zpress: Restart Dev Server"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "zpress.preview",
+          "when": "resourceLangId == markdown && zpress:isTrackedFile && zpress:serverReady",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "zpress",
+          "title": "zpress",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "zpress.loading",
+        "contents": "$(sync~spin) Starting zpress dev server..."
+      }
+    ],
+    "views": {
+      "zpress": [
+        {
+          "id": "zpress.loading",
+          "name": "zpress",
+          "when": "zpress:isProject && !zpress:serverReady"
+        },
+        {
+          "id": "zpress.section.0",
+          "name": "Section",
+          "when": "zpress:section.0",
+          "visibility": "visible"
+        },
+        {
+          "id": "zpress.section.1",
+          "name": "Section",
+          "when": "zpress:section.1",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "zpress.section.2",
+          "name": "Section",
+          "when": "zpress:section.2",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "zpress.section.3",
+          "name": "Section",
+          "when": "zpress:section.3",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "zpress.section.4",
+          "name": "Section",
+          "when": "zpress:section.4",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "zpress.section.5",
+          "name": "Section",
+          "when": "zpress:section.5",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "zpress.section.6",
+          "name": "Section",
+          "when": "zpress:section.6",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "zpress.section.7",
+          "name": "Section",
+          "when": "zpress:section.7",
+          "visibility": "collapsed"
+        }
+      ]
+    }
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "activationEvents": [
+    "workspaceContains:zpress.config.js",
+    "workspaceContains:zpress.config.json",
+    "workspaceContains:zpress.config.ts",
+    "workspaceContains:zpress.config.mts",
+    "workspaceContains:zpress.config.mjs"
+  ],
+  "engines": {
+    "vscode": "^1.110.0"
+  }
+}

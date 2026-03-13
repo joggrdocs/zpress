@@ -91,7 +91,7 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
       // No need to touch a config file to trigger reload.
       consecutiveFailures = 0
     } catch (error) {
-      consecutiveFailures = consecutiveFailures + 1
+      consecutiveFailures += 1
       const errorMessage = (() => {
         if (error instanceof Error) {
           return error.message

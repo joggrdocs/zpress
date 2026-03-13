@@ -1,0 +1,129 @@
+import crypto from 'node:crypto'
+
+import type { Disposable, Uri, WebviewPanel, WebviewPanelOptions, WebviewOptions } from 'vscode'
+
+interface PreviewPanel extends Disposable {
+  readonly open: (url: string) => void
+}
+
+interface PreviewPanelDeps {
+  readonly createPanel: (
+    viewType: string,
+    title: string,
+    showOptions: number,
+    options: WebviewPanelOptions & WebviewOptions
+  ) => WebviewPanel
+  readonly asExternalUri: (uri: Uri) => Thenable<Uri>
+  readonly parseUri: (value: string) => Uri
+  readonly onError: (message: string) => void
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+}
+
+function getHtml(serverUri: string, cspSource: string): string {
+  const nonce = crypto.randomBytes(16).toString('hex')
+
+  const separator = (() => {
+    if (serverUri.includes('?')) {
+      return '&'
+    }
+    return '?'
+  })()
+
+  const fullUrl = `${serverUri}${separator}env=vscode`
+  const safeUrl = escapeHtml(fullUrl)
+  const safeOrigin = escapeHtml(new URL(serverUri).origin)
+  const safeCspSource = escapeHtml(cspSource)
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; frame-src ${safeOrigin} ${safeCspSource}; style-src 'nonce-${nonce}';"
+  >
+  <style nonce="${nonce}">
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+    .zp-address-bar { display: flex; align-items: center; gap: 6px; font: 12px/1 monospace; padding: 4px 8px; background: var(--vscode-editor-background); color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--vscode-panel-border); }
+    .zp-address-bar span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; color: var(--vscode-input-foreground); }
+    iframe { border: none; width: 100%; height: calc(100vh - 28px); display: block; }
+  </style>
+</head>
+<body>
+  <div class="zp-address-bar">&#9679; <span>${safeUrl}</span></div>
+  <!--
+    allow-same-origin is safe here: the VS Code webview and the iframe are
+    cross-origin, so same-origin access between them is already blocked. The
+    iframe needs its own origin for cookies, HMR WebSocket connections, and
+    fetch requests to function correctly.
+  -->
+  <iframe sandbox="allow-scripts allow-same-origin" src="${safeUrl}"></iframe>
+</body>
+</html>`
+}
+
+/**
+ * Creates a reusable webview panel that renders the zpress dev server in an iframe.
+ */
+function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
+  /*
+   * VS Code extension state: mutable panel reference is unavoidable
+   * when reusing a single webview panel across multiple opens.
+   */
+  const state = { panel: null as WebviewPanel | null }
+
+  function open(url: string): void {
+    function showPanel(serverUri: Uri): void {
+      const uriString = serverUri.toString()
+
+      if (state.panel) {
+        state.panel.reveal()
+        state.panel.webview.html = getHtml(uriString, state.panel.webview.cspSource)
+        return
+      }
+
+      state.panel = deps.createPanel('zpressPreview', 'zpress Preview', 1 /* ViewColumn.One */, {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [],
+      })
+
+      state.panel.webview.html = getHtml(uriString, state.panel.webview.cspSource)
+      state.panel.onDidDispose(() => {
+        state.panel = null
+      })
+    }
+
+    const uri = deps.parseUri(url)
+    const thenable = deps.asExternalUri(uri)
+    // oxlint-disable-next-line prefer-catch, prefer-await-to-callbacks -- Thenable (not Promise) lacks .catch()
+    thenable.then(showPanel, (error: unknown) => {
+      const message = (() => {
+        if (error instanceof Error) {
+          return error.message
+        }
+        return String(error)
+      })()
+      deps.onError(`Failed to resolve external URI: ${message}`)
+    })
+  }
+
+  return {
+    open,
+    dispose: (): void => {
+      if (state.panel) {
+        state.panel.dispose()
+      }
+    },
+  }
+}
+
+export { createPreviewPanel }
+export type { PreviewPanel, PreviewPanelDeps }

@@ -2,8 +2,7 @@
   "/integrations/": [
     {
       "text": "Integrations",
-      "link": "/integrations",
-      "icon": "pixelarticons:integration"
+      "link": "/integrations"
     },
     {
       "text": "Stripe",
@@ -13,8 +12,7 @@
   "/integrations": [
     {
       "text": "Integrations",
-      "link": "/integrations",
-      "icon": "pixelarticons:integration"
+      "link": "/integrations"
     },
     {
       "text": "Stripe",
@@ -24,8 +22,7 @@
   "/packages/": [
     {
       "text": "Packages",
-      "link": "/packages",
-      "icon": "pixelarticons:archive"
+      "link": "/packages"
     },
     {
       "text": "Config",
@@ -65,8 +62,7 @@
   "/packages": [
     {
       "text": "Packages",
-      "link": "/packages",
-      "icon": "pixelarticons:archive"
+      "link": "/packages"
     },
     {
       "text": "Config",
@@ -106,8 +102,7 @@
   "/apps/": [
     {
       "text": "Apps",
-      "link": "/apps",
-      "icon": "pixelarticons:device-laptop"
+      "link": "/apps"
     },
     {
       "text": "Web",
@@ -143,8 +138,7 @@
   "/apps": [
     {
       "text": "Apps",
-      "link": "/apps",
-      "icon": "pixelarticons:device-laptop"
+      "link": "/apps"
     },
     {
       "text": "Web",
@@ -180,13 +174,11 @@
   "/": [
     {
       "text": "Getting Started",
-      "link": "/getting-started",
-      "icon": "pixelarticons:speed-fast"
+      "link": "/getting-started"
     },
     {
       "text": "Architecture",
-      "link": "/architecture",
-      "icon": "pixelarticons:layout-header"
+      "link": "/architecture"
     },
     {
       "text": "Guides",
@@ -203,8 +195,7 @@
           "text": "Local Development",
           "link": "/guides/local-development"
         }
-      ],
-      "icon": "pixelarticons:book-open"
+      ]
     },
     {
       "text": "Contributing",
@@ -227,8 +218,7 @@
           ],
           "collapsed": true
         }
-      ],
-      "icon": "pixelarticons:git-merge"
+      ]
     }
   ]
 }
