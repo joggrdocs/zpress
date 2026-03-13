@@ -1,5 +1,6 @@
 {
   "name": "zpress-vscode",
+  "private": true,
   "displayName": "zpress",
   "version": "0.2.0",
   "description": "Run zpress dev server and preview documentation from VS Code",
