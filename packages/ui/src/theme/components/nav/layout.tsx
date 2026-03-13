@@ -24,6 +24,7 @@ const VSCODE_OVERRIDES = [
   '.rp-nav-screen-menu { display: none !important; }',
   '.rp-local-nav { display: none !important; }',
   '.rp-appearance { display: none !important; }',
+  '.rp-doc-layout__menu { display: none !important; }',
 ].join('\n')
 
 function useVscodeMode(): boolean {
