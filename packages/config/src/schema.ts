@@ -33,7 +33,7 @@ const navItemSchema: z.ZodType<unknown> = z.lazy(() =>
     link: z.string().optional(),
     items: z.array(navItemSchema).optional(),
     activeMatch: z.string().optional(),
-  })
+  }).strict()
 )
 
 // ── Card schema ──────────────────────────────────────────────
@@ -44,8 +44,8 @@ const cardConfigSchema = z.object({
   scope: z.string().optional(),
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  badge: z.object({ src: z.string(), alt: z.string() }).optional(),
-})
+  badge: z.object({ src: z.string(), alt: z.string() }).strict().optional(),
+}).strict()
 
 // ── Entry schema ─────────────────────────────────────────────
 
@@ -69,7 +69,7 @@ const entrySchema: z.ZodType<unknown> = z.lazy(() =>
     icon: z.string().optional(),
     card: cardConfigSchema.optional(),
     isolated: z.boolean().optional(),
-  })
+  }).strict()
 )
 
 // ── Workspace schemas ────────────────────────────────────────
@@ -80,7 +80,7 @@ const workspaceItemSchema = z.object({
   iconColor: z.string().optional(),
   description: z.string({ required_error: 'WorkspaceItem: "description" is required' }),
   tags: z.array(z.string()).optional(),
-  badge: z.object({ src: z.string(), alt: z.string() }).optional(),
+  badge: z.object({ src: z.string(), alt: z.string() }).strict().optional(),
   docsPrefix: z.string({ required_error: 'WorkspaceItem: "docsPrefix" is required' }),
   from: z.string().optional(),
   items: z.array(entrySchema).optional(),
@@ -92,7 +92,7 @@ const workspaceItemSchema = z.object({
   exclude: z.array(z.string()).optional(),
   collapsible: z.boolean().optional(),
   frontmatter: frontmatterSchema.optional(),
-})
+}).strict()
 
 const workspaceGroupSchema = z.object({
   name: z.string({ required_error: 'WorkspaceGroup: "name" is required' }),
@@ -100,7 +100,7 @@ const workspaceGroupSchema = z.object({
   icon: z.string({ required_error: 'WorkspaceGroup: "icon" is required' }),
   items: z.array(workspaceItemSchema).min(1, 'WorkspaceGroup: "items" must be a non-empty array'),
   link: z.string().optional(),
-})
+}).strict()
 
 // ── Feature schema ───────────────────────────────────────────
 
@@ -109,7 +109,7 @@ const featureSchema = z.object({
   description: z.string({ required_error: 'Feature: "description" is required' }),
   link: z.string().optional(),
   icon: z.string().optional(),
-})
+}).strict()
 
 // ── OpenAPI schema ───────────────────────────────────────────
 
@@ -117,7 +117,7 @@ const openapiConfigSchema = z.object({
   spec: z.string(),
   prefix: z.string(),
   title: z.string().optional(),
-})
+}).strict()
 
 // ── Main config schema ───────────────────────────────────────
 
@@ -135,7 +135,7 @@ export const zpressConfigSchema = z.object({
   nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
   exclude: z.array(z.string()).optional(),
   openapi: openapiConfigSchema.optional(),
-})
+}).strict()
 
 // ── Paths schema ─────────────────────────────────────────────
 
@@ -146,4 +146,4 @@ export const pathsSchema = z.object({
   publicDir: z.string(),
   distDir: z.string(),
   cacheDir: z.string(),
-})
+}).strict()

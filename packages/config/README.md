@@ -52,7 +52,7 @@ export default defineConfig({
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/main/packages/config/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json",
   "title": "My Documentation",
   "theme": {
     "name": "arcade",
@@ -70,7 +70,7 @@ export default defineConfig({
 ### YAML Config with Schema
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/main/packages/config/schemas/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json
 
 title: My Documentation
 theme:

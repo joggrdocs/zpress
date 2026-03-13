@@ -4,7 +4,7 @@
  * Re-exports types from @zpress/theme and defines config-specific types.
  */
 
-import type { ThemeConfig } from '@zpress/theme'
+import type { ThemeConfig, IconColor } from '@zpress/theme'
 
 // Re-export theme types
 export type { ThemeName, IconColor, ColorMode, ThemeColors, ThemeConfig } from '@zpress/theme'
@@ -55,7 +55,7 @@ export interface NavItem {
 
 export interface CardConfig {
   readonly icon?: string
-  readonly iconColor?: string
+  readonly iconColor?: IconColor
   readonly scope?: string
   readonly description?: string
   readonly tags?: string[]
@@ -67,7 +67,7 @@ export interface CardConfig {
 export interface WorkspaceItem {
   readonly text: string
   readonly icon?: string
-  readonly iconColor?: string
+  readonly iconColor?: IconColor
   readonly description: string
   readonly tags?: readonly string[]
   readonly badge?: { readonly src: string; readonly alt: string }

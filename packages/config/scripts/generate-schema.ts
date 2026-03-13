@@ -2,7 +2,7 @@
  * Generate JSON Schema from Zod schemas for IDE autocomplete and validation.
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs'
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -13,7 +13,9 @@ import { zpressConfigSchema } from '../src/schema.ts'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const CURRENT_VERSION = '0'
+const packageJsonPath = resolve(__dirname, '../package.json')
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { version: string }
+const currentVersion = packageJson.version
 
 try {
   const jsonSchema = zodToJsonSchema(zpressConfigSchema, {
@@ -24,7 +26,7 @@ try {
 
   const schema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
-    $id: `https://raw.githubusercontent.com/joggrdocs/zpress/v${CURRENT_VERSION}/packages/config/schemas/schema.json`,
+    $id: `https://raw.githubusercontent.com/joggrdocs/zpress/v${currentVersion}/packages/config/schemas/schema.json`,
     title: 'Zpress Configuration',
     description: 'Configuration file for zpress documentation framework',
     ...jsonSchema,
@@ -39,6 +41,16 @@ try {
   console.log(`✓ Generated JSON Schema at ${schemaPath}`)
 } catch (error) {
   console.error('✗ Failed to generate JSON Schema:')
-  console.error(error instanceof Error ? error.message : String(error))
+  console.error(getErrorMessage(error))
   process.exit(1)
+}
+
+/**
+ * Extract error message from unknown error value.
+ */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
 }

@@ -39,7 +39,16 @@ export async function loadConfig(
   const options = resolveOptions(dirOrOptions)
   const { cwd, configFile } = options
 
-  let config: ZpressConfig | undefined
+  return await loadAndValidateConfig({ cwd, configFile })
+}
+
+/**
+ * Internal helper to load and validate config with proper error handling.
+ */
+async function loadAndValidateConfig(
+  options: LoadConfigOptions
+): Promise<ConfigResult<ZpressConfig>> {
+  const { cwd, configFile } = options
 
   try {
     const result = await c12LoadConfig<ZpressConfig>({
@@ -53,32 +62,30 @@ export async function loadConfig(
       globalRc: false,
       dotenv: false,
     })
-    config = result.config
+
+    const { config } = result
+
+    if (!config) {
+      return [
+        configError('not_found', 'Failed to load zpress.config — no config file found'),
+        null,
+      ]
+    }
+
+    if (!config.sections || (Array.isArray(config.sections) && config.sections.length === 0)) {
+      return [
+        configError('empty_sections', 'Failed to load zpress.config — no sections found'),
+        null,
+      ]
+    }
+
+    return validateConfig(config)
   } catch (error) {
     return [
-      configError(
-        'parse_error',
-        `Failed to parse config file: ${error instanceof Error ? error.message : String(error)}`
-      ),
+      configError('parse_error', `Failed to parse config file: ${getErrorMessage(error)}`),
       null,
     ]
   }
-
-  if (!config) {
-    return [
-      configError('not_found', 'Failed to load zpress.config — no config file found'),
-      null,
-    ]
-  }
-
-  if (!config.sections) {
-    return [
-      configError('empty_sections', 'Failed to load zpress.config — no sections found'),
-      null,
-    ]
-  }
-
-  return validateConfig(config)
 }
 
 /**
@@ -89,4 +96,14 @@ function resolveOptions(dirOrOptions: string | LoadConfigOptions): LoadConfigOpt
     return { cwd: dirOrOptions }
   }
   return dirOrOptions
+}
+
+/**
+ * Extract error message from unknown error value.
+ */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
 }
