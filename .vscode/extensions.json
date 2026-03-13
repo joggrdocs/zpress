@@ -1,5 +1,8 @@
 {
   "recommendations": [
-    "connor4312.esbuild-problem-matchers"
+    "joggr.zpress-vscode",
+    "johnpapa.vscode-peacock",
+    "connor4312.esbuild-problem-matchers",
+    "oxc-project.oxc-vscode"
   ]
 }
