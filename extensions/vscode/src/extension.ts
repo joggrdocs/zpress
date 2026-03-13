@@ -43,7 +43,9 @@ function isServerUrl(url: string, baseUrl: string): boolean {
 
     return (
       target.origin === base.origin &&
-      (basePath === '' || target.pathname === basePath || target.pathname.startsWith(`${basePath}/`))
+      (basePath === '' ||
+        target.pathname === basePath ||
+        target.pathname.startsWith(`${basePath}/`))
     )
   } catch {
     return false

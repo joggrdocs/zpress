@@ -220,7 +220,10 @@ function createSidebar(deps: SidebarDeps): Sidebar {
 
   reload()
 
-  const sidebarGlob = new deps.RelativePattern(deps.workspaceRoot, '.zpress/content/.generated/sidebar.json')
+  const sidebarGlob = new deps.RelativePattern(
+    deps.workspaceRoot,
+    '.zpress/content/.generated/sidebar.json'
+  )
   const watcher = deps.createWatcher(sidebarGlob)
   watcher.onDidChange(reload)
   watcher.onDidCreate(reload)
