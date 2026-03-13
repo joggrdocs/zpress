@@ -24,7 +24,6 @@ export async function loadConfig(dir: string): Promise<ConfigResult<ZpressConfig
   // Create jiti instance with cache disabled for hot reload support
   const jiti = createJiti(dir, {
     moduleCache: false,
-    requireCache: false,
   })
 
   const { config } = await c12LoadConfig<ZpressConfig>({

@@ -23,7 +23,7 @@ interface ServerInstance {
 /**
  * Callback invoked when the dev server should restart due to config changes.
  */
-export type OnConfigReload = () => Promise<void>
+export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
 
 /**
  * Start the Rspress dev server with zpress configuration.

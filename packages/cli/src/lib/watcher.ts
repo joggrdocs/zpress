@@ -18,6 +18,34 @@ function isMarkdownFile(filePath: string): boolean {
 }
 
 /**
+ * Find the nearest existing ancestor directory for a given path.
+ * Chokidar cannot watch non-existent paths, but can detect when missing
+ * subdirectories appear under a watched parent directory.
+ *
+ * @param targetPath - The path to normalize (may not exist)
+ * @param fallbackRoot - Fallback root if no ancestors exist
+ * @returns The nearest existing ancestor directory path
+ */
+function nearestExistingAncestor(targetPath: string, fallbackRoot: string): string {
+  // oxlint-disable-next-line functional/no-let -- iterative ancestor search
+  let current = targetPath
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: checking if path exists
+  if (existsSync(current)) {
+    return current
+  }
+  // Walk up parent directories until we find one that exists
+  // oxlint-disable-next-line functional/no-loop-statements -- acceptable for iterative directory traversal
+  while (current !== path.dirname(current)) {
+    current = path.dirname(current)
+    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: checking if path exists
+    if (existsSync(current)) {
+      return current
+    }
+  }
+  return fallbackRoot
+}
+
+/**
  * Create a file watcher that re-syncs documentation on changes.
  *
  * Watches markdown/mdx files and the zpress config file. Returns the
@@ -36,25 +64,25 @@ export function createWatcher(
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
   const planningDir = path.resolve(repoRoot, '.planning')
+  // Normalize content paths to nearest existing ancestors (Chokidar limitation with non-existent paths)
+  const contentPaths = extractWatchPaths(config.sections, repoRoot).map((p) =>
+    nearestExistingAncestor(p, repoRoot)
+  )
   const initialWatchPaths = [
-    ...extractWatchPaths(config.sections, repoRoot),
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: known directory at repo root
-    ...(() => {
-      if (existsSync(planningDir)) {
-        return [planningDir]
-      }
-      return []
-    })(),
+    ...contentPaths,
+    nearestExistingAncestor(planningDir, repoRoot),
     ...configFiles,
   ]
+  // Deduplicate initial paths
+  const uniqueInitialPaths = [...new Set(initialWatchPaths)]
 
-  if (initialWatchPaths.length === 0) {
+  if (uniqueInitialPaths.length === 0) {
     cliLogger.warn('No source paths to watch')
     return
   }
 
   cliLogger.info(
-    `Watching ${initialWatchPaths.length} paths: ${initialWatchPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
+    `Watching ${uniqueInitialPaths.length} paths: ${uniqueInitialPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
   )
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
@@ -65,9 +93,9 @@ export function createWatcher(
   let consecutiveFailures = 0
   const MAX_CONSECUTIVE_FAILURES = 5
   // oxlint-disable-next-line functional/no-let -- tracks currently watched paths for dynamic updates
-  let currentWatchPaths = new Set(initialWatchPaths)
+  let currentWatchPaths = new Set(uniqueInitialPaths)
 
-  const watcher = watch(initialWatchPaths, {
+  const watcher = watch(uniqueInitialPaths, {
     ignoreInitial: true,
     ignored: ['**/node_modules/**', '**/.git/**', '**/.zpress/**', '**/bundle/**'],
     awaitWriteFinish: {
@@ -78,21 +106,20 @@ export function createWatcher(
 
   function updateWatchPaths(newConfig: ZpressConfig): void {
     const newContentPaths = extractWatchPaths(newConfig.sections, repoRoot)
+    // Normalize each content path to its nearest existing ancestor
+    // (Chokidar cannot watch non-existent paths, but can detect subdirs when they appear)
+    const normalizedContentPaths = newContentPaths.map((p) => nearestExistingAncestor(p, repoRoot))
     const newWatchPaths = [
-      ...newContentPaths,
-      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: known directory at repo root
-      ...(() => {
-        if (existsSync(planningDir)) {
-          return [planningDir]
-        }
-        return []
-      })(),
+      ...normalizedContentPaths,
+      // Normalize planning dir to nearest existing ancestor
+      nearestExistingAncestor(planningDir, repoRoot),
       ...configFiles,
     ]
+    // Deduplicate normalized paths
     const newSet = new Set(newWatchPaths)
 
     // Add new paths
-    const toAdd = newWatchPaths.filter((p) => !currentWatchPaths.has(p))
+    const toAdd = [...newSet].filter((p) => !currentWatchPaths.has(p))
     if (toAdd.length > 0) {
       watcher.add(toAdd)
       cliLogger.info(`Added ${toAdd.length} watch paths: ${toAdd.map((p) => path.relative(repoRoot, p)).join(', ')}`)

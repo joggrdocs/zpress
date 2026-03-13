@@ -33,43 +33,47 @@ export default lauf({
 
     ctx.spinner.start('Cleaning build artifacts and caches')
 
-    const cleaned: string[] = []
+    const results = await Promise.all(
+      patterns.map(async (pattern) => {
+        const fullPattern = `${ctx.root}/${pattern}`
 
-    for (const pattern of patterns) {
-      const fullPattern = `${ctx.root}/${pattern}`
-
-      if (ctx.args.verbose) {
-        ctx.logger.info(`Removing: ${pattern}`)
-      }
-
-      try {
-        const removed = await rimraf(fullPattern, {
-          glob: true,
-          preserveRoot: true,
-        })
-
-        if (removed.length > 0) {
-          cleaned.push(pattern)
-          if (ctx.args.verbose) {
-            ctx.logger.info(`  Removed ${removed.length} paths`)
-          }
+        if (ctx.args.verbose) {
+          ctx.logger.info(`Removing: ${pattern}`)
         }
-      } catch (error) {
-        const errorMessage = (() => {
-          if (error instanceof Error) {
-            return error.message
+
+        try {
+          const removed = await rimraf(fullPattern, {
+            glob: true,
+            preserveRoot: true,
+          })
+
+          if (removed.length > 0) {
+            if (ctx.args.verbose) {
+              ctx.logger.info(`  Removed ${removed.length} paths`)
+            }
+            return pattern
           }
-          return String(error)
-        })()
-        ctx.logger.warn(`Failed to clean ${pattern}: ${errorMessage}`)
-      }
-    }
+          return null
+        } catch (error) {
+          const errorMessage = (() => {
+            if (error instanceof Error) {
+              return error.message
+            }
+            return String(error)
+          })()
+          ctx.logger.warn(`Failed to clean ${pattern}: ${errorMessage}`)
+          return null
+        }
+      })
+    )
+
+    const cleaned = results.filter((p): p is string => p !== null)
 
     ctx.spinner.stop(`Cleaned ${cleaned.length} patterns`)
 
     if (ctx.args.verbose && cleaned.length > 0) {
       ctx.logger.info('Cleaned patterns:')
-      cleaned.forEach((p) => ctx.logger.info(`  ${p}`))
+      cleaned.map((p) => ctx.logger.info(`  ${p}`))
     }
 
     if (ctx.args.all) {
