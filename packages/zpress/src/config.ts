@@ -27,4 +27,7 @@ export type {
   NavItem,
   CardConfig,
   OpenAPIConfig,
+  IconConfig,
+  IconColor,
+  IconId,
 } from '@zpress/core'

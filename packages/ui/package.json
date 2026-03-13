@@ -57,6 +57,7 @@
     "@iconify-json/vscode-icons": "^1.2.45",
     "@iconify/react": "^6.0.2",
     "@zpress/config": "workspace:*",
+    "@zpress/core": "workspace:*",
     "@zpress/theme": "workspace:*",
     "ts-pattern": "catalog:"
   },

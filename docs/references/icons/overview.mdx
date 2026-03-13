@@ -160,7 +160,7 @@ Top-level sections display an icon in the collapsed sidebar rail. Set via the `i
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
   icon: 'pixelarticons:book-open',
@@ -175,8 +175,8 @@ When using explicit nav items, each top-level item requires an `icon`:
 
 ```ts
 nav: [
-  { text: 'Guides', link: '/guides', icon: 'pixelarticons:book-open' },
-  { text: 'API', link: '/api', icon: 'pixelarticons:terminal' },
+  { title: 'Guides', link: '/guides', icon: 'pixelarticons:book-open' },
+  { title: 'API', link: '/api', icon: 'pixelarticons:terminal' },
 ]
 ```
 
@@ -189,10 +189,10 @@ Workspace items (`apps`, `packages`, `workspaces`) display an icon on their home
 ```ts
 apps: [
   {
-    text: 'API',
+    title: 'API',
     icon: 'devicon:hono',
     description: 'REST API with typed routes',
-    docsPrefix: '/apps/api',
+    path: '/apps/api',
   },
 ]
 ```
@@ -204,7 +204,7 @@ Home page feature cards can display an icon:
 ```ts
 features: [
   {
-    text: 'Getting Started',
+    title: 'Getting Started',
     description: 'Everything you need to set up and start building.',
     link: '/getting-started',
     icon: 'pixelarticons:speed-fast',

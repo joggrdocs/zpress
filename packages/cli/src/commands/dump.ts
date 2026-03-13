@@ -84,7 +84,7 @@ function toTree(entries: readonly ResolvedEntry[]): DumpEntry[] {
  */
 function buildDumpEntry(entry: ResolvedEntry): DumpEntry {
   return {
-    text: entry.text,
+    text: entry.title,
     ...maybeLink(entry.link),
     ...maybeCollapsible(entry.collapsible),
     ...maybeHidden(entry.hidden),

@@ -15,6 +15,8 @@ export type ConfigErrorType =
   | 'empty_sections'
   | 'missing_field'
   | 'invalid_entry'
+  | 'invalid_section'
+  | 'invalid_field'
   | 'invalid_icon'
   | 'invalid_theme'
   | 'duplicate_prefix'

@@ -5,9 +5,9 @@ import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from '../glob.ts'
-import type { Entry, Feature, ZpressConfig, WorkspaceItem } from '../types.ts'
-import { ICON_COLORS } from './sidebar/landing.ts'
-import type { IconColor } from './sidebar/landing.ts'
+import { ICON_COLORS, resolveOptionalIcon } from '../icon.ts'
+import type { IconColor } from '../icon.ts'
+import type { Section, Feature, ZpressConfig, Workspace } from '../types.ts'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ interface FrontmatterFeature {
  * Serializable workspace card data for a single item.
  */
 export interface HomeWorkspaceCardData {
-  readonly text: string
+  readonly title: string
   readonly href: string
   readonly icon: string | undefined
   readonly iconColor: string | undefined
@@ -195,13 +195,24 @@ function buildFrontmatterFeatures(
  */
 function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly ResolvedFeature[]> {
   return Promise.resolve(
-    features.map((f, index) => ({
-      title: f.text,
-      details: f.description,
-      link: f.link,
-      iconId: f.icon ?? null,
-      iconColor: ICON_COLORS[index % ICON_COLORS.length] as IconColor,
-    }))
+    features.map((f, index) => {
+      const resolved = resolveOptionalIcon(f.icon)
+      const titleStr = match(f.title)
+        .with(P.string, (t) => t)
+        .otherwise(String)
+      const descStr = f.description ?? ''
+      return {
+        title: titleStr,
+        details: descStr,
+        link: f.link,
+        iconId: match(resolved)
+          .with(P.nonNullable, (r) => r.id)
+          .otherwise(() => null),
+        iconColor: match(resolved)
+          .with(P.nonNullable, (r) => r.color)
+          .otherwise(() => ICON_COLORS[index % ICON_COLORS.length]),
+      }
+    })
   )
 }
 
@@ -213,7 +224,7 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
  *
  * @private
  */
-function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
+export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
   const apps = config.apps ?? []
   const packages = config.packages ?? []
   const workspaceGroups = config.workspaces ?? []
@@ -248,9 +259,13 @@ function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
     )
     .otherwise(() => null)
 
-  const groupResults = workspaceGroups.map((g) =>
-    buildGroupData('workspaces', g.name, g.description, g.items, '')
-  )
+  const groupResults = workspaceGroups.map((g) => {
+    const titleStr = match(g.title)
+      .with(P.string, (t) => t)
+      .otherwise(String)
+    const descStr = g.description ?? ''
+    return buildGroupData('workspaces', titleStr, descStr, g.items, '')
+  })
 
   const allResults = [appsResult, packagesResult, ...groupResults].filter(
     (r): r is GroupDataResult => r !== null
@@ -270,19 +285,33 @@ function buildGroupData(
   type: 'apps' | 'packages' | 'workspaces',
   heading: string,
   description: string,
-  items: readonly WorkspaceItem[],
+  items: readonly Workspace[],
   scopePrefix: string
 ): GroupDataResult {
-  const cards: readonly HomeWorkspaceCardData[] = items.map((item) => ({
-    text: item.text,
-    href: item.docsPrefix,
-    icon: item.icon,
-    iconColor: item.iconColor,
-    scope: resolveScope(scopePrefix),
-    description: item.description,
-    tags: resolveTagLabels(item.tags),
-    badge: item.badge,
-  }))
+  const cards: readonly HomeWorkspaceCardData[] = items.map((item) => {
+    const resolved = resolveOptionalIcon(item.icon)
+    const titleStr = match(item.title)
+      .with(P.string, (t) => t)
+      .otherwise(String)
+    return {
+      title: titleStr,
+      href: item.prefix,
+      icon: match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
+      iconColor: match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
+      scope: resolveScope(scopePrefix),
+      description: item.description,
+      tags: resolveTagLabels(item.tags),
+      badge: item.badge,
+    }
+  })
 
   return {
     group: { type, heading, description, cards },
@@ -296,7 +325,7 @@ function buildGroupData(
  *
  * @private
  */
-function findFirstLink(sections: readonly Entry[]): string {
+function findFirstLink(sections: readonly Section[]): string {
   const [first] = sections
   if (!first) {
     return '/'
@@ -311,16 +340,24 @@ function findFirstLink(sections: readonly Entry[]): string {
  * @private
  */
 function buildFeatures(
-  sections: readonly Entry[],
+  sections: readonly Section[],
   repoRoot: string
 ): Promise<readonly ResolvedFeature[]> {
   return Promise.all(
     sections.slice(0, 3).map(async (section, index) => {
       const link = section.link ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
-      const iconId = section.icon ?? null
-      const iconColor: IconColor = ICON_COLORS[index % ICON_COLORS.length]
-      return { title: section.text, details, link, iconId, iconColor }
+      const resolved = resolveOptionalIcon(section.icon)
+      const iconId = match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        .otherwise(() => null)
+      const iconColor: IconColor = match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
+      const titleStr = match(section.title)
+      .with(P.string, (t) => t)
+      .otherwise(() => 'Section')
+      return { title: titleStr, details, link, iconId, iconColor }
     })
   )
 }
@@ -330,7 +367,7 @@ function buildFeatures(
  *
  * @private
  */
-function findFirstChildLink(section: Entry): string | undefined {
+function findFirstChildLink(section: Section): string | undefined {
   if (!section.items) {
     return undefined
   }
@@ -348,11 +385,11 @@ function findFirstChildLink(section: Entry): string | undefined {
 /**
  * Extract a description for a config section.
  *
- * Priority: source file frontmatter -> config frontmatter -> section text.
+ * Priority: source file frontmatter -> config frontmatter -> section title.
  *
  * @private
  */
-async function extractSectionDescription(section: Entry, repoRoot: string): Promise<string> {
+async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
   // Single-file source — read frontmatter description
   if (section.from && !hasGlobChars(section.from)) {
     const description = await readFrontmatterDescription(path.resolve(repoRoot, section.from))
@@ -371,12 +408,15 @@ async function extractSectionDescription(section: Entry, repoRoot: string): Prom
   }
 
   // Well-known section name → curated default
-  const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[section.text.toLowerCase()]
+  const titleStr = match(section.title)
+      .with(P.string, (t) => t)
+      .otherwise(() => 'Section')
+  const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {
     return knownDesc
   }
 
-  return section.text
+  return titleStr
 }
 
 /**

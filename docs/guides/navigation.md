@@ -15,17 +15,17 @@ Set `nav: 'auto'` (the default) to generate one nav item per non-isolated top-le
 export default defineConfig({
   sections: [
     {
-      text: 'Getting Started',
+      title: 'Getting Started',
       link: '/getting-started',
       from: 'docs/getting-started.md',
     },
     {
-      text: 'Guides',
+      title: 'Guides',
       prefix: '/guides',
       from: 'docs/guides/*.md',
     },
     {
-      text: 'Reference',
+      title: 'Reference',
       prefix: '/reference',
       from: 'docs/reference/*.md',
     },
@@ -43,12 +43,12 @@ Pass an array of `NavItem` objects for full control:
 ```ts
 export default defineConfig({
   sections: [
-    { text: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' },
-    { text: 'Reference', prefix: '/reference', from: 'docs/reference/*.md' },
+    { title: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' },
+    { title: 'Reference', prefix: '/reference', from: 'docs/reference/*.md' },
   ],
   nav: [
-    { text: 'Guides', link: '/guides/sections-and-pages' },
-    { text: 'Reference', link: '/reference/configuration' },
+    { title: 'Guides', link: '/guides/sections-and-pages' },
+    { title: 'Reference', link: '/reference/configuration' },
   ],
 })
 ```
@@ -60,10 +60,10 @@ Nav items with `items` instead of `link` render as dropdown menus:
 ```ts
 nav: [
   {
-    text: 'API',
+    title: 'API',
     items: [
-      { text: 'REST API', link: '/api/rest' },
-      { text: 'GraphQL', link: '/api/graphql' },
+      { title: 'REST API', link: '/api/rest' },
+      { title: 'GraphQL', link: '/api/graphql' },
     ],
   },
 ]
@@ -78,7 +78,7 @@ Sections marked `isolated: true` get their own sidebar namespace. In auto nav mo
 In auto mode, nav items highlight based on the current URL matching the section's link or prefix. For explicit nav, use `activeMatch` to control highlighting:
 
 ```ts
-{ text: 'API', link: '/api/overview', activeMatch: '/api/' }
+{ title: 'API', link: '/api/overview', activeMatch: '/api/' }
 ```
 
 The `activeMatch` value is a regex pattern tested against the current URL path.

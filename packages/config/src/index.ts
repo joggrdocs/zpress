@@ -10,20 +10,34 @@ export type {
   ZpressConfig,
   ThemeName,
   IconColor,
+  IconId,
+  IconConfig,
   ColorMode,
   ThemeColors,
   ThemeConfig,
   Frontmatter,
   NavItem,
   CardConfig,
+  // New base Entry type
+  Entry,
+  // Section (renamed from old Entry)
+  Section,
+  // New types
+  Workspace,
+  WorkspaceCategory,
+  TitleConfig,
+  Discovery,
+  RecursiveDiscoveryConfig,
+  FlatDiscoveryConfig,
+  SeoConfig,
+  HeroConfig,
+  // Backward compatibility aliases
   WorkspaceItem,
   WorkspaceGroup,
-  Entry,
   ResolvedPage,
   ResolvedSection,
   OpenAPIConfig,
   Feature,
-  Paths,
   Result,
 } from './types.ts'
 

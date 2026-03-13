@@ -11,7 +11,7 @@ Glob patterns let you add pages without updating the config every time a new fil
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
 }
@@ -19,41 +19,49 @@ Glob patterns let you add pages without updating the config every time a new fil
 
 `prefix` is required with globs. Each matched file gets the URL `prefix + "/" + slug`.
 
-## Text derivation
+## Title derivation
 
-Control how page titles are derived from discovered files with `textFrom`:
+Control how page titles are derived from discovered files with `titleFrom`:
 
 | Strategy        | Source                             | Example                                         |
 | --------------- | ---------------------------------- | ----------------------------------------------- |
+| `'auto'`        | Fallback chain (default)           | Frontmatter → heading → filename                |
 | `'filename'`    | Filename converted to title        | `add-api-route.md` → "Add Api Route"            |
 | `'heading'`     | First `# heading` in the file      | `# Adding an API Route` → "Adding an API Route" |
 | `'frontmatter'` | `title` field in YAML front matter | `title: API Routes` → "API Routes"              |
 
-Default is `'filename'`. Each strategy falls back to the next: frontmatter → heading → filename.
+Default is `'auto'`, which tries frontmatter first, falls back to heading, then filename. This gives you the most intuitive behavior: explicit titles in frontmatter win, but markdown headings and filenames work too.
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
-  textFrom: 'frontmatter',
+  titleFrom: 'frontmatter',  // Only use frontmatter, no fallback
 }
 ```
 
-## Text transform
+### Advanced: TitleConfig
 
-Apply a custom transform to derived text:
+You can also use the `title` field with a configuration object for more control:
 
 ```ts
 {
-  text: 'ADRs',
+  title: 'ADRs',
   prefix: '/adrs',
   from: 'docs/adrs/*.md',
-  textTransform: (text, slug) => slug.replace(/^(\d+)-/, '$1. '),
+  discovery: {
+    title: {
+      from: 'auto',
+      transform: (title, slug) => slug.replace(/^(\d+)-/, '$1. '),
+    },
+  },
 }
 ```
 
-This only applies to auto-discovered children. Entries with explicit `text` are not transformed.
+This applies a custom transform to derived titles. The transform function receives the derived title and the filename slug, returning the final display title.
+
+Transforms only apply to auto-discovered children. Sections with explicit `title` strings are not transformed.
 
 ## Sorting
 
@@ -67,7 +75,7 @@ When `sort` is omitted, entries appear in glob discovery order.
 
 ```ts
 {
-  text: 'ADRs',
+  title: 'ADRs',
   prefix: '/adrs',
   from: 'docs/adrs/*.md',
   sort: 'filename',
@@ -80,7 +88,7 @@ Exclude specific files from a glob match:
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
   exclude: ['**/draft-*.md', '**/internal/**'],

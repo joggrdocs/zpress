@@ -9,7 +9,7 @@ import type { ResolvedEntry, SidebarItem } from '../types.ts'
 function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
   if (entry.items && entry.items.length > 0) {
     return {
-      text: entry.text,
+      text: entry.title,
       items: generateSidebar(entry.items),
       ...maybeCollapsed(entry.collapsible),
       ...maybeLink(entry.link),
@@ -17,12 +17,12 @@ function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
   }
 
   if (entry.link === null || entry.link === undefined) {
-    log.error(`[zpress] Leaf entry "${entry.text}" has no link — skipping`)
-    return { text: entry.text }
+    log.error(`[zpress] Leaf entry "${entry.title}" has no link — skipping`)
+    return { text: entry.title }
   }
 
   return {
-    text: entry.text,
+    text: entry.title,
     link: entry.link,
   }
 }
@@ -51,7 +51,7 @@ function buildNavEntry(entry: ResolvedEntry): NavItem {
   const children = resolveChildren(entry)
 
   return {
-    text: entry.text,
+    title: entry.title,
     link,
     ...maybeChildren(children),
   }
@@ -123,7 +123,7 @@ function resolveChildren(entry: ResolvedEntry): NavItem[] | undefined {
       .filter((child) => !child.hidden)
       .map(
         (child): NavItem => ({
-          text: child.text,
+          title: child.title,
           link: resolveChildLink(child),
         })
       )

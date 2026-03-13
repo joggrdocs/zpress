@@ -7,9 +7,10 @@ import { match, P } from 'ts-pattern'
 /**
  * Derive display text for a page.
  *
+ * - `'auto'` (default) — frontmatter > heading > filename fallback chain
  * - `'filename'` — kebab-to-title from the slug
  * - `'heading'` — first `# heading` in the file, falls back to filename
- * - `'frontmatter'` — `title` from YAML frontmatter, falls back to heading
+ * - `'frontmatter'` — `title` from YAML frontmatter only, falls back to heading
  *
  * @param sourcePath - Absolute path to the source markdown file
  * @param slug - Filename slug (without extension)
@@ -19,9 +20,10 @@ import { match, P } from 'ts-pattern'
 export function deriveText(
   sourcePath: string,
   slug: string,
-  mode: 'filename' | 'heading' | 'frontmatter'
+  mode: 'auto' | 'filename' | 'heading' | 'frontmatter'
 ): Promise<string> {
   return match(mode)
+    .with('auto', () => deriveFromFrontmatter(sourcePath, slug))
     .with('frontmatter', () => deriveFromFrontmatter(sourcePath, slug))
     .with('heading', () => deriveFromHeading(sourcePath, slug))
     .with('filename', () => Promise.resolve(kebabToTitle(slug)))

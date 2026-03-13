@@ -6,11 +6,11 @@ import type { UserConfig } from '@rspress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 import type {
   BuiltInThemeName,
-  Paths,
   ThemeColors,
   ThemeName,
   ZpressConfig,
 } from '@zpress/config'
+import type { Paths } from '@zpress/core'
 
 import { zpressPlugin } from './plugin.ts'
 

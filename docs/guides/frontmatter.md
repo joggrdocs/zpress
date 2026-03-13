@@ -13,7 +13,7 @@ Set `frontmatter` on any entry to inject fields into the output page:
 
 ```ts
 {
-  text: 'Architecture',
+  title: 'Architecture',
   link: '/architecture',
   from: 'docs/architecture.md',
   frontmatter: {
@@ -31,11 +31,11 @@ Frontmatter set on a section applies to all children:
 
 ```ts
 {
-  text: 'API Reference',
+  title: 'API Reference',
   frontmatter: { aside: 'left', editLink: false },
   items: [
-    { text: 'Auth', link: '/api/auth', from: 'docs/api/auth.md' },
-    { text: 'Users', link: '/api/users', from: 'docs/api/users.md' },
+    { title: 'Auth', link: '/api/auth', from: 'docs/api/auth.md' },
+    { title: 'Users', link: '/api/users', from: 'docs/api/users.md' },
   ],
 }
 ```

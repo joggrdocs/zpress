@@ -1,6 +1,5 @@
 import { useSite } from '@rspress/core/runtime'
-
-import type { IconColor } from '../components/home/feature-card'
+import type { IconColor } from '@zpress/config'
 
 // ── Sidebar types ───────────────────────────────────────────
 
@@ -14,7 +13,7 @@ export interface ZpressSidebarItem {
 // ── Workspace types ─────────────────────────────────────────
 
 export interface WorkspaceCardData {
-  readonly text: string
+  readonly title: string
   readonly href: string
   readonly icon: string | undefined
   readonly iconColor: IconColor | undefined

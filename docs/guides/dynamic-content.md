@@ -13,7 +13,7 @@ Set `content` to a string to create a page without a source file:
 
 ```ts
 {
-  text: 'Changelog',
+  title: 'Changelog',
   link: '/changelog',
   content: '# Changelog\n\nAll notable changes are tracked in this document.',
 }
@@ -27,7 +27,7 @@ Set `content` to an async function to generate page content at build time:
 
 ```ts
 {
-  text: 'Status',
+  title: 'Status',
   link: '/status',
   content: async () => {
     const res = await fetch('https://api.example.com/status')
@@ -49,7 +49,7 @@ Virtual pages (those using `content`) support injected frontmatter the same way 
 
 ```ts
 {
-  text: 'Generated API Docs',
+  title: 'Generated API Docs',
   link: '/api/generated',
   content: async () => generateApiDocs(),
   frontmatter: {
@@ -65,7 +65,7 @@ Set `hidden: true` to build and route a page without showing it in the sidebar:
 
 ```ts
 {
-  text: 'Internal Notes',
+  title: 'Internal Notes',
   link: '/internal/notes',
   from: 'docs/internal/notes.md',
   hidden: true,

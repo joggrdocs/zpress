@@ -83,7 +83,7 @@ export interface ManifestEntry {
  * Internal resolved node — produced by the resolver, consumed by copy + sidebar/nav generators.
  */
 export interface ResolvedEntry {
-  readonly text: string
+  readonly title: string
   readonly link?: string
   readonly collapsible?: boolean
   readonly hidden?: boolean

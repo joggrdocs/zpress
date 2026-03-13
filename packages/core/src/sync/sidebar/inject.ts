@@ -1,10 +1,11 @@
 import { match, P } from 'ts-pattern'
 
-import type { Entry, WorkspaceItem } from '../../types.ts'
+import { ICON_COLORS, resolveOptionalIcon } from '../../icon.ts'
+import type { IconColor } from '../../icon.ts'
+import type { Section, Workspace } from '../../types.ts'
 import { linkToOutputPath, sourceExt } from '../resolve/path.ts'
 import type { ResolvedEntry } from '../types.ts'
-import { buildWorkspaceCardJsx, generateLandingContent, ICON_COLORS } from './landing.ts'
-import type { IconColor } from './landing.ts'
+import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
 
 /**
  * Slug priority for overview files that should be promoted to section headers.
@@ -63,16 +64,16 @@ function promoteOverviewChild(entry: ResolvedEntry): void {
  */
 export function injectLandingPages(
   entries: readonly ResolvedEntry[],
-  configEntries: readonly Entry[],
-  workspaceItems: readonly WorkspaceItem[],
+  configSections: readonly Section[],
+  workspaces: readonly Workspace[],
   colorIndex: { value: number } = { value: 0 }
 ): void {
   entries.reduce<void>((_, entry) => {
     promoteOverviewChild(entry)
 
     if (entry.link && !entry.page) {
-      const configEntry = findConfigEntry(configEntries, entry.link)
-      const description: string | undefined = resolveDescription(configEntry)
+      const configSection = findConfigSection(configSections, entry.link)
+      const description: string | undefined = resolveDescription(configSection)
 
       const hasSelfLinkedChild = checkHasSelfLinkedChild(entry.items, entry.link)
 
@@ -83,22 +84,20 @@ export function injectLandingPages(
 
         const children = entry.items
         entry.page = {
-          content: () => generateLandingContent(entry.text, description, children, color),
+          content: () => generateLandingContent(entry.title, description, children, color),
           outputPath: linkToOutputPath(entry.link).replace(/\.md$/, '.mdx'),
           frontmatter: {},
         }
       } else if (!entry.items || entry.items.length === 0) {
         // Check for workspace items matching this section's link prefix
-        const matching = workspaceItems.filter((item) =>
-          item.docsPrefix.startsWith(`${entry.link}/`)
-        )
+        const matching = workspaces.filter((item) => item.prefix.startsWith(`${entry.link}/`))
 
         if (matching.length > 0) {
           const segments = entry.link.split('/')
           const lastSegment = segments.findLast((seg) => seg.length > 0)
           const scope = `${lastSegment}/`
           entry.page = {
-            content: () => generateWorkspaceLandingPage(entry.text, description, matching, scope),
+            content: () => generateWorkspaceLandingPage(entry.title, description, matching, scope),
             outputPath: linkToOutputPath(entry.link).replace(/\.md$/, '.mdx'),
             frontmatter: {},
           }
@@ -106,11 +105,14 @@ export function injectLandingPages(
 
         if (matching.length === 0) {
           const entryLink = entry.link
-          const exact = workspaceItems.find((item) => item.docsPrefix === entryLink)
+          const exact = workspaces.find((item) => item.prefix === entryLink)
           if (exact) {
+            const titleStr = match(exact.title)
+              .with(P.string, (t) => t)
+              .otherwise(String)
             // Simple text page — no React components, stays as .md
             entry.page = {
-              content: () => `# ${exact.text}\n\n${exact.description}\n`,
+              content: () => `# ${titleStr}\n\n${exact.description}\n`,
               outputPath: linkToOutputPath(entryLink),
               frontmatter: {},
             }
@@ -122,8 +124,8 @@ export function injectLandingPages(
     if (entry.items) {
       injectLandingPages(
         entry.items as readonly ResolvedEntry[],
-        configEntries,
-        workspaceItems,
+        configSections,
+        workspaces,
         colorIndex
       )
     }
@@ -142,18 +144,30 @@ export function injectLandingPages(
 function generateWorkspaceLandingPage(
   heading: string,
   description: string | undefined,
-  items: readonly WorkspaceItem[],
+  items: readonly Workspace[],
   scopePrefix: string
 ): string {
   const imports = "import { WorkspaceCard, WorkspaceGrid } from '@zpress/ui/theme'\n\n"
 
   const cards = items.map((item) => {
     const tags: readonly string[] | undefined = resolveTags(item.tags)
+    const resolved = resolveOptionalIcon(item.icon)
+    const titleStr = match(item.title)
+      .with(P.string, (t) => t)
+      .otherwise(String)
     return buildWorkspaceCardJsx({
-      link: item.docsPrefix,
-      text: item.text,
-      icon: item.icon,
-      iconColor: item.iconColor,
+      link: item.prefix,
+      title: titleStr,
+      icon: match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
+      iconColor: match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
       scope: scopePrefix,
       description: item.description,
       tags,
@@ -169,18 +183,18 @@ function generateWorkspaceLandingPage(
 }
 
 /**
- * Look up the original config Entry by link for extracting metadata.
+ * Look up the original config Section by link for extracting metadata.
  *
  * @private
  */
-function findConfigEntry(entries: readonly Entry[], link: string): Entry | undefined {
-  const direct = entries.find((entry) => entry.link === link)
+function findConfigSection(sections: readonly Section[], link: string): Section | undefined {
+  const direct = sections.find((section) => section.link === link)
   if (direct) {
     return direct
   }
-  const nested = entries
-    .filter((entry) => entry.items !== null && entry.items !== undefined)
-    .map((entry) => findConfigEntry(entry.items as readonly Entry[], link))
+  const nested = sections
+    .filter((section) => section.items !== null && section.items !== undefined)
+    .map((section) => findConfigSection(section.items as readonly Section[], link))
     .find((result) => result !== null && result !== undefined)
   return nested
 }
@@ -194,14 +208,14 @@ function resolveExt(source: string | undefined): string {
   return '.md'
 }
 
-function resolveDescription(configEntry: Entry | undefined): string | undefined {
+function resolveDescription(configSection: Section | undefined): string | undefined {
   if (
-    configEntry !== null &&
-    configEntry !== undefined &&
-    configEntry.frontmatter !== null &&
-    configEntry.frontmatter !== undefined
+    configSection !== null &&
+    configSection !== undefined &&
+    configSection.frontmatter !== null &&
+    configSection.frontmatter !== undefined
   ) {
-    return configEntry.frontmatter.description as string | undefined
+    return configSection.frontmatter.description as string | undefined
   }
   return undefined
 }

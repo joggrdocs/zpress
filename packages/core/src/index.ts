@@ -1,8 +1,11 @@
-// Re-export types and utilities from @zpress/config
+// Types
 export type {
   ZpressConfig,
   Entry,
+  Section,
   Feature,
+  Workspace,
+  WorkspaceCategory,
   WorkspaceItem,
   WorkspaceGroup,
   Frontmatter,
@@ -12,26 +15,27 @@ export type {
   ResolvedPage,
   ResolvedSection,
   Result,
-  ThemeConfig,
-  ThemeName,
-  ColorMode,
-  ThemeColors,
-  IconColor,
-  Paths,
-} from '@zpress/config'
+  TitleConfig,
+  Discovery,
+  RecursiveDiscoveryConfig,
+  FlatDiscoveryConfig,
+  SeoConfig,
+  HeroConfig,
+} from './types.ts'
 
-export {
-  defineConfig,
-  loadConfig,
-  validateConfig,
-  resolveDefaultColorMode,
-  configError,
-  THEME_NAMES,
-  COLOR_MODES,
-  ICON_COLORS,
-} from '@zpress/config'
+// Icon system
+export type { IconConfig, IconColor, ResolvedIcon } from './icon.ts'
+export { resolveIcon, resolveOptionalIcon, ICON_COLORS } from './icon.ts'
+export type { IconId, IconPrefix } from './icons.generated.ts'
+export { ICON_PREFIXES } from './icons.generated.ts'
 
-export type { ConfigError, ConfigResult, ConfigErrorType, LoadConfigOptions } from '@zpress/config'
+// Config
+export { defineConfig, validateConfig } from './define-config.ts'
+export { loadConfig } from './config.ts'
+
+// Theme
+export type { ThemeConfig, ThemeName, ColorMode, ThemeColors } from './theme.ts'
+export { resolveDefaultColorMode, THEME_NAMES, COLOR_MODES } from './theme.ts'
 
 // Sync engine
 export { sync, type SyncResult, type SyncOptions } from './sync/index.ts'
@@ -45,8 +49,8 @@ export type {
   Manifest,
   ManifestEntry,
 } from './sync/types.ts'
-export type { SyncError, SyncOutcome } from './sync/errors.ts'
-export { syncError } from './sync/errors.ts'
+export type { SyncError, SyncOutcome, ConfigError, ConfigResult } from './sync/errors.ts'
+export { syncError, configError } from './sync/errors.ts'
 
 // Banner / asset generation
 export {
@@ -59,6 +63,7 @@ export type { AssetConfig, AssetError, AssetResult, GeneratedAsset } from './ban
 
 // Paths
 export { createPaths } from './paths.ts'
+export type { Paths } from './paths.ts'
 
 // Utilities
 export { hasGlobChars } from './glob.ts'

@@ -39,6 +39,12 @@ export type {
   ResolvedSection,
   Result,
 
+  // Icon types
+  IconConfig,
+  IconColor,
+  IconId,
+  IconPrefix,
+
   // Path types
   Paths,
 

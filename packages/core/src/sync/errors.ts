@@ -5,8 +5,8 @@
  * Config validation returns `Result<T, ConfigError>`.
  */
 
-// Re-export config errors from @zpress/config
-export type { ConfigError, ConfigErrorType, ConfigResult } from '@zpress/config'
+// Re-export from @zpress/config to maintain backward compatibility
+export type { ConfigError, ConfigResult } from '@zpress/config'
 export { configError } from '@zpress/config'
 
 // ── Sync errors ─────────────────────────────────────────────
@@ -38,8 +38,6 @@ export type SyncOutcome<T> = readonly [SyncError, null] | readonly [null, T]
 export function syncError(type: SyncError['type'], message: string): SyncError {
   return Object.freeze({ _tag: 'SyncError' as const, type, message })
 }
-
-// Config errors are now defined in @zpress/config and re-exported above
 
 // ── Utilities ───────────────────────────────────────────────
 

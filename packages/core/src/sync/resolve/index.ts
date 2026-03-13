@@ -6,7 +6,7 @@ import fg from 'fast-glob'
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from '../../glob.ts'
-import type { Entry, Frontmatter } from '../../types.ts'
+import type { Section, Frontmatter } from '../../types.ts'
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
@@ -16,26 +16,26 @@ import { sortEntries } from './sort.ts'
 import { deriveText } from './text.ts'
 
 /**
- * Walk the Entry tree and produce a ResolvedEntry tree.
+ * Walk the Section tree and produce a ResolvedEntry tree.
  *
  * Resolves globs, derives text, merges frontmatter, deduplicates.
  * Returns a `SyncOutcome` tuple — the caller is responsible for
  * surfacing errors and exiting.
  *
- * @param entries - Config entry tree to resolve
+ * @param sections - Config section tree to resolve
  * @param ctx - Sync context (provides repo root, config, quiet flag)
- * @param inheritedFrontmatter - Frontmatter inherited from parent entries
+ * @param inheritedFrontmatter - Frontmatter inherited from parent sections
  * @param depth - Current nesting depth (0 = top-level)
  * @returns Result tuple containing resolved entry tree or the first sync error
  */
 export async function resolveEntries(
-  entries: readonly Entry[],
+  sections: readonly Section[],
   ctx: SyncContext,
   inheritedFrontmatter: Frontmatter = {},
   depth = 0
 ): Promise<readonly [SyncError, null] | readonly [null, ResolvedEntry[]]> {
   const results = await Promise.all(
-    entries.map((entry) => resolveEntry(entry, ctx, inheritedFrontmatter, depth))
+    sections.map((section) => resolveSection(section, ctx, inheritedFrontmatter, depth))
   )
 
   const result = collectResults(results)
@@ -49,66 +49,69 @@ export async function resolveEntries(
 }
 
 /**
- * Resolve a single entry node — dispatches to leaf, virtual, or section handler.
+ * Resolve a single section node — dispatches to leaf, virtual, or nested section handler.
  */
-function resolveEntry(
-  entry: Entry,
+function resolveSection(
+  section: Section,
   ctx: SyncContext,
   inheritedFrontmatter: Frontmatter,
   depth: number
 ): Promise<SyncOutcome<ResolvedEntry>> {
-  const mergedFm = { ...inheritedFrontmatter, ...entry.frontmatter }
+  const mergedFm = { ...inheritedFrontmatter, ...section.frontmatter }
 
   // Leaf page from single file
-  if (entry.from && !hasGlobChars(entry.from) && !entry.items) {
-    return Promise.resolve(resolveFilePage(entry, ctx, mergedFm))
+  if (section.from && !hasGlobChars(section.from) && !section.items) {
+    return Promise.resolve(resolveFilePage(section, ctx, mergedFm))
   }
 
   // Virtual page (inline/generated content)
-  if (entry.content && entry.link) {
-    return Promise.resolve(resolveVirtualPage(entry, mergedFm))
+  if (section.content !== undefined && section.content !== null && section.link) {
+    return Promise.resolve(resolveVirtualPage(section, mergedFm))
   }
 
-  // Section — may have glob, explicit items, or both
-  return resolveSection(entry, ctx, mergedFm, depth)
+  // Nested section — may have glob, explicit items, or both
+  return resolveNestedSection(section, ctx, mergedFm, depth)
 }
 
 /**
  * Resolve a leaf page backed by a single source file.
  */
 function resolveFilePage(
-  entry: Entry,
+  section: Section,
   ctx: SyncContext,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
-  if (entry.from === null || entry.from === undefined) {
-    return [syncError('missing_from', 'resolveFilePage called without entry.from'), null]
+  if (section.from === null || section.from === undefined) {
+    return [syncError('missing_from', 'resolveFilePage called without section.from'), null]
   }
 
-  const sourcePath = path.resolve(ctx.repoRoot, entry.from)
+  const sourcePath = path.resolve(ctx.repoRoot, section.from)
   if (!fs.existsSync(sourcePath)) {
-    return [syncError('file_not_found', `Source file not found: ${entry.from}`), null]
+    return [syncError('file_not_found', `Source file not found: ${section.from}`), null]
   }
 
-  if (entry.link === null || entry.link === undefined) {
+  if (section.link === null || section.link === undefined) {
     return [
-      syncError('missing_link', `resolveFilePage called without entry.link for: ${entry.from}`),
+      syncError('missing_link', `resolveFilePage called without section.link for: ${section.from}`),
       null,
     ]
   }
 
-  const ext = sourceExt(entry.from)
+  const ext = sourceExt(section.from)
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   return [
     null,
     {
-      text: entry.text,
-      link: entry.link,
-      hidden: entry.hidden,
-      card: entry.card,
+      title: titleStr,
+      link: section.link,
+      hidden: section.hidden,
+      card: section.card,
       page: {
         source: sourcePath,
-        outputPath: linkToOutputPath(entry.link, ext),
+        outputPath: linkToOutputPath(section.link, ext),
         frontmatter,
       },
     },
@@ -118,21 +121,25 @@ function resolveFilePage(
 /**
  * Resolve a virtual page with inline or generated content.
  */
-function resolveVirtualPage(entry: Entry, frontmatter: Frontmatter): SyncOutcome<ResolvedEntry> {
-  if (entry.link === undefined || entry.link === null) {
-    return [syncError('missing_link', 'resolveVirtualPage called without entry.link'), null]
+function resolveVirtualPage(section: Section, frontmatter: Frontmatter): SyncOutcome<ResolvedEntry> {
+  if (section.link === undefined || section.link === null) {
+    return [syncError('missing_link', 'resolveVirtualPage called without section.link'), null]
   }
+
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   return [
     null,
     {
-      text: entry.text,
-      link: entry.link,
-      hidden: entry.hidden,
-      card: entry.card,
+      title: titleStr,
+      link: section.link,
+      hidden: section.hidden,
+      card: section.card,
       page: {
-        content: entry.content,
-        outputPath: linkToOutputPath(entry.link),
+        content: section.content,
+        outputPath: linkToOutputPath(section.link),
         frontmatter,
       },
     },
@@ -140,30 +147,30 @@ function resolveVirtualPage(entry: Entry, frontmatter: Frontmatter): SyncOutcome
 }
 
 /**
- * Resolve a section entry — may include glob-discovered children,
+ * Resolve a nested section — may include glob-discovered children,
  * explicit children, or both. Deduplicates and sorts the result.
  */
-async function resolveSection(
-  entry: Entry,
+async function resolveNestedSection(
+  section: Section,
   ctx: SyncContext,
   mergedFm: Frontmatter,
   depth: number
 ): Promise<SyncOutcome<ResolvedEntry>> {
   // 1. Auto-discover from glob
   const globbed = await (() => {
-    if (entry.from && hasGlobChars(entry.from)) {
-      if (entry.recursive) {
-        return resolveRecursiveGlob(entry, ctx, mergedFm, depth + 1)
+    if (section.from && hasGlobChars(section.from)) {
+      if (section.recursive) {
+        return resolveRecursiveGlob(section, ctx, mergedFm, depth + 1)
       }
-      return resolveGlob(entry, ctx, mergedFm)
+      return resolveGlob(section, ctx, mergedFm)
     }
     return Promise.resolve([] as ResolvedEntry[])
   })()
 
   // 2. Explicit children
   const explicitResult = await (() => {
-    if (entry.items) {
-      return resolveEntries(entry.items, ctx, mergedFm, depth + 1)
+    if (section.items) {
+      return resolveEntries(section.items, ctx, mergedFm, depth + 1)
     }
     return Promise.resolve([null, [] as ResolvedEntry[]] as const)
   })()
@@ -176,10 +183,10 @@ async function resolveSection(
   // 3. Merge, deduplicate (explicit wins over glob), sort
   const children = [...globbed, ...explicit]
   const deduped = deduplicateByLink(children)
-  const sorted = sortEntries(deduped, entry.sort)
+  const sorted = sortEntries(deduped, section.sort)
 
   // Section header can also be a page (has link + non-glob from)
-  const sectionPage = resolveSectionPage(entry, ctx, mergedFm)
+  const sectionPage = resolveSectionPage(section, ctx, mergedFm)
 
   // Collapsible: explicit value wins, otherwise auto-collapse below top level
   const autoCollapsible = (() => {
@@ -187,17 +194,21 @@ async function resolveSection(
       return true as const
     }
   })()
-  const collapsible = entry.collapsible ?? autoCollapsible
+  const collapsible = section.collapsible ?? autoCollapsible
+
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   return [
     null,
     {
-      text: entry.text,
-      link: entry.link,
+      title: titleStr,
+      link: section.link,
       collapsible,
-      hidden: entry.hidden,
-      card: entry.card,
-      isolated: entry.isolated,
+      hidden: section.hidden,
+      card: section.card,
+      isolated: section.isolated,
       items: sorted,
       page: sectionPage,
     },
@@ -208,24 +219,24 @@ async function resolveSection(
  * Resolve the section header page (if the section has a `link` and a non-glob `from`).
  */
 function resolveSectionPage(
-  entry: Entry,
+  section: Section,
   ctx: SyncContext,
   mergedFm: Frontmatter
 ): ResolvedEntry['page'] | undefined {
-  if (entry.link && entry.from && !hasGlobChars(entry.from)) {
-    const sourcePath = path.resolve(ctx.repoRoot, entry.from)
+  if (section.link && section.from && !hasGlobChars(section.from)) {
+    const sourcePath = path.resolve(ctx.repoRoot, section.from)
     if (fs.existsSync(sourcePath)) {
-      const ext = sourceExt(entry.from)
+      const ext = sourceExt(section.from)
       return {
         source: sourcePath,
-        outputPath: linkToOutputPath(entry.link, ext),
+        outputPath: linkToOutputPath(section.link, ext),
         frontmatter: mergedFm,
       }
     }
-  } else if (entry.link && entry.recursive && entry.from) {
+  } else if (section.link && section.recursive && section.from) {
     // Recursive mode: find the root-level index file from the glob base (.md or .mdx)
-    const baseDir = extractBaseDir(entry.from)
-    const indexFile = entry.indexFile ?? 'overview'
+    const baseDir = extractBaseDir(section.from)
+    const indexFile = section.indexFile ?? 'overview'
     const mdPath = path.join(baseDir, `${indexFile}.md`)
     const mdxPath = path.join(baseDir, `${indexFile}.mdx`)
     const mdxExists = fs.existsSync(path.resolve(ctx.repoRoot, mdxPath))
@@ -237,7 +248,7 @@ function resolveSectionPage(
       const ext = sourceExt(indexPath)
       return {
         source: sourcePath,
-        outputPath: linkToOutputPath(entry.link, ext),
+        outputPath: linkToOutputPath(section.link, ext),
         frontmatter: mergedFm,
       }
     }
@@ -248,34 +259,54 @@ function resolveSectionPage(
  * Resolve a non-recursive glob pattern into leaf page entries.
  */
 async function resolveGlob(
-  entry: Entry,
+  section: Section,
   ctx: SyncContext,
   frontmatter: Frontmatter
 ): Promise<ResolvedEntry[]> {
-  const ignore = [...(ctx.config.exclude ?? []), ...(entry.exclude ?? [])]
+  const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
 
-  if (entry.from === null || entry.from === undefined) {
-    log.error('[zpress] resolveGlob called without entry.from')
+  if (section.from === null || section.from === undefined) {
+    log.error('[zpress] resolveGlob called without section.from')
     return []
   }
 
-  const files = await fg(entry.from, {
+  const files = await fg(section.from, {
     cwd: ctx.repoRoot,
     ignore,
     absolute: false,
     onlyFiles: true,
   })
 
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
+
   if (files.length === 0) {
     if (!ctx.quiet) {
-      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.text}"`)
+      log.warn(`Glob "${section.from}" matched 0 files for "${titleStr}"`)
     }
     return []
   }
 
-  const prefix = entry.prefix ?? ''
-  const textFrom = entry.textFrom ?? 'filename'
-  const { textTransform } = entry
+  const prefix = section.prefix ?? ''
+
+  // Extract titleFrom and titleTransform, preferring new title object API over deprecated fields
+  const titleConfig =
+    match(section.title)
+      .when(
+        (t): t is {
+          from: 'auto' | 'filename' | 'heading' | 'frontmatter'
+          transform?: (text: string, slug: string) => string
+        } => typeof t === 'object' && t !== null && 'from' in t,
+        (t) => t
+      )
+      .otherwise(() => null)
+  const titleFrom = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.from)
+    .otherwise(() => section.titleFrom ?? ('auto' as const))
+  const titleTransform = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.transform)
+    .otherwise(() => section.titleTransform)
 
   return Promise.all(
     files.map(async (file) => {
@@ -283,13 +314,13 @@ async function resolveGlob(
       const slug = path.basename(file, path.extname(file))
       const link = `${prefix}/${slug}`
       const sourcePath = path.resolve(ctx.repoRoot, file)
-      const rawText = await deriveText(sourcePath, slug, textFrom)
-      const text = match(textTransform)
-        .with(P.nonNullable, (t) => t(rawText, slug))
-        .otherwise(() => rawText)
+      const rawTitle = await deriveText(sourcePath, slug, titleFrom)
+      const title = match(titleTransform)
+        .with(P.nonNullable, (t) => t(rawTitle, slug))
+        .otherwise(() => rawTitle)
 
       return {
-        text,
+        title,
         link,
         page: {
           source: sourcePath,

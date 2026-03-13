@@ -13,7 +13,7 @@ import { defineConfig } from '@zpress/kit'
 export default defineConfig({
   title: 'My Docs',
   description: 'Project documentation',
-  sections: [{ text: 'Introduction', link: '/intro', from: 'docs/intro.md' }],
+  sections: [{ title: 'Introduction', link: '/intro', from: 'docs/intro.md' }],
 })
 ```
 
@@ -43,29 +43,29 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 **Page — single file:**
 
 ```ts
-{ text: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
+{ title: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
 ```
 
 **Page — inline content:**
 
 ```ts
-{ text: 'Overview', link: '/overview', content: '# Overview\nProject overview content.' }
+{ title: 'Overview', link: '/overview', content: '# Overview\nProject overview content.' }
 ```
 
 **Page — async content generator:**
 
 ```ts
-{ text: 'Status', link: '/status', content: async () => fetchStatus() }
+{ title: 'Status', link: '/status', content: async () => fetchStatus() }
 ```
 
 **Section — explicit children:**
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   items: [
-    { text: 'Quick Start', link: '/guides/quick-start', from: 'docs/guides/quick-start.md' },
-    { text: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
+    { title: 'Quick Start', link: '/guides/quick-start', from: 'docs/guides/quick-start.md' },
+    { title: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
   ],
 }
 ```
@@ -73,30 +73,31 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 **Section — auto-discovered from glob:**
 
 ```ts
-{ text: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
+{ title: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
 ```
 
 ### Entry fields
 
-| Field           | Type                                          | Description                                     |
-| --------------- | --------------------------------------------- | ----------------------------------------------- |
-| `text`          | `string`                                      | Display name in sidebar and nav                 |
-| `link`          | `string`                                      | Output URL path                                 |
-| `from`          | `string`                                      | Source file path or glob pattern                |
-| `prefix`        | `string`                                      | URL prefix for glob-discovered children         |
-| `content`       | `string \| (() => string \| Promise<string>)` | Inline or generated markdown content            |
-| `items`         | `Entry[]`                                     | Explicit child entries                          |
-| `collapsible`   | `boolean`                                     | Make sidebar section collapsible                |
-| `exclude`       | `string[]`                                    | Exclude globs scoped to this entry              |
-| `hidden`        | `boolean`                                     | Hide from sidebar (page still routable)         |
-| `frontmatter`   | `Frontmatter`                                 | Injected YAML frontmatter                       |
-| `textFrom`      | `'filename' \| 'heading' \| 'frontmatter'`    | Text derivation for discovered children         |
-| `textTransform` | `(text, slug) => string`                      | Transform derived text                          |
-| `sort`          | `'alpha' \| 'filename' \| comparator`         | Sort order for discovered children              |
-| `recursive`     | `boolean`                                     | Directory-based nesting for recursive globs     |
-| `indexFile`     | `string`                                      | Section header filename (default: `"overview"`) |
-| `card`          | `CardConfig`                                  | Landing page card metadata                      |
-| `isolated`      | `boolean`                                     | Separate sidebar namespace (requires `link`)    |
+| Field            | Type                                          | Description                                     |
+| ---------------- | --------------------------------------------- | ----------------------------------------------- |
+| `title`          | `string`                                      | Display name in sidebar and nav                 |
+| `link`           | `string`                                      | Output URL path                                 |
+| `from`           | `string`                                      | Source file path or glob pattern                |
+| `prefix`         | `string`                                      | URL prefix for glob-discovered children         |
+| `content`        | `string \| (() => string \| Promise<string>)` | Inline or generated markdown content            |
+| `items`          | `Entry[]`                                     | Explicit child entries                          |
+| `collapsible`    | `boolean`                                     | Make sidebar section collapsible                |
+| `exclude`        | `string[]`                                    | Exclude globs scoped to this entry              |
+| `hidden`         | `boolean`                                     | Hide from sidebar (page still routable)         |
+| `frontmatter`    | `Frontmatter`                                 | Injected YAML frontmatter                       |
+| `titleFrom`      | `'filename' \| 'heading' \| 'frontmatter'`    | Title derivation for discovered children        |
+| `titleTransform` | `(title, slug) => string`                     | Transform derived title                         |
+| `sort`           | `'alpha' \| 'filename' \| comparator`         | Sort order for discovered children              |
+| `recursive`      | `boolean`                                     | Directory-based nesting for recursive globs     |
+| `indexFile`      | `string`                                      | Section header filename (default: `"overview"`) |
+| `icon`           | `IconConfig`                                  | Icon for home page feature cards                |
+| `card`           | `CardConfig`                                  | Landing page card metadata                      |
+| `isolated`       | `boolean`                                     | Separate sidebar namespace (requires `link`)    |
 
 ## WorkspaceItem
 
@@ -104,34 +105,32 @@ Metadata for monorepo apps and packages. Drives home page cards, landing page ca
 
 ```ts
 {
-  text: 'API',
-  icon: 'devicon:hono',
-  iconColor: 'blue',
+  title: 'API',
+  icon: { id: 'devicon:hono', color: 'blue' },
   description: 'REST API with typed routes',
   tags: ['hono', 'typescript'],
-  docsPrefix: '/apps/api',
+  path: '/apps/api',
 }
 ```
 
-| Field           | Type                                       | Required | Description                                     |
-| --------------- | ------------------------------------------ | -------- | ----------------------------------------------- |
-| `text`          | `string`                                   | yes      | Display name                                    |
-| `icon`          | `string`                                   | no       | Iconify identifier                              |
-| `iconColor`     | `string`                                   | no       | CSS class suffix for icon color                 |
-| `description`   | `string`                                   | yes      | Short description for cards                     |
-| `tags`          | `string[]`                                 | no       | Technology tags (kebab-case)                    |
-| `badge`         | `{ src: string; alt: string }`             | no       | Deploy badge image                              |
-| `docsPrefix`    | `string`                                   | yes      | Docs path prefix matching sections              |
-| `from`          | `string`                                   | no       | Content source relative to workspace base       |
-| `items`         | `Entry[]`                                  | no       | Explicit child entries                          |
-| `sort`          | `'alpha' \| 'filename' \| fn`              | no       | Sort order for auto-discovered children         |
-| `textFrom`      | `'filename' \| 'heading' \| 'frontmatter'` | no       | Text derivation for discovered children         |
-| `textTransform` | `(text, slug) => string`                   | no       | Transform derived text                          |
-| `recursive`     | `boolean`                                  | no       | Enable recursive directory nesting              |
-| `indexFile`     | `string`                                   | no       | Section header filename (default: `"overview"`) |
-| `exclude`       | `string[]`                                 | no       | Exclude globs scoped to this item               |
-| `collapsible`   | `boolean`                                  | no       | Make sidebar section collapsible                |
-| `frontmatter`   | `Frontmatter`                              | no       | Injected frontmatter for all child pages        |
+| Field            | Type                                       | Required | Description                                                     |
+| ---------------- | ------------------------------------------ | -------- | --------------------------------------------------------------- |
+| `title`          | `string`                                   | yes      | Display name                                                    |
+| `icon`           | `IconConfig`                               | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `description`    | `string`                                   | yes      | Short description for cards                                     |
+| `tags`           | `string[]`                                 | no       | Technology tags (kebab-case)                                    |
+| `badge`          | `{ src: string; alt: string }`             | no       | Deploy badge image                                              |
+| `path`           | `string`                                   | yes      | Docs path prefix matching sections                              |
+| `from`           | `string`                                   | no       | Content source relative to workspace base                       |
+| `items`          | `Entry[]`                                  | no       | Explicit child entries                                          |
+| `sort`           | `'alpha' \| 'filename' \| fn`              | no       | Sort order for auto-discovered children                         |
+| `titleFrom`      | `'filename' \| 'heading' \| 'frontmatter'` | no       | Title derivation for discovered children                        |
+| `titleTransform` | `(title, slug) => string`                  | no       | Transform derived title                                         |
+| `recursive`      | `boolean`                                  | no       | Enable recursive directory nesting                              |
+| `indexFile`      | `string`                                   | no       | Section header filename (default: `"overview"`)                 |
+| `exclude`        | `string[]`                                 | no       | Exclude globs scoped to this item                               |
+| `collapsible`    | `boolean`                                  | no       | Make sidebar section collapsible                                |
+| `frontmatter`    | `Frontmatter`                              | no       | Injected frontmatter for all child pages                        |
 
 ## WorkspaceGroup
 
@@ -143,18 +142,18 @@ Custom named groups beyond the built-in `apps` and `packages`. Each group receiv
   description: 'Third-party service connectors',
   icon: 'pixelarticons:integration',
   items: [
-    { text: 'Stripe', description: 'Payment processing', docsPrefix: '/integrations/stripe' },
+    { title: 'Stripe', description: 'Payment processing', path: '/integrations/stripe' },
   ],
 }
 ```
 
-| Field         | Type              | Required | Description                                           |
-| ------------- | ----------------- | -------- | ----------------------------------------------------- |
-| `name`        | `string`          | Yes      | Group display name                                    |
-| `description` | `string`          | Yes      | Short description                                     |
-| `icon`        | `string`          | Yes      | Iconify identifier                                    |
-| `items`       | `WorkspaceItem[]` | Yes      | Workspace items in this group                         |
-| `link`        | `string`          | No       | URL prefix override (defaults to `/${slugify(name)}`) |
+| Field         | Type              | Required | Description                                                     |
+| ------------- | ----------------- | -------- | --------------------------------------------------------------- |
+| `name`        | `string`          | Yes      | Group display name                                              |
+| `description` | `string`          | Yes      | Short description                                               |
+| `icon`        | `IconConfig`      | Yes      | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `items`       | `WorkspaceItem[]` | Yes      | Workspace items in this group                                   |
+| `link`        | `string`          | No       | URL prefix override (defaults to `/${slugify(name)}`)           |
 
 ## CardConfig
 
@@ -162,8 +161,7 @@ Controls how an entry appears as a card on its parent section's auto-generated l
 
 ```ts
 {
-  icon: 'devicon:hono',
-  iconColor: 'api',
+  icon: { id: 'devicon:hono', color: 'blue' },
   scope: 'apps/',
   description: 'REST API with typed routes',
   tags: ['Hono', 'REST'],
@@ -171,14 +169,13 @@ Controls how an entry appears as a card on its parent section's auto-generated l
 }
 ```
 
-| Field         | Type                           | Description                                     |
-| ------------- | ------------------------------ | ----------------------------------------------- |
-| `icon`        | `string`                       | Iconify identifier                              |
-| `iconColor`   | `string`                       | CSS class suffix for `.workspace-icon--{color}` |
-| `scope`       | `string`                       | Scope label above the card name                 |
-| `description` | `string`                       | Short description (overrides auto-extracted)    |
-| `tags`        | `string[]`                     | Technology tag badges                           |
-| `badge`       | `{ src: string; alt: string }` | Deploy badge image                              |
+| Field         | Type                           | Description                                                     |
+| ------------- | ------------------------------ | --------------------------------------------------------------- |
+| `icon`        | `IconConfig`                   | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `scope`       | `string`                       | Scope label above the card name                                 |
+| `description` | `string`                       | Short description (overrides auto-extracted)                    |
+| `tags`        | `string[]`                     | Technology tag badges                                           |
+| `badge`       | `{ src: string; alt: string }` | Deploy badge image                                              |
 
 ## NavItem
 
@@ -186,14 +183,14 @@ Explicit navigation bar configuration. Used when `nav` is an array instead of `'
 
 ```ts
 nav: [
-  { text: 'Guides', link: '/guides/sections-and-pages' },
-  { text: 'API', link: '/api/overview' },
+  { title: 'Guides', link: '/guides/sections-and-pages' },
+  { title: 'API', link: '/api/overview' },
 ]
 ```
 
 | Field         | Type        | Description                             |
 | ------------- | ----------- | --------------------------------------- |
-| `text`        | `string`    | Display text                            |
+| `title`       | `string`    | Display text                            |
 | `link`        | `string`    | Target URL path                         |
 | `items`       | `NavItem[]` | Dropdown children                       |
 | `activeMatch` | `string`    | Regex pattern for active state matching |
@@ -207,7 +204,7 @@ Explicit feature card for the home page. Replaces the auto-generated cards deriv
 ```ts
 features: [
   {
-    text: 'Getting Started',
+    title: 'Getting Started',
     description: 'Set up zpress and create your first site.',
     link: '/getting-started',
     icon: 'pixelarticons:speed-fast',
@@ -215,12 +212,12 @@ features: [
 ]
 ```
 
-| Field         | Type     | Description                   |
-| ------------- | -------- | ----------------------------- |
-| `text`        | `string` | Card title                    |
-| `description` | `string` | Short description below title |
-| `link`        | `string` | Click target URL              |
-| `icon`        | `string` | Iconify identifier            |
+| Field         | Type         | Description                                                     |
+| ------------- | ------------ | --------------------------------------------------------------- |
+| `title`       | `string`     | Card title                                                      |
+| `description` | `string`     | Short description below title                                   |
+| `link`        | `string`     | Click target URL                                                |
+| `icon`        | `IconConfig` | Iconify identifier or `{ id: IconId, color: IconColor }` object |
 
 ## OpenAPIConfig
 

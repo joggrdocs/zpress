@@ -4,7 +4,7 @@ import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'ts-pattern'
 
-import type { Entry, Frontmatter } from '../../types.ts'
+import type { Section, Frontmatter } from '../../types.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { sortEntries } from './sort.ts'
@@ -24,57 +24,78 @@ interface DirNode {
 }
 
 /**
- * Resolve a recursive glob pattern into a nested entry tree.
+ * Resolve a recursive glob pattern into a nested section tree.
  *
  * Scans all files matching the glob, groups them by directory structure,
  * and produces a nested `ResolvedEntry` tree mirroring the filesystem.
  *
- * @param entry - Config entry with a recursive glob `from` pattern
+ * @param section - Config section with a recursive glob `from` pattern
  * @param ctx - Sync context (provides repo root, exclude patterns, quiet flag)
- * @param frontmatter - Merged frontmatter inherited from parent entries
+ * @param frontmatter - Merged frontmatter inherited from parent sections
  * @param depth - Current nesting depth for collapsible auto-detection
  * @returns Flat or nested resolved entries matching the glob
  */
 export async function resolveRecursiveGlob(
-  entry: Entry,
+  section: Section,
   ctx: SyncContext,
   frontmatter: Frontmatter,
   depth: number
 ): Promise<ResolvedEntry[]> {
-  const ignore = [...(ctx.config.exclude ?? []), ...(entry.exclude ?? [])]
-  const indexFile = entry.indexFile ?? 'overview'
+  const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
+  const indexFile = section.indexFile ?? 'overview'
 
-  if (entry.from === null || entry.from === undefined) {
-    log.error('[zpress] resolveRecursiveGlob called without entry.from')
+  if (section.from === null || section.from === undefined) {
+    log.error('[zpress] resolveRecursiveGlob called without section.from')
     return []
   }
 
-  const files = await fg(entry.from, {
+  const files = await fg(section.from, {
     cwd: ctx.repoRoot,
     ignore,
     absolute: false,
     onlyFiles: true,
   })
 
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
+
   if (files.length === 0) {
     if (!ctx.quiet) {
-      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.text}"`)
+      log.warn(`Glob "${section.from}" matched 0 files for "${titleStr}"`)
     }
     return []
   }
 
-  const baseDir = extractBaseDir(entry.from)
-  const prefix = entry.prefix ?? ''
-  const textFrom = entry.textFrom ?? 'filename'
+  const baseDir = extractBaseDir(section.from)
+  const prefix = section.prefix ?? ''
+
+  // Extract titleFrom and titleTransform, preferring new title object API over deprecated fields
+  const titleConfig =
+    match(section.title)
+      .when(
+        (t): t is {
+          from: 'auto' | 'filename' | 'heading' | 'frontmatter'
+          transform?: (text: string, slug: string) => string
+        } => typeof t === 'object' && t !== null && 'from' in t,
+        (t) => t
+      )
+      .otherwise(() => null)
+  const titleFrom = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.from)
+    .otherwise(() => section.titleFrom ?? ('auto' as const))
+  const titleTransform = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.transform)
+    .otherwise(() => section.titleTransform)
 
   const root = buildDirTree(files, baseDir)
   return buildEntryTree({
     node: root,
     prefix,
-    textFrom,
-    textTransform: entry.textTransform,
-    sort: entry.sort,
-    collapsible: entry.collapsible,
+    titleFrom,
+    titleTransform,
+    sort: section.sort,
+    collapsible: section.collapsible,
     indexFile,
     ctx,
     frontmatter,
@@ -136,9 +157,9 @@ function buildDirTree(files: readonly string[], baseDir: string): DirNode {
 interface BuildEntryTreeParams {
   readonly node: DirNode
   readonly prefix: string
-  readonly textFrom: 'filename' | 'heading' | 'frontmatter'
-  readonly textTransform: Entry['textTransform']
-  readonly sort: Entry['sort']
+  readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
+  readonly titleTransform: Section['titleTransform']
+  readonly sort: Section['sort']
   readonly collapsible: boolean | undefined
   readonly indexFile: string
   readonly ctx: SyncContext
@@ -156,8 +177,8 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
   const {
     node,
     prefix,
-    textFrom,
-    textTransform,
+    titleFrom,
+    titleTransform,
     sort,
     collapsible,
     indexFile,
@@ -177,13 +198,13 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
       const slug = path.basename(file, path.extname(file))
       const link = `${prefix}/${slug}`
       const sourcePath = path.resolve(ctx.repoRoot, file)
-      const rawText = await deriveText(sourcePath, slug, textFrom)
-      const text = match(textTransform)
-        .with(P.nonNullable, (t) => t(rawText, slug))
-        .otherwise(() => rawText)
+      const rawTitle = await deriveText(sourcePath, slug, titleFrom)
+      const title = match(titleTransform)
+        .with(P.nonNullable, (t) => t(rawTitle, slug))
+        .otherwise(() => rawTitle)
 
       return {
-        text,
+        title,
         link,
         page: {
           source: sourcePath,
@@ -204,13 +225,13 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
         (f) => path.basename(f, path.extname(f)) === indexFile
       )
 
-      const { sectionText, sectionPage } = await resolveSubdirSection({
+      const { sectionTitle, sectionPage } = await resolveSubdirSection({
         indexFilePath,
         dirName,
         subPrefix,
         indexFile,
-        textFrom,
-        textTransform,
+        titleFrom,
+        titleTransform,
         ctx,
         frontmatter,
       })
@@ -218,8 +239,8 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
       const children = await buildEntryTree({
         node: subNode,
         prefix: subPrefix,
-        textFrom,
-        textTransform,
+        titleFrom,
+        titleTransform,
         sort,
         collapsible,
         indexFile,
@@ -237,7 +258,7 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
       const sectionLink = resolveSectionLink(indexFilePath, subPrefix, indexFile)
 
       return {
-        text: sectionText,
+        title: sectionTitle,
         link: sectionLink,
         collapsible: effectiveCollapsible,
         items: sorted,
@@ -257,14 +278,14 @@ interface ResolveSubdirSectionParams {
   readonly dirName: string
   readonly subPrefix: string
   readonly indexFile: string
-  readonly textFrom: 'filename' | 'heading' | 'frontmatter'
-  readonly textTransform: Entry['textTransform']
+  readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
+  readonly titleTransform: Section['titleTransform']
   readonly ctx: SyncContext
   readonly frontmatter: Frontmatter
 }
 
 /**
- * Resolve the section text and optional page for a subdirectory entry.
+ * Resolve the section title and optional page for a subdirectory entry.
  *
  * When an index file exists, derives the section heading from it and
  * creates a page entry. Otherwise falls back to kebab-to-title of the
@@ -272,14 +293,14 @@ interface ResolveSubdirSectionParams {
  */
 async function resolveSubdirSection(
   params: ResolveSubdirSectionParams
-): Promise<{ sectionText: string; sectionPage: ResolvedEntry['page'] | undefined }> {
+): Promise<{ sectionTitle: string; sectionPage: ResolvedEntry['page'] | undefined }> {
   const {
     indexFilePath,
     dirName,
     subPrefix,
     indexFile,
-    textFrom,
-    textTransform,
+    titleFrom,
+    titleTransform,
     ctx,
     frontmatter,
   } = params
@@ -287,22 +308,22 @@ async function resolveSubdirSection(
   if (indexFilePath) {
     const ext = sourceExt(indexFilePath)
     const sourcePath = path.resolve(ctx.repoRoot, indexFilePath)
-    const rawText = await deriveText(sourcePath, dirName, textFrom)
-    const sectionText = match(textTransform)
-      .with(P.nonNullable, (t) => t(rawText, dirName))
-      .otherwise(() => rawText)
+    const rawTitle = await deriveText(sourcePath, dirName, titleFrom)
+    const sectionTitle = match(titleTransform)
+      .with(P.nonNullable, (t) => t(rawTitle, dirName))
+      .otherwise(() => rawTitle)
     const sectionPage: ResolvedEntry['page'] = {
       source: sourcePath,
       outputPath: linkToOutputPath(`${subPrefix}/${indexFile}`, ext),
       frontmatter,
     }
-    return { sectionText, sectionPage }
+    return { sectionTitle, sectionPage }
   }
-  const rawText = kebabToTitle(dirName)
-  const sectionText = match(textTransform)
-    .with(P.nonNullable, (t) => t(rawText, dirName))
-    .otherwise(() => rawText)
-  return { sectionText, sectionPage: undefined }
+  const rawTitle = kebabToTitle(dirName)
+  const sectionTitle = match(titleTransform)
+    .with(P.nonNullable, (t) => t(rawTitle, dirName))
+    .otherwise(() => rawTitle)
+  return { sectionTitle, sectionPage: undefined }
 }
 
 // ── Private helpers ───────────────────────────────────────────

@@ -46,7 +46,7 @@ export function buildMultiSidebar(
       const isChild = parentEntry !== null && parentEntry !== undefined && parentEntry !== entry
 
       const landing: SidebarItem = {
-        text: entry.text,
+        text: entry.title,
         link: entryLink,
       }
 
@@ -55,7 +55,7 @@ export function buildMultiSidebar(
           const pe = parentEntry as ResolvedEntry
           const peLink = pe.link as string
           const parentLanding: SidebarItem = {
-            text: pe.text,
+            text: pe.title,
             link: peLink,
           }
 
@@ -69,7 +69,7 @@ export function buildMultiSidebar(
             const sibChildren = resolveChildrenByLink(childrenByLink, sibLink)
             const isCurrent = sib.link === entry.link
 
-            return buildSidebarGroup(sib.text, sibLink, sibChildren, !isCurrent)
+            return buildSidebarGroup(sib.title, sibLink, sibChildren, !isCurrent)
           })
 
           return [parentLanding, ...siblingGroups]
@@ -85,7 +85,7 @@ export function buildMultiSidebar(
                 .map((child): SidebarItem => {
                   const childLink = child.link as string
                   const childItems = resolveChildrenByLink(childrenByLink, childLink)
-                  return buildSidebarGroup(child.text, childLink, childItems, true)
+                  return buildSidebarGroup(child.title, childLink, childItems, true)
                 })
             )
             .otherwise(() => [])
