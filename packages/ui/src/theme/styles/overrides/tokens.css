@@ -1,11 +1,8 @@
 /**
- * zpress custom properties (--zp-* prefix).
+ * zpress structural tokens (--zp-* prefix).
  *
- * Palette derived from apps/console globals.css:
- *   --background : oklch(0.1448 0 0)   ≈ #1a1a1a
- *   --foreground : oklch(0.9851 0 0)    ≈ #fbfbfb
- *   --primary    : oklch(0.78 0.13 291) ≈ #a78bfa (purple/violet)
- *   --border     : oklch(0.3407 0 0)    ≈ #4a4a4a
+ * Color definitions have moved to theme files (styles/themes/*.css).
+ * This file retains only structural tokens: fonts, layout, radii.
  */
 
 :root {
@@ -17,32 +14,4 @@
   --rp-radius: 0.25rem;
   --rp-radius-small: 0.125rem;
   --rp-radius-large: 0.5rem;
-
-  --zp-c-brand-1: #a78bfa;
-  --zp-c-brand-2: #8b5cf6;
-  --zp-c-brand-3: #7c3aed;
-  --zp-c-brand-soft: rgba(167, 139, 250, 0.14);
-
-  /* Light-mode surface & text defaults — ensures --zp-c-* variables
-     resolve even when .rp-dark is not applied. */
-  --zp-c-bg: #ffffff;
-  --zp-c-bg-alt: #f9f9f9;
-  --zp-c-bg-elv: #f5f5f5;
-  --zp-c-bg-soft: #f0f0f0;
-  --zp-c-bg-icon: #cccccc;
-
-  --zp-c-text-1: #1a1a1a;
-  --zp-c-text-2: rgba(26, 26, 26, 0.72);
-  --zp-c-text-3: rgba(26, 26, 26, 0.48);
-
-  --zp-c-divider: #e2e2e2;
-  --zp-c-border: #d0d0d0;
-  --zp-c-gutter: #f5f5f5;
-
-  --zp-code-block-bg: #f5f5f5;
-
-  --zp-button-brand-bg: #7c3aed;
-  --zp-button-brand-hover-bg: #8b5cf6;
-  --zp-button-brand-active-bg: #6d28d9;
-  --zp-button-brand-text: #ffffff;
 }

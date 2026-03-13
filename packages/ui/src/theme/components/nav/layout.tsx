@@ -3,6 +3,7 @@ import type React from 'react'
 import { useEffect, useState } from 'react'
 
 import { BranchTag } from './branch-tag'
+import { ThemeSwitcher } from './theme-switcher'
 import { VscodeTag } from './vscode-tag'
 
 const VSCODE_OVERRIDES = [
@@ -45,9 +46,8 @@ function useVscodeMode(): boolean {
 
 /**
  * Custom Layout override for zpress.
- * Wraps the original Rspress Layout and injects the BranchTag
- * into the `beforeNavMenu` slot so it renders before the search
- * bar in the navbar on all page types.
+ * Wraps the original Rspress Layout and injects BranchTag
+ * into `beforeNavMenu` and ThemeSwitcher into `afterNavMenu`.
  */
 export function Layout(): React.ReactElement {
   const vscode = useVscodeMode()
@@ -62,5 +62,5 @@ export function Layout(): React.ReactElement {
     }
     return <BranchTag />
   })()
-  return <OriginalLayout beforeNavMenu={navSlot} />
+  return <OriginalLayout beforeNavMenu={navSlot} afterNavMenu={<ThemeSwitcher />} />
 }

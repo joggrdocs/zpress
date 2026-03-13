@@ -1,25 +1,14 @@
 /**
- * Rspress brand overrides (purple / violet).
+ * Rspress structural overrides.
  *
- * html:root bumps specificity (0,1,1) above Rspress vars.css
- * (:root = 0,1,0) so these always win regardless of load order.
+ * Color definitions have moved to theme files (styles/themes/*.css).
+ * This file retains only structural overrides: fonts, layout, LLMs UI.
  */
 
 html:root {
   /* Fonts — map Geist into Rspress's font stack */
   --rp-font-family-base: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
   --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
-
-  /* Brand colors */
-  --rp-c-brand: #a78bfa;
-  --rp-c-brand-light: #c4b5fd;
-  --rp-c-brand-lighter: #ddd6fe;
-  --rp-c-brand-dark: #8b5cf6;
-  --rp-c-brand-darker: #7c3aed;
-  --rp-c-brand-tint: rgba(167, 139, 250, 0.14);
-
-  /* Solid home background — overrides Rspress default radial gradients */
-  --rp-home-background-bg: #fff;
 }
 
 /* ── LLMs UI — hide the view-options trigger button (dropdown arrow) ── */
@@ -47,62 +36,4 @@ html .rp-button--big {
 html table {
   border-radius: var(--rp-radius);
   overflow: hidden;
-}
-
-/* ── Dark-mode overrides (zpress custom vars) ─────────────── */
-.rp-dark,
-html[data-dark='true'] {
-  --zp-c-bg: #141414;
-  --zp-c-bg-alt: #1a1a1a;
-  --zp-c-bg-elv: #1f1f1f;
-  --zp-c-bg-soft: #222222;
-  --zp-c-bg-icon: #3d3d3d;
-
-  --zp-c-text-1: #fbfbfb;
-  --zp-c-text-2: rgba(251, 251, 251, 0.72);
-  --zp-c-text-3: rgba(251, 251, 251, 0.48);
-
-  --zp-c-divider: #2e2e2e;
-  --zp-c-border: #3a3a3a;
-  --zp-c-gutter: #1a1a1a;
-
-  --zp-c-brand-1: #a78bfa;
-  --zp-c-brand-2: #8b5cf6;
-  --zp-c-brand-3: #7c3aed;
-  --zp-c-brand-soft: rgba(167, 139, 250, 0.14);
-
-  --zp-code-block-bg: #1a1a1a;
-
-  --zp-button-brand-bg: #7c3aed;
-  --zp-button-brand-hover-bg: #8b5cf6;
-  --zp-button-brand-active-bg: #6d28d9;
-  --zp-button-brand-text: #fbfbfb;
-}
-
-/* ── Dark-mode overrides (Rspress vars) ──────────────────────
- * html.rp-dark bumps specificity (0,1,1) above Rspress vars.css
- * .rp-dark (0,1,0) so these always win regardless of load order. */
-html.rp-dark {
-  --rp-c-bg: #141414;
-  --rp-c-bg-soft: #222222;
-  --rp-c-bg-mute: #1f1f1f;
-
-  --rp-c-text-1: #fbfbfb;
-  --rp-c-text-2: rgba(251, 251, 251, 0.72);
-  --rp-c-text-3: rgba(251, 251, 251, 0.48);
-
-  --rp-c-divider: #2e2e2e;
-
-  --rp-c-brand: #a78bfa;
-  --rp-c-brand-light: #c4b5fd;
-  --rp-c-brand-lighter: #ddd6fe;
-  --rp-c-brand-dark: #8b5cf6;
-  --rp-c-brand-darker: #7c3aed;
-  --rp-c-brand-tint: rgba(167, 139, 250, 0.14);
-  --rp-c-link: var(--rp-c-brand-light);
-
-  --rp-code-block-bg: #1a1a1a;
-
-  /* Solid home background — overrides Rspress default radial gradients */
-  --rp-home-background-bg: #141414;
 }

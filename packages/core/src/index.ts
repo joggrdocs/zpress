@@ -18,6 +18,10 @@ export type {
 export { defineConfig, validateConfig } from './define-config.ts'
 export { loadConfig } from './config.ts'
 
+// Theme
+export type { ThemeConfig, ThemeName, ColorMode, ThemeColors } from './theme.ts'
+export { resolveDefaultColorMode, THEME_NAMES, COLOR_MODES } from './theme.ts'
+
 // Sync engine
 export { sync, type SyncResult, type SyncOptions } from './sync/index.ts'
 export { resolveEntries } from './sync/resolve/index.ts'

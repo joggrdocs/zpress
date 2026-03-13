@@ -1,0 +1,360 @@
+/**
+ * Arcade theme — custom hover animations and visual effects.
+ *
+ * All rules are scoped to html[data-zp-theme='arcade'] so they
+ * only activate when the arcade palette is in use.
+ *
+ * Effects:
+ *   1. Border trace — conic-gradient that spins around cards on hover
+ *   2. Neon pulse  — expanding glow ring on buttons
+ *   3. CRT scanlines — subtle scrolling overlay on code blocks
+ *   4. Link glow — neon underline sweep on hover
+ *   5. Sidebar + navbar hover — neon underline sweep
+ *   6. Sidebar active glow bar
+ */
+
+/* ── @property for animatable gradient angle ─────────────── */
+@property --arcade-border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── 1. Border trace — cards ─────────────────────────────── */
+
+/*
+ * Uses a conic-gradient as the border-image source.
+ * The --arcade-border-angle custom property is animated from
+ * 0deg to 360deg, creating a neon light tracing the border.
+ *
+ * Requires position: relative and overflow: hidden on the card
+ * so the ::before pseudo-element stays within bounds.
+ */
+html[data-zp-theme='arcade'] .home-card,
+html[data-zp-theme='arcade'] .section-card {
+  position: relative;
+  overflow: hidden;
+  --arcade-border-angle: 0deg;
+}
+
+html[data-zp-theme='arcade'] .home-card::before,
+html[data-zp-theme='arcade'] .section-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--arcade-border-angle),
+    transparent 40%,
+    #00ff88 50%,
+    #00ffcc 55%,
+    transparent 60%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+html[data-zp-theme='arcade'] .home-card:hover::before,
+html[data-zp-theme='arcade'] .section-card:hover::before {
+  opacity: 1;
+  animation: arcade-border-spin 2.5s linear infinite;
+}
+
+/* Glow shadow behind the card on hover */
+html[data-zp-theme='arcade'] .home-card:hover,
+html[data-zp-theme='arcade'] .section-card:hover {
+  box-shadow:
+    0 0 12px rgba(0, 255, 136, 0.15),
+    0 0 24px rgba(0, 255, 136, 0.06);
+}
+
+@keyframes arcade-border-spin {
+  to {
+    --arcade-border-angle: 360deg;
+  }
+}
+
+/* ── 2. Neon pulse — buttons ─────────────────────────────── */
+
+/*
+ * Replace the default gradient with a solid neon brand color,
+ * dark text for contrast, and a subtle border glow on hover.
+ */
+html[data-zp-theme='arcade'] .rp-button--brand {
+  background: #7c3aed;
+  color: #fff;
+  border: 1px solid #7c3aed;
+  opacity: 1;
+}
+
+html[data-zp-theme='arcade'] .rp-button--brand:hover {
+  background: transparent;
+  color: #a78bfa;
+  border-color: #a78bfa;
+  opacity: 1;
+  box-shadow:
+    0 0 8px rgba(124, 58, 237, 0.5),
+    inset 0 0 8px rgba(124, 58, 237, 0.15);
+}
+
+/*
+ * Alt button — outlined style with neon border.
+ */
+html[data-zp-theme='arcade'] .rp-button--alt {
+  background: transparent;
+  color: var(--zp-c-text-1);
+  border: 1px solid var(--zp-c-border);
+}
+
+html[data-zp-theme='arcade'] .rp-button--alt:hover {
+  border-color: #a78bfa;
+  color: #a78bfa;
+  opacity: 1;
+  background: transparent;
+  box-shadow:
+    0 0 8px rgba(124, 58, 237, 0.3),
+    inset 0 0 8px rgba(124, 58, 237, 0.06);
+}
+
+/*
+ * On hover, hero action buttons emit an expanding ring pulse
+ * using box-shadow animation. The ring fades out as it expands.
+ */
+html[data-zp-theme='arcade'] .rp-button--medium,
+html[data-zp-theme='arcade'] .rp-button--big {
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+html[data-zp-theme='arcade'] .rp-button--medium:hover,
+html[data-zp-theme='arcade'] .rp-button--big:hover {
+  transform: scale(1.03);
+  animation: arcade-neon-pulse 1.4s ease-out infinite;
+}
+
+@keyframes arcade-neon-pulse {
+  0% {
+    box-shadow:
+      0 0 4px rgba(124, 58, 237, 0.6),
+      0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  70% {
+    box-shadow:
+      0 0 8px rgba(124, 58, 237, 0.3),
+      0 0 0 12px rgba(124, 58, 237, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 4px rgba(124, 58, 237, 0.6),
+      0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+/* ── 3. CRT scanlines — code blocks ──────────────────────── */
+
+/*
+ * A repeating linear-gradient of thin semi-transparent lines
+ * scrolls slowly down code blocks, simulating a CRT monitor.
+ * pointer-events: none keeps the overlay non-interactive.
+ *
+ * Rspress wraps code blocks in .rp-codeblock which already
+ * has position: relative. The overlay targets .rp-codeblock__content
+ * (the inner container with the background color) so it sits
+ * above the code but below the title bar and button group.
+ */
+html[data-zp-theme='arcade'] .rp-codeblock__content {
+  position: relative;
+}
+
+html[data-zp-theme='arcade'] .rp-codeblock__content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 255, 136, 0.08) 3px,
+    rgba(0, 255, 136, 0.08) 4px
+  );
+  animation: arcade-scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-codeblock:hover .rp-codeblock__content::after {
+  opacity: 0;
+}
+
+@keyframes arcade-scanline {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 200px;
+  }
+}
+
+/* ── 4. Link glow — neon underline sweep ─────────────────── */
+
+/*
+ * Content links get a neon underline that sweeps in from the
+ * left on hover, paired with a subtle text-shadow glow.
+ *
+ * Rspress uses a.rp-link for content links inside .rp-doc.
+ * Header anchors use .rp-header-anchor and are excluded.
+ */
+html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor) {
+  text-decoration: none;
+  background-image: linear-gradient(#00ff88, #00ff88);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition:
+    background-size 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
+  background-size: 100% 1.5px;
+  border-bottom: none;
+  text-shadow:
+    0 0 6px rgba(0, 255, 136, 0.5),
+    0 0 12px rgba(0, 255, 136, 0.2);
+}
+
+/* ── 5. Sidebar + navbar link hover — neon underline sweep ── */
+
+/*
+ * Same sweep effect as doc content links, adapted for
+ * sidebar items (.rp-sidebar-item) and navbar menu items
+ * (.rp-nav-menu__item). Uses a background-image gradient
+ * that expands from 0% to 100% width on hover.
+ */
+html[data-zp-theme='arcade'] .rp-sidebar-item {
+  text-decoration: none;
+  background-image: linear-gradient(#00ff88, #00ff88);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition:
+    color 0.15s,
+    background-color 0.15s,
+    background-size 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-sidebar-item:hover {
+  background-size: 100% 1.5px;
+  text-shadow:
+    0 0 6px rgba(0, 255, 136, 0.5),
+    0 0 12px rgba(0, 255, 136, 0.2);
+}
+
+html[data-zp-theme='arcade'] .rp-nav-menu__item {
+  text-decoration: none;
+  background-image: linear-gradient(#00ff88, #00ff88);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition:
+    color 0.25s,
+    background-size 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+html[data-zp-theme='arcade'] .rp-nav-menu__item:hover {
+  background-size: 100% 1.5px;
+  text-shadow:
+    0 0 6px rgba(0, 255, 136, 0.5),
+    0 0 12px rgba(0, 255, 136, 0.2);
+}
+
+/* ── 6. Sidebar active glow bar ──────────────────────────── */
+
+/*
+ * The active sidebar item gets a left-border glow that
+ * scales in vertically, simulating a neon indicator light.
+ *
+ * Rspress uses .rp-sidebar-item--active (BEM double hyphen).
+ * It already has position: relative. Uses ::after because
+ * ::before is used by Rspress for group-item line indicators.
+ */
+html[data-zp-theme='arcade'] .rp-sidebar-item--active {
+  overflow: visible;
+}
+
+html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 2px;
+  height: 0;
+  background: #00ff88;
+  box-shadow:
+    0 0 4px rgba(0, 255, 136, 0.8),
+    0 0 8px rgba(0, 255, 136, 0.4);
+  border-radius: 1px;
+  animation: arcade-glow-bar 0.3s ease-out forwards;
+}
+
+@keyframes arcade-glow-bar {
+  to {
+    height: 60%;
+    top: 20%;
+  }
+}
+
+/* ── 7. Search results — readable highlight ────────────── */
+
+/*
+ * The default search highlight uses --rp-c-brand (#00ff88)
+ * as a background, which is too bright for white text.
+ * Override to a darker green that maintains the neon feel
+ * while ensuring legibility.
+ */
+html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__link {
+  background-color: #007a42;
+}
+
+html[data-zp-theme='arcade'] .rp-suggest-item__mark {
+  color: #00ff88;
+}
+
+html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__mark {
+  color: #fff;
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+
+/*
+ * Disable all continuous and hover-triggered animations when
+ * the user has opted into reduced motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html[data-zp-theme='arcade'] .home-card:hover::before,
+  html[data-zp-theme='arcade'] .section-card:hover::before,
+  html[data-zp-theme='arcade'] .rp-codeblock__content::after,
+  html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
+    animation: none;
+  }
+
+  html[data-zp-theme='arcade'] .rp-button--medium:hover,
+  html[data-zp-theme='arcade'] .rp-button--big:hover {
+    animation: none;
+    transform: none;
+  }
+}

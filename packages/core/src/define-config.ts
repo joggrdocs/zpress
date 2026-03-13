@@ -1,6 +1,8 @@
 import { hasGlobChars } from './glob.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
+import { THEME_NAMES, COLOR_MODES } from './theme.ts'
+import type { ThemeConfig, ThemeColors } from './theme.ts'
 import type { ZpressConfig, Entry, Feature, WorkspaceItem, WorkspaceGroup } from './types.ts'
 
 /**
@@ -62,6 +64,11 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
   const [featErr] = validateFeatures(config.features)
   if (featErr) {
     return [featErr, null]
+  }
+
+  const [themeErr] = validateTheme(config.theme)
+  if (themeErr) {
+    return [themeErr, null]
   }
 
   return [null, config]
@@ -292,4 +299,93 @@ function validateFeature(feature: Feature): ConfigError | null {
   }
 
   return null
+}
+/**
+ * Validate a single ThemeColors object.
+ */
+function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<true> {
+  const colorPattern = /^(?:#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgba?\([^)]*\))$/
+  const keys: readonly (keyof ThemeColors)[] = [
+    'brand',
+    'brandLight',
+    'brandDark',
+    'brandSoft',
+    'bg',
+    'bgAlt',
+    'bgElv',
+    'bgSoft',
+    'text1',
+    'text2',
+    'text3',
+    'divider',
+    'border',
+    'homeBg',
+  ]
+
+  const firstError = keys.reduce<ConfigError | null>((acc, key) => {
+    if (acc) {
+      return acc
+    }
+    const value = colors[key]
+    if (value !== undefined && !colorPattern.test(value)) {
+      return configError(
+        'invalid_theme',
+        `theme.${label}.${key}: "${value}" is not a valid color (use hex #xxx/#xxxxxx or rgba())`
+      )
+    }
+    return null
+  }, null)
+
+  if (firstError) {
+    return [firstError, null]
+  }
+  return [null, true]
+}
+
+/**
+ * Validate theme configuration when provided.
+ */
+function validateTheme(theme: ThemeConfig | undefined): ConfigResult<true> {
+  if (theme === undefined) {
+    return [null, true]
+  }
+
+  if (theme.name !== undefined && !(THEME_NAMES as readonly string[]).includes(theme.name)) {
+    return [
+      configError(
+        'invalid_theme',
+        `theme.name: "${theme.name}" is not a valid theme (use ${THEME_NAMES.map((n) => `"${n}"`).join(', ')})`
+      ),
+      null,
+    ]
+  }
+
+  if (
+    theme.colorMode !== undefined &&
+    !(COLOR_MODES as readonly string[]).includes(theme.colorMode)
+  ) {
+    return [
+      configError(
+        'invalid_theme',
+        `theme.colorMode: "${theme.colorMode}" is not valid (use ${COLOR_MODES.map((m) => `"${m}"`).join(', ')})`
+      ),
+      null,
+    ]
+  }
+
+  if (theme.colors) {
+    const [colorsErr] = validateThemeColors(theme.colors, 'colors')
+    if (colorsErr) {
+      return [colorsErr, null]
+    }
+  }
+
+  if (theme.darkColors) {
+    const [darkErr] = validateThemeColors(theme.darkColors, 'darkColors')
+    if (darkErr) {
+      return [darkErr, null]
+    }
+  }
+
+  return [null, true]
 }

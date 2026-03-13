@@ -1,3 +1,5 @@
+import type { ThemeConfig } from './theme.ts'
+
 /**
  * zpress — unified information architecture config.
  *
@@ -581,6 +583,12 @@ export interface ZpressConfig {
    * Site meta description. Used as the hero headline on the home page.
    */
   readonly description?: string
+
+  /**
+   * Theme configuration.
+   * Controls the visual theme, color mode, and optional color overrides.
+   */
+  readonly theme?: ThemeConfig
 
   /**
    * Path to a custom favicon file served from `.zpress/public/`.

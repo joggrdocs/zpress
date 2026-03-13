@@ -1,5 +1,13 @@
 # @zpress/cli
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [7255aa3]
+  - @zpress/core@0.5.0
+  - @zpress/ui@0.4.0
+
 ## 0.2.0
 
 ### Minor Changes
