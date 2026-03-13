@@ -7,6 +7,7 @@ import type { BuiltInThemeName, ThemeColors, ThemeName, ZpressConfig } from '@zp
 import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 
+import { getCriticalCss } from './critical-css.ts'
 import { zpressPlugin } from './plugin.ts'
 
 interface CreateRspressConfigOptions {
@@ -113,6 +114,15 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const themeColors = resolveThemeColors(config)
   const themeDarkColors = resolveThemeDarkColors(config)
 
+  const criticalCss = getCriticalCss(themeName)
+
+  const headElements = (() => {
+    if (criticalCss) {
+      return [`<style data-zpress-critical>${criticalCss}</style>`]
+    }
+    return []
+  })()
+
   return {
     root: paths.contentDir,
     outDir: paths.distDir,
@@ -131,6 +141,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     themeDir: path.resolve(import.meta.dirname, 'theme'),
 
     plugins: [zpressPlugin()],
+
+    head: headElements,
 
     builderConfig: {
       ...(() => {
