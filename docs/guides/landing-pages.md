@@ -17,7 +17,7 @@ A landing page is created when a section has:
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   link: '/guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
@@ -34,7 +34,7 @@ With `recursive: true`, the `indexFile` field controls which filename is used (d
 
 ```ts
 {
-  text: 'Reference',
+  title: 'Reference',
   prefix: '/reference',
   from: 'docs/reference/**/*.md',
   recursive: true,
@@ -46,13 +46,13 @@ With `recursive: true`, the `indexFile` field controls which filename is used (d
 
 Sections without workspace metadata display simple cards. Each card shows:
 
-- Entry name (from `text`)
+- Entry name (from `title`)
 - Description (from child page frontmatter `description`)
 - Icon colors rotate automatically across cards
 
 ## Workspace cards
 
-When workspace metadata (from `apps`, `packages`, or `workspaces`) matches a section by `docsPrefix`, the landing page uses workspace-style cards. These show:
+When workspace metadata (from `apps`, `packages`, or `workspaces`) matches a section by `path`, the landing page uses workspace-style cards. These show:
 
 - Icon with color styling
 - Scope label (e.g. `apps/`)
@@ -72,7 +72,7 @@ Card descriptions are resolved in this order (highest priority first):
 
 ```ts
 {
-  text: 'API Docs',
+  title: 'API Docs',
   link: '/api',
   from: 'docs/api/overview.md',
   card: {

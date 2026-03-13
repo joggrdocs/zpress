@@ -13,7 +13,7 @@ A page maps a source markdown file to a URL.
 
 ```ts
 {
-  text: 'Architecture',
+  title: 'Architecture',
   link: '/architecture',
   from: 'docs/architecture.md',
 }
@@ -23,7 +23,7 @@ Pages can also use inline content instead of a file:
 
 ```ts
 {
-  text: 'Changelog',
+  title: 'Changelog',
   link: '/changelog',
   content: '# Changelog\n\nSee GitHub releases.',
 }
@@ -33,7 +33,7 @@ Or generate content dynamically:
 
 ```ts
 {
-  text: 'Status',
+  title: 'Status',
   link: '/status',
   content: async () => {
     const data = await fetchStatus()
@@ -50,10 +50,10 @@ A section groups pages under a collapsible sidebar heading.
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   items: [
-    { text: 'Quick Start', link: '/guides/quick-start', from: 'docs/guides/quick-start.md' },
-    { text: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
+    { title: 'Quick Start', link: '/guides/quick-start', from: 'docs/guides/quick-start.md' },
+    { title: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
   ],
 }
 ```
@@ -64,7 +64,7 @@ Use a glob pattern with `prefix` to discover pages automatically:
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
 }
@@ -78,11 +78,11 @@ Combine explicit entries with auto-discovery. Explicit entries take precedence o
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
   items: [
-    { text: 'Start Here', link: '/guides/start', from: 'docs/intro.md' },
+    { title: 'Start Here', link: '/guides/start', from: 'docs/intro.md' },
   ],
 }
 ```
@@ -93,13 +93,13 @@ Sections can nest arbitrarily. Sections deeper than level 1 are collapsible by d
 
 ```ts
 {
-  text: 'API',
+  title: 'API',
   items: [
     {
-      text: 'Authentication',
+      title: 'Authentication',
       items: [
-        { text: 'OAuth', link: '/api/auth/oauth', from: 'docs/api/auth/oauth.md' },
-        { text: 'API Keys', link: '/api/auth/keys', from: 'docs/api/auth/keys.md' },
+        { title: 'OAuth', link: '/api/auth/oauth', from: 'docs/api/auth/oauth.md' },
+        { title: 'API Keys', link: '/api/auth/keys', from: 'docs/api/auth/keys.md' },
       ],
     },
   ],
@@ -112,7 +112,7 @@ For large doc trees that mirror a directory structure, use `recursive: true`:
 
 ```ts
 {
-  text: 'Reference',
+  title: 'Reference',
   prefix: '/reference',
   from: 'docs/reference/**/*.md',
   recursive: true,
@@ -140,12 +140,12 @@ By default all sections share one sidebar. Set `isolated: true` to give a sectio
 
 ```ts
 {
-  text: 'API Reference',
+  title: 'API Reference',
   link: '/api/',
   isolated: true,
   items: [
-    { text: 'Auth', link: '/api/auth', from: 'docs/api/auth.md' },
-    { text: 'Users', link: '/api/users', from: 'docs/api/users.md' },
+    { title: 'Auth', link: '/api/auth', from: 'docs/api/auth.md' },
+    { title: 'Users', link: '/api/users', from: 'docs/api/users.md' },
   ],
 }
 ```

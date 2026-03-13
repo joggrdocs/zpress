@@ -14,6 +14,12 @@ export type {
   Result,
 } from './types.ts'
 
+// Icon system
+export type { IconConfig, IconColor, ResolvedIcon } from './icon.ts'
+export { resolveIcon, resolveOptionalIcon, ICON_COLORS } from './icon.ts'
+export type { IconId, IconPrefix } from './icons.generated.ts'
+export { ICON_PREFIXES } from './icons.generated.ts'
+
 // Config
 export { defineConfig, validateConfig } from './define-config.ts'
 export { loadConfig } from './config.ts'

@@ -42,7 +42,7 @@ export function sortEntries(
 
   return match(sort)
     .with('alpha', () =>
-      [...entries].toSorted((a, b) => sectionFirst(a, b) || a.text.localeCompare(b.text))
+      [...entries].toSorted((a, b) => sectionFirst(a, b) || a.title.localeCompare(b.title))
     )
     .with('filename', () =>
       [...entries].toSorted((a, b) => {
@@ -52,10 +52,10 @@ export function sortEntries(
         }
         const aKey = match(a.page)
           .with(P.nonNullable, (p) => p.outputPath)
-          .otherwise(() => a.text)
+          .otherwise(() => a.title)
         const bKey = match(b.page)
           .with(P.nonNullable, (p) => p.outputPath)
-          .otherwise(() => b.text)
+          .otherwise(() => b.title)
         return aKey.localeCompare(bKey)
       })
     )
@@ -77,7 +77,7 @@ function toResolvedPage(entry: ResolvedEntry): ResolvedPage {
     return {}
   })()
   return {
-    text: entry.text,
+    title: entry.title,
     link: match(entry.link)
       .with(P.nonNullable, (l) => l)
       .otherwise(() => ''),

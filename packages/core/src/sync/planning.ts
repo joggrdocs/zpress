@@ -86,7 +86,7 @@ export async function discoverPlanningPages(ctx: SyncContext): Promise<readonly 
  */
 interface FileEntry {
   readonly slug: string
-  readonly text: string
+  readonly title: string
 }
 
 /**
@@ -103,7 +103,7 @@ interface DirNode {
  */
 interface EnrichedEntry {
   readonly slug: string
-  readonly text: string
+  readonly title: string
   readonly dirName: string | undefined
 }
 
@@ -125,12 +125,12 @@ async function generatePlanningIndex(
     files.map(async (relativePath) => {
       const slug = relativePath.replace(/\.md$/, '')
       const sourcePath = path.resolve(planningDir, relativePath)
-      const text = await deriveText(sourcePath, path.basename(slug), 'heading')
+      const title = await deriveText(sourcePath, path.basename(slug), 'heading')
       const segments = relativePath.split('/')
 
       const dirName = resolveDirName(segments)
 
-      return { slug, text, dirName } satisfies EnrichedEntry
+      return { slug, title, dirName } satisfies EnrichedEntry
     })
   )
 
@@ -150,7 +150,7 @@ async function generatePlanningIndex(
       name: dirName,
       title: kebabToTitle(dirName),
       files: dirEntries
-        .map((e): FileEntry => ({ slug: e.slug, text: e.text }))
+        .map((e): FileEntry => ({ slug: e.slug, title: e.title }))
         .toSorted((a, b) => naturalCompare(a.slug, b.slug)),
     }))
 
@@ -159,7 +159,7 @@ async function generatePlanningIndex(
 
   const dirSections = dirs.map((dir) => {
     const heading = `## ${dir.title}\n`
-    const links = dir.files.map((e) => `- [${e.text}](${PLANNING_PREFIX}/${e.slug})`).join('\n')
+    const links = dir.files.map((e) => `- [${e.title}](${PLANNING_PREFIX}/${e.slug})`).join('\n')
     return `${heading}\n${links}`
   })
 
@@ -231,5 +231,5 @@ function resolveRootSection(rootFiles: readonly FileEntry[]): readonly string[] 
   if (rootFiles.length === 0) {
     return []
   }
-  return [rootFiles.map((e) => `- [${e.text}](${PLANNING_PREFIX}/${e.slug})`).join('\n')]
+  return [rootFiles.map((e) => `- [${e.title}](${PLANNING_PREFIX}/${e.slug})`).join('\n')]
 }

@@ -1,6 +1,7 @@
 import { isUndefined, omitBy } from 'es-toolkit'
-import { match } from 'ts-pattern'
+import { match, P } from 'ts-pattern'
 
+import { resolveOptionalIcon } from '../icon.ts'
 import type { Entry, ZpressConfig, WorkspaceItem } from '../types.ts'
 import { buildWorkspaceCardJsx } from './sidebar/landing.ts'
 import type { ResolvedEntry } from './types.ts'
@@ -18,7 +19,7 @@ interface WorkspaceArrays {
  * Enrich resolved entries with card metadata derived from workspace items.
  *
  * Walks the resolved entry tree and, for each entry whose link starts with
- * a `WorkspaceItem.docsPrefix`, produces a new tree with `CardConfig` metadata
+ * a `WorkspaceItem.path`, produces a new tree with `CardConfig` metadata
  * added — without mutating the original entries.
  *
  * @param entries - Resolved entry tree from `resolveEntries()`
@@ -126,8 +127,8 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
  * @returns Full introduction page markdown string
  */
 export function generateIntroPage(workspaces: WorkspaceArrays): string {
-  const appsList = workspaces.apps.map((a) => `${a.text} (${a.description})`).join(', ')
-  const packagesList = workspaces.packages.map((p) => `${p.text} (${p.description})`).join(', ')
+  const appsList = workspaces.apps.map((a) => `${a.title} (${a.description})`).join(', ')
+  const packagesList = workspaces.packages.map((p) => `${p.title} (${p.description})`).join(', ')
 
   return [
     '# Introduction',
@@ -165,14 +166,14 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
     .with(
       true,
       (): Entry => ({
-        text: 'Apps',
+        title: 'Apps',
         link: '/apps',
         isolated: true,
         frontmatter: {
           description: 'Deployable applications that make up the platform.',
         },
         items: apps
-          .filter((item) => !existingLinks.has(item.docsPrefix))
+          .filter((item) => !existingLinks.has(item.path))
           .map((item) => workspaceItemToEntry(item)),
       })
     )
@@ -182,14 +183,14 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
     .with(
       true,
       (): Entry => ({
-        text: 'Packages',
+        title: 'Packages',
         link: '/packages',
         isolated: true,
         frontmatter: {
           description: 'Shared libraries and utilities consumed across apps and services.',
         },
         items: packages
-          .filter((item) => !existingLinks.has(item.docsPrefix))
+          .filter((item) => !existingLinks.has(item.path))
           .map((item) => workspaceItemToEntry(item)),
       })
     )
@@ -201,14 +202,14 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
       return null
     }
     return {
-      text: group.name,
+      title: group.name,
       link,
       isolated: true,
       frontmatter: {
         description: group.description,
       },
       items: group.items
-        .filter((item) => !existingLinks.has(item.docsPrefix))
+        .filter((item) => !existingLinks.has(item.path))
         .map((item) => workspaceItemToEntry(item)),
     }
   })
@@ -263,9 +264,9 @@ function enrichEntries(
 
     if (entry.link && !entry.card) {
       const entryLink = entry.link
-      const matched = items.find((item) => entryLink === item.docsPrefix)
+      const matched = items.find((item) => entryLink === item.path)
       if (matched) {
-        const scope = deriveScope(matched.docsPrefix)
+        const scope = deriveScope(matched.path)
         const tags = resolveTags(matched.tags)
         const badge = resolveBadge(matched.badge)
 
@@ -274,7 +275,6 @@ function enrichEntries(
           items: enrichedItems,
           card: {
             icon: matched.icon,
-            iconColor: matched.iconColor,
             scope,
             description: matched.description,
             tags,
@@ -292,13 +292,13 @@ function enrichEntries(
 }
 
 /**
- * Derive the scope label from a docsPrefix.
+ * Derive the scope label from a path.
  * E.g. "/apps/api" → "apps/", "/packages/database" → "packages/"
  *
  * @private
  */
-function deriveScope(docsPrefix: string): string {
-  const segments = docsPrefix.split('/').filter(Boolean)
+function deriveScope(itemPath: string): string {
+  const segments = itemPath.split('/').filter(Boolean)
   if (segments.length > 0) {
     return `${segments[0]}/`
   }
@@ -316,18 +316,27 @@ function buildWorkspaceSection(
   items: readonly WorkspaceItem[],
   scopePrefix: string
 ): string {
-  const cards = items.map((item) =>
-    buildWorkspaceCardJsx({
-      link: item.docsPrefix,
-      text: item.text,
-      icon: item.icon,
-      iconColor: item.iconColor,
+  const cards = items.map((item) => {
+    const resolved = resolveOptionalIcon(item.icon)
+    return buildWorkspaceCardJsx({
+      link: item.path,
+      title: item.title,
+      icon: match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
+      iconColor: match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
       scope: scopePrefix,
       description: item.description,
       tags: item.tags,
       badge: item.badge,
     })
-  )
+  })
 
   return [
     `## ${heading}`,
@@ -343,20 +352,20 @@ function buildWorkspaceSection(
 /**
  * Convert a WorkspaceItem to an Entry, passing through all Entry-like fields.
  *
- * Uses `docsPrefix` as both `link` (clickable section header) and `prefix`
+ * Uses `path` as both `link` (clickable section header) and `prefix`
  * (URL prefix for glob-discovered children).
  *
  * The `from` field is resolved relative to the workspace item's base path
- * (derived from `docsPrefix`). Defaults to `"docs/*.md"` when omitted.
+ * (derived from `path`). Defaults to `"docs/*.md"` when omitted.
  *
- * For example, `docsPrefix: "/apps/api"` resolves to `"apps/api/docs/*.md"`.
+ * For example, `path: "/apps/api"` resolves to `"apps/api/docs/*.md"`.
  *
  * @private
  */
 function workspaceItemToEntry(item: WorkspaceItem): Entry {
   const base: Entry = {
-    text: item.text,
-    link: item.docsPrefix,
+    title: item.title,
+    link: item.path,
   }
 
   return applyOptionalFields(base, item)
@@ -364,18 +373,18 @@ function workspaceItemToEntry(item: WorkspaceItem): Entry {
 
 function applyOptionalFields(base: Entry, item: WorkspaceItem): Entry {
   const fromPattern = item.from ?? 'docs/*.md'
-  const basePath = item.docsPrefix.replace(/^\//, '')
+  const basePath = item.path.replace(/^\//, '')
   const resolvedFrom = `${basePath}/${fromPattern}`
 
   return omitBy(
     {
       ...base,
       from: resolvedFrom,
-      prefix: item.docsPrefix,
+      prefix: item.path,
       items: item.items,
       sort: item.sort,
-      textFrom: item.textFrom,
-      textTransform: item.textTransform,
+      titleFrom: item.titleFrom,
+      titleTransform: item.titleTransform,
       recursive: item.recursive,
       indexFile: resolveIndexFile(item.recursive, item.indexFile),
       exclude: resolveExclude(item.exclude),

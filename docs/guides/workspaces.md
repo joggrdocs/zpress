@@ -15,51 +15,48 @@ import { defineConfig } from '@zpress/kit'
 export default defineConfig({
   apps: [
     {
-      text: 'API',
-      icon: 'devicon:hono',
-      iconColor: 'blue',
+      title: 'API',
+      icon: { id: 'devicon:hono', color: 'blue' },
       description: 'REST API with typed routes',
       tags: ['hono', 'typescript', 'node'],
-      docsPrefix: '/apps/api',
+      path: '/apps/api',
     },
     {
-      text: 'Console',
-      icon: 'devicon:react',
-      iconColor: 'purple',
+      title: 'Console',
+      icon: { id: 'devicon:react', color: 'purple' },
       description: 'Admin dashboard',
       tags: ['react', 'vite'],
-      docsPrefix: '/apps/console',
+      path: '/apps/console',
     },
   ],
   packages: [
     {
-      text: 'SDK',
+      title: 'SDK',
       description: 'TypeScript client SDK',
       tags: ['typescript', 'npm'],
-      docsPrefix: '/packages/sdk',
+      path: '/packages/sdk',
     },
   ],
   sections: [
-    { text: 'Getting Started', link: '/getting-started', from: 'docs/getting-started.md' },
+    { title: 'Getting Started', link: '/getting-started', from: 'docs/getting-started.md' },
   ],
 })
 ```
 
 ## Fields
 
-| Field         | Type                           | Required | Description                        |
-| ------------- | ------------------------------ | -------- | ---------------------------------- |
-| `text`        | `string`                       | yes      | Display name                       |
-| `icon`        | `string`                       | no       | Iconify identifier                 |
-| `iconColor`   | `string`                       | no       | CSS class suffix for icon color    |
-| `description` | `string`                       | yes      | Short description for cards        |
-| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)       |
-| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                 |
-| `docsPrefix`  | `string`                       | yes      | Docs path prefix matching sections |
+| Field         | Type                           | Required | Description                                                     |
+| ------------- | ------------------------------ | -------- | --------------------------------------------------------------- |
+| `title`       | `string`                       | yes      | Display name                                                    |
+| `icon`        | `IconConfig`                   | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `description` | `string`                       | yes      | Short description for cards                                     |
+| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                                    |
+| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                              |
+| `path`        | `string`                       | yes      | Docs path prefix matching sections                              |
 
 ## How it works
 
-Workspace items are matched to sections by `docsPrefix`. When a section's `link` or `prefix` matches a workspace item's `docsPrefix`, the workspace metadata is injected into that section's auto-generated landing page as a card.
+Workspace items are matched to sections by `path`. When a section's `link` or `prefix` matches a workspace item's `path`, the workspace metadata is injected into that section's auto-generated landing page as a card.
 
 Cards display:
 

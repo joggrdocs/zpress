@@ -58,21 +58,21 @@ export async function resolveRecursiveGlob(
 
   if (files.length === 0) {
     if (!ctx.quiet) {
-      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.text}"`)
+      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.title}"`)
     }
     return []
   }
 
   const baseDir = extractBaseDir(entry.from)
   const prefix = entry.prefix ?? ''
-  const textFrom = entry.textFrom ?? 'filename'
+  const titleFrom = entry.titleFrom ?? 'filename'
 
   const root = buildDirTree(files, baseDir)
   return buildEntryTree({
     node: root,
     prefix,
-    textFrom,
-    textTransform: entry.textTransform,
+    titleFrom,
+    titleTransform: entry.titleTransform,
     sort: entry.sort,
     collapsible: entry.collapsible,
     indexFile,
@@ -136,8 +136,8 @@ function buildDirTree(files: readonly string[], baseDir: string): DirNode {
 interface BuildEntryTreeParams {
   readonly node: DirNode
   readonly prefix: string
-  readonly textFrom: 'filename' | 'heading' | 'frontmatter'
-  readonly textTransform: Entry['textTransform']
+  readonly titleFrom: 'filename' | 'heading' | 'frontmatter'
+  readonly titleTransform: Entry['titleTransform']
   readonly sort: Entry['sort']
   readonly collapsible: boolean | undefined
   readonly indexFile: string
@@ -156,8 +156,8 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
   const {
     node,
     prefix,
-    textFrom,
-    textTransform,
+    titleFrom,
+    titleTransform,
     sort,
     collapsible,
     indexFile,
@@ -177,13 +177,13 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
       const slug = path.basename(file, path.extname(file))
       const link = `${prefix}/${slug}`
       const sourcePath = path.resolve(ctx.repoRoot, file)
-      const rawText = await deriveText(sourcePath, slug, textFrom)
-      const text = match(textTransform)
-        .with(P.nonNullable, (t) => t(rawText, slug))
-        .otherwise(() => rawText)
+      const rawTitle = await deriveText(sourcePath, slug, titleFrom)
+      const title = match(titleTransform)
+        .with(P.nonNullable, (t) => t(rawTitle, slug))
+        .otherwise(() => rawTitle)
 
       return {
-        text,
+        title,
         link,
         page: {
           source: sourcePath,
@@ -204,13 +204,13 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
         (f) => path.basename(f, path.extname(f)) === indexFile
       )
 
-      const { sectionText, sectionPage } = await resolveSubdirSection({
+      const { sectionTitle, sectionPage } = await resolveSubdirSection({
         indexFilePath,
         dirName,
         subPrefix,
         indexFile,
-        textFrom,
-        textTransform,
+        titleFrom,
+        titleTransform,
         ctx,
         frontmatter,
       })
@@ -218,8 +218,8 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
       const children = await buildEntryTree({
         node: subNode,
         prefix: subPrefix,
-        textFrom,
-        textTransform,
+        titleFrom,
+        titleTransform,
         sort,
         collapsible,
         indexFile,
@@ -237,7 +237,7 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
       const sectionLink = resolveSectionLink(indexFilePath, subPrefix, indexFile)
 
       return {
-        text: sectionText,
+        title: sectionTitle,
         link: sectionLink,
         collapsible: effectiveCollapsible,
         items: sorted,
@@ -257,14 +257,14 @@ interface ResolveSubdirSectionParams {
   readonly dirName: string
   readonly subPrefix: string
   readonly indexFile: string
-  readonly textFrom: 'filename' | 'heading' | 'frontmatter'
-  readonly textTransform: Entry['textTransform']
+  readonly titleFrom: 'filename' | 'heading' | 'frontmatter'
+  readonly titleTransform: Entry['titleTransform']
   readonly ctx: SyncContext
   readonly frontmatter: Frontmatter
 }
 
 /**
- * Resolve the section text and optional page for a subdirectory entry.
+ * Resolve the section title and optional page for a subdirectory entry.
  *
  * When an index file exists, derives the section heading from it and
  * creates a page entry. Otherwise falls back to kebab-to-title of the
@@ -272,14 +272,14 @@ interface ResolveSubdirSectionParams {
  */
 async function resolveSubdirSection(
   params: ResolveSubdirSectionParams
-): Promise<{ sectionText: string; sectionPage: ResolvedEntry['page'] | undefined }> {
+): Promise<{ sectionTitle: string; sectionPage: ResolvedEntry['page'] | undefined }> {
   const {
     indexFilePath,
     dirName,
     subPrefix,
     indexFile,
-    textFrom,
-    textTransform,
+    titleFrom,
+    titleTransform,
     ctx,
     frontmatter,
   } = params
@@ -287,22 +287,22 @@ async function resolveSubdirSection(
   if (indexFilePath) {
     const ext = sourceExt(indexFilePath)
     const sourcePath = path.resolve(ctx.repoRoot, indexFilePath)
-    const rawText = await deriveText(sourcePath, dirName, textFrom)
-    const sectionText = match(textTransform)
-      .with(P.nonNullable, (t) => t(rawText, dirName))
-      .otherwise(() => rawText)
+    const rawTitle = await deriveText(sourcePath, dirName, titleFrom)
+    const sectionTitle = match(titleTransform)
+      .with(P.nonNullable, (t) => t(rawTitle, dirName))
+      .otherwise(() => rawTitle)
     const sectionPage: ResolvedEntry['page'] = {
       source: sourcePath,
       outputPath: linkToOutputPath(`${subPrefix}/${indexFile}`, ext),
       frontmatter,
     }
-    return { sectionText, sectionPage }
+    return { sectionTitle, sectionPage }
   }
-  const rawText = kebabToTitle(dirName)
-  const sectionText = match(textTransform)
-    .with(P.nonNullable, (t) => t(rawText, dirName))
-    .otherwise(() => rawText)
-  return { sectionText, sectionPage: undefined }
+  const rawTitle = kebabToTitle(dirName)
+  const sectionTitle = match(titleTransform)
+    .with(P.nonNullable, (t) => t(rawTitle, dirName))
+    .otherwise(() => rawTitle)
+  return { sectionTitle, sectionPage: undefined }
 }
 
 // ── Private helpers ───────────────────────────────────────────

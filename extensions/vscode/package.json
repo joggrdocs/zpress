@@ -3,7 +3,6 @@
   "displayName": "zpress",
   "version": "0.1.0",
   "description": "Run zpress dev server and preview documentation from VS Code",
-  "icon": "resources/icon.png",
   "categories": [
     "Other"
   ],
@@ -139,16 +138,17 @@
       ]
     }
   },
-  "extensionKind": [
-    "workspace"
-  ],
   "activationEvents": [
     "workspaceContains:zpress.config.js",
     "workspaceContains:zpress.config.json",
-    "workspaceContains:zpress.config.ts",
+    "workspaceContains:zpress.config.mjs",
     "workspaceContains:zpress.config.mts",
-    "workspaceContains:zpress.config.mjs"
+    "workspaceContains:zpress.config.ts"
   ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "icon": "resources/icon.png",
   "engines": {
     "vscode": "^1.110.0"
   }

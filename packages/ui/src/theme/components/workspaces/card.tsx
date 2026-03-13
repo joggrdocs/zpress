@@ -1,7 +1,7 @@
+import type { IconColor } from '@zpress/core'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
-import type { IconColor } from '../home/feature-card'
 import { Card } from '../shared/card'
 import { Icon } from '../shared/icon'
 import { TechTag } from '../shared/tech-tag'
@@ -12,7 +12,7 @@ export interface WorkspaceCardProps {
   /**
    * Display name for the card header.
    */
-  readonly text: string
+  readonly title: string
   /**
    * Link target (e.g. "/apps/api").
    */
@@ -50,7 +50,7 @@ export interface WorkspaceCardProps {
  * description, tech tags, and optional deploy badge.
  */
 export function WorkspaceCard({
-  text,
+  title,
   href,
   icon,
   iconColor = 'purple',
@@ -59,7 +59,7 @@ export function WorkspaceCard({
   tags,
   badge,
 }: WorkspaceCardProps): React.ReactElement {
-  const name = text.toLowerCase()
+  const name = title.toLowerCase()
 
   const iconEl = match(icon)
     .with(P.nonNullable, (id) => <Icon icon={id} />)

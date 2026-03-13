@@ -1,10 +1,11 @@
 import { match, P } from 'ts-pattern'
 
+import { ICON_COLORS, resolveOptionalIcon } from '../../icon.ts'
+import type { IconColor } from '../../icon.ts'
 import type { Entry, WorkspaceItem } from '../../types.ts'
 import { linkToOutputPath, sourceExt } from '../resolve/path.ts'
 import type { ResolvedEntry } from '../types.ts'
-import { buildWorkspaceCardJsx, generateLandingContent, ICON_COLORS } from './landing.ts'
-import type { IconColor } from './landing.ts'
+import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
 
 /**
  * Slug priority for overview files that should be promoted to section headers.
@@ -83,22 +84,20 @@ export function injectLandingPages(
 
         const children = entry.items
         entry.page = {
-          content: () => generateLandingContent(entry.text, description, children, color),
+          content: () => generateLandingContent(entry.title, description, children, color),
           outputPath: linkToOutputPath(entry.link).replace(/\.md$/, '.mdx'),
           frontmatter: {},
         }
       } else if (!entry.items || entry.items.length === 0) {
         // Check for workspace items matching this section's link prefix
-        const matching = workspaceItems.filter((item) =>
-          item.docsPrefix.startsWith(`${entry.link}/`)
-        )
+        const matching = workspaceItems.filter((item) => item.path.startsWith(`${entry.link}/`))
 
         if (matching.length > 0) {
           const segments = entry.link.split('/')
           const lastSegment = segments.findLast((seg) => seg.length > 0)
           const scope = `${lastSegment}/`
           entry.page = {
-            content: () => generateWorkspaceLandingPage(entry.text, description, matching, scope),
+            content: () => generateWorkspaceLandingPage(entry.title, description, matching, scope),
             outputPath: linkToOutputPath(entry.link).replace(/\.md$/, '.mdx'),
             frontmatter: {},
           }
@@ -106,11 +105,11 @@ export function injectLandingPages(
 
         if (matching.length === 0) {
           const entryLink = entry.link
-          const exact = workspaceItems.find((item) => item.docsPrefix === entryLink)
+          const exact = workspaceItems.find((item) => item.path === entryLink)
           if (exact) {
             // Simple text page — no React components, stays as .md
             entry.page = {
-              content: () => `# ${exact.text}\n\n${exact.description}\n`,
+              content: () => `# ${exact.title}\n\n${exact.description}\n`,
               outputPath: linkToOutputPath(entryLink),
               frontmatter: {},
             }
@@ -149,11 +148,18 @@ function generateWorkspaceLandingPage(
 
   const cards = items.map((item) => {
     const tags: readonly string[] | undefined = resolveTags(item.tags)
+    const resolved = resolveOptionalIcon(item.icon)
     return buildWorkspaceCardJsx({
-      link: item.docsPrefix,
-      text: item.text,
-      icon: item.icon,
-      iconColor: item.iconColor,
+      link: item.path,
+      title: item.title,
+      icon: match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        .with(P.nullish, () => undefined)
+        .exhaustive(),
+      iconColor: match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        .with(P.nullish, () => undefined)
+        .exhaustive(),
       scope: scopePrefix,
       description: item.description,
       tags,

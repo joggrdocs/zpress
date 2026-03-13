@@ -1,4 +1,5 @@
 import { hasGlobChars } from './glob.ts'
+import type { IconConfig } from './icon.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
 import { THEME_NAMES, COLOR_MODES } from './theme.ts'
@@ -84,9 +85,9 @@ function validateWorkspaceItems(items: readonly WorkspaceItem[]): ConfigResult<t
         return acc
       }
 
-      if (!item.text) {
+      if (!item.title) {
         return {
-          error: configError('missing_field', 'WorkspaceItem: "text" is required'),
+          error: configError('missing_field', 'WorkspaceItem: "title" is required'),
           seen: acc.seen,
         }
       }
@@ -95,43 +96,35 @@ function validateWorkspaceItems(items: readonly WorkspaceItem[]): ConfigResult<t
         return {
           error: configError(
             'missing_field',
-            `WorkspaceItem "${item.text}": "description" is required`
+            `WorkspaceItem "${item.title}": "description" is required`
           ),
           seen: acc.seen,
         }
       }
 
-      if (!item.docsPrefix) {
+      if (!item.path) {
         return {
-          error: configError(
-            'missing_field',
-            `WorkspaceItem "${item.text}": "docsPrefix" is required`
-          ),
+          error: configError('missing_field', `WorkspaceItem "${item.title}": "path" is required`),
           seen: acc.seen,
         }
       }
 
-      if (acc.seen.has(item.docsPrefix)) {
+      if (acc.seen.has(item.path)) {
         return {
           error: configError(
             'duplicate_prefix',
-            `WorkspaceItem "${item.text}": duplicate docsPrefix "${item.docsPrefix}"`
+            `WorkspaceItem "${item.title}": duplicate path "${item.path}"`
           ),
           seen: acc.seen,
         }
       }
 
-      if (item.icon && !item.icon.includes(':')) {
-        return {
-          error: configError(
-            'invalid_icon',
-            `WorkspaceItem "${item.text}": icon must be an Iconify identifier (e.g. "devicon:hono")`
-          ),
-          seen: acc.seen,
-        }
+      const [iconErr] = validateIconConfig(item.icon, `WorkspaceItem "${item.title}"`)
+      if (iconErr) {
+        return { error: iconErr, seen: acc.seen }
       }
 
-      return { error: null, seen: new Set([...acc.seen, item.docsPrefix]) }
+      return { error: null, seen: new Set([...acc.seen, item.path]) }
     },
     { error: null, seen: new Set<string>() }
   )
@@ -190,7 +183,7 @@ function validateEntry(entry: Entry): ConfigResult<true> {
     return [
       configError(
         'invalid_entry',
-        `Entry "${entry.text}": 'from' and 'content' are mutually exclusive`
+        `Entry "${entry.title}": 'from' and 'content' are mutually exclusive`
       ),
       null,
     ]
@@ -200,7 +193,7 @@ function validateEntry(entry: Entry): ConfigResult<true> {
     return [
       configError(
         'invalid_entry',
-        `Entry "${entry.text}": page with 'link' must have 'from', 'content', or 'items'`
+        `Entry "${entry.title}": page with 'link' must have 'from', 'content', or 'items'`
       ),
       null,
     ]
@@ -208,14 +201,14 @@ function validateEntry(entry: Entry): ConfigResult<true> {
 
   if (entry.from && !hasGlobChars(entry.from) && !entry.items && !entry.link) {
     return [
-      configError('invalid_entry', `Entry "${entry.text}": single-file 'from' requires 'link'`),
+      configError('invalid_entry', `Entry "${entry.title}": single-file 'from' requires 'link'`),
       null,
     ]
   }
 
   if (entry.from && hasGlobChars(entry.from) && !entry.prefix) {
     return [
-      configError('invalid_entry', `Entry "${entry.text}": glob 'from' requires 'prefix'`),
+      configError('invalid_entry', `Entry "${entry.title}": glob 'from' requires 'prefix'`),
       null,
     ]
   }
@@ -224,7 +217,7 @@ function validateEntry(entry: Entry): ConfigResult<true> {
     return [
       configError(
         'invalid_entry',
-        `Entry "${entry.text}": 'recursive' requires a recursive glob pattern (e.g. "**/*.md")`
+        `Entry "${entry.title}": 'recursive' requires a recursive glob pattern (e.g. "**/*.md")`
       ),
       null,
     ]
@@ -232,7 +225,7 @@ function validateEntry(entry: Entry): ConfigResult<true> {
 
   if (entry.recursive && !entry.prefix) {
     return [
-      configError('invalid_entry', `Entry "${entry.text}": 'recursive' requires 'prefix'`),
+      configError('invalid_entry', `Entry "${entry.title}": 'recursive' requires 'prefix'`),
       null,
     ]
   }
@@ -259,7 +252,7 @@ function validateEntry(entry: Entry): ConfigResult<true> {
 
 /**
  * Validate explicit features when provided.
- * Each feature must have `text` and `description`.
+ * Each feature must have `title` and `description`.
  */
 function validateFeatures(features: ZpressConfig['features']): ConfigResult<true> {
   if (features === undefined) {
@@ -283,23 +276,58 @@ function validateFeatures(features: ZpressConfig['features']): ConfigResult<true
  * Validate a single feature has required fields and valid icon format.
  */
 function validateFeature(feature: Feature): ConfigError | null {
-  if (!feature.text) {
-    return configError('missing_field', 'Feature: "text" is required')
+  if (!feature.title) {
+    return configError('missing_field', 'Feature: "title" is required')
   }
 
   if (!feature.description) {
-    return configError('missing_field', `Feature "${feature.text}": "description" is required`)
+    return configError('missing_field', `Feature "${feature.title}": "description" is required`)
   }
 
-  if (feature.icon && !feature.icon.includes(':')) {
-    return configError(
-      'invalid_icon',
-      `Feature "${feature.text}": icon must be an Iconify identifier (e.g. "pixelarticons:speed-fast")`
-    )
+  const [iconErr] = validateIconConfig(feature.icon, `Feature "${feature.title}"`)
+  if (iconErr) {
+    return iconErr
   }
 
   return null
 }
+
+/**
+ * Validate an IconConfig value (string or object form).
+ * String form must contain `:`. Object form must have `id` with `:`.
+ */
+function validateIconConfig(icon: IconConfig | undefined, context: string): ConfigResult<true> {
+  if (icon === undefined) {
+    return [null, true]
+  }
+
+  if (typeof icon === 'string') {
+    if (!icon.includes(':')) {
+      return [
+        configError(
+          'invalid_icon',
+          `${context}: icon must be an Iconify identifier (e.g. "devicon:hono")`
+        ),
+        null,
+      ]
+    }
+    return [null, true]
+  }
+
+  // Object form: { id, color }
+  if (!icon.id || !icon.id.includes(':')) {
+    return [
+      configError(
+        'invalid_icon',
+        `${context}: icon.id must be an Iconify identifier (e.g. "devicon:hono")`
+      ),
+      null,
+    ]
+  }
+
+  return [null, true]
+}
+
 /**
  * Validate a single ThemeColors object.
  */

@@ -6,23 +6,23 @@ export default defineConfig({
   tagline: 'Lightweight utilities for everyday TypeScript.',
   sections: [
     {
-      text: 'Getting Started',
+      title: 'Getting Started',
       link: '/getting-started',
       from: 'docs/getting-started.md',
       icon: 'pixelarticons:speed-fast',
     },
     {
-      text: 'API Reference',
+      title: 'API Reference',
       link: '/api-reference',
       from: 'docs/api-reference.md',
       icon: 'pixelarticons:book-open',
     },
     {
-      text: 'Guides',
+      title: 'Guides',
       prefix: '/guides',
       from: 'docs/guides/*.md',
       icon: 'pixelarticons:article',
-      textFrom: 'frontmatter',
+      titleFrom: 'frontmatter',
       sort: 'alpha',
     },
   ],

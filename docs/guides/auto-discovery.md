@@ -11,7 +11,7 @@ Glob patterns let you add pages without updating the config every time a new fil
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
 }
@@ -19,9 +19,9 @@ Glob patterns let you add pages without updating the config every time a new fil
 
 `prefix` is required with globs. Each matched file gets the URL `prefix + "/" + slug`.
 
-## Text derivation
+## Title derivation
 
-Control how page titles are derived from discovered files with `textFrom`:
+Control how page titles are derived from discovered files with `titleFrom`:
 
 | Strategy        | Source                             | Example                                         |
 | --------------- | ---------------------------------- | ----------------------------------------------- |
@@ -33,27 +33,27 @@ Default is `'filename'`. Each strategy falls back to the next: frontmatter → h
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
-  textFrom: 'frontmatter',
+  titleFrom: 'frontmatter',
 }
 ```
 
-## Text transform
+## Title transform
 
-Apply a custom transform to derived text:
+Apply a custom transform to derived title:
 
 ```ts
 {
-  text: 'ADRs',
+  title: 'ADRs',
   prefix: '/adrs',
   from: 'docs/adrs/*.md',
-  textTransform: (text, slug) => slug.replace(/^(\d+)-/, '$1. '),
+  titleTransform: (title, slug) => slug.replace(/^(\d+)-/, '$1. '),
 }
 ```
 
-This only applies to auto-discovered children. Entries with explicit `text` are not transformed.
+This only applies to auto-discovered children. Entries with explicit `title` are not transformed.
 
 ## Sorting
 
@@ -67,7 +67,7 @@ When `sort` is omitted, entries appear in glob discovery order.
 
 ```ts
 {
-  text: 'ADRs',
+  title: 'ADRs',
   prefix: '/adrs',
   from: 'docs/adrs/*.md',
   sort: 'filename',
@@ -80,7 +80,7 @@ Exclude specific files from a glob match:
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
   exclude: ['**/draft-*.md', '**/internal/**'],

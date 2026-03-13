@@ -10,7 +10,7 @@ import type { AssetConfig } from '../banner/types.ts'
 import type { Paths } from '../paths.ts'
 import type { Entry, ZpressConfig } from '../types.ts'
 import { copyPage } from './copy.ts'
-import { generateDefaultHomePage } from './home.ts'
+import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
 import { discoverPlanningPages } from './planning.ts'
 import { resolveEntries } from './resolve/index.ts'
@@ -99,22 +99,19 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 2. Collect all pages from the tree
   const sectionPages = collectPages(resolved)
 
-  // 2.1 Auto-generate home page when no explicit index.md exists
+  // 2.1 Write workspace data (always — independent of home page strategy)
+  const workspaceResult = buildWorkspaceData(config)
+  await fs.writeFile(
+    path.resolve(outDir, '.generated/workspaces.json'),
+    JSON.stringify(workspaceResult.data, null, 2),
+    'utf8'
+  )
+
+  // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
   const homeResult = await match(hasExplicitHome)
     .with(true, () => Promise.resolve(null))
     .otherwise(() => generateDefaultHomePage(config, repoRoot))
-
-  // 2.2 Write workspace data
-  await match(homeResult)
-    .with(P.nonNullable, async (result) => {
-      await fs.writeFile(
-        path.resolve(outDir, '.generated/workspaces.json'),
-        JSON.stringify(result.workspaces, null, 2),
-        'utf8'
-      )
-    })
-    .otherwise(() => Promise.resolve())
 
   const pages: PageData[] = match(homeResult)
     .with(P.nonNullable, (result) => [

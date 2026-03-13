@@ -5,9 +5,9 @@ import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from '../glob.ts'
+import { ICON_COLORS, resolveOptionalIcon } from '../icon.ts'
+import type { IconColor } from '../icon.ts'
 import type { Entry, Feature, ZpressConfig, WorkspaceItem } from '../types.ts'
-import { ICON_COLORS } from './sidebar/landing.ts'
-import type { IconColor } from './sidebar/landing.ts'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ interface FrontmatterFeature {
  * Serializable workspace card data for a single item.
  */
 export interface HomeWorkspaceCardData {
-  readonly text: string
+  readonly title: string
   readonly href: string
   readonly icon: string | undefined
   readonly iconColor: string | undefined
@@ -195,13 +195,18 @@ function buildFrontmatterFeatures(
  */
 function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly ResolvedFeature[]> {
   return Promise.resolve(
-    features.map((f, index) => ({
-      title: f.text,
-      details: f.description,
-      link: f.link,
-      iconId: f.icon ?? null,
-      iconColor: ICON_COLORS[index % ICON_COLORS.length] as IconColor,
-    }))
+    features.map((f, index) => {
+      const resolved = resolveOptionalIcon(f.icon)
+      return {
+        title: f.title,
+        details: f.description,
+        link: f.link,
+        iconId: match(resolved)
+          .with(P.nonNullable, (r) => r.id)
+          .otherwise(() => null),
+        iconColor: ICON_COLORS[index % ICON_COLORS.length] as IconColor,
+      }
+    })
   )
 }
 
@@ -213,7 +218,7 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
  *
  * @private
  */
-function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
+export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
   const apps = config.apps ?? []
   const packages = config.packages ?? []
   const workspaceGroups = config.workspaces ?? []
@@ -273,16 +278,27 @@ function buildGroupData(
   items: readonly WorkspaceItem[],
   scopePrefix: string
 ): GroupDataResult {
-  const cards: readonly HomeWorkspaceCardData[] = items.map((item) => ({
-    text: item.text,
-    href: item.docsPrefix,
-    icon: item.icon,
-    iconColor: item.iconColor,
-    scope: resolveScope(scopePrefix),
-    description: item.description,
-    tags: resolveTagLabels(item.tags),
-    badge: item.badge,
-  }))
+  const cards: readonly HomeWorkspaceCardData[] = items.map((item) => {
+    const resolved = resolveOptionalIcon(item.icon)
+    return {
+      title: item.title,
+      href: item.path,
+      icon: match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
+      iconColor: match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
+        .exhaustive(),
+      scope: resolveScope(scopePrefix),
+      description: item.description,
+      tags: resolveTagLabels(item.tags),
+      badge: item.badge,
+    }
+  })
 
   return {
     group: { type, heading, description, cards },
@@ -318,9 +334,12 @@ function buildFeatures(
     sections.slice(0, 3).map(async (section, index) => {
       const link = section.link ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
-      const iconId = section.icon ?? null
+      const resolved = resolveOptionalIcon(section.icon)
+      const iconId = match(resolved)
+        .with(P.nonNullable, (r) => r.id)
+        .otherwise(() => null)
       const iconColor: IconColor = ICON_COLORS[index % ICON_COLORS.length]
-      return { title: section.text, details, link, iconId, iconColor }
+      return { title: section.title, details, link, iconId, iconColor }
     })
   )
 }
@@ -348,7 +367,7 @@ function findFirstChildLink(section: Entry): string | undefined {
 /**
  * Extract a description for a config section.
  *
- * Priority: source file frontmatter -> config frontmatter -> section text.
+ * Priority: source file frontmatter -> config frontmatter -> section title.
  *
  * @private
  */
@@ -371,12 +390,12 @@ async function extractSectionDescription(section: Entry, repoRoot: string): Prom
   }
 
   // Well-known section name → curated default
-  const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[section.text.toLowerCase()]
+  const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[section.title.toLowerCase()]
   if (knownDesc) {
     return knownDesc
   }
 
-  return section.text
+  return section.title
 }
 
 /**

@@ -1,3 +1,4 @@
+import type { IconConfig } from './icon.ts'
 import type { ThemeConfig } from './theme.ts'
 
 /**
@@ -15,22 +16,22 @@ import type { ThemeConfig } from './theme.ts'
  *   title: 'My Docs',
  *   sections: [
  *     {
- *       text: 'Introduction',
+ *       title: 'Introduction',
  *       items: [
- *         { text: 'Architecture', link: '/architecture', from: 'docs/architecture.md' },
- *         { text: 'Structure', link: '/structure', from: 'docs/structure.md' },
+ *         { title: 'Architecture', link: '/architecture', from: 'docs/architecture.md' },
+ *         { title: 'Structure', link: '/structure', from: 'docs/structure.md' },
  *       ],
  *     },
  *     {
- *       text: 'Guides',
+ *       title: 'Guides',
  *       prefix: '/guides',
  *       from: 'docs/guides/*.md',
  *     },
  *     {
- *       text: 'API Reference',
+ *       title: 'API Reference',
  *       items: [
- *         { text: 'Overview', link: '/api/overview', content: '# API\n...' },
- *         { text: 'Routes', link: '/api/routes', from: 'apps/api/docs/routes.md' },
+ *         { title: 'Overview', link: '/api/overview', content: '# API\n...' },
+ *         { title: 'Routes', link: '/api/routes', from: 'apps/api/docs/routes.md' },
  *       ],
  *     },
  *   ],
@@ -98,7 +99,7 @@ export interface Frontmatter {
 // ── Nav ──────────────────────────────────────────────────────
 
 export interface NavItem {
-  readonly text: string
+  readonly title: string
   readonly link?: UrlPath
   readonly items?: readonly NavItem[]
   readonly activeMatch?: string
@@ -117,7 +118,6 @@ export interface NavItem {
  * ```ts
  * card: {
  *   icon: 'devicon:hono',
- *   iconColor: 'api',
  *   scope: 'apps/',
  *   description: 'Hono REST API with RPC-typed routes',
  *   tags: ['Hono', 'REST', 'Serverless'],
@@ -127,13 +127,9 @@ export interface NavItem {
  */
 export interface CardConfig {
   /**
-   * Iconify identifier for the card icon (e.g. 'devicon:hono').
+   * Icon configuration — Iconify identifier string or `{ id, color }` object.
    */
-  icon?: string
-  /**
-   * CSS class suffix for the icon color (maps to `.workspace-icon--{color}`).
-   */
-  iconColor?: string
+  icon?: IconConfig
   /**
    * Scope label shown above the name (e.g. `"apps/"`).
    */
@@ -163,13 +159,12 @@ export interface CardConfig {
  * @example
  * ```ts
  * {
- *   text: 'API',
+ *   title: 'API',
  *   icon: 'devicon:hono',
- *   iconColor: 'api',
  *   description: 'Hono REST API serving all client applications with RPC-typed routes',
  *   tags: ['hono', 'react', 'vercel'],
  *   badge: { src: '/logos/vercel.svg', alt: 'Vercel' },
- *   docsPrefix: '/apps/api',
+ *   path: '/apps/api',
  * }
  * ```
  */
@@ -177,16 +172,12 @@ export interface WorkspaceItem {
   /**
    * Display name (e.g. "API", "Console", "AI").
    */
-  readonly text: string
+  readonly title: string
   /**
-   * Main icon — Iconify identifier (e.g. "devicon:hono").
+   * Icon configuration — Iconify identifier string or `{ id, color }` object.
    * Falls back to a default app or package icon when omitted.
    */
-  readonly icon?: string
-  /**
-   * CSS class suffix for icon color (maps to `.workspace-icon--{color}`).
-   */
-  readonly iconColor?: string
+  readonly icon?: IconConfig
   /**
    * Short description for cards and bullet lists.
    */
@@ -204,15 +195,15 @@ export interface WorkspaceItem {
    * Docs path prefix (e.g. "/apps/api"). Matches section entries and derives card links.
    * Also used as the URL prefix for glob-discovered children.
    */
-  readonly docsPrefix: string
+  readonly path: string
 
   // ── Entry-like fields for hierarchical documentation ──────
 
   /**
    * Content source — file path or glob, **relative to the workspace item's
-   * base path** (derived from `docsPrefix`).
+   * base path** (derived from `path`).
    *
-   * - `docsPrefix: "/apps/api"` + `from: "docs/*.md"` → resolves to `apps/api/docs/*.md`
+   * - `path: "/apps/api"` + `from: "docs/*.md"` → resolves to `apps/api/docs/*.md`
    * - **No wildcards** → single file (e.g. `"docs/overview.md"`)
    * - **With wildcards** → auto-discover children (e.g. `"docs/*.md"`)
    *
@@ -226,22 +217,22 @@ export interface WorkspaceItem {
   readonly items?: readonly Entry[]
   /**
    * Sort order for auto-discovered children.
-   * - `"alpha"` — alphabetical by derived text (default)
+   * - `"alpha"` — alphabetical by derived title (default)
    * - `"filename"` — alphabetical by filename
    * - Custom comparator function
    */
   readonly sort?: Entry['sort']
   /**
-   * How to derive `text` for auto-discovered children.
+   * How to derive `title` for auto-discovered children.
    * - `"filename"` — kebab-to-title from filename (default)
    * - `"heading"` — first `# heading` in the file
    * - `"frontmatter"` — `title` field from YAML frontmatter, falls back to heading
    */
-  readonly textFrom?: Entry['textFrom']
+  readonly titleFrom?: Entry['titleFrom']
   /**
-   * Transform function applied to auto-derived text (from `textFrom`).
+   * Transform function applied to auto-derived title (from `titleFrom`).
    */
-  readonly textTransform?: Entry['textTransform']
+  readonly titleTransform?: Entry['titleTransform']
   /**
    * Enable recursive directory-based nesting for glob patterns.
    * Requires `from` with a recursive glob (e.g. `"apps/api/docs/**\/*.md"`).
@@ -282,7 +273,7 @@ export interface WorkspaceItem {
  *   description: 'Third-party service connectors',
  *   icon: 'pixelarticons:integration',
  *   items: [
- *     { text: 'Stripe', description: 'Payment processing', docsPrefix: '/integrations/stripe' },
+ *     { title: 'Stripe', description: 'Payment processing', path: '/integrations/stripe' },
  *   ],
  * }
  * ```
@@ -290,7 +281,7 @@ export interface WorkspaceItem {
 export interface WorkspaceGroup {
   readonly name: string
   readonly description: string
-  readonly icon: string
+  readonly icon: IconConfig
   readonly items: readonly WorkspaceItem[]
   /**
    * URL prefix override for the group's landing page.
@@ -308,41 +299,41 @@ export interface WorkspaceGroup {
  *
  * **Page — explicit file**
  * ```ts
- * { text: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
+ * { title: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
  * ```
  *
  * **Page — inline/generated content**
  * ```ts
- * { text: 'Overview', link: '/api/overview', content: '# API Overview\n...' }
+ * { title: 'Overview', link: '/api/overview', content: '# API Overview\n...' }
  * ```
  *
  * **Section — explicit children**
  * ```ts
- * { text: 'Guides', items: [ ... ] }
+ * { title: 'Guides', items: [ ... ] }
  * ```
  *
  * **Section — auto-discovered from glob**
  * ```ts
- * { text: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
+ * { title: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
  * ```
  *
  * **Section — mix of explicit + auto-discovered**
  * ```ts
  * {
- *   text: 'Guides',
+ *   title: 'Guides',
  *   prefix: '/guides',
  *   from: 'docs/guides/*.md',
  *   items: [
- *     { text: 'Getting Started', link: '/guides/start', from: 'docs/intro.md' },
+ *     { title: 'Getting Started', link: '/guides/start', from: 'docs/intro.md' },
  *   ],
  * }
  * ```
  */
 export interface Entry {
   /**
-   * Display text in sidebar and nav.
+   * Display title in sidebar and nav.
    */
-  readonly text: string
+  readonly title: string
 
   /**
    * Output URL path.
@@ -406,27 +397,27 @@ export interface Entry {
   readonly frontmatter?: Frontmatter
 
   /**
-   * How to derive `text` for auto-discovered children.
+   * How to derive `title` for auto-discovered children.
    * - `"filename"` — kebab-to-title from filename (default)
    * - `"heading"` — first `# heading` in the file
    * - `"frontmatter"` — `title` field from YAML frontmatter, falls back to heading
    */
-  readonly textFrom?: 'filename' | 'heading' | 'frontmatter'
+  readonly titleFrom?: 'filename' | 'heading' | 'frontmatter'
 
   /**
-   * Transform function applied to auto-derived text (from `textFrom`).
-   * Called after text derivation for glob-discovered and recursive children.
-   * Does NOT apply to entries with explicit `text` (those are already user-controlled).
+   * Transform function applied to auto-derived title (from `titleFrom`).
+   * Called after title derivation for glob-discovered and recursive children.
+   * Does NOT apply to entries with explicit `title` (those are already user-controlled).
    *
-   * @param text - The derived text (from heading or filename)
+   * @param title - The derived title (from heading or filename)
    * @param slug - The filename slug (without extension)
-   * @returns Transformed text for sidebar display
+   * @returns Transformed title for sidebar display
    */
-  readonly textTransform?: (text: string, slug: string) => string
+  readonly titleTransform?: (title: string, slug: string) => string
 
   /**
    * Sort order for auto-discovered children.
-   * - `"alpha"` — alphabetical by derived text (default)
+   * - `"alpha"` — alphabetical by derived title (default)
    * - `"filename"` — alphabetical by filename
    * - Custom comparator function
    */
@@ -452,10 +443,10 @@ export interface Entry {
   readonly indexFile?: string
 
   /**
-   * Iconify icon identifier (e.g. `"pixelarticons:speed-fast"`).
+   * Icon configuration — Iconify identifier string or `{ id, color }` object.
    * Used on home page feature cards when auto-generated from sections.
    */
-  readonly icon?: string
+  readonly icon?: IconConfig
 
   /**
    * Card display metadata for the parent section's auto-generated landing page.
@@ -485,9 +476,9 @@ export interface Entry {
  */
 export interface ResolvedPage {
   /**
-   * Display text.
+   * Display title.
    */
-  readonly text: string
+  readonly title: string
   /**
    * Output URL path.
    */
@@ -506,7 +497,7 @@ export interface ResolvedPage {
  * A fully resolved section.
  */
 export interface ResolvedSection {
-  readonly text: string
+  readonly title: string
   readonly link?: UrlPath
   readonly collapsible?: boolean
   readonly items: readonly (ResolvedPage | ResolvedSection)[]
@@ -545,7 +536,7 @@ export interface OpenAPIConfig {
  * @example
  * ```ts
  * {
- *   text: 'Getting Started',
+ *   title: 'Getting Started',
  *   description: 'Everything you need to set up and start building.',
  *   link: '/getting-started',
  *   icon: 'pixelarticons:speed-fast',
@@ -556,7 +547,7 @@ export interface Feature {
   /**
    * Display title for the feature card.
    */
-  readonly text: string
+  readonly title: string
   /**
    * Short description shown below the title.
    */
@@ -566,9 +557,9 @@ export interface Feature {
    */
   readonly link?: string
   /**
-   * Iconify icon identifier (e.g. `"pixelarticons:speed-fast"`).
+   * Icon configuration — Iconify identifier string or `{ id, color }` object.
    */
-  readonly icon?: string
+  readonly icon?: IconConfig
 }
 
 // ── Top-level config ─────────────────────────────────────────

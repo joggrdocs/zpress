@@ -37,7 +37,7 @@ export default defineConfig({
   description: 'Project documentation',
   sections: [
     {
-      text: 'Introduction',
+      title: 'Introduction',
       link: '/intro',
       from: 'docs/intro.md',
     },
@@ -49,7 +49,7 @@ Add a section that auto-discovers pages from a directory:
 
 ```ts
 {
-  text: 'Guides',
+  title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
   icon: 'pixelarticons:book-open',

@@ -37,8 +37,8 @@ function renderGroup(group: WorkspaceGroupData): React.ReactElement {
     <WorkspaceGrid key={group.heading} heading={group.heading} description={group.description}>
       {group.cards.map((card, i) => (
         <WorkspaceCard
-          key={`${card.text}-${i}`}
-          text={card.text}
+          key={`${card.title}-${i}`}
+          title={card.title}
           href={card.href}
           icon={card.icon}
           iconColor={card.iconColor}

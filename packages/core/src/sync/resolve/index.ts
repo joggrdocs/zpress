@@ -102,7 +102,7 @@ function resolveFilePage(
   return [
     null,
     {
-      text: entry.text,
+      title: entry.title,
       link: entry.link,
       hidden: entry.hidden,
       card: entry.card,
@@ -126,7 +126,7 @@ function resolveVirtualPage(entry: Entry, frontmatter: Frontmatter): SyncOutcome
   return [
     null,
     {
-      text: entry.text,
+      title: entry.title,
       link: entry.link,
       hidden: entry.hidden,
       card: entry.card,
@@ -192,7 +192,7 @@ async function resolveSection(
   return [
     null,
     {
-      text: entry.text,
+      title: entry.title,
       link: entry.link,
       collapsible,
       hidden: entry.hidden,
@@ -268,14 +268,14 @@ async function resolveGlob(
 
   if (files.length === 0) {
     if (!ctx.quiet) {
-      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.text}"`)
+      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.title}"`)
     }
     return []
   }
 
   const prefix = entry.prefix ?? ''
-  const textFrom = entry.textFrom ?? 'filename'
-  const { textTransform } = entry
+  const titleFrom = entry.titleFrom ?? 'filename'
+  const { titleTransform } = entry
 
   return Promise.all(
     files.map(async (file) => {
@@ -283,13 +283,13 @@ async function resolveGlob(
       const slug = path.basename(file, path.extname(file))
       const link = `${prefix}/${slug}`
       const sourcePath = path.resolve(ctx.repoRoot, file)
-      const rawText = await deriveText(sourcePath, slug, textFrom)
-      const text = match(textTransform)
-        .with(P.nonNullable, (t) => t(rawText, slug))
-        .otherwise(() => rawText)
+      const rawTitle = await deriveText(sourcePath, slug, titleFrom)
+      const title = match(titleTransform)
+        .with(P.nonNullable, (t) => t(rawTitle, slug))
+        .otherwise(() => rawTitle)
 
       return {
-        text,
+        title,
         link,
         page: {
           source: sourcePath,

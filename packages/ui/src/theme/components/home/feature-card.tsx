@@ -1,13 +1,11 @@
+import type { IconColor } from '@zpress/core'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
 import './feature-card.css'
 import { Card } from '../shared/card'
 
-/**
- * Icon color variants matching the design system.
- */
-export type IconColor = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'slate' | 'cyan' | 'pink'
+export type { IconColor } from '@zpress/core'
 
 export interface FeatureCardProps {
   readonly title: string

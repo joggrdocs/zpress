@@ -33,6 +33,33 @@ importers:
       '@changesets/cli':
         specifier: ^2.30.0
         version: 2.30.0(@types/node@25.5.0)
+      '@iconify-json/catppuccin':
+        specifier: ^1.2.17
+        version: 1.2.17
+      '@iconify-json/devicon':
+        specifier: ^1.2.60
+        version: 1.2.60
+      '@iconify-json/logos':
+        specifier: ^1.2.10
+        version: 1.2.10
+      '@iconify-json/material-icon-theme':
+        specifier: ^1.2.55
+        version: 1.2.55
+      '@iconify-json/mdi':
+        specifier: ^1.2.3
+        version: 1.2.3
+      '@iconify-json/pixelarticons':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/simple-icons':
+        specifier: ^1.2.73
+        version: 1.2.73
+      '@iconify-json/skill-icons':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/vscode-icons':
+        specifier: ^1.2.45
+        version: 1.2.45
       '@microsoft/api-extractor':
         specifier: ^7.57.7
         version: 7.57.7(@types/node@25.5.0)

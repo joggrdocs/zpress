@@ -3,26 +3,9 @@ import fs from 'node:fs/promises'
 import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
+import { resolveOptionalIcon } from '../../icon.ts'
+import type { IconColor } from '../../icon.ts'
 import type { ResolvedEntry } from '../types.ts'
-
-// ── Color palette ────────────────────────────────────────────
-
-export type IconColor = 'blue' | 'purple' | 'green' | 'amber' | 'cyan' | 'red' | 'pink' | 'slate'
-
-/**
- * Rotating color palette applied to auto-generated section landing page icons.
- * Each section gets the next color in the cycle.
- */
-export const ICON_COLORS: IconColor[] = [
-  'purple',
-  'blue',
-  'green',
-  'amber',
-  'cyan',
-  'red',
-  'pink',
-  'slate',
-]
 
 // ── Shared card data ─────────────────────────────────────────
 
@@ -37,7 +20,7 @@ export interface WorkspaceCardData {
   /**
    * Display name for the card.
    */
-  readonly text: string
+  readonly title: string
   /**
    * Iconify identifier for the card icon (e.g. 'devicon:hono').
    */
@@ -129,7 +112,7 @@ export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
   const iconColor = data.iconColor ?? 'purple'
 
   const props: readonly string[] = [
-    `text="${escapeJsxProp(data.text)}"`,
+    `title="${escapeJsxProp(data.title)}"`,
     `href="${data.link}"`,
     `icon="${icon}"`,
     `iconColor="${iconColor}"`,
@@ -147,12 +130,19 @@ export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
 async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
   const card = entry.card ?? {}
   const description = card.description ?? (await resolveDescription(entry))
+  const resolved = resolveOptionalIcon(card.icon)
 
   return buildWorkspaceCardJsx({
     link: entry.link ?? '',
-    text: entry.text,
-    icon: card.icon,
-    iconColor: card.iconColor,
+    title: entry.title,
+    icon: match(resolved)
+      .with(P.nonNullable, (r) => r.id)
+      .with(P.nullish, () => undefined)
+      .exhaustive(),
+    iconColor: match(resolved)
+      .with(P.nonNullable, (r) => r.color)
+      .with(P.nullish, () => undefined)
+      .exhaustive(),
     scope: card.scope,
     description,
     tags: card.tags,
@@ -179,7 +169,7 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
 
   const props = [
     `href="${entry.link}"`,
-    `title="${escapeJsxProp(entry.text)}"`,
+    `title="${escapeJsxProp(entry.title)}"`,
     `icon="${icon}"`,
     `iconColor="${iconColor}"`,
   ]
