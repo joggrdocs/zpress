@@ -229,6 +229,14 @@ export function activate(context: ExtensionContext): void {
     commands.registerCommand('zpress.restart', () => {
       server.restart()
     }),
+    commands.registerCommand('zpress.openInBrowser', () => {
+      const baseUrl = server.getBaseUrl()
+      if (!baseUrl) {
+        window.showWarningMessage('Dev server is not running.')
+        return
+      }
+      env.openExternal(Uri.parse(baseUrl))
+    }),
     commands.registerCommand('zpress.openPage', (url: string) => {
       const baseUrl = server.getBaseUrl()
       if (!baseUrl || !isServerUrl(url, baseUrl)) {

@@ -58,6 +58,11 @@
       {
         "command": "zpress.restart",
         "title": "zpress: Restart Dev Server"
+      },
+      {
+        "command": "zpress.openInBrowser",
+        "title": "zpress: Open in Browser",
+        "icon": "$(link-external)"
       }
     ],
     "menus": {
@@ -77,6 +82,11 @@
         {
           "command": "zpress.stop",
           "when": "view =~ /^zpress\\.(loading|section)/ && (zpress:serverReady || zpress:serverStarting)",
+          "group": "navigation"
+        },
+        {
+          "command": "zpress.openInBrowser",
+          "when": "view =~ /^zpress\\.(loading|section)/ && zpress:serverReady",
           "group": "navigation"
         }
       ]
