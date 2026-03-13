@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "watch",
+      "path": "extensions/vscode",
+      "problemMatcher": "$esbuild-watch",
+      "isBackground": true,
+      "label": "vscode: watch",
+      "presentation": {
+        "reveal": "never"
+      }
+    }
+  ]
+}
