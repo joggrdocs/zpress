@@ -1,20 +1,19 @@
 {
-  "name": "@zpress/core",
-  "version": "0.5.0",
-  "description": "Sync engine and asset utilities for zpress",
+  "name": "@zpress/theme",
+  "version": "0.1.0",
+  "description": "Theme types and definitions for zpress",
   "keywords": [
-    "config",
-    "core",
-    "docs",
+    "theme",
+    "types",
     "zpress"
   ],
-  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/core#readme",
+  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/theme#readme",
   "bugs": "https://github.com/joggrdocs/zpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/joggrdocs/zpress.git",
-    "directory": "packages/core"
+    "directory": "packages/theme"
   },
   "files": [
     "dist"
@@ -36,13 +35,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clack/prompts": "^1.1.0",
-    "@zpress/config": "workspace:*",
-    "es-toolkit": "catalog:",
-    "fast-glob": "^3.3.3",
-    "gray-matter": "^4.0.3",
-    "jiti": "^2.6.1",
-    "ts-pattern": "catalog:"
+    "ts-pattern": "catalog:",
+    "type-fest": "^4.30.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",

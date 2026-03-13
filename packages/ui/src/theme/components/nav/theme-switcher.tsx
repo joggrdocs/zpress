@@ -17,6 +17,7 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
   { name: 'base', label: 'Base', swatch: '#a78bfa', defaultColorMode: 'toggle' },
   { name: 'midnight', label: 'Midnight', swatch: '#60a5fa', defaultColorMode: 'dark' },
   { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark' },
+  { name: 'arcade-fx', label: 'Arcade FX', swatch: '#ff00ff', defaultColorMode: 'dark' },
 ]
 
 /**
