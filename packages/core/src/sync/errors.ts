@@ -5,6 +5,10 @@
  * Config validation returns `Result<T, ConfigError>`.
  */
 
+// Re-export from @zpress/config to maintain backward compatibility
+export type { ConfigError, ConfigResult } from '@zpress/config'
+export { configError } from '@zpress/config'
+
 // ── Sync errors ─────────────────────────────────────────────
 
 /**
@@ -33,41 +37,6 @@ export type SyncOutcome<T> = readonly [SyncError, null] | readonly [null, T]
  */
 export function syncError(type: SyncError['type'], message: string): SyncError {
   return Object.freeze({ _tag: 'SyncError' as const, type, message })
-}
-
-// ── Config errors ───────────────────────────────────────────
-
-/**
- * Error produced during config validation in `defineConfig`.
- */
-export interface ConfigError {
-  readonly _tag: 'ConfigError'
-  readonly type:
-    | 'empty_sections'
-    | 'missing_field'
-    | 'duplicate_prefix'
-    | 'invalid_icon'
-    | 'invalid_entry'
-    | 'invalid_section'
-    | 'invalid_field'
-    | 'invalid_theme'
-  readonly message: string
-}
-
-/**
- * Convenience alias for config validation results.
- */
-export type ConfigResult<T> = readonly [ConfigError, null] | readonly [null, T]
-
-/**
- * Create a `ConfigError` value.
- *
- * @param type - Error classification
- * @param message - Human-readable description
- * @returns A frozen `ConfigError` object
- */
-export function configError(type: ConfigError['type'], message: string): ConfigError {
-  return Object.freeze({ _tag: 'ConfigError' as const, type, message })
 }
 
 // ── Utilities ───────────────────────────────────────────────

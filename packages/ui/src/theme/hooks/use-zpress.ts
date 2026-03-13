@@ -1,5 +1,5 @@
 import { useSite } from '@rspress/core/runtime'
-import type { IconColor } from '@zpress/core'
+import type { IconColor } from '@zpress/config'
 
 // ── Sidebar types ───────────────────────────────────────────
 

@@ -1,11 +1,11 @@
-import type { IconColor } from '@zpress/core'
+import type { IconColor } from '@zpress/config'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
 import './feature-card.css'
 import { Card } from '../shared/card'
 
-export type { IconColor } from '@zpress/core'
+export type { IconColor } from '@zpress/config'
 
 export interface FeatureCardProps {
   readonly title: string

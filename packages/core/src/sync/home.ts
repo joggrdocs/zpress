@@ -199,7 +199,7 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
       const resolved = resolveOptionalIcon(f.icon)
       const titleStr = match(f.title)
         .with(P.string, (t) => t)
-        .otherwise((t) => String(t))
+        .otherwise(String)
       const descStr = f.description ?? ''
       return {
         title: titleStr,
@@ -262,7 +262,7 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
   const groupResults = workspaceGroups.map((g) => {
     const titleStr = match(g.title)
       .with(P.string, (t) => t)
-      .otherwise((t) => String(t))
+      .otherwise(String)
     const descStr = g.description ?? ''
     return buildGroupData('workspaces', titleStr, descStr, g.items, '')
   })
@@ -292,7 +292,7 @@ function buildGroupData(
     const resolved = resolveOptionalIcon(item.icon)
     const titleStr = match(item.title)
       .with(P.string, (t) => t)
-      .otherwise((t) => String(t))
+      .otherwise(String)
     return {
       title: titleStr,
       href: item.prefix,

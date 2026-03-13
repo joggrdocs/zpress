@@ -1,12 +1,19 @@
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from './glob.ts'
-import type { IconConfig } from './icon.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
-import { THEME_NAMES, COLOR_MODES } from './theme.ts'
-import type { ThemeConfig, ThemeColors } from './theme.ts'
-import type { ZpressConfig, Section, Feature, Workspace, WorkspaceCategory } from './types.ts'
+import type {
+  ZpressConfig,
+  Section,
+  Feature,
+  Workspace,
+  WorkspaceCategory,
+  IconConfig,
+  ThemeConfig,
+  ThemeColors,
+} from './types.ts'
+import { THEME_NAMES, COLOR_MODES } from '@zpress/theme'
 
 /**
  * Type-safe config helper for user config files.

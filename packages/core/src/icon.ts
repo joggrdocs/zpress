@@ -1,23 +1,7 @@
-import type { IconId } from './icons.generated.ts'
+import type { IconConfig as ConfigIconConfig, IconColor as ConfigIconColor } from '@zpress/config'
 
-// ── IconColor ────────────────────────────────────────────────
-
-/**
- * Available icon color variants matching the design system.
- *
- * Each color maps to `.home-card-icon--{color}` CSS classes.
- *
- * Palette order for auto-rotation:
- * 1. purple (default)
- * 2. blue
- * 3. green
- * 4. amber
- * 5. cyan
- * 6. red
- * 7. pink
- * 8. slate
- */
-export type IconColor = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'slate' | 'cyan' | 'pink'
+// Re-export from @zpress/config to maintain backward compatibility
+export type { IconConfig, IconColor } from '@zpress/config'
 
 /**
  * Rotating color palette applied to auto-generated icons.
@@ -26,7 +10,7 @@ export type IconColor = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'slate' 
  * This array defines the order in which colors are assigned to
  * auto-generated section cards and feature icons.
  */
-export const ICON_COLORS: readonly IconColor[] = [
+export const ICON_COLORS: readonly ConfigIconColor[] = [
   'purple',
   'blue',
   'green',
@@ -37,29 +21,6 @@ export const ICON_COLORS: readonly IconColor[] = [
   'slate',
 ]
 
-// ── IconConfig ───────────────────────────────────────────────
-
-/**
- * Unified icon configuration.
- *
- * Accepts either:
- * - **String**: Iconify identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`)
- *   - Color defaults to purple (first in rotation)
- *   - Find icons at https://icon-sets.iconify.design/
- * - **Object**: `{ id: IconId, color: IconColor }`
- *   - Explicit color from 8-color palette
- *
- * Auto-generated section cards rotate through these colors:
- * purple → blue → green → amber → cyan → red → pink → slate
- *
- * @example
- * ```ts
- * icon: 'devicon:react'  // Uses purple (default)
- * icon: { id: 'devicon:nextjs', color: 'blue' }  // Explicit blue
- * ```
- */
-export type IconConfig = IconId | { readonly id: IconId; readonly color: IconColor }
-
 // ── Resolved icon ────────────────────────────────────────────
 
 /**
@@ -67,7 +28,7 @@ export type IconConfig = IconId | { readonly id: IconId; readonly color: IconCol
  */
 export interface ResolvedIcon {
   readonly id: string
-  readonly color: IconColor
+  readonly color: ConfigIconColor
 }
 
 // ── Public API ───────────────────────────────────────────────
@@ -81,7 +42,7 @@ export interface ResolvedIcon {
  * @param icon - Icon config value (string or object)
  * @returns Normalized `{ id, color }` pair
  */
-export function resolveIcon(icon: IconConfig): ResolvedIcon {
+export function resolveIcon(icon: ConfigIconConfig): ResolvedIcon {
   if (typeof icon === 'string') {
     return { id: icon, color: 'purple' }
   }
@@ -96,7 +57,7 @@ export function resolveIcon(icon: IconConfig): ResolvedIcon {
  * @param icon - Optional icon config value
  * @returns Normalized `{ id, color }` pair, or `undefined`
  */
-export function resolveOptionalIcon(icon: IconConfig | undefined): ResolvedIcon | undefined {
+export function resolveOptionalIcon(icon: ConfigIconConfig | undefined): ResolvedIcon | undefined {
   if (icon === undefined) {
     return undefined
   }

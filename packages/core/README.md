@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/joggrdocs/zpress/main/assets/banner.svg" alt="zpress" width="90%" />
-  <p><strong>Config loading, sync engine, and asset utilities for zpress.</strong></p>
+  <p><strong>Sync engine, asset generation, and core utilities for zpress.</strong></p>
 
 <a href="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml"><img src="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
 <a href="https://www.npmjs.com/package/@zpress/core"><img src="https://img.shields.io/npm/v/@zpress/core" alt="npm version" /></a>
@@ -16,12 +16,14 @@ npm install @zpress/core
 
 ## API
 
-### Config
+### Config (re-exported from `@zpress/config`)
 
 | Export         | Description                         |
 | -------------- | ----------------------------------- |
 | `defineConfig` | Type-safe config factory            |
 | `loadConfig`   | Load and validate `zpress.config.*` |
+
+See [@zpress/config](../config/README.md) for full config documentation.
 
 ### Sync Engine
 

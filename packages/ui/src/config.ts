@@ -3,8 +3,14 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import type { UserConfig } from '@rspress/core'
-import { resolveDefaultColorMode } from '@zpress/core'
-import type { Paths, ThemeColors, ThemeName, ZpressConfig } from '@zpress/core'
+import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
+import type {
+  BuiltInThemeName,
+  ThemeColors,
+  ThemeName,
+  ZpressConfig,
+} from '@zpress/config'
+import type { Paths } from '@zpress/core'
 
 import { zpressPlugin } from './plugin.ts'
 
@@ -52,12 +58,16 @@ function resolveThemeName(config: ZpressConfig): ThemeName {
 
 /**
  * Resolve the color mode from config, defaulting to the theme's natural mode.
+ * For custom themes, defaults to 'toggle'.
  */
 function resolveColorMode(config: ZpressConfig, themeName: ThemeName): string {
   if (config.theme && config.theme.colorMode) {
     return config.theme.colorMode
   }
-  return resolveDefaultColorMode(themeName)
+  if (isBuiltInTheme(themeName)) {
+    return resolveDefaultColorMode(themeName as BuiltInThemeName)
+  }
+  return 'toggle'
 }
 
 /**

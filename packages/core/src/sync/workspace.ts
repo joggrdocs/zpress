@@ -320,7 +320,7 @@ function buildWorkspaceSection(
     const resolved = resolveOptionalIcon(item.icon)
     const titleStr = match(item.title)
       .with(P.string, (t) => t)
-      .otherwise((t) => String(t))
+      .otherwise(String)
     return buildWorkspaceCardJsx({
       link: item.prefix,
       title: titleStr,
@@ -378,7 +378,7 @@ function workspaceToSection(item: Workspace): Section {
 
 function applyOptionalFields(base: Section, item: Workspace): Section {
   // Extract discovery config or use defaults
-  const discovery = item.discovery
+  const { discovery } = item
   const fromPattern = match(discovery)
     .with(P.nonNullable, (d) => d.from ?? 'docs/*.md')
     .otherwise(() => 'docs/*.md')
@@ -390,49 +390,49 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
   // Otherwise use default 'auto' strategy
   const titleConfig = match(discovery)
     .with(P.nonNullable, (d) => d.title)
-    .otherwise(() => undefined)
+    .otherwise(() => null)
   const titleFrom = match(titleConfig)
     .when(
       (tc) => tc !== undefined && typeof tc !== 'string',
       (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).from
     )
-    .otherwise(() => undefined)
+    .otherwise(() => null)
   const titleTransform = match(titleConfig)
     .when(
       (tc) => tc !== undefined && typeof tc !== 'string',
       (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).transform
     )
-    .otherwise(() => undefined)
+    .otherwise(() => null)
 
   const sort = match(discovery)
     .with(P.nonNullable, (d) => d.sort)
-    .otherwise(() => undefined)
+    .otherwise(() => null)
 
   const recursive = match(discovery)
     .when(
       (d): d is { recursive: boolean } => d !== undefined && 'recursive' in d,
       (d) => d.recursive
     )
-    .otherwise(() => undefined)
+    .otherwise(() => null)
 
   const indexFile = match(discovery)
     .when(
       (d) => d !== undefined && 'recursive' in d && d.recursive === true,
       (d) => (d as { recursive: true; indexFile?: string }).indexFile
     )
-    .otherwise(() => undefined)
+    .otherwise(() => null)
 
   const exclude = match(discovery)
     .with(P.nonNullable, (d) =>
       match(d.exclude)
         .with(P.nonNullable, (ex) => [...ex])
-        .otherwise(() => undefined)
+        .otherwise(() => null)
     )
-    .otherwise(() => undefined)
+    .otherwise(() => null)
 
   const frontmatter = match(discovery)
     .with(P.nonNullable, (d) => d.frontmatter)
-    .otherwise(() => undefined)
+    .otherwise(() => null)
 
   return omitBy(
     {

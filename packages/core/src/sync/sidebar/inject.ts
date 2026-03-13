@@ -109,7 +109,7 @@ export function injectLandingPages(
           if (exact) {
             const titleStr = match(exact.title)
               .with(P.string, (t) => t)
-              .otherwise((t) => String(t))
+              .otherwise(String)
             // Simple text page — no React components, stays as .md
             entry.page = {
               content: () => `# ${titleStr}\n\n${exact.description}\n`,
@@ -154,7 +154,7 @@ function generateWorkspaceLandingPage(
     const resolved = resolveOptionalIcon(item.icon)
     const titleStr = match(item.title)
       .with(P.string, (t) => t)
-      .otherwise((t) => String(t))
+      .otherwise(String)
     return buildWorkspaceCardJsx({
       link: item.prefix,
       title: titleStr,
