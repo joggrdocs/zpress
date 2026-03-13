@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 import { cliLogger } from '@kidd-cli/core/logger'
-import type { ZpressConfig, Entry, Paths } from '@zpress/core'
+import type { ZpressConfig, Section, Paths } from '@zpress/core'
 import { loadConfig, hasGlobChars, sync } from '@zpress/core'
 import type { FSWatcher } from 'chokidar'
 import { watch } from 'chokidar'
@@ -164,11 +164,11 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
  * - Single-file entries → watch just the file (avoids watching huge parent dirs)
  * Deduplicates: files inside an already-watched directory are dropped.
  */
-function extractWatchPaths(entries: readonly Entry[], repoRoot: string): string[] {
+function extractWatchPaths(entries: readonly Section[], repoRoot: string): string[] {
   const dirs = new Set<string>()
   const files = new Set<string>()
 
-  function walk(items: readonly Entry[]) {
+  function walk(items: readonly Section[]) {
     // oxlint-disable-next-line no-unused-expressions -- walk is a private recursive helper inside extractWatchPaths; using .map for traversal with controlled mutation of the enclosing dirs/files sets is acceptable here
     items.map((entry) => {
       if (entry.from) {
