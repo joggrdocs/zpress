@@ -204,7 +204,9 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
         iconId: match(resolved)
           .with(P.nonNullable, (r) => r.id)
           .otherwise(() => null),
-        iconColor: ICON_COLORS[index % ICON_COLORS.length] as IconColor,
+        iconColor: match(resolved)
+          .with(P.nonNullable, (r) => r.color)
+          .otherwise(() => ICON_COLORS[index % ICON_COLORS.length]),
       }
     })
   )
@@ -338,7 +340,9 @@ function buildFeatures(
       const iconId = match(resolved)
         .with(P.nonNullable, (r) => r.id)
         .otherwise(() => null)
-      const iconColor: IconColor = ICON_COLORS[index % ICON_COLORS.length]
+      const iconColor: IconColor = match(resolved)
+        .with(P.nonNullable, (r) => r.color)
+        .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
       return { title: section.title, details, link, iconId, iconColor }
     })
   )
