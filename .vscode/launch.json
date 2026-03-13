@@ -7,8 +7,8 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "${workspaceFolder}/examples/kitchen-sink",
-        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
+        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode",
+        "${workspaceFolder}/.vscode/kitchen-sink.code-workspace"
       ],
       "outFiles": ["${workspaceFolder}/extensions/vscode/dist/**/*.js"],
       "preLaunchTask": "vscode: watch"
@@ -19,8 +19,8 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "${workspaceFolder}/examples/simple",
-        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
+        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode",
+        "${workspaceFolder}/.vscode/simple.code-workspace"
       ],
       "outFiles": ["${workspaceFolder}/extensions/vscode/dist/**/*.js"],
       "preLaunchTask": "vscode: watch"
@@ -31,8 +31,8 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "${workspaceFolder}/examples/kitchen-sink",
-        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
+        "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode",
+        "${workspaceFolder}/.vscode/kitchen-sink.code-workspace"
       ],
       "outFiles": ["${workspaceFolder}/extensions/vscode/dist/**/*.js"]
     }
