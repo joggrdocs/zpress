@@ -33,16 +33,17 @@
     "commands": [
       {
         "command": "zpress.start",
-        "title": "zpress: Start Dev Server"
+        "title": "zpress: Start Dev Server",
+        "icon": "$(debug-start)"
       },
       {
         "command": "zpress.stop",
-        "title": "zpress: Stop Dev Server"
+        "title": "zpress: Stop Dev Server",
+        "icon": "$(debug-stop)"
       },
       {
         "command": "zpress.toggle",
-        "title": "zpress: Toggle Dev Server",
-        "icon": "$(debug-start)"
+        "title": "zpress: Toggle Dev Server"
       },
       {
         "command": "zpress.preview",
@@ -68,8 +69,13 @@
       ],
       "view/title": [
         {
-          "command": "zpress.toggle",
-          "when": "view =~ /^zpress\\.(loading|section)/",
+          "command": "zpress.start",
+          "when": "view =~ /^zpress\\.(loading|section)/ && !zpress:serverReady && !zpress:serverStarting",
+          "group": "navigation"
+        },
+        {
+          "command": "zpress.stop",
+          "when": "view =~ /^zpress\\.(loading|section)/ && (zpress:serverReady || zpress:serverStarting)",
           "group": "navigation"
         }
       ]
