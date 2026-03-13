@@ -23,8 +23,14 @@ function isMarkdownFile(filePath: string): boolean {
  * Watches markdown/mdx files and the zpress config file. Returns the
  * chokidar `FSWatcher` instance so the caller can close it on shutdown.
  * Returns `undefined` if there are no paths to watch.
+ *
+ * @param onConfigReload - Optional callback invoked after config reload and sync complete
  */
-export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatcher | undefined {
+export function createWatcher(
+  initialConfig: ZpressConfig,
+  paths: Paths,
+  onConfigReload?: () => void
+): FSWatcher | undefined {
   const { repoRoot } = paths
   const configFiles = CONFIG_EXTENSIONS.map((ext) => path.resolve(repoRoot, `zpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
@@ -113,6 +119,8 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
       return
     }
     syncing = true
+    // oxlint-disable-next-line functional/no-let -- tracks whether this sync included a config reload
+    let didReloadConfig = false
     try {
       if (reloadConfig) {
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
@@ -123,11 +131,14 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
         config = newConfig
         cliLogger.info('Config reloaded')
         updateWatchPaths(newConfig)
+        didReloadConfig = true
       }
       await sync(config, { paths })
-      // Rspress dev server watches the content directory directly via HMR.
-      // No need to touch a config file to trigger reload.
       consecutiveFailures = 0
+      // Notify caller that config was reloaded and sync completed successfully
+      if (didReloadConfig && onConfigReload) {
+        onConfigReload()
+      }
     } catch (error) {
       consecutiveFailures += 1
       const errorMessage = (() => {

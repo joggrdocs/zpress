@@ -14,14 +14,30 @@ interface ServerOptions {
 }
 
 /**
+ * Callback invoked when the dev server should be notified of config changes.
+ * Currently logs a message prompting manual restart, as Rspress does not
+ * support runtime config reloading.
+ */
+export type OnConfigReload = () => void
+
+/**
  * Start the Rspress dev server with zpress configuration.
  *
+ * Returns a callback that will be invoked when config changes are detected.
+ * Currently, this logs a message to the user to manually restart the server,
+ * as Rspress's dev() function does not support runtime config reloading.
+ *
+ * The server runs asynchronously and this function returns immediately with
+ * the config reload callback.
+ *
  * @param options - Dev server configuration including config and paths
- * @returns A promise that resolves when the server starts
+ * @returns A callback to invoke when config changes (currently logs restart prompt)
  */
-export async function startDevServer(options: ServerOptions): Promise<void> {
+export function startDevServer(options: ServerOptions): OnConfigReload {
   const rspressConfig = createRspressConfig(options)
-  await dev({
+
+  // Start server asynchronously (non-blocking)
+  dev({
     appDirectory: options.paths.repoRoot,
     docDirectory: options.paths.contentDir,
     config: rspressConfig,
@@ -31,7 +47,21 @@ export async function startDevServer(options: ServerOptions): Promise<void> {
         port: DEFAULT_PORT,
       },
     },
+  }).catch((error) => {
+    const errorMessage = (() => {
+      if (error instanceof Error) {
+        return error.message
+      }
+      return String(error)
+    })()
+    process.stderr.write(`Dev server error: ${errorMessage}\n`)
+    process.exit(1)
   })
+
+  // Return callback that will be invoked when config changes
+  return () => {
+    process.stdout.write('\n⚠️  Config changed — please restart dev server (Ctrl+C then `zpress dev`)\n\n')
+  }
 }
 
 /**
