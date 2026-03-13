@@ -146,6 +146,7 @@ export function activate(context: ExtensionContext): void {
     },
     onStopped: () => {
       manifestReader.reload(null)
+      sidebar.setBaseUrl('')
       setServerReady(false)
     },
   })

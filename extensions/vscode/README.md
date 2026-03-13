@@ -25,6 +25,8 @@ Run the [zpress](https://zpress.dev) dev server and preview documentation withou
 | `zpress: Restart Dev Server` | Restart the dev server |
 | `zpress: Preview Page` | Preview the current markdown file |
 
+> `zpress: Open Page` is an internal command used by the sidebar tree view and is not intended to be invoked directly.
+
 ## Requirements
 
 - [zpress](https://zpress.dev) installed in your project (`npx zpress` or `pnpm add @zpress/kit`)

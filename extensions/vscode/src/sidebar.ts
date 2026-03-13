@@ -233,10 +233,13 @@ function createSidebar(deps: SidebarDeps): Sidebar {
       getTreeItem: (node: SidebarNode): TreeItem => {
         const hasChildren = node.children.length > 0
         const collapsibleState = (() => {
-          if (hasChildren) {
+          if (!hasChildren) {
+            return 0 /* TreeItemCollapsibleState.None */
+          }
+          if (node.collapsed) {
             return 1 /* TreeItemCollapsibleState.Collapsed */
           }
-          return 0 /* TreeItemCollapsibleState.None */
+          return 2 /* TreeItemCollapsibleState.Expanded */
         })()
 
         const item: TreeItem = {

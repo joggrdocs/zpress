@@ -5,5 +5,4 @@ src/**
 node_modules/**
 tsconfig.json
 esbuild.mjs
-resources/icon.svg
 *.map
