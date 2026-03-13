@@ -29,7 +29,7 @@ function escapeHtml(str: string): string {
     .replaceAll('>', '&gt;')
 }
 
-function getStoppedHtml(cspSource: string): string {
+function getStoppedHtml(_cspSource: string): string {
   const nonce = crypto.randomBytes(16).toString('hex')
 
   return `<!DOCTYPE html>
@@ -56,7 +56,7 @@ function getStoppedHtml(cspSource: string): string {
 </html>`
 }
 
-function getStartingHtml(cspSource: string): string {
+function getStartingHtml(_cspSource: string): string {
   const nonce = crypto.randomBytes(16).toString('hex')
 
   return `<!DOCTYPE html>
