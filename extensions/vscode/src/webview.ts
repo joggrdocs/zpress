@@ -31,7 +31,6 @@ function escapeHtml(str: string): string {
 
 function getStoppedHtml(cspSource: string): string {
   const nonce = crypto.randomBytes(16).toString('hex')
-  const safeCspSource = escapeHtml(cspSource)
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -59,7 +58,6 @@ function getStoppedHtml(cspSource: string): string {
 
 function getStartingHtml(cspSource: string): string {
   const nonce = crypto.randomBytes(16).toString('hex')
-  const safeCspSource = escapeHtml(cspSource)
 
   return `<!DOCTYPE html>
 <html lang="en">
