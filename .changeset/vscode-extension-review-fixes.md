@@ -1,5 +1,4 @@
 ---
-"zpress-vscode": minor
 "@zpress/ui": patch
 ---
 
