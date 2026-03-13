@@ -12,6 +12,11 @@ import type { ZpressConfig } from './types.ts'
  * surfacing any error and exiting. Validation runs here (not in
  * `defineConfig`) so every consumer gets structured error feedback.
  *
+ * NOTE: c12 caches ESM imports by default. When config files change,
+ * the cache is not automatically cleared. For now, we rely on the user
+ * restarting the dev server to pick up config changes. A future enhancement
+ * would use `watchConfig` or implement custom cache busting.
+ *
  * @param dir - Repository root directory to search for `zpress.config.*`
  * @returns A `ConfigResult` tuple — `[null, config]` on success or `[ConfigError, null]` on failure
  */
