@@ -16,12 +16,26 @@
       "type": "npm",
       "script": "watch",
       "path": "extensions/vscode",
-      "problemMatcher": "$esbuild-watch",
       "isBackground": true,
       "label": "vscode: watch:esbuild",
       "presentation": {
         "group": "watch",
         "reveal": "never"
+      },
+      "problemMatcher": {
+        "owner": "esbuild",
+        "fileLocation": "relative",
+        "pattern": {
+          "regexp": "^\\s+(.*):(\\d+):(\\d+):",
+          "file": 1,
+          "line": 2,
+          "column": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[zpress-vscode\\]",
+          "endsPattern": "^\\[zpress-vscode\\] (build complete|watching for changes)"
+        }
       }
     },
     {
