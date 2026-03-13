@@ -96,7 +96,6 @@ function createDevServer(deps: DevServerDeps): DevServer {
     setStatus('starting')
     state.baseUrl = null
     state.stdoutBuffer = ''
-    deps.outputChannel.show(true)
     deps.outputChannel.appendLine('[zpress] Starting dev server...')
 
     /*
