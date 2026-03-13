@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { Disposable, Event, EventEmitter, FileSystemWatcher, GlobPattern } from 'vscode'
+import type { Disposable, Event, EventEmitter, FileSystemWatcher, GlobPattern, RelativePattern } from 'vscode'
 
 interface ManifestFileEntry {
   readonly source: string
@@ -19,7 +19,7 @@ interface ManifestReader extends Disposable {
   readonly getUrl: (fsPath: string) => string | undefined
   readonly getPath: (fsPath: string) => string | undefined
   readonly isTracked: (fsPath: string) => boolean
-  readonly reload: (baseUrl?: string) => void
+  readonly reload: (baseUrl?: string | null) => void
   readonly onDidChange: Event<void>
 }
 
@@ -27,6 +27,7 @@ interface ManifestReaderDeps {
   readonly workspaceRoot: string
   readonly createWatcher: (pattern: GlobPattern) => FileSystemWatcher
   readonly EventEmitter: new () => EventEmitter<void>
+  readonly RelativePattern: new (base: string, pattern: string) => RelativePattern
 }
 
 const MANIFEST_RELATIVE = path.join('.zpress', 'content', '.generated', 'manifest.json')
@@ -75,15 +76,15 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
     baseUrl: null as string | null,
   }
 
-  function reload(baseUrl?: string): void {
-    if (baseUrl) {
+  function reload(baseUrl?: string | null): void {
+    if (baseUrl !== undefined) {
       state.baseUrl = baseUrl
     }
     state.pathMap = buildPathMap(readManifest(deps.workspaceRoot), deps.workspaceRoot)
     emitter.fire()
   }
 
-  const manifestGlob = path.join(deps.workspaceRoot, MANIFEST_RELATIVE)
+  const manifestGlob = new deps.RelativePattern(deps.workspaceRoot, '.zpress/content/.generated/manifest.json')
   const watcher = deps.createWatcher(manifestGlob)
   watcher.onDidChange(() => reload())
   watcher.onDidCreate(() => reload())

@@ -7,6 +7,7 @@ import type {
   EventEmitter,
   FileSystemWatcher,
   GlobPattern,
+  RelativePattern,
   ThemeColor,
   ThemeIcon,
   TreeDataProvider,
@@ -46,6 +47,7 @@ interface SidebarDeps {
   readonly createWatcher: (pattern: GlobPattern) => FileSystemWatcher
   readonly EventEmitter: new <T>() => EventEmitter<T>
   readonly ThemeIcon: new (id: string, color?: ThemeColor) => ThemeIcon
+  readonly RelativePattern: new (base: string, pattern: string) => RelativePattern
 }
 
 interface Sidebar extends Disposable {
@@ -211,14 +213,14 @@ function createSidebar(deps: SidebarDeps): Sidebar {
         `[zpress] sidebar has ${String(state.sections.length)} sections but only ${String(MAX_SECTIONS)} are supported`
       )
     }
-    // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- fire all emitters to refresh tree views
+    // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- EventEmitter.fire requires explicit undefined argument
     sectionEmitters.map((e) => e.fire(undefined))
     reloadEmitter.fire()
   }
 
   reload()
 
-  const sidebarGlob = path.join(deps.workspaceRoot, SIDEBAR_RELATIVE)
+  const sidebarGlob = new deps.RelativePattern(deps.workspaceRoot, '.zpress/content/.generated/sidebar.json')
   const watcher = deps.createWatcher(sidebarGlob)
   watcher.onDidChange(reload)
   watcher.onDidCreate(reload)
@@ -299,7 +301,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
     onDidReload: reloadEmitter.event,
     setBaseUrl: (url: string): void => {
       state.baseUrl = url
-      // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- fire all emitters to refresh tree views
+      // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- EventEmitter.fire requires explicit undefined argument
       sectionEmitters.map((e) => e.fire(undefined))
     },
     dispose: (): void => {

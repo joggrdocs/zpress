@@ -7,6 +7,7 @@ import {
   EventEmitter,
   languages,
   Range,
+  RelativePattern,
   ThemeIcon,
   Uri,
   window,
@@ -34,6 +35,21 @@ const CONFIG_FILES = [
   'zpress.config.json',
 ] as const
 
+function isServerUrl(url: string, baseUrl: string): boolean {
+  try {
+    const target = new URL(url)
+    const base = new URL(baseUrl)
+    const basePath = base.pathname.replace(/\/$/, '')
+
+    return (
+      target.origin === base.origin &&
+      (basePath === '' || target.pathname === basePath || target.pathname.startsWith(`${basePath}/`))
+    )
+  } catch {
+    return false
+  }
+}
+
 function isZpressProject(workspaceRoot: string): boolean {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename
   return CONFIG_FILES.some((file) => fs.existsSync(path.join(workspaceRoot, file)))
@@ -44,16 +60,15 @@ function isZpressProject(workspaceRoot: string): boolean {
  */
 export function activate(context: ExtensionContext): void {
   const folders = workspace.workspaceFolders
-  if (!folders || !folders[0]) {
+  if (!folders) {
     return
   }
-  const [workspaceFolder] = folders
+  const workspaceFolder = folders.find((folder) => isZpressProject(folder.uri.fsPath))
+  if (!workspaceFolder) {
+    return
+  }
 
   const workspaceRoot = workspaceFolder.uri.fsPath
-
-  if (!isZpressProject(workspaceRoot)) {
-    return
-  }
 
   commands.executeCommand('setContext', 'zpress:isProject', true)
   const outputChannel = window.createOutputChannel('zpress')
@@ -66,6 +81,7 @@ export function activate(context: ExtensionContext): void {
     workspaceRoot,
     createWatcher: (pattern) => workspace.createFileSystemWatcher(pattern),
     EventEmitter,
+    RelativePattern,
   })
 
   const previewPanel = createPreviewPanel({
@@ -83,6 +99,7 @@ export function activate(context: ExtensionContext): void {
     createWatcher: (pattern) => workspace.createFileSystemWatcher(pattern),
     EventEmitter,
     ThemeIcon,
+    RelativePattern,
   })
 
   /* Empty tree view shown while the dev server is starting */
@@ -128,6 +145,7 @@ export function activate(context: ExtensionContext): void {
       setServerReady(true)
     },
     onStopped: () => {
+      manifestReader.reload(null)
       setServerReady(false)
     },
   })
@@ -207,7 +225,7 @@ export function activate(context: ExtensionContext): void {
     }),
     commands.registerCommand('zpress.openPage', (url: string) => {
       const baseUrl = server.getBaseUrl()
-      if (!baseUrl || !url.startsWith(baseUrl)) {
+      if (!baseUrl || !isServerUrl(url, baseUrl)) {
         return
       }
       previewPanel.open(url)
@@ -220,7 +238,8 @@ export function activate(context: ExtensionContext): void {
        */
       const targetUrl = resolveTargetUrl(arg)
 
-      if (!targetUrl) {
+      const baseUrl = server.getBaseUrl()
+      if (!targetUrl || !baseUrl || !isServerUrl(targetUrl, baseUrl)) {
         window.showWarningMessage('This file is not part of the zpress configuration.')
         return
       }

@@ -16,6 +16,7 @@
   "publisher": "joggr",
   "main": "./dist/extension.js",
   "scripts": {
+    "vscode:prepublish": "node esbuild.mjs",
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
     "typecheck": "tsc --noEmit"
