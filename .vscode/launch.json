@@ -5,6 +5,7 @@
       "name": "Run Extension (Kitchen Sink)",
       "type": "extensionHost",
       "request": "launch",
+      "runtimeExecutable": "${execPath}",
       "args": [
         "${workspaceFolder}/examples/kitchen-sink",
         "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
@@ -16,6 +17,7 @@
       "name": "Run Extension (Simple)",
       "type": "extensionHost",
       "request": "launch",
+      "runtimeExecutable": "${execPath}",
       "args": [
         "${workspaceFolder}/examples/simple",
         "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
@@ -27,6 +29,7 @@
       "name": "Run Extension (No Pre-Launch)",
       "type": "extensionHost",
       "request": "launch",
+      "runtimeExecutable": "${execPath}",
       "args": [
         "${workspaceFolder}/examples/kitchen-sink",
         "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"

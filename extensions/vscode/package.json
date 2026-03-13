@@ -19,6 +19,7 @@
     "vscode:prepublish": "node esbuild.mjs",
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
+    "watch:tsc": "tsc --noEmit --watch",
     "typecheck": "tsc --noEmit",
     "package": "vsce package --no-git-tag-version",
     "publish": "vsce publish --no-git-tag-version"
