@@ -166,7 +166,7 @@ Add `$schema` property to your `zpress.config.json`:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/main/packages/config/schemas/schema.json"
+  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json"
 }
 ```
 
@@ -174,7 +174,7 @@ Add `$schema` property to your `zpress.config.json`:
 Add a modeline comment to your `zpress.config.yaml`:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/main/packages/config/schemas/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json
 ```
 
 ### Versioned Schemas
