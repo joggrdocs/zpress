@@ -1,8 +1,8 @@
 ---
-'@zpress/core': major
-'@zpress/ui': major
-'@zpress/cli': major
-'@zpress/kit': major
+'@zpress/core': minor
+'@zpress/ui': minor
+'@zpress/cli': minor
+'@zpress/kit': minor
 ---
 
 # Comprehensive Config API Refactor
