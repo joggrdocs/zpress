@@ -11,16 +11,16 @@ Major breaking changes to the zpress configuration API for better consistency an
 
 ## Breaking Changes
 
-### Type Renames
+### Type System Refactor
 
-- **`Entry` → `Section`**: The old `Entry` type has been renamed to `Section` for clearer semantics (it represents a section/page node, not a generic entry)
-- **`WorkspaceItem` → `Workspace`**: Renamed for consistency
-- **`WorkspaceGroup` → `WorkspaceCategory`**: More descriptive name
-- **Backward compatibility**: Old type names are re-exported as aliases, so existing code will continue to work but should migrate to new names
+**BREAKING**: The type hierarchy has been restructured with a new base type:
 
-### New Base Type: `Entry`
+- **New `Entry` base type**: Introduced with common fields (`title`, `icon`, `description`) that all config types now extend
+- **Old `Entry` type renamed to `Section`**: The previous `Entry` type (representing a section/page node) is now called `Section` for clearer semantics. **No backward compatibility alias** - the name `Entry` is now used for the new base type.
+- **`WorkspaceItem` → `Workspace`**: Renamed for consistency (backward compatible alias maintained)
+- **`WorkspaceGroup` → `WorkspaceCategory`**: More descriptive name (backward compatible alias maintained)
 
-A new `Entry` base type has been introduced with common fields (`title`, `icon`, `description`). All config types now extend this base:
+All config types now extend the new `Entry` base:
 
 ```ts
 // All types now extend Entry

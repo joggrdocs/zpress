@@ -290,9 +290,23 @@ async function resolveGlob(
 
   const prefix = section.prefix ?? ''
 
-  // Extract titleFrom and titleTransform from deprecated fields or default to 'auto'
-  const titleFrom = section.titleFrom ?? 'auto'
-  const { titleTransform } = section
+  // Extract titleFrom and titleTransform, preferring new title object API over deprecated fields
+  const titleConfig =
+    match(section.title)
+      .when(
+        (t): t is {
+          from: 'auto' | 'filename' | 'heading' | 'frontmatter'
+          transform?: (text: string, slug: string) => string
+        } => typeof t === 'object' && t !== null && 'from' in t,
+        (t) => t
+      )
+      .otherwise(() => null)
+  const titleFrom = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.from)
+    .otherwise(() => section.titleFrom ?? ('auto' as const))
+  const titleTransform = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.transform)
+    .otherwise(() => section.titleTransform)
 
   return Promise.all(
     files.map(async (file) => {

@@ -61,7 +61,7 @@ export default defineConfig({
 | Field         | Type                           | Required | Description                                                     |
 | ------------- | ------------------------------ | -------- | --------------------------------------------------------------- |
 | `title`       | `string`                       | yes      | Display name                                                    |
-| `icon`        | `IconConfig`                   | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `icon`        | `IconConfig`                   | no       | Icon ID string (from bundled collections) or `{ id: IconId, color: IconColor }` object. See [icon reference](/references/icons/overview) for supported icons. |
 | `description` | `string`                       | yes      | Short description for cards                                     |
 | `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                                    |
 | `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                              |

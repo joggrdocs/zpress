@@ -69,14 +69,31 @@ export async function resolveRecursiveGlob(
 
   const baseDir = extractBaseDir(section.from)
   const prefix = section.prefix ?? ''
-  const titleFrom = section.titleFrom ?? 'auto'
+
+  // Extract titleFrom and titleTransform, preferring new title object API over deprecated fields
+  const titleConfig =
+    match(section.title)
+      .when(
+        (t): t is {
+          from: 'auto' | 'filename' | 'heading' | 'frontmatter'
+          transform?: (text: string, slug: string) => string
+        } => typeof t === 'object' && t !== null && 'from' in t,
+        (t) => t
+      )
+      .otherwise(() => null)
+  const titleFrom = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.from)
+    .otherwise(() => section.titleFrom ?? ('auto' as const))
+  const titleTransform = match(titleConfig)
+    .with(P.nonNullable, (tc) => tc.transform)
+    .otherwise(() => section.titleTransform)
 
   const root = buildDirTree(files, baseDir)
   return buildEntryTree({
     node: root,
     prefix,
     titleFrom,
-    titleTransform: section.titleTransform,
+    titleTransform,
     sort: section.sort,
     collapsible: section.collapsible,
     indexFile,
