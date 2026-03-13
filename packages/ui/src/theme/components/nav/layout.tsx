@@ -26,10 +26,15 @@ function useVscodeMode(): boolean {
 
   useEffect(() => {
     const params = new URLSearchParams(globalThis.location.search)
-    if (params.get('env') !== 'vscode') {
+    const isVscode =
+      params.get('env') === 'vscode' ||
+      globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
+
+    if (!isVscode) {
       return
     }
 
+    globalThis.sessionStorage.setItem('zpress-env', 'vscode')
     setActive(true)
     document.documentElement.dataset.zpressEnv = 'vscode'
 
@@ -38,6 +43,7 @@ function useVscodeMode(): boolean {
     document.head.append(style)
     return () => {
       style.remove()
+      delete document.documentElement.dataset.zpressEnv
     }
   }, [])
 

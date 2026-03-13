@@ -114,7 +114,7 @@ function sectionTitle(key: string): string {
     key
       .replaceAll(/^\/|\/$/g, '')
       .split('/')
-      .pop() ?? ''
+      .at(-1) ?? ''
   return titleCase(segment)
 }
 
@@ -159,26 +159,28 @@ function sectionSortKey(key: string): string {
 }
 
 function parseSidebarSections(sidebar: SidebarJson): readonly SidebarSection[] {
-  return Object.entries(sidebar)
-    .map(([key, items]) => {
-      if (key.endsWith('/') && key.length > 1) {
-        return { key: key.slice(0, -1), items }
-      }
-      return { key, items }
-    })
-    /* Deduplicate by keeping only the first entry per normalized key */
-    .filter((entry, i, arr) => arr.findIndex((e) => e.key === entry.key) === i)
-    .map(({ key, items }) => {
-      const nodes = items.map(jsonItemToNode)
-      /* For isolated sections, drop the landing-page item whose link matches the section key */
-      if (key === '/') {
-        return { key, title: sectionTitle(key), items: nodes }
-      }
-      const filtered = nodes.filter((n) => n.link !== key)
-      return { key, title: sectionTitle(key), items: filtered }
-    })
-    // oxlint-disable-next-line no-array-sort -- intermediate array from .map(), not mutating original
-    .sort((a, b) => sectionSortKey(a.key).localeCompare(sectionSortKey(b.key)))
+  return (
+    Object.entries(sidebar)
+      .map(([key, items]) => {
+        if (key.endsWith('/') && key.length > 1) {
+          return { key: key.slice(0, -1), items }
+        }
+        return { key, items }
+      })
+      /* Deduplicate by keeping only the first entry per normalized key */
+      .filter((entry, i, arr) => arr.findIndex((e) => e.key === entry.key) === i)
+      .map(({ key, items }) => {
+        const nodes = items.map(jsonItemToNode)
+        /* For isolated sections, drop the landing-page item whose link matches the section key */
+        if (key === '/') {
+          return { key, title: sectionTitle(key), items: nodes }
+        }
+        const filtered = nodes.filter((n) => n.link !== key)
+        return { key, title: sectionTitle(key), items: filtered }
+      })
+      // oxlint-disable-next-line no-array-sort -- intermediate array from .map(), not mutating original
+      .sort((a, b) => sectionSortKey(a.key).localeCompare(sectionSortKey(b.key)))
+  )
 }
 
 /**
@@ -203,6 +205,11 @@ function createSidebar(deps: SidebarDeps): Sidebar {
       state.sections = parseSidebarSections(json)
     } else {
       state.sections = []
+    }
+    if (state.sections.length > MAX_SECTIONS) {
+      console.warn(
+        `[zpress] sidebar has ${String(state.sections.length)} sections but only ${String(MAX_SECTIONS)} are supported`
+      )
     }
     // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- fire all emitters to refresh tree views
     sectionEmitters.map((e) => e.fire(undefined))

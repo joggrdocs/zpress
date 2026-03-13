@@ -26,7 +26,13 @@ import { createPreviewPanel } from './webview'
  * This is a quick hack — should be replaced with proper config loading
  * from the zpress packages once the extension can depend on them.
  */
-const CONFIG_FILES = ['zpress.config.ts', 'zpress.config.js', 'zpress.config.json']
+const CONFIG_FILES = [
+  'zpress.config.ts',
+  'zpress.config.mts',
+  'zpress.config.js',
+  'zpress.config.mjs',
+  'zpress.config.json',
+] as const
 
 function isZpressProject(workspaceRoot: string): boolean {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename
@@ -67,6 +73,9 @@ export function activate(context: ExtensionContext): void {
       window.createWebviewPanel(viewType, title, showOptions, options),
     asExternalUri: (uri) => env.asExternalUri(uri),
     parseUri: (value) => Uri.parse(value),
+    onError: (message) => {
+      outputChannel.appendLine(`[zpress] ${message}`)
+    },
   })
 
   const sidebar = createSidebar({
@@ -90,6 +99,7 @@ export function activate(context: ExtensionContext): void {
 
   function refreshSectionViews(): void {
     const activeCount = sidebar.activeSectionCount()
+    // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (setting context on each section)
     sidebar.sections.map((section, i) => {
       commands.executeCommand('setContext', `zpress:section.${String(i)}`, i < activeCount)
       const treeView = sectionTreeViews[i]
@@ -108,6 +118,9 @@ export function activate(context: ExtensionContext): void {
     workspaceRoot,
     statusBar,
     outputChannel,
+    showErrorMessage: (message) => {
+      window.showErrorMessage(message)
+    },
     onReady: (baseUrl) => {
       manifestReader.reload(baseUrl)
       sidebar.setBaseUrl(baseUrl)
@@ -189,10 +202,17 @@ export function activate(context: ExtensionContext): void {
         server.start()
       }
     }),
+    commands.registerCommand('zpress.restart', () => {
+      server.restart()
+    }),
     commands.registerCommand('zpress.openPage', (url: string) => {
+      const baseUrl = server.getBaseUrl()
+      if (!baseUrl || !url.startsWith(baseUrl)) {
+        return
+      }
       previewPanel.open(url)
     }),
-    commands.registerCommand('zpress.openInBrowser', (arg?: string | Uri) => {
+    commands.registerCommand('zpress.preview', (arg?: string | Uri) => {
       /*
        * When invoked from CodeLens, arg is a string URL.
        * When invoked from editor/title menu, VS Code passes the resource Uri.
@@ -207,10 +227,7 @@ export function activate(context: ExtensionContext): void {
 
       previewPanel.open(targetUrl)
     }),
-    languages.registerCodeLensProvider(
-      { language: 'markdown', scheme: 'file' },
-      codeLensProvider
-    ),
+    languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, codeLensProvider),
     window.onDidChangeActiveTextEditor(updateTrackedContext)
   )
 

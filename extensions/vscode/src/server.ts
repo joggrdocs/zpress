@@ -11,6 +11,7 @@ interface DevServerDeps {
   readonly workspaceRoot: string
   readonly statusBar: StatusBar
   readonly outputChannel: OutputChannel
+  readonly showErrorMessage: (message: string) => void
   readonly onReady: (baseUrl: string) => void
   readonly onStopped: () => void
 }
@@ -18,9 +19,12 @@ interface DevServerDeps {
 interface DevServer extends Disposable {
   readonly start: () => void
   readonly stop: () => void
+  readonly restart: () => void
   readonly isRunning: () => boolean
   readonly getBaseUrl: () => string | null
 }
+
+const MAX_STDOUT_BUFFER = 65_536
 
 function findBinary(
   workspaceRoot: string
@@ -40,7 +44,7 @@ function findBinary(
 function parseLocalUrl(text: string): string | null {
   const match = /Local:\s+(https?:\/\/[^\s/]+)\/?/.exec(text)
   if (match) {
-    return match[1]
+    return match[1] ?? null
   }
   return null
 }
@@ -58,11 +62,13 @@ function createDevServer(deps: DevServerDeps): DevServer {
     status: ServerStatus
     baseUrl: string | null
     stdoutBuffer: string
+    restartPending: boolean
   } = {
     process: null,
     status: 'stopped',
     baseUrl: null,
     stdoutBuffer: '',
+    restartPending: false,
   }
 
   function setStatus(status: ServerStatus): void {
@@ -77,10 +83,11 @@ function createDevServer(deps: DevServerDeps): DevServer {
 
     const binary = findBinary(deps.workspaceRoot)
     if (!binary) {
-      deps.outputChannel.appendLine(
-        '[zpress] zpress binary not found in node_modules. Run `npm install` or `pnpm install` first.'
-      )
+      const message =
+        'zpress binary not found in node_modules. Run `npm install` or `pnpm install` first.'
+      deps.outputChannel.appendLine(`[zpress] ${message}`)
       deps.outputChannel.show(true)
+      deps.showErrorMessage(message)
       return
     }
 
@@ -110,11 +117,18 @@ function createDevServer(deps: DevServerDeps): DevServer {
         deps.outputChannel.append(text)
 
         /* Buffer all stdout until the URL is found — data events may split lines across chunks */
-        if (state.status === 'starting') {
+        if (state.status === 'starting' && state.stdoutBuffer.length <= MAX_STDOUT_BUFFER) {
           state.stdoutBuffer += text
+          if (state.stdoutBuffer.length > MAX_STDOUT_BUFFER) {
+            deps.outputChannel.appendLine(
+              '[zpress] stdout buffer exceeded 64KB — URL detection stopped'
+            )
+            return
+          }
           const url = parseLocalUrl(state.stdoutBuffer)
           if (url) {
             state.baseUrl = url
+            state.stdoutBuffer = ''
             setStatus('running')
             deps.onReady(url)
           }
@@ -139,6 +153,10 @@ function createDevServer(deps: DevServerDeps): DevServer {
       state.stdoutBuffer = ''
       setStatus('stopped')
       deps.onStopped()
+      if (state.restartPending) {
+        state.restartPending = false
+        start()
+      }
     })
 
     child.on('error', (err) => {
@@ -164,9 +182,19 @@ function createDevServer(deps: DevServerDeps): DevServer {
     /* Do not null state.process here — the close handler clears it when the child actually exits */
   }
 
+  function restart(): void {
+    if (!state.process) {
+      start()
+      return
+    }
+    state.restartPending = true
+    stop()
+  }
+
   return {
     start,
     stop,
+    restart,
     isRunning: () => state.status === 'running',
     getBaseUrl: () => state.baseUrl,
     dispose: (): void => {
@@ -174,6 +202,9 @@ function createDevServer(deps: DevServerDeps): DevServer {
         state.process.kill()
         state.process = null
       }
+      state.status = 'stopped'
+      state.baseUrl = null
+      state.stdoutBuffer = ''
     },
   }
 }

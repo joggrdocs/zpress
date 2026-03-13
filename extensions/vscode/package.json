@@ -40,15 +40,23 @@
         "title": "zpress: Toggle Dev Server"
       },
       {
-        "command": "zpress.openInBrowser",
-        "title": "zpress: View in Browser",
+        "command": "zpress.preview",
+        "title": "zpress: Preview Page",
         "icon": "$(globe)"
+      },
+      {
+        "command": "zpress.openPage",
+        "title": "zpress: Open Page"
+      },
+      {
+        "command": "zpress.restart",
+        "title": "zpress: Restart Dev Server"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "zpress.openInBrowser",
+          "command": "zpress.preview",
           "when": "resourceLangId == markdown && zpress:isTrackedFile && zpress:serverReady",
           "group": "navigation"
         }
@@ -127,10 +135,15 @@
       ]
     }
   },
+  "extensionKind": [
+    "workspace"
+  ],
   "activationEvents": [
     "workspaceContains:zpress.config.js",
     "workspaceContains:zpress.config.json",
-    "workspaceContains:zpress.config.ts"
+    "workspaceContains:zpress.config.ts",
+    "workspaceContains:zpress.config.mts",
+    "workspaceContains:zpress.config.mjs"
   ],
   "engines": {
     "vscode": "^1.90.0"

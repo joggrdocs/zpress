@@ -1,4 +1,11 @@
-import type { CodeLens, CodeLensProvider, Disposable, EventEmitter, Range, TextDocument } from 'vscode'
+import type {
+  CodeLens,
+  CodeLensProvider,
+  Disposable,
+  EventEmitter,
+  Range,
+  TextDocument,
+} from 'vscode'
 
 import type { ManifestReader } from './manifest'
 
@@ -36,7 +43,7 @@ function createCodeLensProvider(deps: CodeLensDeps): CodeLensProvider & Disposab
           range: new deps.Range(0, 0, 0, 0),
           command: {
             title: '$(globe) View in zpress',
-            command: 'zpress.openInBrowser',
+            command: 'zpress.preview',
             arguments: [url],
           },
           isResolved: true,

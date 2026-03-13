@@ -1,3 +1,5 @@
+import crypto from 'node:crypto'
+
 import type { Disposable, Uri, WebviewPanel, WebviewPanelOptions, WebviewOptions } from 'vscode'
 
 interface PreviewPanel extends Disposable {
@@ -13,6 +15,7 @@ interface PreviewPanelDeps {
   ) => WebviewPanel
   readonly asExternalUri: (uri: Uri) => Thenable<Uri>
   readonly parseUri: (value: string) => Uri
+  readonly onError: (message: string) => void
 }
 
 function escapeHtml(str: string): string {
@@ -24,11 +27,7 @@ function escapeHtml(str: string): string {
 }
 
 function getHtml(serverUri: string, cspSource: string): string {
-  const nonce = Array.from({ length: 32 }, () =>
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.charAt(
-      Math.floor(Math.random() * 62)
-    )
-  ).join('')
+  const nonce = crypto.randomBytes(16).toString('hex')
 
   const separator = (() => {
     if (serverUri.includes('?')) {
@@ -39,7 +38,7 @@ function getHtml(serverUri: string, cspSource: string): string {
 
   const fullUrl = `${serverUri}${separator}env=vscode`
   const safeUrl = escapeHtml(fullUrl)
-  const safeCsp = escapeHtml(serverUri)
+  const safeOrigin = escapeHtml(new URL(serverUri).origin)
   const safeCspSource = escapeHtml(cspSource)
 
   return `<!DOCTYPE html>
@@ -48,17 +47,23 @@ function getHtml(serverUri: string, cspSource: string): string {
   <meta charset="UTF-8">
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; frame-src ${safeCsp} ${safeCspSource}; style-src 'nonce-${nonce}';"
+    content="default-src 'none'; frame-src ${safeOrigin} ${safeCspSource}; style-src 'nonce-${nonce}';"
   >
   <style nonce="${nonce}">
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-    .zp-address-bar { display: flex; align-items: center; gap: 6px; font: 12px/1 monospace; padding: 4px 8px; background: #1e1e1e; color: #999; border-bottom: 1px solid #333; }
-    .zp-address-bar span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: #2a2a2a; padding: 3px 8px; border-radius: 4px; color: #ccc; }
+    .zp-address-bar { display: flex; align-items: center; gap: 6px; font: 12px/1 monospace; padding: 4px 8px; background: var(--vscode-editor-background); color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--vscode-panel-border); }
+    .zp-address-bar span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--vscode-input-background); padding: 3px 8px; border-radius: 4px; color: var(--vscode-input-foreground); }
     iframe { border: none; width: 100%; height: calc(100vh - 28px); display: block; }
   </style>
 </head>
 <body>
   <div class="zp-address-bar">&#9679; <span>${safeUrl}</span></div>
+  <!--
+    allow-same-origin is safe here: the VS Code webview and the iframe are
+    cross-origin, so same-origin access between them is already blocked. The
+    iframe needs its own origin for cookies, HMR WebSocket connections, and
+    fetch requests to function correctly.
+  -->
   <iframe sandbox="allow-scripts allow-same-origin" src="${safeUrl}"></iframe>
 </body>
 </html>`
@@ -106,7 +111,7 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
         }
         return String(error)
       })()
-      console.error('[zpress] Failed to resolve external URI:', message)
+      deps.onError(`Failed to resolve external URI: ${message}`)
     })
   }
 
