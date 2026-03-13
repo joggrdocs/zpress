@@ -260,7 +260,7 @@ export interface WorkspaceItem {
 }
 
 /**
- * A named group of workspace items for custom workspace categories.
+ * A group of workspace items for custom workspace categories.
  *
  * Lets users define arbitrary groups beyond the built-in `apps` and `packages`
  * (e.g. "Services", "Tools", "Integrations") that receive the same
