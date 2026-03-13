@@ -56,7 +56,9 @@ export async function resolveRecursiveGlob(
     onlyFiles: true,
   })
 
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   if (files.length === 0) {
     if (!ctx.quiet) {

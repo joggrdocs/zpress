@@ -1,3 +1,5 @@
+import { match, P } from 'ts-pattern'
+
 import { hasGlobChars } from './glob.ts'
 import type { IconConfig } from './icon.ts'
 import { configError } from './sync/errors.ts'
@@ -200,7 +202,9 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
  */
 function validateSection(section: Section): ConfigResult<true> {
   // Get the title string for error messages
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   if (section.from && section.content) {
     return [
@@ -337,7 +341,9 @@ function validateFeature(feature: Feature): ConfigError | null {
     return configError('missing_field', 'Feature: "title" is required')
   }
 
-  const titleStr = typeof feature.title === 'string' ? feature.title : 'Feature'
+  const titleStr = match(feature.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Feature')
 
   if (typeof feature.title !== 'string') {
     return configError(

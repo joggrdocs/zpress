@@ -197,7 +197,9 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
   return Promise.resolve(
     features.map((f, index) => {
       const resolved = resolveOptionalIcon(f.icon)
-      const titleStr = typeof f.title === 'string' ? f.title : String(f.title)
+      const titleStr = match(f.title)
+        .with(P.string, (t) => t)
+        .otherwise((t) => String(t))
       const descStr = f.description ?? ''
       return {
         title: titleStr,
@@ -258,7 +260,9 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
     .otherwise(() => null)
 
   const groupResults = workspaceGroups.map((g) => {
-    const titleStr = typeof g.title === 'string' ? g.title : String(g.title)
+    const titleStr = match(g.title)
+      .with(P.string, (t) => t)
+      .otherwise((t) => String(t))
     const descStr = g.description ?? ''
     return buildGroupData('workspaces', titleStr, descStr, g.items, '')
   })
@@ -286,7 +290,9 @@ function buildGroupData(
 ): GroupDataResult {
   const cards: readonly HomeWorkspaceCardData[] = items.map((item) => {
     const resolved = resolveOptionalIcon(item.icon)
-    const titleStr = typeof item.title === 'string' ? item.title : String(item.title)
+    const titleStr = match(item.title)
+      .with(P.string, (t) => t)
+      .otherwise((t) => String(t))
     return {
       title: titleStr,
       href: item.prefix,
@@ -348,7 +354,9 @@ function buildFeatures(
       const iconColor: IconColor = match(resolved)
         .with(P.nonNullable, (r) => r.color)
         .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
-      const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+      const titleStr = match(section.title)
+      .with(P.string, (t) => t)
+      .otherwise(() => 'Section')
       return { title: titleStr, details, link, iconId, iconColor }
     })
   )
@@ -400,7 +408,9 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
   }
 
   // Well-known section name → curated default
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+      .with(P.string, (t) => t)
+      .otherwise(() => 'Section')
   const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {
     return knownDesc

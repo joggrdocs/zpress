@@ -65,7 +65,7 @@ function resolveSection(
   }
 
   // Virtual page (inline/generated content)
-  if (section.content && section.link) {
+  if (section.content !== undefined && section.content !== null && section.link) {
     return Promise.resolve(resolveVirtualPage(section, mergedFm))
   }
 
@@ -98,7 +98,9 @@ function resolveFilePage(
   }
 
   const ext = sourceExt(section.from)
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   return [
     null,
@@ -124,7 +126,9 @@ function resolveVirtualPage(section: Section, frontmatter: Frontmatter): SyncOut
     return [syncError('missing_link', 'resolveVirtualPage called without section.link'), null]
   }
 
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   return [
     null,
@@ -192,7 +196,9 @@ async function resolveNestedSection(
   })()
   const collapsible = section.collapsible ?? autoCollapsible
 
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   return [
     null,
@@ -271,7 +277,9 @@ async function resolveGlob(
     onlyFiles: true,
   })
 
-  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const titleStr = match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
 
   if (files.length === 0) {
     if (!ctx.quiet) {

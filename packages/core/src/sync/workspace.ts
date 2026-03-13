@@ -318,7 +318,9 @@ function buildWorkspaceSection(
 ): string {
   const cards = items.map((item) => {
     const resolved = resolveOptionalIcon(item.icon)
-    const titleStr = typeof item.title === 'string' ? item.title : String(item.title)
+    const titleStr = match(item.title)
+      .with(P.string, (t) => t)
+      .otherwise((t) => String(t))
     return buildWorkspaceCardJsx({
       link: item.prefix,
       title: titleStr,
@@ -377,22 +379,60 @@ function workspaceToSection(item: Workspace): Section {
 function applyOptionalFields(base: Section, item: Workspace): Section {
   // Extract discovery config or use defaults
   const discovery = item.discovery
-  const fromPattern = discovery?.from ?? 'docs/*.md'
+  const fromPattern = match(discovery)
+    .with(P.nonNullable, (d) => d.from ?? 'docs/*.md')
+    .otherwise(() => 'docs/*.md')
   const basePath = item.prefix.replace(/^\//, '')
   const resolvedFrom = `${basePath}/${fromPattern}`
 
   // Extract title config from discovery (deprecated path)
   // If discovery.title is a TitleConfig object, pass it through
   // Otherwise use default 'auto' strategy
-  const titleConfig = discovery?.title
-  const titleFrom =
-    titleConfig !== undefined && typeof titleConfig !== 'string'
-      ? titleConfig.from
-      : undefined
-  const titleTransform =
-    titleConfig !== undefined && typeof titleConfig !== 'string'
-      ? titleConfig.transform
-      : undefined
+  const titleConfig = match(discovery)
+    .with(P.nonNullable, (d) => d.title)
+    .otherwise(() => undefined)
+  const titleFrom = match(titleConfig)
+    .when(
+      (tc) => tc !== undefined && typeof tc !== 'string',
+      (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).from
+    )
+    .otherwise(() => undefined)
+  const titleTransform = match(titleConfig)
+    .when(
+      (tc) => tc !== undefined && typeof tc !== 'string',
+      (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).transform
+    )
+    .otherwise(() => undefined)
+
+  const sort = match(discovery)
+    .with(P.nonNullable, (d) => d.sort)
+    .otherwise(() => undefined)
+
+  const recursive = match(discovery)
+    .when(
+      (d): d is { recursive: boolean } => d !== undefined && 'recursive' in d,
+      (d) => d.recursive
+    )
+    .otherwise(() => undefined)
+
+  const indexFile = match(discovery)
+    .when(
+      (d) => d !== undefined && 'recursive' in d && d.recursive === true,
+      (d) => (d as { recursive: true; indexFile?: string }).indexFile
+    )
+    .otherwise(() => undefined)
+
+  const exclude = match(discovery)
+    .with(P.nonNullable, (d) =>
+      match(d.exclude)
+        .with(P.nonNullable, (ex) => [...ex])
+        .otherwise(() => undefined)
+    )
+    .otherwise(() => undefined)
+
+  const frontmatter = match(discovery)
+    .with(P.nonNullable, (d) => d.frontmatter)
+    .otherwise(() => undefined)
 
   return omitBy(
     {
@@ -400,18 +440,14 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
       from: resolvedFrom,
       prefix: item.prefix,
       items: item.items,
-      sort: discovery?.sort,
+      sort,
       titleFrom,
       titleTransform,
-      recursive:
-        discovery !== undefined && 'recursive' in discovery ? discovery.recursive : undefined,
-      indexFile:
-        discovery !== undefined && 'recursive' in discovery && discovery.recursive
-          ? discovery.indexFile
-          : undefined,
-      exclude: discovery?.exclude !== undefined ? [...discovery.exclude] : undefined,
+      recursive,
+      indexFile,
+      exclude,
       collapsible: item.collapsible,
-      frontmatter: discovery?.frontmatter,
+      frontmatter,
     },
     isUndefined
   ) as Section
@@ -457,19 +493,3 @@ function resolveBadge(
   return undefined
 }
 
-function resolveIndexFile(
-  recursive: boolean | undefined,
-  indexFile: string | undefined
-): string | undefined {
-  if (recursive) {
-    return indexFile
-  }
-  return undefined
-}
-
-function resolveExclude(exclude: readonly string[] | undefined): string[] | undefined {
-  if (exclude) {
-    return [...exclude]
-  }
-  return undefined
-}

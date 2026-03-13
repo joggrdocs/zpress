@@ -107,7 +107,9 @@ export function injectLandingPages(
           const entryLink = entry.link
           const exact = workspaces.find((item) => item.prefix === entryLink)
           if (exact) {
-            const titleStr = typeof exact.title === 'string' ? exact.title : String(exact.title)
+            const titleStr = match(exact.title)
+              .with(P.string, (t) => t)
+              .otherwise((t) => String(t))
             // Simple text page — no React components, stays as .md
             entry.page = {
               content: () => `# ${titleStr}\n\n${exact.description}\n`,
@@ -150,7 +152,9 @@ function generateWorkspaceLandingPage(
   const cards = items.map((item) => {
     const tags: readonly string[] | undefined = resolveTags(item.tags)
     const resolved = resolveOptionalIcon(item.icon)
-    const titleStr = typeof item.title === 'string' ? item.title : String(item.title)
+    const titleStr = match(item.title)
+      .with(P.string, (t) => t)
+      .otherwise((t) => String(t))
     return buildWorkspaceCardJsx({
       link: item.prefix,
       title: titleStr,
