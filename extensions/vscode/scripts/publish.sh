@@ -13,17 +13,18 @@ if ! command -v pnpm &>/dev/null; then
   exit 1
 fi
 
+# ── Prompt for PAT if not set ──────────────────────────────────────
+
 if [ -z "${VSCE_PAT:-}" ]; then
-  echo "error: VSCE_PAT environment variable is not set" >&2
-  echo "" >&2
-  echo "Create a Personal Access Token at:" >&2
-  echo "  https://dev.azure.com/joggr/_usersSettings/tokens" >&2
-  echo "" >&2
-  echo "Scope: Marketplace > Manage" >&2
-  echo "" >&2
-  echo "Then run:" >&2
-  echo "  VSCE_PAT=<token> ./scripts/publish.sh" >&2
-  exit 1
+  echo "No VSCE_PAT found in environment."
+  echo ""
+  echo "Create a Personal Access Token at:"
+  echo "  https://dev.azure.com/joggr/_usersSettings/tokens"
+  echo "  Scope: Marketplace > Manage"
+  echo ""
+  read -rsp "Paste your PAT: " VSCE_PAT
+  echo ""
+  export VSCE_PAT
 fi
 
 # ── Typecheck & build ──────────────────────────────────────────────
