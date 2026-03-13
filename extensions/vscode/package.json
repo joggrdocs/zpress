@@ -2,8 +2,8 @@
   "name": "zpress-vscode",
   "displayName": "zpress",
   "version": "0.1.0",
-  "private": true,
   "description": "Run zpress dev server and preview documentation from VS Code",
+  "icon": "resources/icon.png",
   "categories": [
     "Other"
   ],
@@ -147,6 +147,6 @@
     "workspaceContains:zpress.config.mjs"
   ],
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.110.0"
   }
 }
