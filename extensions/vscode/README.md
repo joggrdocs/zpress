@@ -17,13 +17,13 @@ Run the [zpress](https://zpress.dev) dev server and preview documentation withou
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `zpress: Start Dev Server` | Start the dev server |
-| `zpress: Stop Dev Server` | Stop the dev server |
-| `zpress: Toggle Dev Server` | Toggle the dev server on/off |
-| `zpress: Restart Dev Server` | Restart the dev server |
-| `zpress: Preview Page` | Preview the current markdown file |
+| Command                      | Description                       |
+| ---------------------------- | --------------------------------- |
+| `zpress: Start Dev Server`   | Start the dev server              |
+| `zpress: Stop Dev Server`    | Stop the dev server               |
+| `zpress: Toggle Dev Server`  | Toggle the dev server on/off      |
+| `zpress: Restart Dev Server` | Restart the dev server            |
+| `zpress: Preview Page`       | Preview the current markdown file |
 
 > `zpress: Open Page` is an internal command used by the sidebar tree view and is not intended to be invoked directly.
 
