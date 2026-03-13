@@ -129,8 +129,10 @@ export function activate(context: ExtensionContext): void {
     })
   }
 
-  function setServerReady(ready: boolean): void {
-    commands.executeCommand('setContext', 'zpress:serverReady', ready)
+  function setServerStatus(status: 'stopped' | 'starting' | 'running' | 'stopping'): void {
+    commands.executeCommand('setContext', 'zpress:serverReady', status === 'running')
+    commands.executeCommand('setContext', 'zpress:serverStarting', status === 'starting' || status === 'stopping')
+    commands.executeCommand('setContext', 'zpress:serverStopped', status === 'stopped')
   }
 
   const server = createDevServer({
@@ -140,16 +142,18 @@ export function activate(context: ExtensionContext): void {
     showErrorMessage: (message) => {
       window.showErrorMessage(message)
     },
+    onStatusChange: (status) => {
+      setServerStatus(status)
+      previewPanel.updateStatus(status)
+    },
     onReady: (baseUrl) => {
       manifestReader.reload(baseUrl)
       sidebar.setBaseUrl(baseUrl)
       refreshSectionViews()
-      setServerReady(true)
     },
     onStopped: () => {
       manifestReader.reload(null)
       sidebar.setBaseUrl('')
-      setServerReady(false)
     },
   })
 
@@ -159,8 +163,9 @@ export function activate(context: ExtensionContext): void {
   /* Set initial section visibility from any existing sidebar.json */
   refreshSectionViews()
 
-  /* Start the dev server immediately on activation */
-  server.start()
+  /* Set initial server status to stopped */
+  setServerStatus('stopped')
+  previewPanel.updateStatus('stopped')
 
   function updateTrackedContext(editor: TextEditor | undefined): void {
     if (!editor) {
@@ -213,18 +218,24 @@ export function activate(context: ExtensionContext): void {
     }),
     commands.registerCommand('zpress.stop', () => {
       server.stop()
-      setServerReady(false)
     }),
     commands.registerCommand('zpress.toggle', () => {
       if (server.isRunning()) {
         server.stop()
-        setServerReady(false)
       } else {
         server.start()
       }
     }),
     commands.registerCommand('zpress.restart', () => {
       server.restart()
+    }),
+    commands.registerCommand('zpress.openInBrowser', () => {
+      const baseUrl = server.getBaseUrl()
+      if (!baseUrl) {
+        window.showWarningMessage('Dev server is not running.')
+        return
+      }
+      env.openExternal(Uri.parse(baseUrl))
     }),
     commands.registerCommand('zpress.openPage', (url: string) => {
       const baseUrl = server.getBaseUrl()

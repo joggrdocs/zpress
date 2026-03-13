@@ -18,37 +18,71 @@ function isMarkdownFile(filePath: string): boolean {
 }
 
 /**
+ * Find the nearest existing ancestor directory for a given path.
+ * Chokidar cannot watch non-existent paths, but can detect when missing
+ * subdirectories appear under a watched parent directory.
+ *
+ * @param targetPath - The path to normalize (may not exist)
+ * @param fallbackRoot - Fallback root if no ancestors exist
+ * @returns The nearest existing ancestor directory path
+ */
+function nearestExistingAncestor(targetPath: string, fallbackRoot: string): string {
+  // oxlint-disable-next-line functional/no-let -- iterative ancestor search
+  let current = targetPath
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: checking if path exists
+  if (existsSync(current)) {
+    return current
+  }
+  // Walk up parent directories until we find one that exists
+  // oxlint-disable-next-line functional/no-loop-statements -- acceptable for iterative directory traversal
+  while (current !== path.dirname(current)) {
+    current = path.dirname(current)
+    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: checking if path exists
+    if (existsSync(current)) {
+      return current
+    }
+  }
+  return fallbackRoot
+}
+
+/**
  * Create a file watcher that re-syncs documentation on changes.
  *
  * Watches markdown/mdx files and the zpress config file. Returns the
  * chokidar `FSWatcher` instance so the caller can close it on shutdown.
  * Returns `undefined` if there are no paths to watch.
+ *
+ * @param onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
  */
-export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatcher | undefined {
+export function createWatcher(
+  initialConfig: ZpressConfig,
+  paths: Paths,
+  onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
+): FSWatcher | undefined {
   const { repoRoot } = paths
   const configFiles = CONFIG_EXTENSIONS.map((ext) => path.resolve(repoRoot, `zpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
   const planningDir = path.resolve(repoRoot, '.planning')
-  const watchPaths = [
-    ...extractWatchPaths(config.sections, repoRoot),
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: known directory at repo root
-    ...(() => {
-      if (existsSync(planningDir)) {
-        return [planningDir]
-      }
-      return []
-    })(),
+  // Normalize content paths to nearest existing ancestors (Chokidar limitation with non-existent paths)
+  const contentPaths = extractWatchPaths(config.sections, repoRoot).map((p) =>
+    nearestExistingAncestor(p, repoRoot)
+  )
+  const initialWatchPaths = [
+    ...contentPaths,
+    nearestExistingAncestor(planningDir, repoRoot),
     ...configFiles,
   ]
+  // Deduplicate initial paths
+  const uniqueInitialPaths = [...new Set(initialWatchPaths)]
 
-  if (watchPaths.length === 0) {
+  if (uniqueInitialPaths.length === 0) {
     cliLogger.warn('No source paths to watch')
     return
   }
 
   cliLogger.info(
-    `Watching ${watchPaths.length} paths: ${watchPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
+    `Watching ${uniqueInitialPaths.length} paths: ${uniqueInitialPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
   )
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
@@ -58,8 +92,10 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
   // oxlint-disable-next-line functional/no-let -- bounded retry counter to prevent unbounded recursive sync
   let consecutiveFailures = 0
   const MAX_CONSECUTIVE_FAILURES = 5
+  // oxlint-disable-next-line functional/no-let -- tracks currently watched paths for dynamic updates
+  let currentWatchPaths = new Set(uniqueInitialPaths)
 
-  const watcher = watch(watchPaths, {
+  const watcher = watch(uniqueInitialPaths, {
     ignoreInitial: true,
     ignored: ['**/node_modules/**', '**/.git/**', '**/.zpress/**', '**/bundle/**'],
     awaitWriteFinish: {
@@ -67,6 +103,40 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
       pollInterval: 50,
     },
   })
+
+  function updateWatchPaths(newConfig: ZpressConfig): void {
+    const newContentPaths = extractWatchPaths(newConfig.sections, repoRoot)
+    // Normalize each content path to its nearest existing ancestor
+    // (Chokidar cannot watch non-existent paths, but can detect subdirs when they appear)
+    const normalizedContentPaths = newContentPaths.map((p) => nearestExistingAncestor(p, repoRoot))
+    const newWatchPaths = [
+      ...normalizedContentPaths,
+      // Normalize planning dir to nearest existing ancestor
+      nearestExistingAncestor(planningDir, repoRoot),
+      ...configFiles,
+    ]
+    // Deduplicate normalized paths
+    const newSet = new Set(newWatchPaths)
+
+    // Add new paths
+    const toAdd = [...newSet].filter((p) => !currentWatchPaths.has(p))
+    if (toAdd.length > 0) {
+      watcher.add(toAdd)
+      cliLogger.info(`Added ${toAdd.length} watch paths: ${toAdd.map((p) => path.relative(repoRoot, p)).join(', ')}`)
+    }
+
+    // Remove old paths (excluding config files which should always be watched)
+    const configFileSet = new Set(configFiles)
+    const toRemove = [...currentWatchPaths].filter((p) => !newSet.has(p) && !configFileSet.has(p))
+    if (toRemove.length > 0) {
+      watcher.unwatch(toRemove)
+      cliLogger.info(
+        `Removed ${toRemove.length} watch paths: ${toRemove.map((p) => path.relative(repoRoot, p)).join(', ')}`
+      )
+    }
+
+    currentWatchPaths = newSet
+  }
 
   async function triggerSync(reloadConfig: boolean) {
     if (syncing) {
@@ -76,6 +146,8 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
       return
     }
     syncing = true
+    // oxlint-disable-next-line functional/no-let -- tracks whether this sync included a config reload
+    let didReloadConfig = false
     try {
       if (reloadConfig) {
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
@@ -85,11 +157,15 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
         }
         config = newConfig
         cliLogger.info('Config reloaded')
+        updateWatchPaths(newConfig)
+        didReloadConfig = true
       }
       await sync(config, { paths })
-      // Rspress dev server watches the content directory directly via HMR.
-      // No need to touch a config file to trigger reload.
       consecutiveFailures = 0
+      // Notify caller that config was reloaded and sync completed successfully
+      if (didReloadConfig && onConfigReload) {
+        await onConfigReload(config)
+      }
     } catch (error) {
       consecutiveFailures += 1
       const errorMessage = (() => {

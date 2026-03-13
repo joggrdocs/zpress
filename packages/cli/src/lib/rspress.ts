@@ -14,24 +14,85 @@ interface ServerOptions {
 }
 
 /**
+ * Server instance returned by Rspress dev() - allows closing the server.
+ */
+interface ServerInstance {
+  readonly close: () => Promise<void>
+}
+
+/**
+ * Callback invoked when the dev server should restart due to config changes.
+ */
+export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
+
+/**
  * Start the Rspress dev server with zpress configuration.
  *
+ * Returns a callback that will restart the server when invoked with updated config.
+ * The callback closes the current server instance and starts a new one with the
+ * fresh configuration values.
+ *
  * @param options - Dev server configuration including config and paths
- * @returns A promise that resolves when the server starts
+ * @returns An async callback to invoke when config changes with new config (restarts server)
  */
-export async function startDevServer(options: ServerOptions): Promise<void> {
-  const rspressConfig = createRspressConfig(options)
-  await dev({
-    appDirectory: options.paths.repoRoot,
-    docDirectory: options.paths.contentDir,
-    config: rspressConfig,
-    configFilePath: '',
-    extraBuilderConfig: {
-      server: {
-        port: DEFAULT_PORT,
-      },
-    },
-  })
+export async function startDevServer(options: ServerOptions): Promise<(newConfig: ZpressConfig) => Promise<void>> {
+  const { paths } = options
+  // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
+  let serverInstance: ServerInstance | null = null
+
+  async function startServer(config: ZpressConfig): Promise<void> {
+    const rspressConfig = createRspressConfig({ config, paths })
+    try {
+      serverInstance = await dev({
+        appDirectory: paths.repoRoot,
+        docDirectory: paths.contentDir,
+        config: rspressConfig,
+        configFilePath: '',
+        extraBuilderConfig: {
+          server: {
+            port: DEFAULT_PORT,
+          },
+        },
+      })
+    } catch (error) {
+      const errorMessage = (() => {
+        if (error instanceof Error) {
+          return error.message
+        }
+        return String(error)
+      })()
+      process.stderr.write(`Dev server error: ${errorMessage}\n`)
+      process.exit(1)
+    }
+  }
+
+  // Start initial server
+  await startServer(options.config)
+
+  // Return callback that restarts server with new config
+  return async (newConfig: ZpressConfig) => {
+    process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
+
+    // Close existing server
+    if (serverInstance) {
+      try {
+        await serverInstance.close()
+      } catch (error) {
+        const errorMessage = (() => {
+          if (error instanceof Error) {
+            return error.message
+          }
+          return String(error)
+        })()
+        process.stderr.write(`Error closing server: ${errorMessage}\n`)
+      }
+    }
+
+    // Start new server with fresh config
+    await startServer(newConfig)
+
+    process.stdout.write('✅ Dev server restarted\n\n')
+  }
 }
 
 /**
