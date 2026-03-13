@@ -6,20 +6,57 @@ import { BranchTag } from './branch-tag'
 import { ThemeSwitcher } from './theme-switcher'
 import { VscodeTag } from './vscode-tag'
 
-const VSCODE_OVERRIDES = [
-  /* Hide left sidebar and its placeholder */
-  '.rp-doc-layout__sidebar { display: none !important; }',
-  '.rp-doc-layout__sidebar-placeholder { display: none !important; }',
-  /* Hide right TOC and its placeholder */
-  '.rp-doc-layout__outline { display: none !important; }',
-  '.rp-doc-layout__outline-placeholder { display: none !important; }',
-  /* Center content at 1200px max */
-  '.rp-doc-layout__doc { max-width: 1200px !important; margin: 0 auto !important; }',
-  /* Hide nav items, social links, hamburger */
-  '.rp-nav-menu__item { display: none !important; }',
-  '.rp-social-links { display: none !important; }',
-  '.rp-nav-hamburger { display: none !important; }',
-].join('\n')
+const VSCODE_OVERRIDES = `
+/* Hide left sidebar and its placeholder */
+html[data-zpress-env="vscode"] .rp-doc-layout__sidebar {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-doc-layout__sidebar-placeholder {
+  display: none;
+}
+
+/* Hide right TOC and its placeholder */
+html[data-zpress-env="vscode"] .rp-doc-layout__outline {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-doc-layout__outline-placeholder {
+  display: none;
+}
+
+/* Center content at 1200px max */
+html[data-zpress-env="vscode"] .rp-doc-layout__doc {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Hide nav items, social links, hamburger */
+html[data-zpress-env="vscode"] .rp-nav-menu__item {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-social-links {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-nav-hamburger {
+  display: none;
+}
+
+/* Hide mobile navigation elements */
+html[data-zpress-env="vscode"] .rp-nav-screen {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-nav-screen-menu {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-local-nav {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-appearance {
+  display: none;
+}
+html[data-zpress-env="vscode"] .rp-doc-layout__menu {
+  display: none;
+}
+`
 
 function useVscodeMode(): boolean {
   const [active, setActive] = useState(false)

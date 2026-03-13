@@ -1,0 +1,54 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "vscode: watch",
+      "dependsOn": ["vscode: watch:esbuild", "vscode: watch:tsc"],
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "npm",
+      "script": "watch",
+      "path": "extensions/vscode",
+      "isBackground": true,
+      "label": "vscode: watch:esbuild",
+      "presentation": {
+        "group": "watch",
+        "reveal": "never"
+      },
+      "problemMatcher": {
+        "owner": "esbuild",
+        "fileLocation": "relative",
+        "pattern": {
+          "regexp": "^\\s+(.*):(\\d+):(\\d+):",
+          "file": 1,
+          "line": 2,
+          "column": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[zpress-vscode\\]",
+          "endsPattern": "^\\[zpress-vscode\\] (build complete|watching for changes)"
+        }
+      }
+    },
+    {
+      "type": "npm",
+      "script": "watch:tsc",
+      "path": "extensions/vscode",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "label": "vscode: watch:tsc",
+      "presentation": {
+        "group": "watch",
+        "reveal": "never"
+      }
+    }
+  ]
+}
