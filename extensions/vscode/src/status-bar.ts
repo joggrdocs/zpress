@@ -2,7 +2,9 @@ import type { Disposable, StatusBarAlignment, StatusBarItem } from 'vscode'
 
 type ServerStatus = 'stopped' | 'starting' | 'running' | 'stopping'
 
-type StatusBarConfig = Readonly<Record<ServerStatus, { readonly text: string; readonly tooltip: string }>>
+type StatusBarConfig = Readonly<
+  Record<ServerStatus, { readonly text: string; readonly tooltip: string }>
+>
 
 const STATUS_CONFIG: StatusBarConfig = {
   stopped: {

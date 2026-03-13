@@ -27,8 +27,7 @@ function useVscodeMode(): boolean {
   useEffect(() => {
     const params = new URLSearchParams(globalThis.location.search)
     const isVscode =
-      params.get('env') === 'vscode' ||
-      globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
+      params.get('env') === 'vscode' || globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
 
     if (!isVscode) {
       return

@@ -1,7 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { Disposable, Event, EventEmitter, FileSystemWatcher, GlobPattern, RelativePattern } from 'vscode'
+import type {
+  Disposable,
+  Event,
+  EventEmitter,
+  FileSystemWatcher,
+  GlobPattern,
+  RelativePattern,
+} from 'vscode'
 
 interface ManifestFileEntry {
   readonly source: string
@@ -84,7 +91,10 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
     emitter.fire()
   }
 
-  const manifestGlob = new deps.RelativePattern(deps.workspaceRoot, '.zpress/content/.generated/manifest.json')
+  const manifestGlob = new deps.RelativePattern(
+    deps.workspaceRoot,
+    '.zpress/content/.generated/manifest.json'
+  )
   const watcher = deps.createWatcher(manifestGlob)
   watcher.onDidChange(() => reload())
   watcher.onDidCreate(() => reload())
