@@ -154,11 +154,13 @@ function generateWorkspaceLandingPage(
       title: item.title,
       icon: match(resolved)
         .with(P.nonNullable, (r) => r.id)
-        .with(P.nullish, () => undefined)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
         .exhaustive(),
       iconColor: match(resolved)
         .with(P.nonNullable, (r) => r.color)
-        .with(P.nullish, () => undefined)
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
+        .with(P.nullish, (): undefined => undefined)
         .exhaustive(),
       scope: scopePrefix,
       description: item.description,
