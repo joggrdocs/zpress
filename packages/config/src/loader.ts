@@ -66,10 +66,7 @@ async function loadAndValidateConfig(
     const { config } = result
 
     if (!config) {
-      return [
-        configError('not_found', 'Failed to load zpress.config — no config file found'),
-        null,
-      ]
+      return [configError('not_found', 'Failed to load zpress.config — no config file found'), null]
     }
 
     if (!config.sections || (Array.isArray(config.sections) && config.sections.length === 0)) {

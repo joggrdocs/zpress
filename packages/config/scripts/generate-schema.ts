@@ -18,7 +18,8 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { versi
 const currentVersion = packageJson.version
 
 try {
-  const jsonSchema = zodToJsonSchema(zpressConfigSchema, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const jsonSchema = zodToJsonSchema(zpressConfigSchema as any, {
     name: 'ZpressConfig',
     $refStrategy: 'root',
     target: 'jsonSchema7',

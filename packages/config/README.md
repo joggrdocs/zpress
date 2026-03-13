@@ -111,7 +111,7 @@ if (error) {
     console.error('No config file found')
   } else if (error.type === 'validation_failed') {
     console.error('Config validation errors:')
-    error.errors?.forEach(err => {
+    error.errors?.forEach((err) => {
       console.error(`  ${err.path.join('.')}: ${err.message}`)
     })
   }
@@ -126,9 +126,7 @@ import { validateConfig } from '@zpress/config'
 
 const config = {
   title: 'My Docs',
-  sections: [
-    { text: 'Guide', from: 'docs' },
-  ],
+  sections: [{ text: 'Guide', from: 'docs' }],
 }
 
 const [error, validatedConfig] = validateConfig(config)
@@ -162,6 +160,7 @@ The package generates a JSON Schema file that provides IDE autocomplete and vali
 ### Using the Schema
 
 #### JSON
+
 Add `$schema` property to your `zpress.config.json`:
 
 ```json
@@ -171,6 +170,7 @@ Add `$schema` property to your `zpress.config.json`:
 ```
 
 #### YAML
+
 Add a modeline comment to your `zpress.config.yaml`:
 
 ```yaml
@@ -234,11 +234,13 @@ function defineConfig(config: ZpressConfig): ZpressConfig
 ```
 
 **Parameters:**
+
 - `config` - Zpress configuration object
 
 **Returns:** The same config object (typed)
 
 **Example:**
+
 ```typescript
 export default defineConfig({
   title: 'My Docs',
@@ -251,12 +253,11 @@ export default defineConfig({
 Load and validate zpress config from a directory.
 
 ```typescript
-function loadConfig(
-  dirOrOptions?: string | LoadConfigOptions
-): Promise<ConfigResult<ZpressConfig>>
+function loadConfig(dirOrOptions?: string | LoadConfigOptions): Promise<ConfigResult<ZpressConfig>>
 ```
 
 **Parameters:**
+
 - `dirOrOptions` - Directory path (string) or options object:
   - `cwd?: string` - Working directory to search for config
   - `configFile?: string` - Specific config file name
@@ -264,6 +265,7 @@ function loadConfig(
 **Returns:** Result tuple with error or validated config
 
 **Example:**
+
 ```typescript
 const [error, config] = await loadConfig('/path/to/project')
 if (error) {
@@ -277,17 +279,17 @@ if (error) {
 Validate a config object against the Zod schema.
 
 ```typescript
-function validateConfig(
-  config: unknown
-): ConfigResult<ZpressConfig>
+function validateConfig(config: unknown): ConfigResult<ZpressConfig>
 ```
 
 **Parameters:**
+
 - `config` - Config object to validate
 
 **Returns:** Result tuple with validation error or validated config
 
 **Example:**
+
 ```typescript
 const [error, validatedConfig] = validateConfig(rawConfig)
 ```
@@ -297,10 +299,7 @@ const [error, validatedConfig] = validateConfig(rawConfig)
 Create a ConfigError object.
 
 ```typescript
-function configError(
-  type: ConfigErrorType,
-  message: string
-): ConfigError
+function configError(type: ConfigErrorType, message: string): ConfigError
 ```
 
 #### `configErrorFromZod(zodError)`
@@ -308,9 +307,7 @@ function configError(
 Convert Zod validation error to ConfigError.
 
 ```typescript
-function configErrorFromZod(
-  zodError: z.ZodError
-): ConfigError
+function configErrorFromZod(zodError: z.ZodError): ConfigError
 ```
 
 ### Constants
@@ -370,6 +367,14 @@ type ConfigErrorType =
   | 'parse_error'
   | 'validation_failed'
   | 'empty_sections'
+  | 'missing_field'
+  | 'invalid_entry'
+  | 'invalid_section'
+  | 'invalid_field'
+  | 'invalid_icon'
+  | 'invalid_theme'
+  | 'duplicate_prefix'
+  | 'unknown'
 ```
 
 ### Handling Errors
@@ -388,7 +393,7 @@ if (error) {
       break
     case 'validation_failed':
       console.error('Validation failed:')
-      error.errors?.forEach(err => {
+      error.errors?.forEach((err) => {
         console.error(`  ${err.path.join('.')}: ${err.message}`)
       })
       break

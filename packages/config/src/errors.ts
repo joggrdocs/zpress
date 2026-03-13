@@ -2,7 +2,7 @@
  * Error types for config loading and validation.
  */
 
-import type { ZodError } from 'zod'
+import type { ZodError } from 'zod/v3'
 
 import type { Result } from './types.ts'
 
@@ -51,8 +51,10 @@ export function configErrorFromZod(zodError: ZodError): ConfigError {
     _tag: 'ConfigError',
     type: 'validation_failed',
     message: 'Configuration validation failed',
-    errors: zodError.errors.map((err) => ({
-      path: err.path,
+    errors: zodError.issues.map((err) => ({
+      path: err.path.filter(
+        (p): p is string | number => typeof p === 'string' || typeof p === 'number'
+      ),
       message: err.message,
     })),
   }

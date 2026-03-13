@@ -1,8 +1,8 @@
 {
   "folders": [
     {
-      "path": "../examples/kitchen-sink"
-    }
+      "path": "../examples/kitchen-sink",
+    },
   ],
-  "settings": {}
+  "settings": {},
 }

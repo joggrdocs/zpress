@@ -46,7 +46,7 @@
     "chokidar": "^5.0.0",
     "es-toolkit": "catalog:",
     "ts-pattern": "catalog:",
-    "zod": "^4.3.6"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",

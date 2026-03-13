@@ -1,8 +1,8 @@
 ---
-"@zpress/core": major
-"@zpress/ui": major
-"@zpress/cli": major
-"@zpress/kit": major
+'@zpress/core': major
+'@zpress/ui': major
+'@zpress/cli': major
+'@zpress/kit': major
 ---
 
 # Comprehensive Config API Refactor
@@ -30,10 +30,18 @@ interface Entry {
   readonly description?: string
 }
 
-interface Section extends Entry { /* ... */ }
-interface Workspace extends Entry { /* ... */ }
-interface WorkspaceCategory extends Entry { /* ... */ }
-interface Feature extends Entry { /* ... */ }
+interface Section extends Entry {
+  /* ... */
+}
+interface Workspace extends Entry {
+  /* ... */
+}
+interface WorkspaceCategory extends Entry {
+  /* ... */
+}
+interface Feature extends Entry {
+  /* ... */
+}
 ```
 
 ### Workspace Field Changes
@@ -42,32 +50,44 @@ interface Feature extends Entry { /* ... */ }
 
 ```ts
 // Before
-apps: [{
-  title: 'API',
-  path: '/apps/api',
-}]
+apps: [
+  {
+    title: 'API',
+    path: '/apps/api',
+  },
+]
 
 // After
-apps: [{
-  title: 'API',
-  prefix: '/apps/api',
-}]
+apps: [
+  {
+    title: 'API',
+    prefix: '/apps/api',
+  },
+]
 ```
 
 **`name` → `title`** on `WorkspaceCategory`: All types now use `title` consistently
 
 ```ts
 // Before
-workspaces: [{
-  name: 'Integrations',
-  items: [/* ... */],
-}]
+workspaces: [
+  {
+    name: 'Integrations',
+    items: [
+      /* ... */
+    ],
+  },
+]
 
 // After
-workspaces: [{
-  title: 'Integrations',
-  items: [/* ... */],
-}]
+workspaces: [
+  {
+    title: 'Integrations',
+    items: [
+      /* ... */
+    ],
+  },
+]
 ```
 
 ### Discovery Configuration
@@ -76,26 +96,30 @@ Workspace items now use a `discovery` field to configure content auto-discovery,
 
 ```ts
 // Before
-apps: [{
-  title: 'API',
-  path: '/apps/api',
-  from: 'docs/*.md',
-  titleFrom: 'frontmatter',
-  sort: 'alpha',
-  recursive: false,
-}]
-
-// After
-apps: [{
-  title: 'API',
-  prefix: '/apps/api',
-  discovery: {
+apps: [
+  {
+    title: 'API',
+    path: '/apps/api',
     from: 'docs/*.md',
-    title: { from: 'auto' },
+    titleFrom: 'frontmatter',
     sort: 'alpha',
     recursive: false,
   },
-}]
+]
+
+// After
+apps: [
+  {
+    title: 'API',
+    prefix: '/apps/api',
+    discovery: {
+      from: 'docs/*.md',
+      title: { from: 'auto' },
+      sort: 'alpha',
+      recursive: false,
+    },
+  },
+]
 ```
 
 **Note**: The `from` field in `discovery` is relative to the workspace's base path (derived from `prefix`). For example, `prefix: "/apps/api"` + `discovery.from: "docs/*.md"` resolves to `apps/api/docs/*.md` (repo-root relative).
@@ -105,6 +129,7 @@ apps: [{
 **Default `titleFrom` changed from `'filename'` to `'auto'`**
 
 The `'auto'` strategy uses a smart fallback chain:
+
 1. Try frontmatter `title` field
 2. Fall back to first `# heading`
 3. Fall back to filename (kebab-to-title)
@@ -142,13 +167,14 @@ interface Discovery {
   exclude?: GlobPattern[]
   frontmatter?: Frontmatter
   recursive?: boolean
-  indexFile?: string  // Only when recursive: true
+  indexFile?: string // Only when recursive: true
 }
 ```
 
 ### Enhanced Icon Documentation
 
 Icon colors are now fully documented in types with the 8-color palette rotation:
+
 - purple (default)
 - blue
 - green
@@ -163,18 +189,21 @@ Icon colors are now fully documented in types with the 8-color palette rotation:
 ### Automated Find/Replace
 
 1. **Update workspace field names**:
+
    ```
    Find:    path: '/
    Replace: prefix: '/
    ```
 
 2. **Update workspace group names**:
+
    ```
    Find:    name: '
    Replace: title: '
    ```
 
 3. **Update type imports** (if using types directly):
+
    ```ts
    // Before
    import type { Entry, WorkspaceItem, WorkspaceGroup } from '@zpress/core'
@@ -189,24 +218,28 @@ Icon colors are now fully documented in types with the 8-color palette rotation:
 
    ```ts
    // Before
-   apps: [{
-     title: 'API',
-     path: '/apps/api',
-     from: 'docs/*.md',
-     titleFrom: 'frontmatter',
-     sort: 'alpha',
-   }]
-
-   // After
-   apps: [{
-     title: 'API',
-     prefix: '/apps/api',
-     discovery: {
+   apps: [
+     {
+       title: 'API',
+       path: '/apps/api',
        from: 'docs/*.md',
-       title: { from: 'auto' },  // Better default!
+       titleFrom: 'frontmatter',
        sort: 'alpha',
      },
-   }]
+   ]
+
+   // After
+   apps: [
+     {
+       title: 'API',
+       prefix: '/apps/api',
+       discovery: {
+         from: 'docs/*.md',
+         title: { from: 'auto' }, // Better default!
+         sort: 'alpha',
+       },
+     },
+   ]
    ```
 
 2. **Verify title derivation behavior**: If you have sections with `titleFrom: 'filename'` and markdown files with frontmatter or headings, the default `'auto'` mode will now use those instead of the filename. To preserve old behavior, explicitly set `titleFrom: 'filename'`.
@@ -220,6 +253,7 @@ Icon colors are now fully documented in types with the 8-color palette rotation:
 ## Documentation
 
 See updated guides:
+
 - [Workspaces](/guides/workspaces) - New `prefix` and `discovery` fields
 - [Auto-Discovery](/guides/auto-discovery) - New `'auto'` titleFrom mode and `TitleConfig`
 - [Configuration Reference](/reference/configuration) - Full field reference

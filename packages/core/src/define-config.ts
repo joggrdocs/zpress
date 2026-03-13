@@ -1,3 +1,4 @@
+import { THEME_NAMES, COLOR_MODES } from '@zpress/theme'
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from './glob.ts'
@@ -13,7 +14,6 @@ import type {
   ThemeConfig,
   ThemeColors,
 } from './types.ts'
-import { THEME_NAMES, COLOR_MODES } from '@zpress/theme'
 
 /**
  * Type-safe config helper for user config files.
@@ -185,7 +185,10 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
     }
 
     if (!category.icon) {
-      return configError('missing_field', `WorkspaceCategory "${category.title}": "icon" is required`)
+      return configError(
+        'missing_field',
+        `WorkspaceCategory "${category.title}": "icon" is required`
+      )
     }
 
     if (!category.items || category.items.length === 0) {
@@ -278,10 +281,7 @@ function validateSection(section: Section): ConfigResult<true> {
   // Validate landing requires link
   if (section.landing !== undefined && section.landing !== false && !section.link) {
     return [
-      configError(
-        'invalid_section',
-        `Section "${titleStr}": 'landing' requires 'link' to be set`
-      ),
+      configError('invalid_section', `Section "${titleStr}": 'landing' requires 'link' to be set`),
       null,
     ]
   }
@@ -289,10 +289,7 @@ function validateSection(section: Section): ConfigResult<true> {
   // Validate isolated requires link
   if (section.isolated && !section.link) {
     return [
-      configError(
-        'invalid_section',
-        `Section "${titleStr}": 'isolated' requires 'link' to be set`
-      ),
+      configError('invalid_section', `Section "${titleStr}": 'isolated' requires 'link' to be set`),
       null,
     ]
   }

@@ -31,12 +31,12 @@ import type { ThemeName, IconColor, ThemeConfig } from '@zpress/theme'
 
 // ThemeName provides autocomplete for built-in themes
 // but also accepts any string for custom themes
-const myTheme: ThemeName = 'midnight'  // ✓ Autocomplete works
-const customTheme: ThemeName = 'my-custom-theme'  // ✓ Also valid
+const myTheme: ThemeName = 'midnight' // ✓ Autocomplete works
+const customTheme: ThemeName = 'my-custom-theme' // ✓ Also valid
 
 // Same pattern for icon colors
-const color: IconColor = 'purple'  // ✓ Autocomplete for built-in colors
-const customColor: IconColor = 'my-brand-color'  // ✓ Also valid
+const color: IconColor = 'purple' // ✓ Autocomplete for built-in colors
+const customColor: IconColor = 'my-brand-color' // ✓ Also valid
 ```
 
 ### Built-in Themes
@@ -47,8 +47,8 @@ import { THEME_NAMES, isBuiltInTheme } from '@zpress/theme'
 console.log(THEME_NAMES)
 // ['base', 'midnight', 'arcade', 'arcade-fx']
 
-isBuiltInTheme('midnight')  // true
-isBuiltInTheme('custom')    // false
+isBuiltInTheme('midnight') // true
+isBuiltInTheme('custom') // false
 ```
 
 ### Theme Utilities
@@ -57,9 +57,9 @@ isBuiltInTheme('custom')    // false
 import { resolveDefaultColorMode } from '@zpress/theme'
 
 // Get the default color mode for a built-in theme
-resolveDefaultColorMode('base')      // 'toggle'
-resolveDefaultColorMode('midnight')  // 'dark'
-resolveDefaultColorMode('arcade')    // 'dark'
+resolveDefaultColorMode('base') // 'toggle'
+resolveDefaultColorMode('midnight') // 'dark'
+resolveDefaultColorMode('arcade') // 'dark'
 ```
 
 ### Zod Validation

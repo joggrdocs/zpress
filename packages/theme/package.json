@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "ts-pattern": "catalog:",
-    "type-fest": "^4.30.0",
-    "zod": "^3.24.1"
+    "type-fest": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",

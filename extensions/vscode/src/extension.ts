@@ -131,7 +131,11 @@ export function activate(context: ExtensionContext): void {
 
   function setServerStatus(status: 'stopped' | 'starting' | 'running' | 'stopping'): void {
     commands.executeCommand('setContext', 'zpress:serverReady', status === 'running')
-    commands.executeCommand('setContext', 'zpress:serverStarting', status === 'starting' || status === 'stopping')
+    commands.executeCommand(
+      'setContext',
+      'zpress:serverStarting',
+      status === 'starting' || status === 'stopping'
+    )
     commands.executeCommand('setContext', 'zpress:serverStopped', status === 'stopped')
   }
 

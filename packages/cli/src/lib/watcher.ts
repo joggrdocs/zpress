@@ -13,6 +13,8 @@ const CONFIG_EXTENSIONS = ['.ts', '.mts', '.cts', '.js', '.mjs', '.cjs', '.json'
 
 const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
 
+const MAX_DISPLAY_PATHS = 3
+
 function isMarkdownFile(filePath: string): boolean {
   return MARKDOWN_EXTENSIONS.some((ext) => filePath.endsWith(ext))
 }
@@ -81,9 +83,15 @@ export function createWatcher(
     return
   }
 
-  cliLogger.info(
-    `Watching ${uniqueInitialPaths.length} paths: ${uniqueInitialPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
-  )
+  const relativePaths = uniqueInitialPaths.map((p) => path.relative(repoRoot, p))
+  const pathsMessage = match(relativePaths.length <= MAX_DISPLAY_PATHS)
+    .with(true, () => relativePaths.join(', '))
+    .otherwise(
+      () =>
+        `${relativePaths.slice(0, MAX_DISPLAY_PATHS).join(', ')} and ${relativePaths.length - MAX_DISPLAY_PATHS} more`
+    )
+
+  cliLogger.info(`Watching ${uniqueInitialPaths.length} paths: ${pathsMessage}`)
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
   let syncing = false
@@ -102,6 +110,8 @@ export function createWatcher(
       stabilityThreshold: 100,
       pollInterval: 50,
     },
+    // Limit recursion depth as a safety guard
+    depth: 99,
   })
 
   function updateWatchPaths(newConfig: ZpressConfig): void {
@@ -122,7 +132,14 @@ export function createWatcher(
     const toAdd = [...newSet].filter((p) => !currentWatchPaths.has(p))
     if (toAdd.length > 0) {
       watcher.add(toAdd)
-      cliLogger.info(`Added ${toAdd.length} watch paths: ${toAdd.map((p) => path.relative(repoRoot, p)).join(', ')}`)
+      const relativeAdded = toAdd.map((p) => path.relative(repoRoot, p))
+      const addedMessage = match(relativeAdded.length <= MAX_DISPLAY_PATHS)
+        .with(true, () => relativeAdded.join(', '))
+        .otherwise(
+          () =>
+            `${relativeAdded.slice(0, MAX_DISPLAY_PATHS).join(', ')} and ${relativeAdded.length - MAX_DISPLAY_PATHS} more`
+        )
+      cliLogger.info(`Added ${toAdd.length} watch paths: ${addedMessage}`)
     }
 
     // Remove old paths (excluding config files which should always be watched)
@@ -130,9 +147,14 @@ export function createWatcher(
     const toRemove = [...currentWatchPaths].filter((p) => !newSet.has(p) && !configFileSet.has(p))
     if (toRemove.length > 0) {
       watcher.unwatch(toRemove)
-      cliLogger.info(
-        `Removed ${toRemove.length} watch paths: ${toRemove.map((p) => path.relative(repoRoot, p)).join(', ')}`
-      )
+      const relativeRemoved = toRemove.map((p) => path.relative(repoRoot, p))
+      const removedMessage = match(relativeRemoved.length <= MAX_DISPLAY_PATHS)
+        .with(true, () => relativeRemoved.join(', '))
+        .otherwise(
+          () =>
+            `${relativeRemoved.slice(0, MAX_DISPLAY_PATHS).join(', ')} and ${relativeRemoved.length - MAX_DISPLAY_PATHS} more`
+        )
+      cliLogger.info(`Removed ${toRemove.length} watch paths: ${removedMessage}`)
     }
 
     currentWatchPaths = newSet
@@ -154,9 +176,9 @@ export function createWatcher(
         if (configErr) {
           cliLogger.error(`Config reload failed: ${configErr.message}`)
           if (configErr.errors && configErr.errors.length > 0) {
-            configErr.errors.forEach((err) => {
+            configErr.errors.map((err) => {
               const pathStr = err.path.join('.')
-              cliLogger.error(`  ${pathStr}: ${err.message}`)
+              return cliLogger.error(`  ${pathStr}: ${err.message}`)
             })
           }
           return
