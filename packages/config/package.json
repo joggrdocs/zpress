@@ -1,0 +1,61 @@
+{
+  "name": "@zpress/config",
+  "version": "0.1.0",
+  "description": "Configuration loading and validation for zpress",
+  "keywords": [
+    "config",
+    "schema",
+    "validation",
+    "zpress"
+  ],
+  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/config#readme",
+  "bugs": "https://github.com/joggrdocs/zpress/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joggrdocs/zpress.git",
+    "directory": "packages/config"
+  },
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./schema": {
+      "default": "./schemas/schema.json"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsx scripts/generate-schema.ts && rslib build",
+    "dev": "rslib build --watch --no-clean",
+    "typecheck": "tsc --noEmit",
+    "generate:schema": "tsx scripts/generate-schema.ts"
+  },
+  "dependencies": {
+    "@zpress/theme": "workspace:*",
+    "c12": "4.0.0-beta.3",
+    "es-toolkit": "catalog:",
+    "ts-pattern": "catalog:",
+    "type-fest": "^4.30.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@rslib/core": "catalog:",
+    "@types/node": "^22.13.9",
+    "tsx": "^4.19.3",
+    "typescript": "catalog:",
+    "zod-to-json-schema": "^3.24.1"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

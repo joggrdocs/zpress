@@ -1,0 +1,1674 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/joggrdocs/zpress/v0/packages/config/schemas/schema.json",
+  "title": "Zpress Configuration",
+  "description": "Configuration file for zpress documentation framework",
+  "$ref": "#/definitions/ZpressConfig",
+  "definitions": {
+    "ZpressConfig": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "theme": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "base"
+            },
+            "colorMode": {
+              "type": "string",
+              "enum": [
+                "dark",
+                "light",
+                "toggle"
+              ]
+            },
+            "switcher": {
+              "type": "boolean"
+            },
+            "colors": {
+              "type": "object",
+              "properties": {
+                "brand": {
+                  "type": "string"
+                },
+                "brandLight": {
+                  "type": "string"
+                },
+                "brandDark": {
+                  "type": "string"
+                },
+                "brandSoft": {
+                  "type": "string"
+                },
+                "bg": {
+                  "type": "string"
+                },
+                "bgAlt": {
+                  "type": "string"
+                },
+                "bgElv": {
+                  "type": "string"
+                },
+                "bgSoft": {
+                  "type": "string"
+                },
+                "text1": {
+                  "type": "string"
+                },
+                "text2": {
+                  "type": "string"
+                },
+                "text3": {
+                  "type": "string"
+                },
+                "divider": {
+                  "type": "string"
+                },
+                "border": {
+                  "type": "string"
+                },
+                "homeBg": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "darkColors": {
+              "type": "object",
+              "properties": {
+                "brand": {
+                  "type": "string"
+                },
+                "brandLight": {
+                  "type": "string"
+                },
+                "brandDark": {
+                  "type": "string"
+                },
+                "brandSoft": {
+                  "type": "string"
+                },
+                "bg": {
+                  "type": "string"
+                },
+                "bgAlt": {
+                  "type": "string"
+                },
+                "bgElv": {
+                  "type": "string"
+                },
+                "bgSoft": {
+                  "type": "string"
+                },
+                "text1": {
+                  "type": "string"
+                },
+                "text2": {
+                  "type": "string"
+                },
+                "text3": {
+                  "type": "string"
+                },
+                "divider": {
+                  "type": "string"
+                },
+                "border": {
+                  "type": "string"
+                },
+                "homeBg": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "icon": {
+          "type": "string"
+        },
+        "tagline": {
+          "type": "string"
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "iconColor": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "badge": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "src",
+                  "alt"
+                ],
+                "additionalProperties": false
+              },
+              "docsPrefix": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "link": {
+                      "type": "string"
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "collapsible": {
+                      "type": "boolean"
+                    },
+                    "exclude": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "hidden": {
+                      "type": "boolean"
+                    },
+                    "frontmatter": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "titleTemplate": {
+                          "type": [
+                            "string",
+                            "boolean"
+                          ]
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "layout": {
+                          "type": "string"
+                        },
+                        "sidebar": {
+                          "type": "boolean"
+                        },
+                        "aside": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "string",
+                              "const": "left"
+                            }
+                          ]
+                        },
+                        "outline": {
+                          "anyOf": [
+                            {
+                              "type": "boolean",
+                              "const": false
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "array",
+                              "minItems": 2,
+                              "maxItems": 2,
+                              "items": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "const": "deep"
+                            }
+                          ]
+                        },
+                        "navbar": {
+                          "type": "boolean"
+                        },
+                        "editLink": {
+                          "type": "boolean"
+                        },
+                        "lastUpdated": {
+                          "type": "boolean"
+                        },
+                        "footer": {
+                          "type": "boolean"
+                        },
+                        "pageClass": {
+                          "type": "string"
+                        },
+                        "head": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    "textFrom": {
+                      "type": "string",
+                      "enum": [
+                        "filename",
+                        "heading",
+                        "frontmatter"
+                      ]
+                    },
+                    "sort": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "alpha",
+                            "filename"
+                          ]
+                        }
+                      ]
+                    },
+                    "recursive": {
+                      "type": "boolean"
+                    },
+                    "indexFile": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "card": {
+                      "type": "object",
+                      "properties": {
+                        "icon": {
+                          "type": "string"
+                        },
+                        "iconColor": {
+                          "type": "string"
+                        },
+                        "scope": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "badge": {
+                          "type": "object",
+                          "properties": {
+                            "src": {
+                              "type": "string"
+                            },
+                            "alt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "src",
+                            "alt"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "isolated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "sort": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "alpha",
+                      "filename"
+                    ]
+                  }
+                ]
+              },
+              "textFrom": {
+                "type": "string",
+                "enum": [
+                  "filename",
+                  "heading",
+                  "frontmatter"
+                ]
+              },
+              "recursive": {
+                "type": "boolean"
+              },
+              "indexFile": {
+                "type": "string"
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "collapsible": {
+                "type": "boolean"
+              },
+              "frontmatter": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "titleTemplate": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ]
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "layout": {
+                    "type": "string"
+                  },
+                  "sidebar": {
+                    "type": "boolean"
+                  },
+                  "aside": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string",
+                        "const": "left"
+                      }
+                    ]
+                  },
+                  "outline": {
+                    "anyOf": [
+                      {
+                        "type": "boolean",
+                        "const": false
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "const": "deep"
+                      }
+                    ]
+                  },
+                  "navbar": {
+                    "type": "boolean"
+                  },
+                  "editLink": {
+                    "type": "boolean"
+                  },
+                  "lastUpdated": {
+                    "type": "boolean"
+                  },
+                  "footer": {
+                    "type": "boolean"
+                  },
+                  "pageClass": {
+                    "type": "string"
+                  },
+                  "head": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "text",
+              "description",
+              "docsPrefix"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "iconColor": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "badge": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "src",
+                  "alt"
+                ],
+                "additionalProperties": false
+              },
+              "docsPrefix": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "link": {
+                      "type": "string"
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "collapsible": {
+                      "type": "boolean"
+                    },
+                    "exclude": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "hidden": {
+                      "type": "boolean"
+                    },
+                    "frontmatter": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "titleTemplate": {
+                          "type": [
+                            "string",
+                            "boolean"
+                          ]
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "layout": {
+                          "type": "string"
+                        },
+                        "sidebar": {
+                          "type": "boolean"
+                        },
+                        "aside": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "string",
+                              "const": "left"
+                            }
+                          ]
+                        },
+                        "outline": {
+                          "anyOf": [
+                            {
+                              "type": "boolean",
+                              "const": false
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "array",
+                              "minItems": 2,
+                              "maxItems": 2,
+                              "items": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "const": "deep"
+                            }
+                          ]
+                        },
+                        "navbar": {
+                          "type": "boolean"
+                        },
+                        "editLink": {
+                          "type": "boolean"
+                        },
+                        "lastUpdated": {
+                          "type": "boolean"
+                        },
+                        "footer": {
+                          "type": "boolean"
+                        },
+                        "pageClass": {
+                          "type": "string"
+                        },
+                        "head": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    "textFrom": {
+                      "type": "string",
+                      "enum": [
+                        "filename",
+                        "heading",
+                        "frontmatter"
+                      ]
+                    },
+                    "sort": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "alpha",
+                            "filename"
+                          ]
+                        }
+                      ]
+                    },
+                    "recursive": {
+                      "type": "boolean"
+                    },
+                    "indexFile": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "card": {
+                      "type": "object",
+                      "properties": {
+                        "icon": {
+                          "type": "string"
+                        },
+                        "iconColor": {
+                          "type": "string"
+                        },
+                        "scope": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "badge": {
+                          "type": "object",
+                          "properties": {
+                            "src": {
+                              "type": "string"
+                            },
+                            "alt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "src",
+                            "alt"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "isolated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "sort": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "alpha",
+                      "filename"
+                    ]
+                  }
+                ]
+              },
+              "textFrom": {
+                "type": "string",
+                "enum": [
+                  "filename",
+                  "heading",
+                  "frontmatter"
+                ]
+              },
+              "recursive": {
+                "type": "boolean"
+              },
+              "indexFile": {
+                "type": "string"
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "collapsible": {
+                "type": "boolean"
+              },
+              "frontmatter": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "titleTemplate": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ]
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "layout": {
+                    "type": "string"
+                  },
+                  "sidebar": {
+                    "type": "boolean"
+                  },
+                  "aside": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string",
+                        "const": "left"
+                      }
+                    ]
+                  },
+                  "outline": {
+                    "anyOf": [
+                      {
+                        "type": "boolean",
+                        "const": false
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "const": "deep"
+                      }
+                    ]
+                  },
+                  "navbar": {
+                    "type": "boolean"
+                  },
+                  "editLink": {
+                    "type": "boolean"
+                  },
+                  "lastUpdated": {
+                    "type": "boolean"
+                  },
+                  "footer": {
+                    "type": "boolean"
+                  },
+                  "pageClass": {
+                    "type": "string"
+                  },
+                  "head": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "text",
+              "description",
+              "docsPrefix"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "workspaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "iconColor": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "badge": {
+                      "type": "object",
+                      "properties": {
+                        "src": {
+                          "type": "string"
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "src",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "docsPrefix": {
+                      "type": "string"
+                    },
+                    "from": {
+                      "type": "string"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string"
+                          },
+                          "from": {
+                            "type": "string"
+                          },
+                          "prefix": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "items": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "collapsible": {
+                            "type": "boolean"
+                          },
+                          "exclude": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "frontmatter": {
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string"
+                              },
+                              "titleTemplate": {
+                                "type": [
+                                  "string",
+                                  "boolean"
+                                ]
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "layout": {
+                                "type": "string"
+                              },
+                              "sidebar": {
+                                "type": "boolean"
+                              },
+                              "aside": {
+                                "anyOf": [
+                                  {
+                                    "type": "boolean"
+                                  },
+                                  {
+                                    "type": "string",
+                                    "const": "left"
+                                  }
+                                ]
+                              },
+                              "outline": {
+                                "anyOf": [
+                                  {
+                                    "type": "boolean",
+                                    "const": false
+                                  },
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "items": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "const": "deep"
+                                  }
+                                ]
+                              },
+                              "navbar": {
+                                "type": "boolean"
+                              },
+                              "editLink": {
+                                "type": "boolean"
+                              },
+                              "lastUpdated": {
+                                "type": "boolean"
+                              },
+                              "footer": {
+                                "type": "boolean"
+                              },
+                              "pageClass": {
+                                "type": "string"
+                              },
+                              "head": {
+                                "type": "array",
+                                "items": {
+                                  "type": "array",
+                                  "minItems": 2,
+                                  "maxItems": 2,
+                                  "items": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "additionalProperties": true
+                          },
+                          "textFrom": {
+                            "type": "string",
+                            "enum": [
+                              "filename",
+                              "heading",
+                              "frontmatter"
+                            ]
+                          },
+                          "sort": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "alpha",
+                                  "filename"
+                                ]
+                              }
+                            ]
+                          },
+                          "recursive": {
+                            "type": "boolean"
+                          },
+                          "indexFile": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "card": {
+                            "type": "object",
+                            "properties": {
+                              "icon": {
+                                "type": "string"
+                              },
+                              "iconColor": {
+                                "type": "string"
+                              },
+                              "scope": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "badge": {
+                                "type": "object",
+                                "properties": {
+                                  "src": {
+                                    "type": "string"
+                                  },
+                                  "alt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "src",
+                                  "alt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "isolated": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "sort": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "alpha",
+                            "filename"
+                          ]
+                        }
+                      ]
+                    },
+                    "textFrom": {
+                      "type": "string",
+                      "enum": [
+                        "filename",
+                        "heading",
+                        "frontmatter"
+                      ]
+                    },
+                    "recursive": {
+                      "type": "boolean"
+                    },
+                    "indexFile": {
+                      "type": "string"
+                    },
+                    "exclude": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "collapsible": {
+                      "type": "boolean"
+                    },
+                    "frontmatter": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "titleTemplate": {
+                          "type": [
+                            "string",
+                            "boolean"
+                          ]
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "layout": {
+                          "type": "string"
+                        },
+                        "sidebar": {
+                          "type": "boolean"
+                        },
+                        "aside": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "string",
+                              "const": "left"
+                            }
+                          ]
+                        },
+                        "outline": {
+                          "anyOf": [
+                            {
+                              "type": "boolean",
+                              "const": false
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "array",
+                              "minItems": 2,
+                              "maxItems": 2,
+                              "items": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "const": "deep"
+                            }
+                          ]
+                        },
+                        "navbar": {
+                          "type": "boolean"
+                        },
+                        "editLink": {
+                          "type": "boolean"
+                        },
+                        "lastUpdated": {
+                          "type": "boolean"
+                        },
+                        "footer": {
+                          "type": "boolean"
+                        },
+                        "pageClass": {
+                          "type": "string"
+                        },
+                        "head": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "description",
+                    "docsPrefix"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1
+              },
+              "link": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "description",
+              "icon",
+              "items"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              },
+              "prefix": {
+                "type": "string"
+              },
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "items": {
+                "type": "array",
+                "items": {}
+              },
+              "collapsible": {
+                "type": "boolean"
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "hidden": {
+                "type": "boolean"
+              },
+              "frontmatter": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "titleTemplate": {
+                    "type": [
+                      "string",
+                      "boolean"
+                    ]
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "layout": {
+                    "type": "string"
+                  },
+                  "sidebar": {
+                    "type": "boolean"
+                  },
+                  "aside": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string",
+                        "const": "left"
+                      }
+                    ]
+                  },
+                  "outline": {
+                    "anyOf": [
+                      {
+                        "type": "boolean",
+                        "const": false
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "number"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "const": "deep"
+                      }
+                    ]
+                  },
+                  "navbar": {
+                    "type": "boolean"
+                  },
+                  "editLink": {
+                    "type": "boolean"
+                  },
+                  "lastUpdated": {
+                    "type": "boolean"
+                  },
+                  "footer": {
+                    "type": "boolean"
+                  },
+                  "pageClass": {
+                    "type": "string"
+                  },
+                  "head": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "additionalProperties": true
+              },
+              "textFrom": {
+                "type": "string",
+                "enum": [
+                  "filename",
+                  "heading",
+                  "frontmatter"
+                ]
+              },
+              "sort": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "alpha",
+                      "filename"
+                    ]
+                  }
+                ]
+              },
+              "recursive": {
+                "type": "boolean"
+              },
+              "indexFile": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "card": {
+                "type": "object",
+                "properties": {
+                  "icon": {
+                    "type": "string"
+                  },
+                  "iconColor": {
+                    "type": "string"
+                  },
+                  "scope": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "badge": {
+                    "type": "object",
+                    "properties": {
+                      "src": {
+                        "type": "string"
+                      },
+                      "alt": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "src",
+                      "alt"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              "isolated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "nav": {
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "link": {
+                    "type": "string"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {}
+                  },
+                  "activeMatch": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            }
+          ]
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "openapi": {
+          "type": "object",
+          "properties": {
+            "spec": {
+              "type": "string"
+            },
+            "prefix": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "spec",
+            "prefix"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "sections"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
