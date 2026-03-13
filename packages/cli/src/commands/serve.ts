@@ -18,6 +18,12 @@ export const serveCommand = command({
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
       ctx.logger.error(configErr.message)
+      if (configErr.errors && configErr.errors.length > 0) {
+        configErr.errors.forEach((err) => {
+          const path = err.path.join('.')
+          ctx.logger.error(`  ${path}: ${err.message}`)
+        })
+      }
       process.exit(1)
     }
 

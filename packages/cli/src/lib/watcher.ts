@@ -153,6 +153,12 @@ export function createWatcher(
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
         if (configErr) {
           cliLogger.error(`Config reload failed: ${configErr.message}`)
+          if (configErr.errors && configErr.errors.length > 0) {
+            configErr.errors.forEach((err) => {
+              const pathStr = err.path.join('.')
+              cliLogger.error(`  ${pathStr}: ${err.message}`)
+            })
+          }
           return
         }
         config = newConfig

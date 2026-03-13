@@ -11,6 +11,9 @@ dist/
 # zpress
 .zpress/
 
+# Vercel
+.vercel/
+
 # Coverage
 coverage/
 

@@ -97,8 +97,30 @@
           "items": {
             "type": "object",
             "properties": {
-              "text": {
-                "type": "string"
+              "title": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "enum": [
+                          "auto",
+                          "filename",
+                          "heading",
+                          "frontmatter"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "from"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
               },
               "icon": {
                 "type": "string"
@@ -131,19 +153,148 @@
                 ],
                 "additionalProperties": false
               },
-              "docsPrefix": {
+              "prefix": {
                 "type": "string"
               },
-              "from": {
-                "type": "string"
+              "discovery": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
+                  },
+                  "sort": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "alpha",
+                          "filename"
+                        ]
+                      }
+                    ]
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "frontmatter": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "titleTemplate": {
+                        "type": [
+                          "string",
+                          "boolean"
+                        ]
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "layout": {
+                        "type": "string"
+                      },
+                      "sidebar": {
+                        "type": "boolean"
+                      },
+                      "aside": {
+                        "anyOf": [
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "string",
+                            "const": "left"
+                          }
+                        ]
+                      },
+                      "outline": {
+                        "anyOf": [
+                          {
+                            "type": "boolean",
+                            "const": false
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "number"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "const": "deep"
+                          }
+                        ]
+                      },
+                      "navbar": {
+                        "type": "boolean"
+                      },
+                      "editLink": {
+                        "type": "boolean"
+                      },
+                      "lastUpdated": {
+                        "type": "boolean"
+                      },
+                      "footer": {
+                        "type": "boolean"
+                      },
+                      "pageClass": {
+                        "type": "string"
+                      },
+                      "head": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "items": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "additionalProperties": true
+                  },
+                  "recursive": {
+                    "type": "boolean"
+                  },
+                  "indexFile": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
               },
               "items": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "text": {
-                      "type": "string"
+                    "title": {
+                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
                     },
                     "link": {
                       "type": "string"
@@ -167,6 +318,22 @@
                         "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/items/items"
                       }
                     },
+                    "landing": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "auto",
+                            "cards",
+                            "overview"
+                          ]
+                        },
+                        {
+                          "type": "boolean",
+                          "const": false
+                        }
+                      ]
+                    },
                     "collapsible": {
                       "type": "boolean"
                     },
@@ -180,109 +347,7 @@
                       "type": "boolean"
                     },
                     "frontmatter": {
-                      "type": "object",
-                      "properties": {
-                        "title": {
-                          "type": "string"
-                        },
-                        "titleTemplate": {
-                          "type": [
-                            "string",
-                            "boolean"
-                          ]
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "type": "string"
-                        },
-                        "sidebar": {
-                          "type": "boolean"
-                        },
-                        "aside": {
-                          "anyOf": [
-                            {
-                              "type": "boolean"
-                            },
-                            {
-                              "type": "string",
-                              "const": "left"
-                            }
-                          ]
-                        },
-                        "outline": {
-                          "anyOf": [
-                            {
-                              "type": "boolean",
-                              "const": false
-                            },
-                            {
-                              "type": "number"
-                            },
-                            {
-                              "type": "array",
-                              "minItems": 2,
-                              "maxItems": 2,
-                              "items": [
-                                {
-                                  "type": "number"
-                                },
-                                {
-                                  "type": "number"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "string",
-                              "const": "deep"
-                            }
-                          ]
-                        },
-                        "navbar": {
-                          "type": "boolean"
-                        },
-                        "editLink": {
-                          "type": "boolean"
-                        },
-                        "lastUpdated": {
-                          "type": "boolean"
-                        },
-                        "footer": {
-                          "type": "boolean"
-                        },
-                        "pageClass": {
-                          "type": "string"
-                        },
-                        "head": {
-                          "type": "array",
-                          "items": {
-                            "type": "array",
-                            "minItems": 2,
-                            "maxItems": 2,
-                            "items": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "object",
-                                "additionalProperties": {
-                                  "type": "string"
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      },
-                      "additionalProperties": true
-                    },
-                    "textFrom": {
-                      "type": "string",
-                      "enum": [
-                        "filename",
-                        "heading",
-                        "frontmatter"
-                      ]
+                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/discovery/properties/frontmatter"
                     },
                     "sort": {
                       "anyOf": [
@@ -302,6 +367,9 @@
                       "type": "string"
                     },
                     "icon": {
+                      "type": "string"
+                    },
+                    "iconColor": {
                       "type": "string"
                     },
                     "card": {
@@ -349,53 +417,16 @@
                     }
                   },
                   "required": [
-                    "text"
+                    "title"
                   ],
                   "additionalProperties": false
                 }
-              },
-              "sort": {
-                "anyOf": [
-                  {
-                    "type": "string",
-                    "enum": [
-                      "alpha",
-                      "filename"
-                    ]
-                  }
-                ]
-              },
-              "textFrom": {
-                "type": "string",
-                "enum": [
-                  "filename",
-                  "heading",
-                  "frontmatter"
-                ]
-              },
-              "recursive": {
-                "type": "boolean"
-              },
-              "indexFile": {
-                "type": "string"
-              },
-              "exclude": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "collapsible": {
-                "type": "boolean"
-              },
-              "frontmatter": {
-                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/items/items/properties/frontmatter"
               }
             },
             "required": [
-              "text",
+              "title",
               "description",
-              "docsPrefix"
+              "prefix"
             ],
             "additionalProperties": false
           }
@@ -411,8 +442,8 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": {
-                "type": "string"
+              "title": {
+                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
               },
               "description": {
                 "type": "string"
@@ -432,7 +463,7 @@
               }
             },
             "required": [
-              "name",
+              "title",
               "description",
               "icon",
               "items"
@@ -445,8 +476,8 @@
           "items": {
             "type": "object",
             "properties": {
-              "text": {
-                "type": "string"
+              "title": {
+                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
               },
               "description": {
                 "type": "string"
@@ -459,7 +490,7 @@
               }
             },
             "required": [
-              "text",
+              "title",
               "description"
             ],
             "additionalProperties": false

@@ -36,6 +36,28 @@ const navItemSchema: z.ZodType<unknown> = z.lazy(() =>
   }).strict()
 )
 
+// ── Title schema ─────────────────────────────────────────────
+
+const titleConfigSchema = z.union([
+  z.string(),
+  z.object({
+    from: z.enum(['auto', 'filename', 'heading', 'frontmatter']),
+    transform: z.function().optional(),
+  }).strict()
+])
+
+// ── Discovery schema ─────────────────────────────────────────
+
+const discoverySchema = z.object({
+  from: z.string().optional(),
+  title: titleConfigSchema.optional(),
+  sort: z.union([z.enum(['alpha', 'filename']), z.function()]).optional(),
+  exclude: z.array(z.string()).optional(),
+  frontmatter: frontmatterSchema.optional(),
+  recursive: z.boolean().optional(),
+  indexFile: z.string().optional(),
+}).strict()
+
 // ── Card schema ──────────────────────────────────────────────
 
 const cardConfigSchema = z.object({
@@ -51,22 +73,22 @@ const cardConfigSchema = z.object({
 
 const entrySchema: z.ZodType<unknown> = z.lazy(() =>
   z.object({
-    text: z.string(),
+    title: titleConfigSchema,
     link: z.string().optional(),
     from: z.string().optional(),
     prefix: z.string().optional(),
     content: z.union([z.string(), z.function()]).optional(),
     items: z.array(entrySchema).optional(),
+    landing: z.union([z.enum(['auto', 'cards', 'overview']), z.literal(false)]).optional(),
     collapsible: z.boolean().optional(),
     exclude: z.array(z.string()).optional(),
     hidden: z.boolean().optional(),
     frontmatter: frontmatterSchema.optional(),
-    textFrom: z.enum(['filename', 'heading', 'frontmatter']).optional(),
-    textTransform: z.function().optional(),
     sort: z.union([z.enum(['alpha', 'filename']), z.function()]).optional(),
     recursive: z.boolean().optional(),
     indexFile: z.string().optional(),
     icon: z.string().optional(),
+    iconColor: z.string().optional(),
     card: cardConfigSchema.optional(),
     isolated: z.boolean().optional(),
   }).strict()
@@ -75,38 +97,30 @@ const entrySchema: z.ZodType<unknown> = z.lazy(() =>
 // ── Workspace schemas ────────────────────────────────────────
 
 const workspaceItemSchema = z.object({
-  text: z.string({ required_error: 'WorkspaceItem: "text" is required' }),
+  title: titleConfigSchema,
   icon: z.string().optional(),
   iconColor: z.string().optional(),
-  description: z.string({ required_error: 'WorkspaceItem: "description" is required' }),
+  description: z.string(),
   tags: z.array(z.string()).optional(),
   badge: z.object({ src: z.string(), alt: z.string() }).strict().optional(),
-  docsPrefix: z.string({ required_error: 'WorkspaceItem: "docsPrefix" is required' }),
-  from: z.string().optional(),
+  prefix: z.string(),
+  discovery: discoverySchema.optional(),
   items: z.array(entrySchema).optional(),
-  sort: z.union([z.enum(['alpha', 'filename']), z.function()]).optional(),
-  textFrom: z.enum(['filename', 'heading', 'frontmatter']).optional(),
-  textTransform: z.function().optional(),
-  recursive: z.boolean().optional(),
-  indexFile: z.string().optional(),
-  exclude: z.array(z.string()).optional(),
-  collapsible: z.boolean().optional(),
-  frontmatter: frontmatterSchema.optional(),
 }).strict()
 
 const workspaceGroupSchema = z.object({
-  name: z.string({ required_error: 'WorkspaceGroup: "name" is required' }),
-  description: z.string({ required_error: 'WorkspaceGroup: "description" is required' }),
-  icon: z.string({ required_error: 'WorkspaceGroup: "icon" is required' }),
-  items: z.array(workspaceItemSchema).min(1, 'WorkspaceGroup: "items" must be a non-empty array'),
+  title: titleConfigSchema,
+  description: z.string(),
+  icon: z.string(),
+  items: z.array(workspaceItemSchema).min(1),
   link: z.string().optional(),
 }).strict()
 
 // ── Feature schema ───────────────────────────────────────────
 
 const featureSchema = z.object({
-  text: z.string({ required_error: 'Feature: "text" is required' }),
-  description: z.string({ required_error: 'Feature: "description" is required' }),
+  title: titleConfigSchema,
+  description: z.string(),
   link: z.string().optional(),
   icon: z.string().optional(),
 }).strict()

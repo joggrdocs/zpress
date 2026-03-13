@@ -1,0 +1,7 @@
+{
+  "buildCommand": "pnpm build && pnpm docs:build",
+  "outputDirectory": ".zpress/dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "regions": ["iad1"]
+}
