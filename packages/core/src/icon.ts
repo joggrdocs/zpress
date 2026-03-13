@@ -4,13 +4,27 @@ import type { IconId } from './icons.generated.ts'
 
 /**
  * Available icon color variants matching the design system.
- * Maps to `.home-card-icon--{color}` CSS classes.
+ *
+ * Each color maps to `.home-card-icon--{color}` CSS classes.
+ *
+ * Palette order for auto-rotation:
+ * 1. purple (default)
+ * 2. blue
+ * 3. green
+ * 4. amber
+ * 5. cyan
+ * 6. red
+ * 7. pink
+ * 8. slate
  */
 export type IconColor = 'purple' | 'blue' | 'green' | 'amber' | 'red' | 'slate' | 'cyan' | 'pink'
 
 /**
  * Rotating color palette applied to auto-generated icons.
  * Each section gets the next color in the cycle.
+ *
+ * This array defines the order in which colors are assigned to
+ * auto-generated section cards and feature icons.
  */
 export const ICON_COLORS: readonly IconColor[] = [
   'purple',
@@ -28,8 +42,21 @@ export const ICON_COLORS: readonly IconColor[] = [
 /**
  * Unified icon configuration.
  *
- * - String form: just an icon identifier (e.g. `"devicon:hono"`)
- * - Object form: icon identifier with explicit color (e.g. `{ id: "devicon:hono", color: "blue" }`)
+ * Accepts either:
+ * - **String**: Iconify identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`)
+ *   - Color defaults to purple (first in rotation)
+ *   - Find icons at https://icon-sets.iconify.design/
+ * - **Object**: `{ id: IconId, color: IconColor }`
+ *   - Explicit color from 8-color palette
+ *
+ * Auto-generated section cards rotate through these colors:
+ * purple → blue → green → amber → cyan → red → pink → slate
+ *
+ * @example
+ * ```ts
+ * icon: 'devicon:react'  // Uses purple (default)
+ * icon: { id: 'devicon:nextjs', color: 'blue' }  // Explicit blue
+ * ```
  */
 export type IconConfig = IconId | { readonly id: IconId; readonly color: IconColor }
 

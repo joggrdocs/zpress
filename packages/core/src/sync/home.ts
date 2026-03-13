@@ -7,7 +7,7 @@ import { match, P } from 'ts-pattern'
 import { hasGlobChars } from '../glob.ts'
 import { ICON_COLORS, resolveOptionalIcon } from '../icon.ts'
 import type { IconColor } from '../icon.ts'
-import type { Entry, Feature, ZpressConfig, WorkspaceItem } from '../types.ts'
+import type { Section, Feature, ZpressConfig, Workspace } from '../types.ts'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -197,9 +197,11 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
   return Promise.resolve(
     features.map((f, index) => {
       const resolved = resolveOptionalIcon(f.icon)
+      const titleStr = typeof f.title === 'string' ? f.title : String(f.title)
+      const descStr = f.description ?? ''
       return {
-        title: f.title,
-        details: f.description,
+        title: titleStr,
+        details: descStr,
         link: f.link,
         iconId: match(resolved)
           .with(P.nonNullable, (r) => r.id)
@@ -255,9 +257,11 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
     )
     .otherwise(() => null)
 
-  const groupResults = workspaceGroups.map((g) =>
-    buildGroupData('workspaces', g.name, g.description, g.items, '')
-  )
+  const groupResults = workspaceGroups.map((g) => {
+    const titleStr = typeof g.title === 'string' ? g.title : String(g.title)
+    const descStr = g.description ?? ''
+    return buildGroupData('workspaces', titleStr, descStr, g.items, '')
+  })
 
   const allResults = [appsResult, packagesResult, ...groupResults].filter(
     (r): r is GroupDataResult => r !== null
@@ -277,14 +281,15 @@ function buildGroupData(
   type: 'apps' | 'packages' | 'workspaces',
   heading: string,
   description: string,
-  items: readonly WorkspaceItem[],
+  items: readonly Workspace[],
   scopePrefix: string
 ): GroupDataResult {
   const cards: readonly HomeWorkspaceCardData[] = items.map((item) => {
     const resolved = resolveOptionalIcon(item.icon)
+    const titleStr = typeof item.title === 'string' ? item.title : String(item.title)
     return {
-      title: item.title,
-      href: item.path,
+      title: titleStr,
+      href: item.prefix,
       icon: match(resolved)
         .with(P.nonNullable, (r) => r.id)
         // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
@@ -314,7 +319,7 @@ function buildGroupData(
  *
  * @private
  */
-function findFirstLink(sections: readonly Entry[]): string {
+function findFirstLink(sections: readonly Section[]): string {
   const [first] = sections
   if (!first) {
     return '/'
@@ -329,7 +334,7 @@ function findFirstLink(sections: readonly Entry[]): string {
  * @private
  */
 function buildFeatures(
-  sections: readonly Entry[],
+  sections: readonly Section[],
   repoRoot: string
 ): Promise<readonly ResolvedFeature[]> {
   return Promise.all(
@@ -343,7 +348,8 @@ function buildFeatures(
       const iconColor: IconColor = match(resolved)
         .with(P.nonNullable, (r) => r.color)
         .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
-      return { title: section.title, details, link, iconId, iconColor }
+      const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+      return { title: titleStr, details, link, iconId, iconColor }
     })
   )
 }
@@ -353,7 +359,7 @@ function buildFeatures(
  *
  * @private
  */
-function findFirstChildLink(section: Entry): string | undefined {
+function findFirstChildLink(section: Section): string | undefined {
   if (!section.items) {
     return undefined
   }
@@ -375,7 +381,7 @@ function findFirstChildLink(section: Entry): string | undefined {
  *
  * @private
  */
-async function extractSectionDescription(section: Entry, repoRoot: string): Promise<string> {
+async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
   // Single-file source — read frontmatter description
   if (section.from && !hasGlobChars(section.from)) {
     const description = await readFrontmatterDescription(path.resolve(repoRoot, section.from))
@@ -394,12 +400,13 @@ async function extractSectionDescription(section: Entry, repoRoot: string): Prom
   }
 
   // Well-known section name → curated default
-  const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[section.title.toLowerCase()]
+  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+  const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {
     return knownDesc
   }
 
-  return section.title
+  return titleStr
 }
 
 /**

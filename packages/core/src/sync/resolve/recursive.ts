@@ -4,7 +4,7 @@ import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'ts-pattern'
 
-import type { Entry, Frontmatter } from '../../types.ts'
+import type { Section, Frontmatter } from '../../types.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { sortEntries } from './sort.ts'
@@ -24,57 +24,59 @@ interface DirNode {
 }
 
 /**
- * Resolve a recursive glob pattern into a nested entry tree.
+ * Resolve a recursive glob pattern into a nested section tree.
  *
  * Scans all files matching the glob, groups them by directory structure,
  * and produces a nested `ResolvedEntry` tree mirroring the filesystem.
  *
- * @param entry - Config entry with a recursive glob `from` pattern
+ * @param section - Config section with a recursive glob `from` pattern
  * @param ctx - Sync context (provides repo root, exclude patterns, quiet flag)
- * @param frontmatter - Merged frontmatter inherited from parent entries
+ * @param frontmatter - Merged frontmatter inherited from parent sections
  * @param depth - Current nesting depth for collapsible auto-detection
  * @returns Flat or nested resolved entries matching the glob
  */
 export async function resolveRecursiveGlob(
-  entry: Entry,
+  section: Section,
   ctx: SyncContext,
   frontmatter: Frontmatter,
   depth: number
 ): Promise<ResolvedEntry[]> {
-  const ignore = [...(ctx.config.exclude ?? []), ...(entry.exclude ?? [])]
-  const indexFile = entry.indexFile ?? 'overview'
+  const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
+  const indexFile = section.indexFile ?? 'overview'
 
-  if (entry.from === null || entry.from === undefined) {
-    log.error('[zpress] resolveRecursiveGlob called without entry.from')
+  if (section.from === null || section.from === undefined) {
+    log.error('[zpress] resolveRecursiveGlob called without section.from')
     return []
   }
 
-  const files = await fg(entry.from, {
+  const files = await fg(section.from, {
     cwd: ctx.repoRoot,
     ignore,
     absolute: false,
     onlyFiles: true,
   })
 
+  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+
   if (files.length === 0) {
     if (!ctx.quiet) {
-      log.warn(`Glob "${entry.from}" matched 0 files for "${entry.title}"`)
+      log.warn(`Glob "${section.from}" matched 0 files for "${titleStr}"`)
     }
     return []
   }
 
-  const baseDir = extractBaseDir(entry.from)
-  const prefix = entry.prefix ?? ''
-  const titleFrom = entry.titleFrom ?? 'filename'
+  const baseDir = extractBaseDir(section.from)
+  const prefix = section.prefix ?? ''
+  const titleFrom = section.titleFrom ?? 'auto'
 
   const root = buildDirTree(files, baseDir)
   return buildEntryTree({
     node: root,
     prefix,
     titleFrom,
-    titleTransform: entry.titleTransform,
-    sort: entry.sort,
-    collapsible: entry.collapsible,
+    titleTransform: section.titleTransform,
+    sort: section.sort,
+    collapsible: section.collapsible,
     indexFile,
     ctx,
     frontmatter,
@@ -136,9 +138,9 @@ function buildDirTree(files: readonly string[], baseDir: string): DirNode {
 interface BuildEntryTreeParams {
   readonly node: DirNode
   readonly prefix: string
-  readonly titleFrom: 'filename' | 'heading' | 'frontmatter'
-  readonly titleTransform: Entry['titleTransform']
-  readonly sort: Entry['sort']
+  readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
+  readonly titleTransform: Section['titleTransform']
+  readonly sort: Section['sort']
   readonly collapsible: boolean | undefined
   readonly indexFile: string
   readonly ctx: SyncContext
@@ -257,8 +259,8 @@ interface ResolveSubdirSectionParams {
   readonly dirName: string
   readonly subPrefix: string
   readonly indexFile: string
-  readonly titleFrom: 'filename' | 'heading' | 'frontmatter'
-  readonly titleTransform: Entry['titleTransform']
+  readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
+  readonly titleTransform: Section['titleTransform']
   readonly ctx: SyncContext
   readonly frontmatter: Frontmatter
 }

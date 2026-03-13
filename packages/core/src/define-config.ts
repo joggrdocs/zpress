@@ -4,7 +4,7 @@ import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
 import { THEME_NAMES, COLOR_MODES } from './theme.ts'
 import type { ThemeConfig, ThemeColors } from './theme.ts'
-import type { ZpressConfig, Entry, Feature, WorkspaceItem, WorkspaceGroup } from './types.ts'
+import type { ZpressConfig, Section, Feature, Workspace, WorkspaceCategory } from './types.ts'
 
 /**
  * Type-safe config helper for user config files.
@@ -29,37 +29,37 @@ export function defineConfig(config: ZpressConfig): ZpressConfig {
  */
 export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig> {
   if (!config.sections || config.sections.length === 0) {
-    return [configError('empty_sections', 'config.sections must have at least one entry'), null]
+    return [configError('empty_sections', 'config.sections must have at least one section'), null]
   }
 
-  const [groupErr] = validateWorkspaceGroups(config.workspaces ?? [])
+  const [groupErr] = validateWorkspaceCategories(config.workspaces ?? [])
   if (groupErr) {
     return [groupErr, null]
   }
 
-  const workspaceGroupItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const [wsErr] = validateWorkspaceItems([
+  const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
+  const [wsErr] = validateWorkspaces([
     ...(config.apps ?? []),
     ...(config.packages ?? []),
-    ...workspaceGroupItems,
+    ...workspaceCategoryItems,
   ])
   if (wsErr) {
     return [wsErr, null]
   }
 
-  const entryErrors = config.sections.reduce<ConfigError | null>((acc, entry) => {
+  const sectionErrors = config.sections.reduce<ConfigError | null>((acc, section) => {
     if (acc) {
       return acc
     }
-    const [entryErr] = validateEntry(entry)
-    if (entryErr) {
-      return entryErr
+    const [sectionErr] = validateSection(section)
+    if (sectionErr) {
+      return sectionErr
     }
     return null
   }, null)
 
-  if (entryErrors) {
-    return [entryErrors, null]
+  if (sectionErrors) {
+    return [sectionErrors, null]
   }
 
   const [featErr] = validateFeatures(config.features)
@@ -76,18 +76,30 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
 }
 
 /**
- * Validate workspace items (apps and packages).
+ * Validate workspaces (apps and packages).
  */
-function validateWorkspaceItems(items: readonly WorkspaceItem[]): ConfigResult<true> {
+function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
   const prefixError = items.reduce<{ error: ConfigError | null; seen: ReadonlySet<string> }>(
     (acc, item) => {
       if (acc.error) {
         return acc
       }
 
+      // title is inherited from Entry base and can be string | TitleConfig
+      // For workspace items, it should be a string
       if (!item.title) {
         return {
-          error: configError('missing_field', 'WorkspaceItem: "title" is required'),
+          error: configError('missing_field', 'Workspace: "title" is required'),
+          seen: acc.seen,
+        }
+      }
+
+      if (typeof item.title !== 'string') {
+        return {
+          error: configError(
+            'invalid_field',
+            `Workspace "${String(item.title)}": "title" must be a string (TitleConfig not supported on Workspace)`
+          ),
           seen: acc.seen,
         }
       }
@@ -96,35 +108,35 @@ function validateWorkspaceItems(items: readonly WorkspaceItem[]): ConfigResult<t
         return {
           error: configError(
             'missing_field',
-            `WorkspaceItem "${item.title}": "description" is required`
+            `Workspace "${item.title}": "description" is required`
           ),
           seen: acc.seen,
         }
       }
 
-      if (!item.path) {
+      if (!item.prefix) {
         return {
-          error: configError('missing_field', `WorkspaceItem "${item.title}": "path" is required`),
+          error: configError('missing_field', `Workspace "${item.title}": "prefix" is required`),
           seen: acc.seen,
         }
       }
 
-      if (acc.seen.has(item.path)) {
+      if (acc.seen.has(item.prefix)) {
         return {
           error: configError(
             'duplicate_prefix',
-            `WorkspaceItem "${item.title}": duplicate path "${item.path}"`
+            `Workspace "${item.title}": duplicate prefix "${item.prefix}"`
           ),
           seen: acc.seen,
         }
       }
 
-      const [iconErr] = validateIconConfig(item.icon, `WorkspaceItem "${item.title}"`)
+      const [iconErr] = validateIconConfig(item.icon, `Workspace "${item.title}"`)
       if (iconErr) {
         return { error: iconErr, seen: acc.seen }
       }
 
-      return { error: null, seen: new Set([...acc.seen, item.path]) }
+      return { error: null, seen: new Set([...acc.seen, item.prefix]) }
     },
     { error: null, seen: new Set<string>() }
   )
@@ -136,106 +148,150 @@ function validateWorkspaceItems(items: readonly WorkspaceItem[]): ConfigResult<t
 }
 
 /**
- * Validate workspace groups have required fields and non-empty items.
+ * Validate workspace categories have required fields and non-empty items.
  */
-function validateWorkspaceGroups(groups: readonly WorkspaceGroup[]): ConfigResult<true> {
-  const groupError = groups.reduce<ConfigError | null>((acc, group) => {
+function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): ConfigResult<true> {
+  const categoryError = categories.reduce<ConfigError | null>((acc, category) => {
     if (acc) {
       return acc
     }
 
-    if (!group.name) {
-      return configError('missing_field', 'WorkspaceGroup: "name" is required')
+    // title is inherited from Entry base
+    if (!category.title) {
+      return configError('missing_field', 'WorkspaceCategory: "title" is required')
     }
 
-    if (!group.description) {
+    if (typeof category.title !== 'string') {
       return configError(
-        'missing_field',
-        `WorkspaceGroup "${group.name}": "description" is required`
+        'invalid_field',
+        `WorkspaceCategory: "title" must be a string (TitleConfig not supported on WorkspaceCategory)`
       )
     }
 
-    if (!group.icon) {
-      return configError('missing_field', `WorkspaceGroup "${group.name}": "icon" is required`)
-    }
-
-    if (!group.items || group.items.length === 0) {
+    if (!category.description) {
       return configError(
         'missing_field',
-        `WorkspaceGroup "${group.name}": "items" must be a non-empty array`
+        `WorkspaceCategory "${category.title}": "description" is required`
+      )
+    }
+
+    if (!category.icon) {
+      return configError('missing_field', `WorkspaceCategory "${category.title}": "icon" is required`)
+    }
+
+    if (!category.items || category.items.length === 0) {
+      return configError(
+        'missing_field',
+        `WorkspaceCategory "${category.title}": "items" must be a non-empty array`
       )
     }
 
     return null
   }, null)
 
-  if (groupError) {
-    return [groupError, null]
+  if (categoryError) {
+    return [categoryError, null]
   }
   return [null, true]
 }
 
 /**
- * Validate a single entry node (recursive).
+ * Validate a single section node (recursive).
  */
-function validateEntry(entry: Entry): ConfigResult<true> {
-  if (entry.from && entry.content) {
+function validateSection(section: Section): ConfigResult<true> {
+  // Get the title string for error messages
+  const titleStr = typeof section.title === 'string' ? section.title : 'Section'
+
+  if (section.from && section.content) {
     return [
       configError(
-        'invalid_entry',
-        `Entry "${entry.title}": 'from' and 'content' are mutually exclusive`
+        'invalid_section',
+        `Section "${titleStr}": 'from' and 'content' are mutually exclusive`
       ),
       null,
     ]
   }
 
-  if (entry.link && !entry.from && !entry.content && !entry.items) {
+  if (section.link && !section.from && !section.content && !section.items) {
     return [
       configError(
-        'invalid_entry',
-        `Entry "${entry.title}": page with 'link' must have 'from', 'content', or 'items'`
+        'invalid_section',
+        `Section "${titleStr}": page with 'link' must have 'from', 'content', or 'items'`
       ),
       null,
     ]
   }
 
-  if (entry.from && !hasGlobChars(entry.from) && !entry.items && !entry.link) {
+  if (section.from && !hasGlobChars(section.from) && !section.items && !section.link) {
     return [
-      configError('invalid_entry', `Entry "${entry.title}": single-file 'from' requires 'link'`),
+      configError('invalid_section', `Section "${titleStr}": single-file 'from' requires 'link'`),
       null,
     ]
   }
 
-  if (entry.from && hasGlobChars(entry.from) && !entry.prefix) {
+  if (section.from && hasGlobChars(section.from) && !section.prefix) {
     return [
-      configError('invalid_entry', `Entry "${entry.title}": glob 'from' requires 'prefix'`),
+      configError('invalid_section', `Section "${titleStr}": glob 'from' requires 'prefix'`),
       null,
     ]
   }
 
-  if (entry.recursive && (!entry.from || !entry.from.includes('**'))) {
+  if (section.recursive && (!section.from || !section.from.includes('**'))) {
     return [
       configError(
-        'invalid_entry',
-        `Entry "${entry.title}": 'recursive' requires a recursive glob pattern (e.g. "**/*.md")`
+        'invalid_section',
+        `Section "${titleStr}": 'recursive' requires a recursive glob pattern (e.g. "**/*.md")`
       ),
       null,
     ]
   }
 
-  if (entry.recursive && !entry.prefix) {
+  if (section.recursive && !section.prefix) {
     return [
-      configError('invalid_entry', `Entry "${entry.title}": 'recursive' requires 'prefix'`),
+      configError('invalid_section', `Section "${titleStr}": 'recursive' requires 'prefix'`),
       null,
     ]
   }
 
-  if (entry.items) {
-    const childErr = entry.items.reduce<ConfigError | null>((acc, child) => {
+  // Validate landing field only applies when items exist
+  if (section.landing !== undefined && !section.items) {
+    return [
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": 'landing' only applies to sections with 'items'`
+      ),
+      null,
+    ]
+  }
+
+  // Validate landing requires link
+  if (section.landing !== undefined && section.landing !== false && !section.link) {
+    return [
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": 'landing' requires 'link' to be set`
+      ),
+      null,
+    ]
+  }
+
+  // Validate isolated requires link
+  if (section.isolated && !section.link) {
+    return [
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": 'isolated' requires 'link' to be set`
+      ),
+      null,
+    ]
+  }
+
+  if (section.items) {
+    const childErr = section.items.reduce<ConfigError | null>((acc, child) => {
       if (acc) {
         return acc
       }
-      const [err] = validateEntry(child)
+      const [err] = validateSection(child)
       if (err) {
         return err
       }
@@ -276,12 +332,26 @@ function validateFeatures(features: ZpressConfig['features']): ConfigResult<true
  * Validate a single feature has required fields and valid icon format.
  */
 function validateFeature(feature: Feature): ConfigError | null {
+  // title is inherited from Entry base
   if (!feature.title) {
     return configError('missing_field', 'Feature: "title" is required')
   }
 
+  const titleStr = typeof feature.title === 'string' ? feature.title : 'Feature'
+
+  if (typeof feature.title !== 'string') {
+    return configError(
+      'invalid_field',
+      `Feature "${titleStr}": "title" must be a string (TitleConfig not supported on Feature)`
+    )
+  }
+
   if (!feature.description) {
     return configError('missing_field', `Feature "${feature.title}": "description" is required`)
+  }
+
+  if (!feature.link) {
+    return configError('missing_field', `Feature "${feature.title}": "link" is required`)
   }
 
   const [iconErr] = validateIconConfig(feature.icon, `Feature "${feature.title}"`)

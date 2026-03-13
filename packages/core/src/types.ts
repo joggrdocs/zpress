@@ -105,6 +105,218 @@ export interface NavItem {
   readonly activeMatch?: string
 }
 
+// ── Base Entry — shared display metadata ────────────────────
+
+/**
+ * Base type for all config entries — shared display metadata.
+ *
+ * All types in the information architecture (Section, Workspace, WorkspaceCategory, Feature)
+ * extend this base to inherit common display fields.
+ */
+export interface Entry {
+  /**
+   * Display title shown in UI (sidebar, nav, cards).
+   * Can be a static string or a configuration for deriving from files.
+   */
+  readonly title: string | TitleConfig
+
+  /**
+   * Icon configuration — Iconify identifier string or `{ id, color }` object.
+   *
+   * Accepts either:
+   * - **String**: Iconify identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`)
+   *   - Color defaults to purple (first in rotation)
+   *   - Find icons at https://icon-sets.iconify.design/
+   * - **Object**: `{ id: IconId, color: IconColor }`
+   *   - Explicit color from 8-color palette
+   *
+   * Auto-generated section cards rotate through these colors:
+   * purple → blue → green → amber → cyan → red → pink → slate
+   *
+   * @example
+   * ```ts
+   * icon: 'devicon:react'  // Uses purple (default)
+   * icon: { id: 'devicon:nextjs', color: 'blue' }  // Explicit blue
+   * ```
+   */
+  readonly icon?: IconConfig
+
+  /**
+   * Short description for cards and summaries.
+   */
+  readonly description?: string
+}
+
+/**
+ * Title configuration — static or derived from source files.
+ *
+ * **Static title**:
+ * ```ts
+ * title: "Getting Started"
+ * ```
+ *
+ * **Derived title**:
+ * ```ts
+ * title: { from: 'auto', transform: (text, slug) => text.toUpperCase() }
+ * ```
+ */
+export type TitleConfig =
+  | string
+  | {
+      /**
+       * Title derivation strategy for auto-discovered children.
+       * - `"auto"` (default) — frontmatter > heading > filename fallback chain
+       * - `"filename"` — kebab-to-title from filename only
+       * - `"heading"` — first `# heading` in the file only
+       * - `"frontmatter"` — `title` field from YAML frontmatter only
+       */
+      readonly from: 'auto' | 'filename' | 'heading' | 'frontmatter'
+      /**
+       * Transform function applied after derivation.
+       * @param text - The derived title
+       * @param slug - The filename slug (without extension)
+       * @returns Transformed title for sidebar display
+       */
+      readonly transform?: (text: string, slug: string) => string
+    }
+
+// ── Discovery — content auto-discovery configuration ─────────
+
+/**
+ * Content discovery configuration for auto-generating pages from files.
+ */
+export interface DiscoveryConfig {
+  /**
+   * Content source — file path or glob pattern.
+   * - **No wildcards** → single file (e.g. `"docs/overview.md"`)
+   * - **With wildcards** → auto-discover children (e.g. `"docs/*.md"`)
+   */
+  readonly from?: string | GlobPattern
+
+  /**
+   * Title configuration for auto-discovered children.
+   * @default { from: 'auto' }
+   */
+  readonly title?: TitleConfig
+
+  /**
+   * Sort order for auto-discovered children.
+   * - `"alpha"` — alphabetical by derived title (default)
+   * - `"filename"` — alphabetical by filename
+   * - Custom comparator function
+   */
+  readonly sort?: 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+
+  /**
+   * Exclude globs, scoped to this discovery's `from` glob.
+   */
+  readonly exclude?: readonly GlobPattern[]
+
+  /**
+   * Frontmatter injected at build time for all discovered pages.
+   */
+  readonly frontmatter?: Frontmatter
+}
+
+/**
+ * Recursive directory-based discovery configuration.
+ * Type-enforces that `indexFile` only exists when `recursive: true`.
+ */
+export interface RecursiveDiscoveryConfig extends DiscoveryConfig {
+  readonly recursive: true
+  /**
+   * Filename (without extension) used as the section header page in each directory.
+   * @default "overview"
+   */
+  readonly indexFile?: string
+}
+
+/**
+ * Flat (non-recursive) discovery configuration.
+ */
+export interface FlatDiscoveryConfig extends DiscoveryConfig {
+  readonly recursive?: false
+}
+
+/**
+ * Unified discovery configuration with properly typed recursion dependency.
+ */
+export type Discovery = FlatDiscoveryConfig | RecursiveDiscoveryConfig
+
+// ── SEO and Hero Configuration ───────────────────────────────
+
+/**
+ * SEO meta tag configuration.
+ */
+export interface SeoConfig {
+  /**
+   * Meta title (for `<title>` tag and og:title).
+   * Falls back to site title or page title.
+   */
+  readonly title?: string
+
+  /**
+   * Meta description (for description and og:description).
+   * Falls back to site description or auto-generated from content.
+   */
+  readonly description?: string
+
+  /**
+   * Open Graph image URL.
+   * Falls back to `/og-image.png` (auto-generated from banner.svg).
+   */
+  readonly image?: string
+
+  /**
+   * OG site name. Defaults to site title.
+   */
+  readonly siteName?: string
+
+  /**
+   * OG locale (e.g. "en_US"). Defaults to "en_US".
+   */
+  readonly locale?: string
+
+  /**
+   * Twitter card type. Defaults to "summary_large_image".
+   */
+  readonly twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
+}
+
+/**
+ * Hero section configuration override.
+ */
+export interface HeroConfig {
+  /**
+   * Main hero title. Overrides site title on home page.
+   */
+  readonly title?: string
+
+  /**
+   * Hero subtitle/headline. Overrides site description on home page.
+   */
+  readonly subtitle?: string
+
+  /**
+   * Hero tagline. Overrides site tagline on home page.
+   */
+  readonly tagline?: string
+
+  /**
+   * Hero image path. Defaults to "/banner.svg".
+   */
+  readonly image?: string
+
+  /**
+   * Call-to-action buttons.
+   */
+  readonly actions?: readonly {
+    readonly theme: 'brand' | 'alt'
+    readonly text: string
+    readonly link: string
+  }[]
+}
+
 // ── Card — display metadata for parent landing pages ─────────
 
 /**
@@ -151,7 +363,7 @@ export interface CardConfig {
 // ── Workspace — apps and packages metadata ───────────────────
 
 /**
- * A workspace item representing an app or package in the monorepo.
+ * Workspace item representing an app or package in the monorepo.
  *
  * Used as the single source of truth for workspace metadata — home page cards,
  * landing page cards, and introduction bullets all derive from these arrays.
@@ -164,103 +376,55 @@ export interface CardConfig {
  *   description: 'Hono REST API serving all client applications with RPC-typed routes',
  *   tags: ['hono', 'react', 'vercel'],
  *   badge: { src: '/logos/vercel.svg', alt: 'Vercel' },
- *   path: '/apps/api',
+ *   prefix: '/apps/api',
+ *   discovery: {
+ *     from: 'docs/*.md',
+ *     title: { from: 'auto' },
+ *   },
  * }
  * ```
  */
-export interface WorkspaceItem {
+export interface Workspace extends Entry {
   /**
-   * Display name (e.g. "API", "Console", "AI").
+   * URL prefix for this workspace item's documentation (e.g. "/apps/api").
    */
-  readonly title: string
-  /**
-   * Icon configuration — Iconify identifier string or `{ id, color }` object.
-   * Falls back to a default app or package icon when omitted.
-   */
-  readonly icon?: IconConfig
-  /**
-   * Short description for cards and bullet lists.
-   */
-  readonly description: string
+  readonly prefix: string
+
   /**
    * Technology tags — kebab-case keys resolved by the UI TechTag component.
    * Each tag maps to an Iconify icon and display label.
    */
   readonly tags?: readonly string[]
+
   /**
    * Deploy badge image for the card header.
    */
   readonly badge?: { readonly src: string; readonly alt: string }
-  /**
-   * Docs path prefix (e.g. "/apps/api"). Matches section entries and derives card links.
-   * Also used as the URL prefix for glob-discovered children.
-   */
-  readonly path: string
-
-  // ── Entry-like fields for hierarchical documentation ──────
 
   /**
-   * Content source — file path or glob, **relative to the workspace item's
-   * base path** (derived from `path`).
+   * Content discovery configuration for this workspace item's documentation.
+   * The `from` field is **relative to the workspace base path** (derived from `prefix`).
    *
-   * - `path: "/apps/api"` + `from: "docs/*.md"` → resolves to `apps/api/docs/*.md`
-   * - **No wildcards** → single file (e.g. `"docs/overview.md"`)
-   * - **With wildcards** → auto-discover children (e.g. `"docs/*.md"`)
+   * For example, `prefix: "/apps/api"` + `discovery.from: "docs/*.md"`
+   * resolves to `apps/api/docs/*.md` (repo-root relative).
    *
-   * @default "docs/*.md"
+   * @default { from: "docs/*.md", title: { from: 'auto' } }
    */
-  readonly from?: string
+  readonly discovery?: Discovery
+
   /**
-   * Explicit child entries for this workspace item.
-   * Can be combined with `from` — explicit children override glob-discovered pages.
+   * Explicit child sections. Can be combined with discovery — explicit children override glob-discovered pages.
    */
-  readonly items?: readonly Entry[]
-  /**
-   * Sort order for auto-discovered children.
-   * - `"alpha"` — alphabetical by derived title (default)
-   * - `"filename"` — alphabetical by filename
-   * - Custom comparator function
-   */
-  readonly sort?: Entry['sort']
-  /**
-   * How to derive `title` for auto-discovered children.
-   * - `"filename"` — kebab-to-title from filename (default)
-   * - `"heading"` — first `# heading` in the file
-   * - `"frontmatter"` — `title` field from YAML frontmatter, falls back to heading
-   */
-  readonly titleFrom?: Entry['titleFrom']
-  /**
-   * Transform function applied to auto-derived title (from `titleFrom`).
-   */
-  readonly titleTransform?: Entry['titleTransform']
-  /**
-   * Enable recursive directory-based nesting for glob patterns.
-   * Requires `from` with a recursive glob (e.g. `"apps/api/docs/**\/*.md"`).
-   * @default false
-   */
-  readonly recursive?: boolean
-  /**
-   * Filename (without extension) used as the section header page in each directory.
-   * Only meaningful when `recursive` is true.
-   * @default "overview"
-   */
-  readonly indexFile?: string
-  /**
-   * Exclude globs, scoped to this item's `from` glob.
-   */
-  readonly exclude?: readonly string[]
+  readonly items?: readonly Section[]
+
   /**
    * Make this item's section collapsible in the sidebar.
    */
   readonly collapsible?: boolean
-  /**
-   * Frontmatter injected at build time for all pages under this workspace item.
-   */
-  readonly frontmatter?: Frontmatter
 }
 
 /**
- * A group of workspace items for custom workspace categories.
+ * Custom workspace category grouping apps/packages.
  *
  * Lets users define arbitrary groups beyond the built-in `apps` and `packages`
  * (e.g. "Services", "Tools", "Integrations") that receive the same
@@ -269,55 +433,56 @@ export interface WorkspaceItem {
  * @example
  * ```ts
  * {
- *   name: 'Integrations',
+ *   title: 'Integrations',
  *   description: 'Third-party service connectors',
  *   icon: 'pixelarticons:integration',
  *   items: [
- *     { title: 'Stripe', description: 'Payment processing', path: '/integrations/stripe' },
+ *     { title: 'Stripe', description: 'Payment processing', prefix: '/integrations/stripe' },
  *   ],
  * }
  * ```
  */
-export interface WorkspaceGroup {
-  readonly name: string
-  readonly description: string
-  readonly icon: IconConfig
-  readonly items: readonly WorkspaceItem[]
+export interface WorkspaceCategory extends Entry {
   /**
-   * URL prefix override for the group's landing page.
-   * Defaults to `/${slugify(name)}` when omitted.
+   * Workspace items in this category.
+   */
+  readonly items: readonly Workspace[]
+
+  /**
+   * URL prefix override for the category's landing page.
+   * Defaults to `/${slugify(title)}` when omitted.
    */
   readonly link?: string
 }
 
-// ── Entry — the single building block ────────────────────────
+// ── Section — the single building block ──────────────────────
 
 /**
- * A single node in the information architecture.
+ * A single node in the information architecture (sidebar/nav tree).
  *
- * What you provide determines what it is:
+ * Goes in `config.sections` array. Can be a page, section, or both.
  *
- * **Page — explicit file**
+ * **Page — explicit file**:
  * ```ts
  * { title: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
  * ```
  *
- * **Page — inline/generated content**
+ * **Page — inline/generated content**:
  * ```ts
  * { title: 'Overview', link: '/api/overview', content: '# API Overview\n...' }
  * ```
  *
- * **Section — explicit children**
+ * **Section — explicit children**:
  * ```ts
  * { title: 'Guides', items: [ ... ] }
  * ```
  *
- * **Section — auto-discovered from glob**
+ * **Section — auto-discovered from glob**:
  * ```ts
  * { title: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
  * ```
  *
- * **Section — mix of explicit + auto-discovered**
+ * **Section — mix of explicit + auto-discovered**:
  * ```ts
  * {
  *   title: 'Guides',
@@ -329,12 +494,7 @@ export interface WorkspaceGroup {
  * }
  * ```
  */
-export interface Entry {
-  /**
-   * Display title in sidebar and nav.
-   */
-  readonly title: string
-
+export interface Section extends Entry {
   /**
    * Output URL path.
    * - Pages: exact URL (e.g. `"/guides/add-api-route"`)
@@ -369,17 +529,32 @@ export interface Entry {
   /**
    * Child entries — pages and/or sub-sections.
    */
-  readonly items?: readonly Entry[]
+  readonly items?: readonly Section[]
+
+  /**
+   * Landing page generation strategy for sections with children.
+   *
+   * - `"auto"` (default) — generate cards from children, or promote overview/index if found
+   * - `"cards"` — always generate cards, never promote overview files
+   * - `"overview"` — only use overview file if found, no auto-generation
+   * - `false` — disable landing page (section header not clickable unless explicit `from`)
+   *
+   * Only applies to sections with `items`.
+   * Requires `link` to be set.
+   */
+  readonly landing?: 'auto' | 'cards' | 'overview' | false
 
   /**
    * Make this section collapsible in the sidebar.
-   * Sections at depth > 1 are collapsible by default.
-   * Set to `false` to keep a deep section always-open.
+   *
+   * - `true` — always collapsible
+   * - `false` — never collapsible (keeps deep sections always-open)
+   * - `undefined` (default) — auto-collapsible when depth > 1
    */
   readonly collapsible?: boolean
 
   /**
-   * Exclude globs, scoped to this entry's `from` glob.
+   * Exclude globs, scoped to this section's `from` glob.
    */
   readonly exclude?: readonly GlobPattern[]
 
@@ -388,6 +563,20 @@ export interface Entry {
    * Useful for pages that should exist but not clutter navigation.
    */
   readonly hidden?: boolean
+
+  /**
+   * Isolate this section into its own Rspress sidebar namespace.
+   *
+   * When `true`, the section's children appear under a dedicated sidebar
+   * keyed by `link` (e.g. `"/apps/"`) instead of the root `"/"` sidebar.
+   * This mirrors how the OpenAPI reference already works.
+   *
+   * Note: Isolated sections are excluded from `nav: "auto"` generation.
+   *
+   * Requires `link` to be set.
+   * @default false
+   */
+  readonly isolated?: boolean
 
   /**
    * Frontmatter injected at build time.
@@ -401,17 +590,22 @@ export interface Entry {
    * - `"filename"` — kebab-to-title from filename (default)
    * - `"heading"` — first `# heading` in the file
    * - `"frontmatter"` — `title` field from YAML frontmatter, falls back to heading
+   * - `"auto"` — frontmatter > heading > filename fallback chain
+   *
+   * @deprecated Use `title: { from: 'auto' }` instead
    */
-  readonly titleFrom?: 'filename' | 'heading' | 'frontmatter'
+  readonly titleFrom?: 'filename' | 'heading' | 'frontmatter' | 'auto'
 
   /**
    * Transform function applied to auto-derived title (from `titleFrom`).
    * Called after title derivation for glob-discovered and recursive children.
-   * Does NOT apply to entries with explicit `title` (those are already user-controlled).
+   * Does NOT apply to sections with explicit `title` string (those are already user-controlled).
    *
    * @param title - The derived title (from heading or filename)
    * @param slug - The filename slug (without extension)
    * @returns Transformed title for sidebar display
+   *
+   * @deprecated Use `title: { from: 'auto', transform: ... }` instead
    */
   readonly titleTransform?: (title: string, slug: string) => string
 
@@ -443,30 +637,18 @@ export interface Entry {
   readonly indexFile?: string
 
   /**
-   * Icon configuration — Iconify identifier string or `{ id, color }` object.
-   * Used on home page feature cards when auto-generated from sections.
-   */
-  readonly icon?: IconConfig
-
-  /**
    * Card display metadata for the parent section's auto-generated landing page.
    *
-   * When present on child entries, the parent's landing page uses
+   * When present on child sections, the parent's landing page uses
    * workspace-style cards instead of the default simple cards.
    */
   readonly card?: CardConfig
 
   /**
-   * Isolate this section into its own Rspress sidebar namespace.
-   *
-   * When `true`, the section's children appear under a dedicated sidebar
-   * keyed by `link` (e.g. `"/apps/"`) instead of the root `"/"` sidebar.
-   * This mirrors how the OpenAPI reference already works.
-   *
-   * Requires `link` to be set.
-   * @default false
+   * SEO meta tag overrides for this page.
+   * Merges with site-level SEO config.
    */
-  readonly isolated?: boolean
+  readonly seo?: SeoConfig
 }
 
 // ── Resolved types (output of the sync engine) ──────────────
@@ -543,23 +725,11 @@ export interface OpenAPIConfig {
  * }
  * ```
  */
-export interface Feature {
-  /**
-   * Display title for the feature card.
-   */
-  readonly title: string
-  /**
-   * Short description shown below the title.
-   */
-  readonly description: string
+export interface Feature extends Entry {
   /**
    * Link target when the card is clicked.
    */
-  readonly link?: string
-  /**
-   * Icon configuration — Iconify identifier string or `{ id, color }` object.
-   */
-  readonly icon?: IconConfig
+  readonly link: string
 }
 
 // ── Top-level config ─────────────────────────────────────────
@@ -594,25 +764,37 @@ export interface ZpressConfig {
   readonly tagline?: string
 
   /**
+   * Hero section override for the home page.
+   * When omitted, uses site-level title, description, and tagline.
+   */
+  readonly hero?: HeroConfig
+
+  /**
+   * SEO meta tag configuration for the entire site.
+   * Individual sections can override with their own seo config.
+   */
+  readonly seo?: SeoConfig
+
+  /**
    * Workspace apps — deployable services that make up the platform.
    * Single source of truth for app metadata used on the home page,
    * landing pages, and introduction page.
    */
-  readonly apps?: readonly WorkspaceItem[]
+  readonly apps?: readonly Workspace[]
 
   /**
    * Workspace packages — shared libraries consumed by apps.
    * Single source of truth for package metadata used on the home page,
    * landing pages, and introduction page.
    */
-  readonly packages?: readonly WorkspaceItem[]
+  readonly packages?: readonly Workspace[]
 
   /**
    * Custom workspace groups — arbitrary named groups of workspace items.
    * Each group receives the same card/landing-page treatment as apps and packages.
    * Rendered after apps and packages, in array order.
    */
-  readonly workspaces?: readonly WorkspaceGroup[]
+  readonly workspaces?: readonly WorkspaceCategory[]
 
   /**
    * Explicit feature cards for the home page.
@@ -627,12 +809,14 @@ export interface ZpressConfig {
    * The information architecture.
    * Defines content sources, sidebar structure, and routing in a single tree.
    */
-  readonly sections: readonly Entry[]
+  readonly sections: readonly Section[]
 
   /**
    * Top navigation bar.
-   * - `"auto"` — one nav item per top-level section
+   * - `"auto"` (default) — one nav item per top-level non-isolated section
    * - Array — explicit nav items
+   *
+   * Note: Sections with `isolated: true` are excluded from auto nav generation.
    * @default "auto"
    */
   readonly nav?: 'auto' | readonly NavItem[]
@@ -647,3 +831,15 @@ export interface ZpressConfig {
    */
   readonly openapi?: OpenAPIConfig
 }
+
+// ── Backward compatibility aliases ───────────────────────────
+
+/**
+ * @deprecated Use `Workspace` instead
+ */
+export type WorkspaceItem = Workspace
+
+/**
+ * @deprecated Use `WorkspaceCategory` instead
+ */
+export type WorkspaceGroup = WorkspaceCategory

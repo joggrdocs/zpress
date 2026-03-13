@@ -8,7 +8,7 @@ import { generateAssets } from '../banner/index.ts'
 import { GENERATED_MARKER } from '../banner/svg-shared.ts'
 import type { AssetConfig } from '../banner/types.ts'
 import type { Paths } from '../paths.ts'
-import type { Entry, ZpressConfig } from '../types.ts'
+import type { Section, ZpressConfig } from '../types.ts'
 import { copyPage } from './copy.ts'
 import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
@@ -75,26 +75,26 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // 0. Synthesize workspace sections from apps/packages/workspaces config
   const workspaceSections = synthesizeWorkspaceSections(config)
-  const allSections: Entry[] = [...config.sections, ...workspaceSections]
+  const allSections: Section[] = [...config.sections, ...workspaceSections]
 
-  // 1. Resolve the entry tree
+  // 1. Resolve the section tree
   const [resolveErr, rawResolved] = await resolveEntries(allSections, ctx)
   if (resolveErr) {
     log.error(`[zpress] ${resolveErr.message}`)
     return { pagesWritten: 0, pagesSkipped: 0, pagesRemoved: 0, elapsed: performance.now() - start }
   }
 
-  // 1.25 Enrich entries with workspace card metadata from top-level apps/packages
+  // 1.25 Enrich sections with workspace card metadata from top-level apps/packages
   const resolved = enrichWorkspaceCards(rawResolved, config)
 
   // 1.5 Inject auto-generated landing pages for sections with link but no page
-  const workspaceGroupItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const workspaceItems = [
+  const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
+  const workspaces = [
     ...(config.apps ?? []),
     ...(config.packages ?? []),
-    ...workspaceGroupItems,
+    ...workspaceCategoryItems,
   ]
-  injectLandingPages(resolved, allSections, workspaceItems)
+  injectLandingPages(resolved, allSections, workspaces)
 
   // 2. Collect all pages from the tree
   const sectionPages = collectPages(resolved)

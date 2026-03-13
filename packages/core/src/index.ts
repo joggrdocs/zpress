@@ -2,7 +2,10 @@
 export type {
   ZpressConfig,
   Entry,
+  Section,
   Feature,
+  Workspace,
+  WorkspaceCategory,
   WorkspaceItem,
   WorkspaceGroup,
   Frontmatter,
@@ -12,6 +15,12 @@ export type {
   ResolvedPage,
   ResolvedSection,
   Result,
+  TitleConfig,
+  Discovery,
+  RecursiveDiscoveryConfig,
+  FlatDiscoveryConfig,
+  SeoConfig,
+  HeroConfig,
 } from './types.ts'
 
 // Icon system

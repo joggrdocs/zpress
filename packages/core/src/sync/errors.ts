@@ -48,6 +48,8 @@ export interface ConfigError {
     | 'duplicate_prefix'
     | 'invalid_icon'
     | 'invalid_entry'
+    | 'invalid_section'
+    | 'invalid_field'
     | 'invalid_theme'
   readonly message: string
 }

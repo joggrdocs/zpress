@@ -2,15 +2,15 @@ import { isUndefined, omitBy } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
 import { resolveOptionalIcon } from '../icon.ts'
-import type { Entry, ZpressConfig, WorkspaceItem } from '../types.ts'
+import type { Section, ZpressConfig, Workspace } from '../types.ts'
 import { buildWorkspaceCardJsx } from './sidebar/landing.ts'
 import type { ResolvedEntry } from './types.ts'
 
 // ── Types ────────────────────────────────────────────────────
 
 interface WorkspaceArrays {
-  readonly apps: readonly WorkspaceItem[]
-  readonly packages: readonly WorkspaceItem[]
+  readonly apps: readonly Workspace[]
+  readonly packages: readonly Workspace[]
 }
 
 // ── Public API ───────────────────────────────────────────────
@@ -146,26 +146,26 @@ export function generateIntroPage(workspaces: WorkspaceArrays): string {
 }
 
 /**
- * Synthesize Entry sections from workspace config (apps, packages, custom groups).
+ * Synthesize Section entries from workspace config (apps, packages, custom categories).
  *
  * Produces isolated parent sections with workspace item children,
  * ready to merge into `config.sections` before resolution.
  * Skips any category whose link already exists in `config.sections`.
  *
  * @param config - zpress config containing apps, packages, and workspaces
- * @returns Entry array of synthesized workspace sections
+ * @returns Section array of synthesized workspace sections
  */
-export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
+export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
   const existingLinks = collectAllLinks(config.sections)
 
   const apps = config.apps ?? []
   const packages = config.packages ?? []
-  const groups = config.workspaces ?? []
+  const categories = config.workspaces ?? []
 
-  const appsEntry = match(apps.length > 0 && !existingLinks.has('/apps'))
+  const appsSection = match(apps.length > 0 && !existingLinks.has('/apps'))
     .with(
       true,
-      (): Entry => ({
+      (): Section => ({
         title: 'Apps',
         link: '/apps',
         isolated: true,
@@ -173,16 +173,16 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
           description: 'Deployable applications that make up the platform.',
         },
         items: apps
-          .filter((item) => !existingLinks.has(item.path))
-          .map((item) => workspaceItemToEntry(item)),
+          .filter((item) => !existingLinks.has(item.prefix))
+          .map((item) => workspaceToSection(item)),
       })
     )
     .otherwise(() => null)
 
-  const packagesEntry = match(packages.length > 0 && !existingLinks.has('/packages'))
+  const packagesSection = match(packages.length > 0 && !existingLinks.has('/packages'))
     .with(
       true,
-      (): Entry => ({
+      (): Section => ({
         title: 'Packages',
         link: '/packages',
         isolated: true,
@@ -190,32 +190,32 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
           description: 'Shared libraries and utilities consumed across apps and services.',
         },
         items: packages
-          .filter((item) => !existingLinks.has(item.path))
-          .map((item) => workspaceItemToEntry(item)),
+          .filter((item) => !existingLinks.has(item.prefix))
+          .map((item) => workspaceToSection(item)),
       })
     )
     .otherwise(() => null)
 
-  const groupEntries = groups.map((group): Entry | null => {
-    const link = group.link ?? `/${slugify(group.name)}`
+  const categoryEntries = categories.map((category): Section | null => {
+    const link = category.link ?? `/${slugify(String(category.title))}`
     if (existingLinks.has(link)) {
       return null
     }
     return {
-      title: group.name,
+      title: category.title,
       link,
       isolated: true,
       frontmatter: {
-        description: group.description,
+        description: category.description,
       },
-      items: group.items
-        .filter((item) => !existingLinks.has(item.path))
-        .map((item) => workspaceItemToEntry(item)),
+      items: category.items
+        .filter((item) => !existingLinks.has(item.prefix))
+        .map((item) => workspaceToSection(item)),
     }
   })
 
-  return [appsEntry, packagesEntry, ...groupEntries].filter(
-    (entry): entry is Entry => entry !== null
+  return [appsSection, packagesSection, ...categoryEntries].filter(
+    (section): section is Section => section !== null
   )
 }
 
@@ -223,15 +223,15 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Entry[] {
 
 /**
  * Recursively collect all links from a section tree.
- * Walks entries and their nested items to find every defined link.
+ * Walks sections and their nested items to find every defined link.
  *
  * @private
  */
-function collectAllLinks(sections: readonly Entry[]): Set<string> {
+function collectAllLinks(sections: readonly Section[]): Set<string> {
   return new Set(
-    sections.flatMap((entry): string[] => {
-      const self = collectSelfLinks(entry.link)
-      const nested = collectNestedLinks(entry.items)
+    sections.flatMap((section): string[] => {
+      const self = collectSelfLinks(section.link)
+      const nested = collectNestedLinks(section.items)
       return [...self, ...nested]
     })
   )
@@ -257,16 +257,16 @@ function slugify(text: string): string {
  */
 function enrichEntries(
   entries: readonly ResolvedEntry[],
-  items: readonly WorkspaceItem[]
+  items: readonly Workspace[]
 ): ResolvedEntry[] {
   return entries.map((entry) => {
     const enrichedItems = resolveEnrichedItems(entry.items, items)
 
     if (entry.link && !entry.card) {
       const entryLink = entry.link
-      const matched = items.find((item) => entryLink === item.path)
+      const matched = items.find((item) => entryLink === item.prefix)
       if (matched) {
-        const scope = deriveScope(matched.path)
+        const scope = deriveScope(matched.prefix)
         const tags = resolveTags(matched.tags)
         const badge = resolveBadge(matched.badge)
 
@@ -313,14 +313,15 @@ function deriveScope(itemPath: string): string {
 function buildWorkspaceSection(
   heading: string,
   description: string,
-  items: readonly WorkspaceItem[],
+  items: readonly Workspace[],
   scopePrefix: string
 ): string {
   const cards = items.map((item) => {
     const resolved = resolveOptionalIcon(item.icon)
+    const titleStr = typeof item.title === 'string' ? item.title : String(item.title)
     return buildWorkspaceCardJsx({
-      link: item.path,
-      title: item.title,
+      link: item.prefix,
+      title: titleStr,
       icon: match(resolved)
         .with(P.nonNullable, (r) => r.id)
         // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
@@ -350,49 +351,70 @@ function buildWorkspaceSection(
 }
 
 /**
- * Convert a WorkspaceItem to an Entry, passing through all Entry-like fields.
+ * Convert a Workspace to a Section, extracting discovery config and applying defaults.
  *
- * Uses `path` as both `link` (clickable section header) and `prefix`
+ * Uses `prefix` as both `link` (clickable section header) and `prefix`
  * (URL prefix for glob-discovered children).
  *
- * The `from` field is resolved relative to the workspace item's base path
- * (derived from `path`). Defaults to `"docs/*.md"` when omitted.
+ * The `discovery.from` field is resolved relative to the workspace item's base path
+ * (derived from `prefix`). Defaults to `"docs/*.md"` when omitted.
  *
- * For example, `path: "/apps/api"` resolves to `"apps/api/docs/*.md"`.
+ * For example, `prefix: "/apps/api"` + `discovery.from: "docs/*.md"` resolves to `"apps/api/docs/*.md"`.
  *
  * @private
  */
-function workspaceItemToEntry(item: WorkspaceItem): Entry {
-  const base: Entry = {
+function workspaceToSection(item: Workspace): Section {
+  const base: Section = {
     title: item.title,
-    link: item.path,
+    icon: item.icon,
+    description: item.description,
+    link: item.prefix,
   }
 
   return applyOptionalFields(base, item)
 }
 
-function applyOptionalFields(base: Entry, item: WorkspaceItem): Entry {
-  const fromPattern = item.from ?? 'docs/*.md'
-  const basePath = item.path.replace(/^\//, '')
+function applyOptionalFields(base: Section, item: Workspace): Section {
+  // Extract discovery config or use defaults
+  const discovery = item.discovery
+  const fromPattern = discovery?.from ?? 'docs/*.md'
+  const basePath = item.prefix.replace(/^\//, '')
   const resolvedFrom = `${basePath}/${fromPattern}`
+
+  // Extract title config from discovery (deprecated path)
+  // If discovery.title is a TitleConfig object, pass it through
+  // Otherwise use default 'auto' strategy
+  const titleConfig = discovery?.title
+  const titleFrom =
+    titleConfig !== undefined && typeof titleConfig !== 'string'
+      ? titleConfig.from
+      : undefined
+  const titleTransform =
+    titleConfig !== undefined && typeof titleConfig !== 'string'
+      ? titleConfig.transform
+      : undefined
 
   return omitBy(
     {
       ...base,
       from: resolvedFrom,
-      prefix: item.path,
+      prefix: item.prefix,
       items: item.items,
-      sort: item.sort,
-      titleFrom: item.titleFrom,
-      titleTransform: item.titleTransform,
-      recursive: item.recursive,
-      indexFile: resolveIndexFile(item.recursive, item.indexFile),
-      exclude: resolveExclude(item.exclude),
+      sort: discovery?.sort,
+      titleFrom,
+      titleTransform,
+      recursive:
+        discovery !== undefined && 'recursive' in discovery ? discovery.recursive : undefined,
+      indexFile:
+        discovery !== undefined && 'recursive' in discovery && discovery.recursive
+          ? discovery.indexFile
+          : undefined,
+      exclude: discovery?.exclude !== undefined ? [...discovery.exclude] : undefined,
       collapsible: item.collapsible,
-      frontmatter: item.frontmatter,
+      frontmatter: discovery?.frontmatter,
     },
     isUndefined
-  ) as Entry
+  ) as Section
 }
 
 function collectSelfLinks(link: string | undefined): string[] {
@@ -402,7 +424,7 @@ function collectSelfLinks(link: string | undefined): string[] {
   return []
 }
 
-function collectNestedLinks(items: readonly Entry[] | undefined): string[] {
+function collectNestedLinks(items: readonly Section[] | undefined): string[] {
   if (items) {
     return [...collectAllLinks(items)]
   }
@@ -411,7 +433,7 @@ function collectNestedLinks(items: readonly Entry[] | undefined): string[] {
 
 function resolveEnrichedItems(
   items: readonly ResolvedEntry[] | undefined,
-  workspaceItems: readonly WorkspaceItem[]
+  workspaceItems: readonly Workspace[]
 ): ResolvedEntry[] | undefined {
   if (items) {
     return enrichEntries(items, workspaceItems)
