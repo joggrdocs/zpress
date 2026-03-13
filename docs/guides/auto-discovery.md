@@ -25,35 +25,43 @@ Control how page titles are derived from discovered files with `titleFrom`:
 
 | Strategy        | Source                             | Example                                         |
 | --------------- | ---------------------------------- | ----------------------------------------------- |
+| `'auto'`        | Fallback chain (default)           | Frontmatter → heading → filename                |
 | `'filename'`    | Filename converted to title        | `add-api-route.md` → "Add Api Route"            |
 | `'heading'`     | First `# heading` in the file      | `# Adding an API Route` → "Adding an API Route" |
 | `'frontmatter'` | `title` field in YAML front matter | `title: API Routes` → "API Routes"              |
 
-Default is `'filename'`. Each strategy falls back to the next: frontmatter → heading → filename.
+Default is `'auto'`, which tries frontmatter first, falls back to heading, then filename. This gives you the most intuitive behavior: explicit titles in frontmatter win, but markdown headings and filenames work too.
 
 ```ts
 {
   title: 'Guides',
   prefix: '/guides',
   from: 'docs/guides/*.md',
-  titleFrom: 'frontmatter',
+  titleFrom: 'frontmatter',  // Only use frontmatter, no fallback
 }
 ```
 
-## Title transform
+### Advanced: TitleConfig
 
-Apply a custom transform to derived title:
+You can also use the `title` field with a configuration object for more control:
 
 ```ts
 {
   title: 'ADRs',
   prefix: '/adrs',
   from: 'docs/adrs/*.md',
-  titleTransform: (title, slug) => slug.replace(/^(\d+)-/, '$1. '),
+  discovery: {
+    title: {
+      from: 'auto',
+      transform: (title, slug) => slug.replace(/^(\d+)-/, '$1. '),
+    },
+  },
 }
 ```
 
-This only applies to auto-discovered children. Entries with explicit `title` are not transformed.
+This applies a custom transform to derived titles. The transform function receives the derived title and the filename slug, returning the final display title.
+
+Transforms only apply to auto-discovered children. Sections with explicit `title` strings are not transformed.
 
 ## Sorting
 
