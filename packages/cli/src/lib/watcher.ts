@@ -30,7 +30,7 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
   const planningDir = path.resolve(repoRoot, '.planning')
-  const watchPaths = [
+  const initialWatchPaths = [
     ...extractWatchPaths(config.sections, repoRoot),
     // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: known directory at repo root
     ...(() => {
@@ -42,13 +42,13 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
     ...configFiles,
   ]
 
-  if (watchPaths.length === 0) {
+  if (initialWatchPaths.length === 0) {
     cliLogger.warn('No source paths to watch')
     return
   }
 
   cliLogger.info(
-    `Watching ${watchPaths.length} paths: ${watchPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
+    `Watching ${initialWatchPaths.length} paths: ${initialWatchPaths.map((p) => path.relative(repoRoot, p)).join(', ')}`
   )
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
@@ -58,8 +58,10 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
   // oxlint-disable-next-line functional/no-let -- bounded retry counter to prevent unbounded recursive sync
   let consecutiveFailures = 0
   const MAX_CONSECUTIVE_FAILURES = 5
+  // oxlint-disable-next-line functional/no-let -- tracks currently watched paths for dynamic updates
+  let currentWatchPaths = new Set(initialWatchPaths)
 
-  const watcher = watch(watchPaths, {
+  const watcher = watch(initialWatchPaths, {
     ignoreInitial: true,
     ignored: ['**/node_modules/**', '**/.git/**', '**/.zpress/**', '**/bundle/**'],
     awaitWriteFinish: {
@@ -67,6 +69,41 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
       pollInterval: 50,
     },
   })
+
+  function updateWatchPaths(newConfig: ZpressConfig): void {
+    const newContentPaths = extractWatchPaths(newConfig.sections, repoRoot)
+    const newWatchPaths = [
+      ...newContentPaths,
+      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: known directory at repo root
+      ...(() => {
+        if (existsSync(planningDir)) {
+          return [planningDir]
+        }
+        return []
+      })(),
+      ...configFiles,
+    ]
+    const newSet = new Set(newWatchPaths)
+
+    // Add new paths
+    const toAdd = newWatchPaths.filter((p) => !currentWatchPaths.has(p))
+    if (toAdd.length > 0) {
+      watcher.add(toAdd)
+      cliLogger.info(`Added ${toAdd.length} watch paths: ${toAdd.map((p) => path.relative(repoRoot, p)).join(', ')}`)
+    }
+
+    // Remove old paths (excluding config files which should always be watched)
+    const configFileSet = new Set(configFiles)
+    const toRemove = [...currentWatchPaths].filter((p) => !newSet.has(p) && !configFileSet.has(p))
+    if (toRemove.length > 0) {
+      watcher.unwatch(toRemove)
+      cliLogger.info(
+        `Removed ${toRemove.length} watch paths: ${toRemove.map((p) => path.relative(repoRoot, p)).join(', ')}`
+      )
+    }
+
+    currentWatchPaths = newSet
+  }
 
   async function triggerSync(reloadConfig: boolean) {
     if (syncing) {
@@ -85,6 +122,7 @@ export function createWatcher(initialConfig: ZpressConfig, paths: Paths): FSWatc
         }
         config = newConfig
         cliLogger.info('Config reloaded')
+        updateWatchPaths(newConfig)
       }
       await sync(config, { paths })
       // Rspress dev server watches the content directory directly via HMR.
