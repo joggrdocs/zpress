@@ -41,7 +41,8 @@
       },
       {
         "command": "zpress.toggle",
-        "title": "zpress: Toggle Dev Server"
+        "title": "zpress: Toggle Dev Server",
+        "icon": "$(debug-start)"
       },
       {
         "command": "zpress.preview",
@@ -64,6 +65,13 @@
           "when": "resourceLangId == markdown && zpress:isTrackedFile && zpress:serverReady",
           "group": "navigation"
         }
+      ],
+      "view/title": [
+        {
+          "command": "zpress.toggle",
+          "when": "view =~ /^zpress\\.(loading|section)/",
+          "group": "navigation"
+        }
       ]
     },
     "viewsContainers": {
@@ -78,7 +86,13 @@
     "viewsWelcome": [
       {
         "view": "zpress.loading",
-        "contents": "$(sync~spin) Starting zpress dev server..."
+        "contents": "$(sync~spin) Starting zpress dev server...",
+        "when": "zpress:serverStarting"
+      },
+      {
+        "view": "zpress.loading",
+        "contents": "zpress dev server is stopped.\n[Start Server](command:zpress.start)",
+        "when": "zpress:serverStopped"
       }
     ],
     "views": {
@@ -91,49 +105,49 @@
         {
           "id": "zpress.section.0",
           "name": "Section",
-          "when": "zpress:section.0",
+          "when": "zpress:section.0 && zpress:serverReady",
           "visibility": "visible"
         },
         {
           "id": "zpress.section.1",
           "name": "Section",
-          "when": "zpress:section.1",
+          "when": "zpress:section.1 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.2",
           "name": "Section",
-          "when": "zpress:section.2",
+          "when": "zpress:section.2 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.3",
           "name": "Section",
-          "when": "zpress:section.3",
+          "when": "zpress:section.3 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.4",
           "name": "Section",
-          "when": "zpress:section.4",
+          "when": "zpress:section.4 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.5",
           "name": "Section",
-          "when": "zpress:section.5",
+          "when": "zpress:section.5 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.6",
           "name": "Section",
-          "when": "zpress:section.6",
+          "when": "zpress:section.6 && zpress:serverReady",
           "visibility": "collapsed"
         },
         {
           "id": "zpress.section.7",
           "name": "Section",
-          "when": "zpress:section.7",
+          "when": "zpress:section.7 && zpress:serverReady",
           "visibility": "collapsed"
         }
       ]

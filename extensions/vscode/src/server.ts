@@ -12,6 +12,7 @@ interface DevServerDeps {
   readonly statusBar: StatusBar
   readonly outputChannel: OutputChannel
   readonly showErrorMessage: (message: string) => void
+  readonly onStatusChange: (status: ServerStatus) => void
   readonly onReady: (baseUrl: string) => void
   readonly onStopped: () => void
 }
@@ -74,6 +75,7 @@ function createDevServer(deps: DevServerDeps): DevServer {
   function setStatus(status: ServerStatus): void {
     state.status = status
     deps.statusBar.update(status)
+    deps.onStatusChange(status)
   }
 
   function start(): void {
