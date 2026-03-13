@@ -492,4 +492,3 @@ function resolveBadge(
   }
   return undefined
 }
-

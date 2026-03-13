@@ -3,14 +3,9 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import type { UserConfig } from '@rspress/core'
-import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
-import type {
-  BuiltInThemeName,
-  ThemeColors,
-  ThemeName,
-  ZpressConfig,
-} from '@zpress/config'
+import type { BuiltInThemeName, ThemeColors, ThemeName, ZpressConfig } from '@zpress/config'
 import type { Paths } from '@zpress/core'
+import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 
 import { zpressPlugin } from './plugin.ts'
 

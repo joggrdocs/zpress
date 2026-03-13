@@ -121,7 +121,10 @@ function resolveFilePage(
 /**
  * Resolve a virtual page with inline or generated content.
  */
-function resolveVirtualPage(section: Section, frontmatter: Frontmatter): SyncOutcome<ResolvedEntry> {
+function resolveVirtualPage(
+  section: Section,
+  frontmatter: Frontmatter
+): SyncOutcome<ResolvedEntry> {
   if (section.link === undefined || section.link === null) {
     return [syncError('missing_link', 'resolveVirtualPage called without section.link'), null]
   }
@@ -291,16 +294,17 @@ async function resolveGlob(
   const prefix = section.prefix ?? ''
 
   // Extract titleFrom and titleTransform, preferring new title object API over deprecated fields
-  const titleConfig =
-    match(section.title)
-      .when(
-        (t): t is {
-          from: 'auto' | 'filename' | 'heading' | 'frontmatter'
-          transform?: (text: string, slug: string) => string
-        } => typeof t === 'object' && t !== null && 'from' in t,
-        (t) => t
-      )
-      .otherwise(() => null)
+  const titleConfig = match(section.title)
+    .when(
+      (
+        t
+      ): t is {
+        from: 'auto' | 'filename' | 'heading' | 'frontmatter'
+        transform?: (text: string, slug: string) => string
+      } => typeof t === 'object' && t !== null && 'from' in t,
+      (t) => t
+    )
+    .otherwise(() => null)
   const titleFrom = match(titleConfig)
     .with(P.nonNullable, (tc) => tc.from)
     .otherwise(() => section.titleFrom ?? ('auto' as const))

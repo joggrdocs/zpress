@@ -58,15 +58,15 @@ export default defineConfig({
 
 ## Fields
 
-| Field         | Type                           | Required | Description                                                     |
-| ------------- | ------------------------------ | -------- | --------------------------------------------------------------- |
-| `title`       | `string`                       | yes      | Display name                                                    |
+| Field         | Type                           | Required | Description                                                                                                                                                   |
+| ------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | `string`                       | yes      | Display name                                                                                                                                                  |
 | `icon`        | `IconConfig`                   | no       | Icon ID string (from bundled collections) or `{ id: IconId, color: IconColor }` object. See [icon reference](/references/icons/overview) for supported icons. |
-| `description` | `string`                       | yes      | Short description for cards                                     |
-| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                                    |
-| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                              |
-| `prefix`      | `string`                       | yes      | URL prefix for this workspace's documentation                   |
-| `discovery`   | `Discovery`                    | no       | Content discovery configuration (glob, title, sort, etc.)       |
+| `description` | `string`                       | yes      | Short description for cards                                                                                                                                   |
+| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                                                                                                                                  |
+| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                                                                                                                            |
+| `prefix`      | `string`                       | yes      | URL prefix for this workspace's documentation                                                                                                                 |
+| `discovery`   | `Discovery`                    | no       | Content discovery configuration (glob, title, sort, etc.)                                                                                                     |
 
 ## How it works
 

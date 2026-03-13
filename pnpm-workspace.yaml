@@ -9,3 +9,5 @@ catalog:
   typescript: ^5.9.3
   ts-pattern: ^5.9.0
   es-toolkit: ^1.45.1
+  zod: ^4.3.6
+  type-fest: ^5.4.4

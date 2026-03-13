@@ -355,8 +355,8 @@ function buildFeatures(
         .with(P.nonNullable, (r) => r.color)
         .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
       const titleStr = match(section.title)
-      .with(P.string, (t) => t)
-      .otherwise(() => 'Section')
+        .with(P.string, (t) => t)
+        .otherwise(() => 'Section')
       return { title: titleStr, details, link, iconId, iconColor }
     })
   )
@@ -409,8 +409,8 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
 
   // Well-known section name → curated default
   const titleStr = match(section.title)
-      .with(P.string, (t) => t)
-      .otherwise(() => 'Section')
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Section')
   const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {
     return knownDesc

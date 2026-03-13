@@ -45,15 +45,15 @@
     "c12": "4.0.0-beta.3",
     "es-toolkit": "catalog:",
     "ts-pattern": "catalog:",
-    "type-fest": "^4.30.0",
-    "zod": "^3.24.1"
+    "type-fest": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",
-    "@types/node": "^22.13.9",
-    "tsx": "^4.19.3",
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
     "typescript": "catalog:",
-    "zod-to-json-schema": "^3.24.1"
+    "zod-to-json-schema": "^3.25.1"
   },
   "engines": {
     "node": ">=24.0.0"

@@ -35,7 +35,9 @@ export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
  * @param options - Dev server configuration including config and paths
  * @returns An async callback to invoke when config changes with new config (restarts server)
  */
-export async function startDevServer(options: ServerOptions): Promise<(newConfig: ZpressConfig) => Promise<void>> {
+export async function startDevServer(
+  options: ServerOptions
+): Promise<(newConfig: ZpressConfig) => Promise<void>> {
   const { paths } = options
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null

@@ -38,7 +38,15 @@ export type IconColor = LiteralUnion<
 /**
  * Built-in icon colors for validation and iteration.
  */
-export type BuiltInIconColor = 'blue' | 'purple' | 'green' | 'amber' | 'cyan' | 'red' | 'pink' | 'slate'
+export type BuiltInIconColor =
+  | 'blue'
+  | 'purple'
+  | 'green'
+  | 'amber'
+  | 'cyan'
+  | 'red'
+  | 'pink'
+  | 'slate'
 
 // ── Color mode ──────────────────────────────────────────────
 

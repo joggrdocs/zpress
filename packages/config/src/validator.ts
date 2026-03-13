@@ -2,9 +2,9 @@
  * Config validation using Zod.
  */
 
-import { zpressConfigSchema } from './schema.ts'
 import { configErrorFromZod } from './errors.ts'
 import type { ConfigResult } from './errors.ts'
+import { zpressConfigSchema } from './schema.ts'
 import type { ZpressConfig } from './types.ts'
 
 /**

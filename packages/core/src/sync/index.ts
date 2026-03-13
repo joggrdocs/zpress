@@ -89,11 +89,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // 1.5 Inject auto-generated landing pages for sections with link but no page
   const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const workspaces = [
-    ...(config.apps ?? []),
-    ...(config.packages ?? []),
-    ...workspaceCategoryItems,
-  ]
+  const workspaces = [...(config.apps ?? []), ...(config.packages ?? []), ...workspaceCategoryItems]
   injectLandingPages(resolved, allSections, workspaces)
 
   // 2. Collect all pages from the tree

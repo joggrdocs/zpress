@@ -36,9 +36,9 @@ export const buildCommand = command({
     if (configErr) {
       ctx.logger.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
-        configErr.errors.forEach((err) => {
+        configErr.errors.map((err) => {
           const path = err.path.join('.')
-          ctx.logger.error(`  ${path}: ${err.message}`)
+          return ctx.logger.error(`  ${path}: ${err.message}`)
         })
       }
       process.exit(1)

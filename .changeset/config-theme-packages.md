@@ -10,6 +10,7 @@
 This release introduces two new packages that refactor configuration and theme management:
 
 **@zpress/theme** - Theme definitions and utilities
+
 - Type-safe theme definitions with `LiteralUnion` pattern for autocomplete + extensibility
 - Built-in themes: `base`, `midnight`, `arcade`, `arcade-fx`
 - Icon color types with autocomplete support
@@ -17,6 +18,7 @@ This release introduces two new packages that refactor configuration and theme m
 - Utility functions: `resolveDefaultColorMode`, `isBuiltInTheme`, `isBuiltInIconColor`
 
 **@zpress/config** - Configuration loading and validation
+
 - Multi-format config support: `.ts`, `.js`, `.json`, `.jsonc`, `.yml`, `.yaml`
 - Type-safe `defineConfig` helper
 - `loadConfig` function with Result-based error handling
@@ -25,12 +27,14 @@ This release introduces two new packages that refactor configuration and theme m
 - Re-exports theme utilities for convenience
 
 **@zpress/core** - Internal refactoring
+
 - Removed direct `c12` dependency
 - Now re-exports config and theme utilities from `@zpress/config`
 - Public API remains backwards compatible
 - Added new exports: `ICON_COLORS`, `ConfigErrorType`, `LoadConfigOptions`
 
 **@zpress/ui** - Dependency updates
+
 - Removed `@zpress/core` dependency for config types
 - Now uses `@zpress/config` and `@zpress/theme` directly
 - Added support for custom themes with fallback to 'toggle' color mode
@@ -41,6 +45,7 @@ This release introduces two new packages that refactor configuration and theme m
 For most users, this is a drop-in replacement with no migration needed. All existing imports from `@zpress/core` continue to work.
 
 If you were importing from internal paths, update as follows:
+
 ```ts
 // Before
 import type { ThemeConfig } from '@zpress/core/theme'
@@ -48,7 +53,7 @@ import type { ThemeConfig } from '@zpress/core/theme'
 // After
 import type { ThemeConfig } from '@zpress/config'
 // or
-import type { ThemeConfig } from '@zpress/core'  // still works via re-export
+import type { ThemeConfig } from '@zpress/core' // still works via re-export
 ```
 
 **JSON/YAML Config Support**
@@ -81,7 +86,7 @@ import { defineConfig } from '@zpress/config'
 
 export default defineConfig({
   theme: {
-    name: 'my-custom-theme',  // ✓ TypeScript accepts this
+    name: 'my-custom-theme', // ✓ TypeScript accepts this
     colorMode: 'dark',
   },
 })
