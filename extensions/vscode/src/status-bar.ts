@@ -1,13 +1,8 @@
-import type * as vscode from 'vscode'
+import type { Disposable, StatusBarAlignment, StatusBarItem } from 'vscode'
 
-type ServerStatus = 'stopped' | 'starting' | 'running'
+type ServerStatus = 'stopped' | 'starting' | 'running' | 'stopping'
 
-interface StatusBarConfig {
-  readonly [K in ServerStatus]: {
-    readonly text: string
-    readonly tooltip: string
-  }
-}
+type StatusBarConfig = Record<ServerStatus, { readonly text: string; readonly tooltip: string }>
 
 const STATUS_CONFIG: StatusBarConfig = {
   stopped: {
@@ -22,15 +17,22 @@ const STATUS_CONFIG: StatusBarConfig = {
     text: '$(check) zpress',
     tooltip: 'zpress: Dev server running — click to stop',
   },
+  stopping: {
+    text: '$(sync~spin) zpress',
+    tooltip: 'zpress: Stopping dev server...',
+  },
 }
 
-interface StatusBar extends vscode.Disposable {
+interface StatusBar extends Disposable {
   readonly update: (status: ServerStatus) => void
 }
 
-const createStatusBarItem = (
-  createItem: (alignment: vscode.StatusBarAlignment, priority: number) => vscode.StatusBarItem,
-): StatusBar => {
+/**
+ * Creates a status bar item that reflects the dev server lifecycle.
+ */
+function createStatusBarItem(
+  createItem: (alignment: StatusBarAlignment, priority: number) => StatusBarItem
+): StatusBar {
   const item = createItem(2 /* StatusBarAlignment.Right */, 100)
   item.command = 'zpress.toggle'
   item.text = STATUS_CONFIG.stopped.text

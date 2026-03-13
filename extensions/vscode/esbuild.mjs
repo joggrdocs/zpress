@@ -1,4 +1,4 @@
-import * as esbuild from 'esbuild'
+import { build, context } from 'esbuild'
 
 const isWatch = process.argv.includes('--watch')
 
@@ -15,10 +15,10 @@ const config = {
 }
 
 if (isWatch) {
-  const ctx = await esbuild.context(config)
+  const ctx = await context(config)
   await ctx.watch()
   console.log('[zpress-vscode] watching for changes...')
 } else {
-  await esbuild.build(config)
+  await build(config)
   console.log('[zpress-vscode] build complete')
 }

@@ -1,23 +1,19 @@
 [
   {
     "text": "Getting Started",
-    "link": "/getting-started",
-    "icon": "pixelarticons:speed-fast"
+    "link": "/getting-started"
   },
   {
     "text": "Architecture",
-    "link": "/architecture",
-    "icon": "pixelarticons:layout-header"
+    "link": "/architecture"
   },
   {
     "text": "Guides",
-    "link": "/guides/adding-a-package",
-    "icon": "pixelarticons:book-open"
+    "link": "/guides/adding-a-package"
   },
   {
     "text": "Apps",
     "link": "/apps",
-    "icon": "pixelarticons:device-laptop",
     "items": [
       {
         "text": "Web",
@@ -32,7 +28,6 @@
   {
     "text": "Packages",
     "link": "/packages",
-    "icon": "pixelarticons:archive",
     "items": [
       {
         "text": "UI",
@@ -51,7 +46,6 @@
   {
     "text": "Integrations",
     "link": "/integrations",
-    "icon": "pixelarticons:integration",
     "items": [
       {
         "text": "Stripe",

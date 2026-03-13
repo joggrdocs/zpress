@@ -1,109 +1,182 @@
 import { spawn } from 'node:child_process'
 import type { ChildProcess } from 'node:child_process'
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
 
-import type * as vscode from 'vscode'
+import type { Disposable, OutputChannel } from 'vscode'
 
 import type { ServerStatus, StatusBar } from './status-bar'
-
-const DEFAULT_PORT = 6174
-const BASE_URL = `http://localhost:${String(DEFAULT_PORT)}`
 
 interface DevServerDeps {
   readonly workspaceRoot: string
   readonly statusBar: StatusBar
-  readonly outputChannel: vscode.OutputChannel
-  readonly onReady: () => void
+  readonly outputChannel: OutputChannel
+  readonly onReady: (baseUrl: string) => void
+  readonly onStopped: () => void
 }
 
-interface DevServer extends vscode.Disposable {
+interface DevServer extends Disposable {
   readonly start: () => void
   readonly stop: () => void
   readonly isRunning: () => boolean
-  readonly baseUrl: string
+  readonly getBaseUrl: () => string | null
 }
 
-const findBinary = (workspaceRoot: string): { readonly cmd: string; readonly args: readonly string[] } => {
+function findBinary(
+  workspaceRoot: string
+): { readonly cmd: string; readonly args: readonly string[] } | null {
   const localBin = path.join(workspaceRoot, 'node_modules', '.bin', 'zpress')
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename
   if (fs.existsSync(localBin)) {
     return { cmd: localBin, args: ['dev'] }
   }
-  return { cmd: 'npx', args: ['--yes', 'zpress', 'dev'] }
+  return null
 }
 
-const createDevServer = (deps: DevServerDeps): DevServer => {
+/**
+ * Parses the local URL from Rspress dev server stdout.
+ * Matches lines like: `➜  Local:    http://localhost:6174/`
+ */
+function parseLocalUrl(text: string): string | null {
+  const match = /Local:\s+(https?:\/\/[^\s/]+)\/?/.exec(text)
+  if (match) {
+    return match[1]
+  }
+  return null
+}
+
+/**
+ * Creates a managed dev server that spawns and monitors a `zpress dev` child process.
+ */
+function createDevServer(deps: DevServerDeps): DevServer {
   /*
    * VS Code extension state: mutable process reference is unavoidable
    * when managing an external child process lifecycle.
    */
-  const state = { process: null as ChildProcess | null, status: 'stopped' as ServerStatus }
+  const state: {
+    process: ChildProcess | null
+    status: ServerStatus
+    baseUrl: string | null
+    stdoutBuffer: string
+  } = {
+    process: null,
+    status: 'stopped',
+    baseUrl: null,
+    stdoutBuffer: '',
+  }
 
-  const setStatus = (status: ServerStatus): void => {
+  function setStatus(status: ServerStatus): void {
     state.status = status
     deps.statusBar.update(status)
   }
 
-  const start = (): void => {
-    if (state.process) return
+  function start(): void {
+    if (state.status !== 'stopped') {
+      return
+    }
+
+    const binary = findBinary(deps.workspaceRoot)
+    if (!binary) {
+      deps.outputChannel.appendLine(
+        '[zpress] zpress binary not found in node_modules. Run `npm install` or `pnpm install` first.'
+      )
+      deps.outputChannel.show(true)
+      return
+    }
 
     setStatus('starting')
+    state.baseUrl = null
+    state.stdoutBuffer = ''
     deps.outputChannel.show(true)
     deps.outputChannel.appendLine('[zpress] Starting dev server...')
 
-    const { cmd, args } = findBinary(deps.workspaceRoot)
-    const child = spawn(cmd, args as string[], {
+    /*
+     * Spread readonly args into a mutable array for spawn().
+     * Full process.env is passed intentionally — zpress dev needs PATH,
+     * NODE_PATH, npm/pnpm config vars, proxy settings, etc. to function.
+     */
+    const child = spawn(binary.cmd, [...binary.args], {
       cwd: deps.workspaceRoot,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: { ...process.env, FORCE_COLOR: '0' },
     })
 
+    /* spawn() returns synchronously — state.process is set before any async events fire */
     state.process = child
 
-    child.stdout?.on('data', (data: Buffer) => {
-      const text = data.toString()
-      deps.outputChannel.append(text)
-      if (text.includes(String(DEFAULT_PORT)) || text.includes('listening')) {
-        setStatus('running')
-        deps.onReady()
-      }
-    })
+    if (child.stdout) {
+      child.stdout.on('data', (data: Buffer) => {
+        const text = data.toString()
+        deps.outputChannel.append(text)
 
-    child.stderr?.on('data', (data: Buffer) => {
-      deps.outputChannel.append(data.toString())
-    })
+        /* Buffer all stdout until the URL is found — data events may split lines across chunks */
+        if (state.status === 'starting') {
+          state.stdoutBuffer += text
+          const url = parseLocalUrl(state.stdoutBuffer)
+          if (url) {
+            state.baseUrl = url
+            setStatus('running')
+            deps.onReady(url)
+          }
+        }
+      })
+    }
+
+    if (child.stderr) {
+      child.stderr.on('data', (data: Buffer) => {
+        deps.outputChannel.append(data.toString())
+      })
+    }
 
     child.on('close', (code) => {
+      /* Guard against stale close events from a previously killed child */
+      if (state.process !== child) {
+        return
+      }
       deps.outputChannel.appendLine(`[zpress] Dev server exited (code ${String(code)})`)
       state.process = null
+      state.baseUrl = null
+      state.stdoutBuffer = ''
       setStatus('stopped')
+      deps.onStopped()
     })
 
     child.on('error', (err) => {
+      if (state.process !== child) {
+        return
+      }
       deps.outputChannel.appendLine(`[zpress] Failed to start: ${err.message}`)
       state.process = null
+      state.baseUrl = null
+      state.stdoutBuffer = ''
       setStatus('stopped')
+      deps.onStopped()
     })
   }
 
-  const stop = (): void => {
-    if (!state.process) return
+  function stop(): void {
+    if (!state.process) {
+      return
+    }
     deps.outputChannel.appendLine('[zpress] Stopping dev server...')
-    state.process.kill('SIGTERM')
-    state.process = null
-    setStatus('stopped')
+    setStatus('stopping')
+    state.process.kill()
+    /* Do not null state.process here — the close handler clears it when the child actually exits */
   }
 
   return {
     start,
     stop,
     isRunning: () => state.status === 'running',
-    baseUrl: BASE_URL,
+    getBaseUrl: () => state.baseUrl,
     dispose: (): void => {
-      stop()
+      if (state.process) {
+        state.process.kill()
+        state.process = null
+      }
     },
   }
 }
 
-export { createDevServer, DEFAULT_PORT, BASE_URL }
+export { createDevServer }
 export type { DevServer }
