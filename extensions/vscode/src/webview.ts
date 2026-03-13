@@ -145,7 +145,7 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
       return
     }
 
-    const cspSource = state.panel.webview.cspSource
+    const { cspSource } = state.panel.webview
 
     if (state.currentStatus === 'stopped' || state.currentStatus === 'stopping') {
       state.panel.webview.html = getStoppedHtml(cspSource)
