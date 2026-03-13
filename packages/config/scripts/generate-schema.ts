@@ -20,7 +20,7 @@ const currentVersion = packageJson.version
 try {
   const jsonSchema = zodToJsonSchema(zpressConfigSchema, {
     name: 'ZpressConfig',
-    $refStrategy: 'none',
+    $refStrategy: 'root',
     target: 'jsonSchema7',
   })
 
