@@ -1,9 +1,12 @@
 /**
  * Zod schemas for zpress configuration validation.
+ *
+ * Note: Using 'zod/v3' import for compatibility with zod-to-json-schema@3.25.1
+ * which requires Zod v3 schema objects even when Zod v4 is installed as peer dependency.
+ * All schemas are redefined here using zod/v3 to avoid type incompatibilities.
  */
 
-import { themeConfigSchema } from '@zpress/theme'
-import { z } from 'zod'
+import { z } from 'zod/v3'
 
 // ── Frontmatter schema ───────────────────────────────────────
 
@@ -16,21 +19,14 @@ const frontmatterSchema = z
     sidebar: z.boolean().optional(),
     aside: z.union([z.boolean(), z.literal('left')]).optional(),
     outline: z
-      .union([z.literal(false), z.number(), z.array(z.number()).min(2).max(2), z.literal('deep')])
+      .union([z.literal(false), z.number(), z.tuple([z.number(), z.number()]), z.literal('deep')])
       .optional(),
     navbar: z.boolean().optional(),
     editLink: z.boolean().optional(),
     lastUpdated: z.boolean().optional(),
     footer: z.boolean().optional(),
     pageClass: z.string().optional(),
-    head: z
-      .array(
-        z
-          .array(z.union([z.string(), z.record(z.string(), z.string())]))
-          .min(2)
-          .max(2)
-      )
-      .optional(),
+    head: z.array(z.tuple([z.string(), z.record(z.string(), z.string())])).optional(),
   })
   .passthrough() // Allow additional unknown fields
 
@@ -109,6 +105,9 @@ const entrySchema: z.ZodType<unknown> = z.lazy(() =>
       iconColor: z.string().optional(),
       card: cardConfigSchema.optional(),
       isolated: z.boolean().optional(),
+      // Deprecated fields for backward compatibility
+      titleFrom: z.enum(['filename', 'heading', 'frontmatter', 'auto']).optional(),
+      titleTransform: z.function().optional(),
     })
     .strict()
 )
@@ -157,6 +156,37 @@ const openapiConfigSchema = z
     spec: z.string(),
     prefix: z.string(),
     title: z.string().optional(),
+  })
+  .strict()
+
+// ── Theme schema ─────────────────────────────────────────────
+
+const themeColorsSchema = z
+  .object({
+    brand: z.string().optional(),
+    brandLight: z.string().optional(),
+    brandDark: z.string().optional(),
+    brandSoft: z.string().optional(),
+    bg: z.string().optional(),
+    bgAlt: z.string().optional(),
+    bgElv: z.string().optional(),
+    bgSoft: z.string().optional(),
+    text1: z.string().optional(),
+    text2: z.string().optional(),
+    text3: z.string().optional(),
+    divider: z.string().optional(),
+    border: z.string().optional(),
+    homeBg: z.string().optional(),
+  })
+  .strict()
+
+const themeConfigSchema = z
+  .object({
+    name: z.string().default('base'),
+    colorMode: z.enum(['dark', 'light', 'toggle']).optional(),
+    switcher: z.boolean().optional(),
+    colors: themeColorsSchema.optional(),
+    darkColors: themeColorsSchema.optional(),
   })
   .strict()
 

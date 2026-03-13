@@ -362,7 +362,19 @@ interface ConfigError {
   }>
 }
 
-type ConfigErrorType = 'not_found' | 'parse_error' | 'validation_failed' | 'empty_sections'
+type ConfigErrorType =
+  | 'not_found'
+  | 'parse_error'
+  | 'validation_failed'
+  | 'empty_sections'
+  | 'missing_field'
+  | 'invalid_entry'
+  | 'invalid_section'
+  | 'invalid_field'
+  | 'invalid_icon'
+  | 'invalid_theme'
+  | 'duplicate_prefix'
+  | 'unknown'
 ```
 
 ### Handling Errors
