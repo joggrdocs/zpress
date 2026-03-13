@@ -24,12 +24,12 @@ function isMarkdownFile(filePath: string): boolean {
  * chokidar `FSWatcher` instance so the caller can close it on shutdown.
  * Returns `undefined` if there are no paths to watch.
  *
- * @param onConfigReload - Optional callback invoked after config reload and sync complete
+ * @param onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
  */
 export function createWatcher(
   initialConfig: ZpressConfig,
   paths: Paths,
-  onConfigReload?: () => void
+  onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
 ): FSWatcher | undefined {
   const { repoRoot } = paths
   const configFiles = CONFIG_EXTENSIONS.map((ext) => path.resolve(repoRoot, `zpress.config${ext}`))
@@ -137,7 +137,7 @@ export function createWatcher(
       consecutiveFailures = 0
       // Notify caller that config was reloaded and sync completed successfully
       if (didReloadConfig && onConfigReload) {
-        onConfigReload()
+        await onConfigReload(config)
       }
     } catch (error) {
       consecutiveFailures += 1

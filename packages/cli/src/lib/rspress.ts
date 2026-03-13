@@ -14,53 +14,84 @@ interface ServerOptions {
 }
 
 /**
- * Callback invoked when the dev server should be notified of config changes.
- * Currently logs a message prompting manual restart, as Rspress does not
- * support runtime config reloading.
+ * Server instance returned by Rspress dev() - allows closing the server.
  */
-export type OnConfigReload = () => void
+interface ServerInstance {
+  readonly close: () => Promise<void>
+}
+
+/**
+ * Callback invoked when the dev server should restart due to config changes.
+ */
+export type OnConfigReload = () => Promise<void>
 
 /**
  * Start the Rspress dev server with zpress configuration.
  *
- * Returns a callback that will be invoked when config changes are detected.
- * Currently, this logs a message to the user to manually restart the server,
- * as Rspress's dev() function does not support runtime config reloading.
- *
- * The server runs asynchronously and this function returns immediately with
- * the config reload callback.
+ * Returns a callback that will restart the server when invoked with updated config.
+ * The callback closes the current server instance and starts a new one with the
+ * fresh configuration values.
  *
  * @param options - Dev server configuration including config and paths
- * @returns A callback to invoke when config changes (currently logs restart prompt)
+ * @returns An async callback to invoke when config changes with new config (restarts server)
  */
-export function startDevServer(options: ServerOptions): OnConfigReload {
-  const rspressConfig = createRspressConfig(options)
+export async function startDevServer(options: ServerOptions): Promise<(newConfig: ZpressConfig) => Promise<void>> {
+  const { paths } = options
+  // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
+  let serverInstance: ServerInstance | null = null
 
-  // Start server asynchronously (non-blocking)
-  dev({
-    appDirectory: options.paths.repoRoot,
-    docDirectory: options.paths.contentDir,
-    config: rspressConfig,
-    configFilePath: '',
-    extraBuilderConfig: {
-      server: {
-        port: DEFAULT_PORT,
-      },
-    },
-  }).catch((error) => {
-    const errorMessage = (() => {
-      if (error instanceof Error) {
-        return error.message
+  async function startServer(config: ZpressConfig): Promise<void> {
+    const rspressConfig = createRspressConfig({ config, paths })
+    try {
+      serverInstance = await dev({
+        appDirectory: paths.repoRoot,
+        docDirectory: paths.contentDir,
+        config: rspressConfig,
+        configFilePath: '',
+        extraBuilderConfig: {
+          server: {
+            port: DEFAULT_PORT,
+          },
+        },
+      })
+    } catch (error) {
+      const errorMessage = (() => {
+        if (error instanceof Error) {
+          return error.message
+        }
+        return String(error)
+      })()
+      process.stderr.write(`Dev server error: ${errorMessage}\n`)
+      process.exit(1)
+    }
+  }
+
+  // Start initial server
+  await startServer(options.config)
+
+  // Return callback that restarts server with new config
+  return async (newConfig: ZpressConfig) => {
+    process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
+
+    // Close existing server
+    if (serverInstance) {
+      try {
+        await serverInstance.close()
+      } catch (error) {
+        const errorMessage = (() => {
+          if (error instanceof Error) {
+            return error.message
+          }
+          return String(error)
+        })()
+        process.stderr.write(`Error closing server: ${errorMessage}\n`)
       }
-      return String(error)
-    })()
-    process.stderr.write(`Dev server error: ${errorMessage}\n`)
-    process.exit(1)
-  })
+    }
 
-  // Return callback that will be invoked when config changes
-  return () => {
-    process.stdout.write('\n⚠️  Config changed — please restart dev server (Ctrl+C then `zpress dev`)\n\n')
+    // Start new server with fresh config
+    await startServer(newConfig)
+
+    process.stdout.write('✅ Dev server restarted\n\n')
   }
 }
 

@@ -142,6 +142,9 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
+      jiti:
+        specifier: ^2.6.1
+        version: 2.6.1
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
