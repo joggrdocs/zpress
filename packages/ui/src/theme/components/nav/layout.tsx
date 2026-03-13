@@ -19,6 +19,11 @@ const VSCODE_OVERRIDES = [
   '.rp-nav-menu__item { display: none !important; }',
   '.rp-social-links { display: none !important; }',
   '.rp-nav-hamburger { display: none !important; }',
+  /* Hide mobile navigation elements */
+  '.rp-nav-screen { display: none !important; }',
+  '.rp-nav-screen-menu { display: none !important; }',
+  '.rp-local-nav { display: none !important; }',
+  '.rp-appearance { display: none !important; }',
 ].join('\n')
 
 function useVscodeMode(): boolean {
