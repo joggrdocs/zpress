@@ -53,6 +53,14 @@ html[data-zp-theme='midnight'] {
 
   --rp-code-block-bg: #121212;
 
+  --zp-oas-get: #34d399;
+  --zp-oas-post: #60a5fa;
+  --zp-oas-put: #fbbf24;
+  --zp-oas-patch: #fbbf24;
+  --zp-oas-delete: #f87171;
+  --zp-oas-deprecated: var(--zp-c-text-3);
+  --zp-oas-required: #f87171;
+
   --rp-home-background-bg: #0f0f0f;
 }
 
@@ -91,6 +99,14 @@ html[data-zp-theme='midnight'].rp-dark {
   --rp-c-link: var(--rp-c-brand-light);
 
   --rp-code-block-bg: #0a0a0a;
+
+  --zp-oas-get: #4ade80;
+  --zp-oas-post: #93c5fd;
+  --zp-oas-put: #fcd34d;
+  --zp-oas-patch: #fcd34d;
+  --zp-oas-delete: #fca5a5;
+  --zp-oas-deprecated: var(--zp-c-text-3);
+  --zp-oas-required: #fca5a5;
 
   --rp-home-background-bg: #050505;
 }

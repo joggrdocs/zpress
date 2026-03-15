@@ -1,229 +1,495 @@
-# OpenAPI Support: Workspace-Level + Global
+# OpenAPI Support: Implementation Plan
 
-## Current State
+## Overview
 
-The codebase has **plumbing** for a single global `openapi` field on `ZpressConfig`, but the actual renderer is stubbed out with VitePress-era TODO comments. The `syncOpenAPI()` function in `packages/core/src/sync/openapi.ts` generates empty placeholder files. The sync engine at `packages/core/src/sync/index.ts:155-157` hardcodes an empty sidebar array and never calls `syncOpenAPI()`.
-
-## Example Added
-
-- **Spec file**: `examples/kitchen-sink/apps/api/openapi.json` — a realistic 3-tag (Users, Teams, Auth) spec with 8 operations, request/response schemas, and JWT security.
-- **Config updated**: `examples/kitchen-sink/zpress.config.ts` now shows both:
-  - **Global**: `openapi: { spec, prefix, title }` at root (existing type, just unused)
-  - **Workspace-level**: `openapi: { spec, prefix, title }` on the API `WorkspaceItem` (new field)
+Add OpenAPI documentation rendering to zpress — a custom sidebar + custom page layout for OpenAPI specs, scoped to workspace items (apps/packages). Uses `react-aria-components` for accessible headless primitives, styled with existing `--rp-*` / `--zp-*` CSS variables. The layout follows the industry-standard two-column pattern (spec on left, examples on right) used by Stripe, Scalar, and GitBook.
 
 ---
 
-## What Needs to Change
+## Architecture
 
-### 1. Types — `packages/core/src/types.ts`
+### Layout: Two-Column Operation Page
 
-**Add `openapi` to `WorkspaceItem`:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Sidebar (Rspress)          │  Main Content                  │
+│                            │                                │
+│ ▾ API Reference            │  ┌──────────┬───────────────┐  │
+│   Overview                 │  │  Spec    │  Examples     │  │
+│ ▾ Users                    │  │          │               │  │
+│   ● GET  List Users  ←     │  │ Summary  │ Request       │  │
+│   ● POST Create User       │  │ Params   │  curl ...     │  │
+│ ▾ Teams                    │  │ Body     │               │  │
+│   ● GET  List Teams        │  │ Resp     │ Response      │  │
+│   ● POST Create Team       │  │ Security │  { json }     │  │
+│ ▾ Auth                     │  │          │               │  │
+│   ● POST Login             │  └──────────┴───────────────┘  │
+│   ● POST Refresh Token     │                                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow
+
+```
+openapi.json
+    │
+    ▼
+syncOpenAPI()                    (packages/core — build time)
+    │
+    ├─► SidebarItem[]            (tag groups → operations)
+    │     └─► sidebar.json       (merged into multi-sidebar)
+    │
+    └─► PageData[]               (one .mdx per operation + index)
+          └─► .zpress/content/apps/api/reference/*.mdx
+                │
+                ▼
+          <OpenAPIOperation />   (packages/ui — runtime)
+                │
+                ├─► OperationHeader     (method badge + path + summary)
+                ├─► ParametersTable     (path/query/header params)
+                ├─► RequestBody         (schema + example)
+                ├─► ResponseList        (status codes + schemas)
+                ├─► SecurityBadges      (auth requirements)
+                └─► CodeSample          (curl/fetch examples)
+```
+
+### Dependency Additions
+
+| Package | Dep | Why |
+|---|---|---|
+| `packages/core` | `js-yaml` | Parse YAML OpenAPI specs |
+| `packages/core` | `@apidevtools/swagger-parser` | Resolve `$ref`s, validate spec structure |
+| `packages/ui` | `react-aria-components` | Headless accordion, select, tooltip, disclosure |
+| `packages/ui` | `openapi-sampler` | Generate example values from JSON Schema |
+
+---
+
+## Implementation Steps
+
+### Step 1: Config — Add `openapi` to Workspace type
+
+**Files:**
+- `packages/config/src/types.ts`
+- `packages/config/src/schema.ts`
+
+**Changes:**
+
+Add `openapi?: OpenAPIConfig` to the `Workspace` interface (the canonical type for apps/packages/workspace items):
 
 ```ts
-export interface WorkspaceItem {
+export interface Workspace {
   // ... existing fields ...
-
-  /**
-   * OpenAPI spec integration scoped to this workspace.
-   * Generates interactive API docs under the specified prefix.
-   * `spec` is relative to repo root. `prefix` should be under `docsPrefix`.
-   */
   readonly openapi?: OpenAPIConfig
 }
 ```
 
-No changes needed to `OpenAPIConfig` itself — the existing shape (`spec`, `prefix`, `title`) works for both global and workspace-level.
+Update the Zod schema in `schema.ts` — add `openapi: openapiConfigSchema.optional()` to `workspaceItemSchema` (or whatever the workspace item schema is named).
 
-**Consideration**: Should workspace-level `prefix` be required to start with `docsPrefix`? e.g. if `docsPrefix: '/apps/api'` then `prefix` must start with `/apps/api/`. This keeps API docs nested under their parent workspace sidebar. Enforcing this in validation prevents orphaned sidebar namespaces.
+**No changes to `OpenAPIConfig` itself** — the existing `{ spec, prefix, title }` shape works.
 
-### 2. Validation — `packages/core/src/define-config.ts`
+---
 
-**Add OpenAPI validation to `validateConfig()`:**
+### Step 2: Validation — Enforce OpenAPI config rules
 
+**Files:**
+- `packages/core/src/define-config.ts`
+
+**Rules:**
+- `spec` must be a non-empty string pointing to an existing file
+- `prefix` must start with `/`
+- Workspace-level `prefix` must start with the parent workspace's `prefix` (e.g., API app at `/apps/api` → OpenAPI prefix must be `/apps/api/reference` or similar)
+- No duplicate `prefix` values across all OpenAPI configs
+
+---
+
+### Step 3: Sync — Parse spec and generate pages + sidebar
+
+**Files:**
+- `packages/core/src/sync/openapi.ts` (new)
+- `packages/core/src/sync/index.ts` (wire in)
+- `packages/core/src/sync/sidebar/multi.ts` (implement stub)
+
+#### 3a. New `packages/core/src/sync/openapi.ts`
+
+**Responsibilities:**
+1. Read the spec file (JSON or YAML via `js-yaml`)
+2. Resolve all `$ref`s via `@apidevtools/swagger-parser`
+3. Extract operations from `paths[path][method]`
+4. Group operations by their first tag (fallback: "default")
+5. Generate one `.mdx` file per operation at `{contentDir}/{prefix}/{operationId}.mdx`
+6. Generate an `index.mdx` overview page at `{contentDir}/{prefix}/index.mdx`
+7. Return `{ sidebar: SidebarItem[], pages: PageData[] }`
+
+**Generated MDX per operation:**
+
+```mdx
+---
+title: List Users
+---
+
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  specPath="apps/api/openapi.json"
+  method="get"
+  path="/users"
+  operationId="listUsers"
+/>
 ```
-validateOpenAPIConfig(config.openapi)           // global
-validateWorkspaceOpenAPI(config.apps)            // per-app
-validateWorkspaceOpenAPI(config.packages)        // per-package
-validateWorkspaceOpenAPI(workspaceGroupItems)    // per-group-item
+
+The component receives the operation identifier and resolves the spec at build time via Rsbuild's JSON import. The spec JSON is copied into the content directory alongside the MDX files so the import path is stable.
+
+**Generated index.mdx (overview page):**
+
+```mdx
+---
+title: API Reference
+---
+
+import { OpenAPIOverview } from '@zpress/ui/theme'
+
+<OpenAPIOverview specPath="apps/api/openapi.json" />
 ```
 
-**Validation rules for `OpenAPIConfig`:**
-- `spec` is required (non-empty string)
-- `prefix` is required (must start with `/`)
-- No duplicate `prefix` values across all OpenAPI configs (global + all workspaces)
-- Workspace-level: `prefix` should start with the parent `docsPrefix`
-
-**Add to `validateWorkspaceItems()`:**
-- If `item.openapi` is present, validate its fields
-- Check `prefix` uniqueness against the global `openapi.prefix` and other workspace prefixes
-
-### 3. Rewrite the OpenAPI sync module — `packages/core/src/sync/openapi.ts`
-
-The current module generates VitePress Vue templates. It needs a full rewrite for Rspress/MDX. The core algorithm stays the same (parse spec → generate pages → build sidebar), but the output format changes.
-
-**Key changes:**
-
-| Current (VitePress) | Target (Rspress) |
-|---|---|
-| `[operationId].paths.js` (dynamic routes) | Individual `.mdx` files per operation |
-| Vue template rendering | MDX with React components |
-| Single global invocation | Called per-config (global + each workspace) |
-
-**New function signature:**
+**Sidebar output** (grouped by tag):
 
 ```ts
-interface SyncOpenAPIOptions {
-  readonly config: OpenAPIConfig
-  readonly ctx: SyncContext
-  /** Parent sidebar namespace (e.g. '/apps/api') — for workspace-scoped specs */
-  readonly parentPrefix?: string
-}
-
-function syncOpenAPI(options: SyncOpenAPIOptions): Promise<SyncOpenAPIResult>
-
-interface SyncOpenAPIResult {
-  readonly sidebar: readonly SidebarItem[]
-  readonly pages: readonly PageData[]
-}
+[
+  {
+    text: 'API Reference',
+    link: '/apps/api/reference',
+    items: [
+      {
+        text: 'Users',
+        collapsed: false,
+        items: [
+          { text: 'GET List Users',    link: '/apps/api/reference/list-users' },
+          { text: 'POST Create User',  link: '/apps/api/reference/create-user' },
+          { text: 'GET Get User',      link: '/apps/api/reference/get-user' },
+          { text: 'PATCH Update User', link: '/apps/api/reference/update-user' },
+          { text: 'DELETE Delete User', link: '/apps/api/reference/delete-user' },
+        ],
+      },
+      {
+        text: 'Teams',
+        collapsed: false,
+        items: [
+          { text: 'GET List Teams',         link: '/apps/api/reference/list-teams' },
+          { text: 'POST Create Team',       link: '/apps/api/reference/create-team' },
+          { text: 'GET List Team Members',  link: '/apps/api/reference/list-team-members' },
+        ],
+      },
+      {
+        text: 'Auth',
+        collapsed: false,
+        items: [
+          { text: 'POST Login',         link: '/apps/api/reference/login' },
+          { text: 'POST Refresh Token', link: '/apps/api/reference/refresh-token' },
+        ],
+      },
+    ],
+  },
+]
 ```
 
-**Per-operation page generation:**
-- Parse the spec (JSON or YAML — add YAML support via `yaml` or `gray-matter`)
-- For each `paths[path][method]` → generate `{prefix}/{operationId}.mdx`
-- Generate overview page at `{prefix}/index.mdx`
-- Return sidebar items grouped by tag + the generated page list
+#### 3b. Wire into `packages/core/src/sync/index.ts`
 
-**The generated MDX pages need a React component** to render the operation details. This is a UI concern (see item 6 below).
-
-### 4. Sync engine orchestration — `packages/core/src/sync/index.ts`
-
-**Replace the hardcoded empty array:**
+Replace the hardcoded empty array:
 
 ```ts
-// Current (line 155-157):
+// Before:
 const openapiSidebar: SidebarItem[] = []
 
-// New:
-const openapiResults = await syncAllOpenAPI(config, ctx)
+// After:
+const openapiResults = await syncAllOpenAPI({ config, ctx })
 ```
 
-**New `syncAllOpenAPI` function** collects all OpenAPI configs and runs them:
+New `syncAllOpenAPI` function:
+1. Collect all `OpenAPIConfig` sources: global `config.openapi` + each workspace item's `.openapi`
+2. Call `syncOpenAPI()` for each
+3. Append generated `PageData[]` to the page list
+4. Pass `OpenAPISidebarEntry[]` to `buildMultiSidebar`
 
-```
-1. If config.openapi exists → syncOpenAPI({ config: config.openapi, ctx })
-2. For each app/package/workspace-group item with .openapi →
-     syncOpenAPI({ config: item.openapi, ctx, parentPrefix: item.docsPrefix })
-3. Collect all results → merge pages into the page list, merge sidebars
-```
+#### 3c. Implement `buildOpenapiSidebarEntries` in `sidebar/multi.ts`
 
-**Integration points in sync():**
-- After step 2 (collect pages) — append OpenAPI-generated pages to `sectionPages`
-- Pass all OpenAPI sidebar results into `buildMultiSidebar()`
-
-### 5. Multi-sidebar — `packages/core/src/sync/sidebar/multi.ts`
-
-**Current**: `buildMultiSidebar` takes a single `openapiSidebar` array and mounts it under `config.openapi.prefix`.
-
-**New**: Accept an array of `{ prefix, sidebar }` tuples:
+Change signature from `SidebarItem[]` to `OpenAPISidebarEntry[]`:
 
 ```ts
 interface OpenAPISidebarEntry {
   readonly prefix: string
   readonly sidebar: readonly SidebarItem[]
 }
-```
 
-Update `buildOpenapiSidebarEntries` to iterate over the array instead of a single config:
-
-```ts
 function buildOpenapiSidebarEntries(
   entries: readonly OpenAPISidebarEntry[]
-): Record<string, readonly SidebarItem[]> {
-  return Object.fromEntries(
-    entries.flatMap(({ prefix, sidebar }) => [
-      [`${prefix}/`, [...sidebar]],
-      [prefix, [...sidebar]],
-    ])
-  )
-}
+): Record<string, readonly SidebarItem[]>
 ```
 
-For workspace-level specs, the sidebar should nest under the workspace's isolated sidebar namespace. If the API app's `docsPrefix` is `/apps/api` and the OpenAPI `prefix` is `/apps/api/reference`, the sidebar key `/apps/api/reference/` gets its own namespace — Rspress will match it based on the longest-prefix rule (keys are already sorted by length descending).
+Each entry produces two sidebar keys (`{prefix}/` and `{prefix}`) for Rspress route matching.
 
-### 6. UI — Operation page renderer
+---
 
-This is the biggest piece of net-new work. The `syncOpenAPI` module generates MDX pages, but those pages need a React component to render operation details (method badge, path, parameters table, request/response body schemas, etc.).
+### Step 4: UI Components — Operation page renderer
 
-**Options:**
-
-| Approach | Pros | Cons |
-|---|---|---|
-| **A. Inline MDX generation** — generate full markdown tables/sections per operation, no React component needed | Simple, no UI package changes | Verbose generated output, harder to style, no interactivity (try-it) |
-| **B. Thin React component** — generate MDX that imports `<OperationPage spec={...} operationId="..." />`, component renders everything | Clean generated pages, centralized styling, path to interactive features | Requires new component in `@zpress/ui`, spec must be importable |
-| **C. Full Rspress plugin** — use Rspress's plugin system to inject routes/pages at build time | Most "native" to Rspress | Higher coupling to Rspress internals, more complex |
-
-**Recommendation: Approach B** — it matches the existing pattern (the UI package already provides theme components that get imported into generated MDX). The component can start simple (static rendering of method, path, params, schemas) and grow toward interactivity later.
-
-**Component location:** `packages/ui/src/theme/components/openapi/operation-page.tsx`
-
-**Data flow:** The generated MDX imports the JSON spec and passes it + operationId to the component:
-
-```mdx
-import spec from '../openapi.json'
-import { OperationPage } from '@zpress/ui/openapi'
-
-<OperationPage spec={spec} operationId="listUsers" />
-```
-
-### 7. Workspace synthesis — `packages/core/src/sync/workspace.ts`
-
-**No structural changes needed.** The `workspaceItemToEntry` function converts workspace items to entries. OpenAPI pages are generated separately (not through the entry tree) — they get their own sidebar namespace and their own pages. The workspace item's regular docs and its OpenAPI docs coexist as sibling sidebar namespaces.
-
-However, we should consider adding the OpenAPI section as a **child entry** of the workspace item in the sidebar. For example, the API workspace sidebar would show:
+**Files (all new under `packages/ui/src/theme/components/openapi/`):**
 
 ```
-API (landing)
-├── Overview
-├── Authentication
-├── Endpoints
-└── API Reference (→ links to /apps/api/reference)
+openapi/
+├── index.ts                        # barrel export
+├── operation.tsx + operation.css    # <OpenAPIOperation /> — full operation page
+├── overview.tsx + overview.css      # <OpenAPIOverview /> — spec overview/index page
+├── method-badge.tsx                 # HTTP method badge (GET/POST/PATCH/DELETE)
+├── parameters-table.tsx             # Path, query, header params table
+├── request-body.tsx                 # Request body schema + example
+├── response-list.tsx                # Response status codes + schemas
+├── security-badges.tsx              # Auth requirement badges
+├── schema-viewer.tsx                # Recursive JSON Schema renderer (accordion)
+├── code-sample.tsx                  # Generated curl/fetch code samples
+├── openapi.css                      # Shared OpenAPI styles
+└── utils.ts                         # Spec parsing helpers, example generation
 ```
 
-This can be done by injecting a link entry during `synthesizeWorkspaceSections`:
+#### Component Details
 
+**`<OpenAPIOperation />`** — Top-level page component
+
+Props:
 ```ts
-// If workspace item has openapi, add a link entry pointing to the reference section
-if (item.openapi) {
-  items.push({
-    text: item.openapi.title ?? 'API Reference',
-    link: item.openapi.prefix,
-  })
+interface OpenAPIOperationProps {
+  readonly specPath: string
+  readonly method: string
+  readonly path: string
+  readonly operationId: string
 }
+```
+
+Renders the two-column layout:
+- **Left column (spec):** `OperationHeader` → `ParametersTable` → `RequestBody` → `ResponseList` → `SecurityBadges`
+- **Right column (examples):** `CodeSample` → response example JSON
+
+Uses Rspress's built-in `Tabs`/`Tab` for language switching in code samples. Uses Rspress's `Badge` for status codes. Uses `react-aria-components` `Disclosure` for collapsible schema sections.
+
+**`<OpenAPIOverview />`** — Index page for the API reference
+
+Renders:
+- API title, version, description (from `info`)
+- Server URLs
+- Authentication overview
+- Tag list with operation counts (each links to first operation in tag)
+
+**`<MethodBadge />`** — Colored HTTP method indicator
+
+```
+GET    → green    (--zp-openapi-get)
+POST   → blue     (--zp-openapi-post)
+PUT    → amber    (--zp-openapi-put)
+PATCH  → amber    (--zp-openapi-patch)
+DELETE → red      (--zp-openapi-delete)
+```
+
+**`<ParametersTable />`** — Renders path/query/header parameters
+
+Grouped by `in` value. Each row shows: name, type, required badge, description, default value. Uses a simple `<table>` (inherits Rspress table styles).
+
+**`<RequestBody />`** — Request body with content type tabs
+
+Uses Rspress `Tabs` to switch between content types (e.g., `application/json` vs `multipart/form-data`). Shows the schema via `<SchemaViewer />` and a generated example via `openapi-sampler`.
+
+**`<ResponseList />`** — All responses, grouped by status code
+
+Uses `react-aria-components` `Disclosure` to collapse/expand each status code. Shows response description, headers, and body schema.
+
+**`<SchemaViewer />`** — Recursive JSON Schema tree
+
+The core rendering primitive. Handles:
+- Primitive types (string, number, boolean, integer)
+- Objects (properties rendered as nested disclosures)
+- Arrays (shows item schema)
+- `oneOf` / `anyOf` / `allOf` (tabs or union display)
+- `enum` values
+- `required` markers
+- `description` rendered inline
+- `example` values
+- Circular `$ref` detection (shows "Circular reference" badge)
+
+Uses `react-aria-components` `Disclosure` for nested object expansion. Max depth: 6 levels, then shows "[Expand]" link.
+
+**`<CodeSample />`** — Auto-generated request examples
+
+Generates `curl` and `fetch` snippets from the operation's path, method, parameters, and request body. Uses Rspress's `Tabs` for language switching and `CodeBlock` (or `CodeBlockRuntime`) for syntax highlighting.
+
+**`<SecurityBadges />`** — Auth requirements
+
+Shows which security schemes apply (e.g., "Bearer Auth (JWT)") with a lock icon. Links to the overview page's auth section.
+
+#### CSS Architecture
+
+**New file: `openapi/openapi.css`**
+
+All classes prefixed with `openapi-` following the existing BEM-like convention:
+
+```css
+.openapi-operation { }
+.openapi-operation-columns { }
+.openapi-operation-spec { }
+.openapi-operation-examples { }
+.openapi-method-badge { }
+.openapi-method-badge--get { }
+.openapi-method-badge--post { }
+.openapi-params-table { }
+.openapi-schema-viewer { }
+.openapi-schema-property { }
+.openapi-schema-property-name { }
+.openapi-schema-property-type { }
+.openapi-response-item { }
+.openapi-code-sample { }
+.openapi-security-badge { }
+```
+
+**New CSS variables** (defined per-theme in existing theme CSS files):
+
+```css
+/* Light/dark tokens added to each theme file */
+--zp-openapi-get: #16a34a;
+--zp-openapi-post: #2563eb;
+--zp-openapi-put: #d97706;
+--zp-openapi-patch: #d97706;
+--zp-openapi-delete: #dc2626;
+--zp-openapi-deprecated: var(--zp-c-text-3);
+--zp-openapi-required: #dc2626;
+--zp-openapi-col-spec-width: 55%;
+--zp-openapi-col-example-width: 45%;
 ```
 
 ---
 
-## File Change Summary
+### Step 5: Theme exports — Register components
 
-| File | Change |
-|---|---|
-| `packages/core/src/types.ts` | Add `openapi?: OpenAPIConfig` to `WorkspaceItem` |
-| `packages/core/src/define-config.ts` | Add OpenAPI validation (global + workspace) |
-| `packages/core/src/sync/openapi.ts` | Full rewrite: MDX generation, per-operation pages, multi-config support |
-| `packages/core/src/sync/index.ts` | Orchestrate global + workspace OpenAPI sync, pass results to sidebar/pages |
-| `packages/core/src/sync/sidebar/multi.ts` | Accept array of OpenAPI sidebar entries instead of single array |
-| `packages/core/src/sync/workspace.ts` | Inject OpenAPI reference link into workspace sidebar entries |
-| `packages/ui/src/theme/components/openapi/` | New: `OperationPage` React component for rendering operation details |
-| `packages/ui/src/plugin.ts` | Register OpenAPI component for MDX imports |
+**Files:**
+- `packages/ui/src/theme/index.tsx`
 
-## Open Questions
+Add to the barrel exports:
 
-1. **YAML support?** The current parser is JSON-only. Should we add YAML parsing for OpenAPI specs? Most real-world specs are YAML. Adding `js-yaml` or leveraging `gray-matter` (already a dep) would be straightforward.
+```ts
+export {
+  OpenAPIOperation,
+  OpenAPIOverview,
+} from './components/openapi'
+```
 
-2. **Spec format validation?** Should we validate the spec is a valid OpenAPI 3.x document, or just trust the structure and fail gracefully on missing fields? A lightweight approach: check `openapi` version field exists and `paths` is an object.
+Add CSS import:
 
-3. **Try-it / interactive?** The `OperationPage` component could eventually support a "Try it" panel (send real requests). This is out of scope for initial implementation but influences the component architecture (spec data needs to be fully available client-side).
+```ts
+import './components/openapi/openapi.css'
+```
 
-4. **Multiple specs per workspace?** The current design is one spec per workspace item. Some services expose multiple APIs (REST + GraphQL, or versioned APIs). Supporting `openapi: OpenAPIConfig | OpenAPIConfig[]` adds flexibility but complicates sidebar generation.
+**Note:** No changes to `plugin.ts` — the components are imported directly in the generated MDX via `@zpress/ui/theme`, which is already aliased by `config.ts`.
 
-5. **Remote specs?** Should `spec` support URLs (e.g. `https://api.acme.dev/openapi.json`) in addition to local file paths? This would require a fetch step during sync.
+---
+
+### Step 6: Theme CSS — Add OpenAPI tokens to each theme
+
+**Files:**
+- `packages/ui/src/theme/styles/themes/base.css`
+- `packages/ui/src/theme/styles/themes/midnight.css`
+- `packages/ui/src/theme/styles/themes/arcade.css`
+
+Add the `--zp-openapi-*` color tokens to each theme's light and dark selectors. Each theme gets its own flavor:
+
+- **base** — standard semantic colors (green/blue/amber/red)
+- **midnight** — softer, blue-shifted variants
+- **arcade** — neon-tinted variants matching the retro palette
+
+---
+
+### Step 7: Kitchen-sink example — Wire up the API app
+
+**Files:**
+- `examples/kitchen-sink/zpress.config.ts`
+
+Add `openapi` to the API app entry:
+
+```ts
+{
+  title: 'API',
+  icon: 'devicon:hono',
+  description: 'Hono REST API with typed routes',
+  tags: ['hono', 'typescript'],
+  prefix: '/apps/api',
+  discovery: {
+    from: 'docs/*.md',
+    title: { from: 'auto' },
+    sort: 'alpha',
+  },
+  openapi: {
+    spec: 'apps/api/openapi.json',
+    prefix: '/apps/api/reference',
+    title: 'API Reference',
+  },
+},
+```
+
+**Expected result:**
+
+The API app sidebar becomes:
+
+```
+API
+├── Authentication
+├── Endpoints
+├── Overview
+└── API Reference →
+      ├── Overview (index)
+      ├── Users
+      │   ├── GET  List Users
+      │   ├── POST Create User
+      │   ├── GET  Get User
+      │   ├── PATCH Update User
+      │   └── DELETE Delete User
+      ├── Teams
+      │   ├── GET  List Teams
+      │   ├── POST Create Team
+      │   └── GET  List Team Members
+      └── Auth
+          ├── POST Login
+          └── POST Refresh Token
+```
+
+Clicking "GET List Users" renders the two-column operation page with parameters, response schemas, and a curl example.
+
+---
+
+## Implementation Order
+
+| Phase | Steps | Packages | Description |
+|---|---|---|---|
+| **1. Plumbing** | 1, 2 | `config`, `core` | Types, schema, validation |
+| **2. Sync engine** | 3a, 3b, 3c | `core` | Spec parsing, page gen, sidebar |
+| **3. UI components** | 4, 5, 6 | `ui` | React components, CSS |
+| **4. Integration** | 7 | `examples` | Kitchen-sink wiring, manual test |
+
+Phases 1–2 can be tested independently (verify sidebar.json output, verify .mdx files are generated). Phase 3 is the bulk of the visual work. Phase 4 is validation.
+
+---
+
+## Decisions Made
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Rendering approach | Custom components (Approach B from prior plan) | No headless OpenAPI React lib exists; full theme integration |
+| Headless primitives | `react-aria-components` | Accessible, truly unstyled, proven in this domain |
+| Layout style | Two-column (spec + examples) | Industry standard (Stripe, Scalar, GitBook) |
+| Spec parsing | `@apidevtools/swagger-parser` + `js-yaml` | MIT licensed, handles `$ref` resolution |
+| Example generation | `openapi-sampler` | MIT licensed, generates realistic examples from JSON Schema |
+| Page generation | One `.mdx` per operation | Clean URLs, individual sidebar entries, SEO-friendly |
+| Sidebar grouping | By tag | Matches how most APIs organize endpoints |
+| Code samples | Auto-generated curl + fetch | No external dependency, covers 90% of use cases |
+| CSS approach | Plain CSS with `--zp-openapi-*` tokens | Matches existing zpress pattern, zero framework dep |
+
+## Open Questions (Deferred)
+
+1. **Try-it panel** — interactive request sending. Out of scope for v1, but component architecture supports adding it later via `react-aria` dialog + form primitives.
+2. **Multiple specs per workspace** — `openapi: OpenAPIConfig[]`. Keep singular for v1, revisit if needed.
+3. **Remote spec URLs** — `spec: 'https://...'`. Keep local-only for v1.
+4. **Webhook support** — OpenAPI 3.1 webhooks. Skip for v1, add later.
+5. **Search integration** — index operation descriptions in Rspress search. Deferred.

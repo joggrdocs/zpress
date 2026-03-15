@@ -27,6 +27,8 @@ import './styles/overrides/home.css'
 import './styles/overrides/home-card.css'
 import './styles/overrides/section-card.css'
 import './styles/overrides/vscode.css'
+// OpenAPI component styles
+import './components/openapi/openapi.css'
 
 // Re-export everything from the original Rspress theme
 // (theme-original avoids circular resolution when used inside a themeDir)
@@ -54,6 +56,11 @@ export type { TechIconEntry, TechIconTableProps } from './components/shared/tech
 export { Icon } from './components/shared/icon'
 export { BrowserWindow } from './components/shared/browser-window'
 export type { BrowserWindowProps } from './components/shared/browser-window'
+
+export { OpenAPIOperation } from './components/openapi'
+export type { OpenAPIOperationProps } from './components/openapi'
+export { OpenAPIOverview } from './components/openapi'
+export type { OpenAPIOverviewProps } from './components/openapi'
 
 // Home page overrides — shadow the wildcard re-exports from theme-original
 export { HomeFeature } from './components/home/feature'

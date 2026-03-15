@@ -23,10 +23,11 @@ export default defineConfig({
       description: 'Hono REST API with typed routes',
       tags: ['hono', 'typescript'],
       prefix: '/apps/api',
-      discovery: {
-        from: 'docs/*.md',
-        title: { from: 'auto' },
-        sort: 'alpha',
+      openapi: {
+        spec: 'apps/api/openapi.json',
+        prefix: '/apps/api/reference',
+        title: 'API Reference',
+        sidebarStyle: 'method-path',
       },
     },
   ],

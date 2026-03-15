@@ -12,13 +12,14 @@ import type { Section, ZpressConfig } from '../types.ts'
 import { copyPage } from './copy.ts'
 import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
+import { syncAllOpenAPI } from './openapi.ts'
 import { discoverPlanningPages } from './planning.ts'
 import { resolveEntries } from './resolve/index.ts'
 import { buildSourceMap } from './rewrite-links.ts'
 import { generateNav } from './sidebar/index.ts'
 import { injectLandingPages } from './sidebar/inject.ts'
 import { buildMultiSidebar } from './sidebar/multi.ts'
-import type { PageData, ResolvedEntry, SidebarItem, SyncContext } from './types.ts'
+import type { PageData, ResolvedEntry, SyncContext } from './types.ts'
 import { enrichWorkspaceCards, synthesizeWorkspaceSections } from './workspace.ts'
 
 export interface SyncResult {
@@ -123,10 +124,11 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 2.5 Discover planning pages (hidden — not in sidebar/nav)
   const planningPages = await discoverPlanningPages(ctx)
 
-  const openapiSidebar: SidebarItem[] = []
+  // 2.6 Sync OpenAPI specs
+  const openapiResult = await syncAllOpenAPI(ctx)
 
-  // 3. Copy/generate all pages (sections + home + planning)
-  const allPages = [...pages, ...planningPages]
+  // 3. Copy/generate all pages (sections + home + planning + openapi)
+  const allPages = [...pages, ...planningPages, ...openapiResult.pages]
 
   // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
@@ -160,7 +162,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     .otherwise(() => Promise.resolve(0))
 
   // 6. Generate sidebar + nav
-  const sortedSidebar = buildMultiSidebar(resolved, openapiSidebar)
+  const sortedSidebar = buildMultiSidebar(resolved, openapiResult.sidebar)
   const nav = generateNav(config, resolved)
 
   await fs.writeFile(
