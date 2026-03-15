@@ -16,6 +16,9 @@ import './styles/overrides/rspress.css'
 import './styles/themes/base.css'
 import './styles/themes/midnight.css'
 import './styles/themes/arcade.css'
+// arcade-fx.css is intentionally separate from arcade.css:
+// arcade.css = color palette tokens, arcade-fx.css = visual effects
+// (border trace, neon pulse, CRT scanlines, etc.) scoped to [data-zp-theme='arcade']
 import './styles/themes/arcade-fx.css'
 import './styles/overrides/details.css'
 import './styles/overrides/scrollbar.css'

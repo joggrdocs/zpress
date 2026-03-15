@@ -14,6 +14,8 @@
  *   3. [data-zp-ready] → hard removed (display none)
  */
 
+/* Warning: uses html pseudo-elements which are globally scoped.
+   Avoid defining html::after in theme CSS to prevent conflicts. */
 html::after {
   content: attr(data-zp-loader-text);
   position: fixed;

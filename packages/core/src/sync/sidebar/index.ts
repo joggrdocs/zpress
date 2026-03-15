@@ -95,6 +95,7 @@ function findFirstLink(entry: ResolvedEntry): string | undefined {
     const mapped = entry.items.map(findFirstLink)
     return mapped.find(Boolean)
   }
+  return undefined
 }
 
 // ── Private helpers ───────────────────────────────────────────
@@ -120,7 +121,12 @@ function resolveLink(entry: ResolvedEntry): string | undefined {
   return findFirstLink(entry)
 }
 
-function resolveChildren(entry: ResolvedEntry): RspressNavItem[] | undefined {
+/**
+ * Resolve children for isolated nav dropdowns (one level deep).
+ * Only isolated sections produce dropdown children — nested sub-items
+ * within those children are intentionally flattened to { text, link }.
+ */
+function resolveChildren(entry: ResolvedEntry): readonly RspressNavItem[] | undefined {
   if (entry.isolated && entry.items && entry.items.length > 0) {
     return entry.items
       .filter((child) => !child.hidden)
@@ -142,7 +148,9 @@ function resolveChildLink(child: ResolvedEntry): string | undefined {
   return findFirstLink(child)
 }
 
-function maybeChildren(children: RspressNavItem[] | undefined): { items?: RspressNavItem[] } {
+function maybeChildren(
+  children: readonly RspressNavItem[] | undefined,
+): { items?: readonly RspressNavItem[] } {
   if (children && children.length > 0) {
     return { items: children }
   }

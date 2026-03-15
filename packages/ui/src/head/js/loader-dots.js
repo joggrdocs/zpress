@@ -8,10 +8,12 @@
  * Stores the interval ID on window so ThemeProvider can clear it
  * when dismissing the loader.
  */
-var _zl = ['loading', 'loading.', 'loading..', 'loading...']
-var _zi = 0
-document.documentElement.dataset.zpLoaderText = _zl[0]
-window.__zpDotsInterval = setInterval(function () {
-  _zi = (_zi + 1) % 4
-  document.documentElement.dataset.zpLoaderText = _zl[_zi]
-}, 300)
+;(function () {
+  var frames = ['loading', 'loading.', 'loading..', 'loading...']
+  var idx = 0
+  document.documentElement.dataset.zpLoaderText = frames[0]
+  window.__zpDotsInterval = setInterval(function () {
+    idx = (idx + 1) % 4
+    document.documentElement.dataset.zpLoaderText = frames[idx]
+  }, 300)
+})()

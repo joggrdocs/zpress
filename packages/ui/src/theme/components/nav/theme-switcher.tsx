@@ -38,11 +38,13 @@ function applyTheme(theme: ThemeOption): void {
   localStorage.setItem('zpress-theme', theme.name)
 
   if (theme.defaultColorMode === 'dark') {
-    html.classList.add('rp-dark')
+    // 'rp-dark' is Rspress's dark mode class; 'dark' is added for Tailwind compatibility
+    html.classList.add('rp-dark', 'dark')
     html.dataset.dark = 'true'
     localStorage.setItem('rspress-theme-appearance', 'dark')
   } else if (theme.defaultColorMode === 'light') {
-    html.classList.remove('rp-dark')
+    // Remove both Rspress and Tailwind dark mode classes
+    html.classList.remove('rp-dark', 'dark')
     html.dataset.dark = 'false'
     localStorage.setItem('rspress-theme-appearance', 'light')
   }

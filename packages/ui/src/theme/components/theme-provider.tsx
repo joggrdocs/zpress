@@ -120,6 +120,13 @@ const LOADER_FADE_MS = 200
  *
  * Returns a cleanup function that cancels pending timers.
  */
+function clearDotsInterval(): void {
+  const dotsInterval = (globalThis as Record<string, unknown>).__zpDotsInterval
+  if (typeof dotsInterval === 'number') {
+    clearInterval(dotsInterval)
+  }
+}
+
 function dismissLoader(html: HTMLElement): () => void {
   const fadeTimer = setTimeout(() => {
     html.classList.add('zp-loader-fade')
@@ -128,16 +135,14 @@ function dismissLoader(html: HTMLElement): () => void {
   const removeTimer = setTimeout(() => {
     html.dataset.zpReady = 'true'
     html.classList.remove('zp-loader-fade')
-    // Clear the dots animation interval started by the inline head script
-    const dotsInterval = (globalThis as Record<string, unknown>).__zpDotsInterval
-    if (typeof dotsInterval === 'number') {
-      clearInterval(dotsInterval)
-    }
+    clearDotsInterval()
   }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
 
   return () => {
     clearTimeout(fadeTimer)
     clearTimeout(removeTimer)
+    html.classList.remove('zp-loader-fade')
+    clearDotsInterval()
   }
 }
 
@@ -164,7 +169,7 @@ export function ThemeProvider(): React.ReactElement | null {
 
     // 2. Force color mode if not toggle
     if (colorMode === 'dark') {
-      html.classList.add('rp-dark')
+      html.classList.add('rp-dark', 'dark')
       html.dataset.dark = 'true'
       try {
         localStorage.setItem('rspress-theme-appearance', 'dark')
@@ -172,7 +177,7 @@ export function ThemeProvider(): React.ReactElement | null {
         // storage unavailable
       }
     } else if (colorMode === 'light') {
-      html.classList.remove('rp-dark')
+      html.classList.remove('rp-dark', 'dark')
       html.dataset.dark = 'false'
       try {
         localStorage.setItem('rspress-theme-appearance', 'light')
@@ -218,12 +223,8 @@ export function ThemeProvider(): React.ReactElement | null {
       }
     }
 
-    // 5. Dismiss loading overlay
-    const cancelLoader = dismissLoader(html)
-
-    return () => {
-      cancelLoader()
-    }
+    // 5. Dismiss loading overlay (no dark-color observer needed)
+    return dismissLoader(html)
   }, [])
 
   return null

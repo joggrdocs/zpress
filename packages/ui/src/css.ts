@@ -27,8 +27,10 @@ const LOADER_CSS = BACKDROP_CSS + DOTS_LOADER_CSS
  * should provide their own :root fallback in their external CSS.
  */
 export function getThemeCss(themeName: string): string {
-  const theme = themeName as BuiltInThemeName
-  const themeColors = THEME_CSS_MAP[theme]
+  if (!Object.hasOwn(THEME_CSS_MAP, themeName)) {
+    return LOADER_CSS
+  }
+  const themeColors = THEME_CSS_MAP[themeName as BuiltInThemeName]
   if (themeColors) {
     return themeColors + LOADER_CSS
   }

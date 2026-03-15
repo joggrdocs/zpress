@@ -8,6 +8,8 @@
  *   3. [data-zp-ready] → hard removed (display none)
  */
 
+/* Warning: uses html pseudo-elements which are globally scoped.
+   Avoid defining html::before in theme CSS to prevent conflicts. */
 html::before {
   content: '';
   position: fixed;

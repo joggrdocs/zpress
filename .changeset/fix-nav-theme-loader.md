@@ -1,4 +1,5 @@
 ---
+'@zpress/config': patch
 '@zpress/core': patch
 '@zpress/theme': patch
 '@zpress/ui': patch

@@ -16,21 +16,32 @@ const DIST = resolve(ROOT, 'dist/head')
 
 const SUPPORTED = new Set(['.css', '.js'])
 
+function minifyEntry(srcPath, distPath) {
+  const ext = extname(srcPath)
+  const content = readFileSync(srcPath, 'utf8')
+  try {
+    const { code } = transformSync(content, { loader: ext.slice(1), minify: true })
+    writeFileSync(distPath, code)
+  } catch (err) {
+    process.stderr.write(`[zpress] Failed to minify ${srcPath}: ${err.message}\n`)
+    process.exit(1)
+  }
+}
+
 function processDir(src, dist) {
   mkdirSync(dist, { recursive: true })
-  for (const entry of readdirSync(src, { withFileTypes: true })) {
+  readdirSync(src, { withFileTypes: true }).forEach((entry) => {
     const srcPath = resolve(src, entry.name)
     const distPath = resolve(dist, entry.name)
     if (entry.isDirectory()) {
       processDir(srcPath, distPath)
-      continue
+      return
     }
-    const ext = extname(entry.name)
-    if (!SUPPORTED.has(ext)) continue
-    const content = readFileSync(srcPath, 'utf8')
-    const { code } = transformSync(content, { loader: ext.slice(1), minify: true })
-    writeFileSync(distPath, code)
-  }
+    if (!SUPPORTED.has(extname(entry.name))) {
+      return
+    }
+    minifyEntry(srcPath, distPath)
+  })
 }
 
 processDir(SRC, DIST)

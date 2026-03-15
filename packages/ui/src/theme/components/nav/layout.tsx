@@ -14,10 +14,14 @@ function readVscodeMode(): boolean {
   if (globalThis.window === undefined) {
     return false
   }
-  const params = new URLSearchParams(globalThis.location.search)
-  return (
-    params.get('env') === 'vscode' || globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
-  )
+  try {
+    const params = new URLSearchParams(globalThis.location.search)
+    return (
+      params.get('env') === 'vscode' || globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
+    )
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -31,11 +35,18 @@ function readVscodeMode(): boolean {
 function useVscodeMode(): boolean {
   const [active] = useState<boolean>(readVscodeMode)
 
+  // Persist vscode mode across SPA route changes — the inline head script
+  // sets sessionStorage on first load via URL param, but client-side
+  // navigation may lose the param. This ensures the flag survives.
   useEffect(() => {
     if (!active) {
       return
     }
-    sessionStorage.setItem('zpress-env', 'vscode')
+    try {
+      sessionStorage.setItem('zpress-env', 'vscode')
+    } catch {
+      // sessionStorage may be blocked in some environments
+    }
   }, [active])
 
   return active

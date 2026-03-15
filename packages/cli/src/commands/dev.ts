@@ -30,9 +30,10 @@ export const devCommand = command({
     if (configErr) {
       ctx.logger.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
-        configErr.errors.map((err) => {
+        // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
+        configErr.errors.forEach((err) => {
           const path = err.path.join('.')
-          return ctx.logger.error(`  ${path}: ${err.message}`)
+          ctx.logger.error(`  ${path}: ${err.message}`)
         })
       }
       process.exit(1)

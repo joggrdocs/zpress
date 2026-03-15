@@ -78,9 +78,10 @@ export function createWatcher(
         if (configErr) {
           cliLogger.error(`Config reload failed: ${configErr.message}`)
           if (configErr.errors && configErr.errors.length > 0) {
-            configErr.errors.map((err) => {
+            // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
+            configErr.errors.forEach((err) => {
               const pathStr = err.path.join('.')
-              return cliLogger.error(`  ${pathStr}: ${err.message}`)
+              cliLogger.error(`  ${pathStr}: ${err.message}`)
             })
           }
           return
@@ -115,6 +116,8 @@ export function createWatcher(
         } else {
           const shouldReload = pendingReloadConfig
           pendingReloadConfig = null
+          // Intentionally not awaited — queues the next sync cycle without
+          // blocking the finally block. Errors are caught by triggerSync's own try/catch.
           triggerSync(shouldReload)
         }
       }
@@ -124,12 +127,22 @@ export function createWatcher(
   const debouncedSync = debounce(() => triggerSync(false), 150)
   const debouncedConfigSync = debounce(() => triggerSync(true), 150)
 
-  function isConfigFile(filename: string): boolean {
-    return configFileNames.has(filename)
+  function isConfigFile(filename: string, filePath: string): boolean {
+    if (!configFileNames.has(filename)) {
+      return false
+    }
+    // Only treat config files at the repo root as actual config changes,
+    // not nested files (e.g. test fixtures) with the same basename.
+    const dir = path.dirname(filePath)
+    return dir === '.'
   }
 
   // Native recursive watcher — single FSEvents subscription on macOS,
-  // single inotify recursive watch on Linux (Node 24+).
+  // single inotify recursive watch on Linux (Node 22+).
+  // Note: fs.watch does NOT follow symlinks — symlinked doc directories
+  // will not trigger change events (unlike the previous chokidar watcher).
+  // _event ('rename' | 'change') is intentionally discarded — all changes
+  // trigger the same debounced re-sync regardless of event type.
   const watcher = watch(repoRoot, { recursive: true }, (_event, filename) => {
     if (!filename) {
       return
@@ -141,7 +154,7 @@ export function createWatcher(
 
     const basename = path.basename(filename)
 
-    if (isConfigFile(basename)) {
+    if (isConfigFile(basename, filename)) {
       cliLogger.info(`Config changed: ${basename}`)
       debouncedConfigSync()
       return

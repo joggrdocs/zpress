@@ -118,6 +118,7 @@ function buildColorModeJs(colorMode: string): string {
   if (colorMode === 'light') {
     return COLOR_MODE_LIGHT_JS
   }
+  // 'toggle' mode — no forced color mode; Rspress controls the toggle natively
   return ''
 }
 
