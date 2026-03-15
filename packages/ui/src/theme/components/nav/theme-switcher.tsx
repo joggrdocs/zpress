@@ -17,8 +17,22 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
   { name: 'base', label: 'Base', swatch: '#a78bfa', defaultColorMode: 'toggle' },
   { name: 'midnight', label: 'Midnight', swatch: '#60a5fa', defaultColorMode: 'dark' },
   { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark' },
-  { name: 'arcade-fx', label: 'Arcade FX', swatch: '#ff00ff', defaultColorMode: 'dark' },
 ]
+
+const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
+
+/**
+ * Validate a stored theme name, rejecting unknown values.
+ */
+function sanitizeThemeName(raw: string | null): string {
+  if (!raw) {
+    return 'base'
+  }
+  if (VALID_THEME_NAMES.has(raw)) {
+    return raw
+  }
+  return 'base'
+}
 
 /**
  * Build the className string for a theme option button.
@@ -39,13 +53,15 @@ function applyTheme(theme: ThemeOption): void {
   localStorage.setItem('zpress-theme', theme.name)
 
   if (theme.defaultColorMode === 'dark') {
-    html.classList.add('rp-dark')
+    // 'rp-dark' is Rspress's dark mode class; 'dark' is added for Tailwind compatibility
+    html.classList.add('rp-dark', 'dark')
     html.dataset.dark = 'true'
-    localStorage.setItem('rspress-theme', 'dark')
+    localStorage.setItem('rspress-theme-appearance', 'dark')
   } else if (theme.defaultColorMode === 'light') {
-    html.classList.remove('rp-dark')
+    // Remove both Rspress and Tailwind dark mode classes
+    html.classList.remove('rp-dark', 'dark')
     html.dataset.dark = 'false'
-    localStorage.setItem('rspress-theme', 'light')
+    localStorage.setItem('rspress-theme-appearance', 'light')
   }
 }
 
@@ -56,11 +72,11 @@ function applyTheme(theme: ThemeOption): void {
 export function ThemeSwitcher(): React.ReactElement | null {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTheme, setActiveTheme] = useState(() => {
-    if (typeof globalThis === 'undefined') {
+    if (globalThis.window === undefined) {
       return 'base'
     }
     try {
-      return localStorage.getItem('zpress-theme') || 'base'
+      return sanitizeThemeName(globalThis.localStorage.getItem('zpress-theme'))
     } catch {
       return 'base'
     }

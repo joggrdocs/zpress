@@ -1,0 +1,45 @@
+/**
+ * Loading text with animated dots — "loading..." in center of viewport.
+ *
+ * The text content is driven by JS (loader-dots.js) which cycles the
+ * `data-zp-loader-text` attribute. CSS reads the attribute value
+ * via `attr()`. This approach works cross-browser — unlike animating
+ * the CSS `content` property via @keyframes, which only works in
+ * Chromium.
+ *
+ * Uses a fixed-width container so the dots append without shifting
+ * the text. Lifecycle mirrors loader-backdrop.css:
+ *   1. Visible by default (opacity 1)
+ *   2. .zp-loader-fade → opacity transitions to 0 over 200ms
+ *   3. [data-zp-ready] → hard removed (display none)
+ */
+
+/* Warning: uses html pseudo-elements which are globally scoped.
+   Avoid defining html::after in theme CSS to prevent conflicts. */
+html::after {
+  content: attr(data-zp-loader-text);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 8em;
+  margin-left: -4em;
+  margin-top: -0.5em;
+  text-align: left;
+  color: var(--zp-c-text-2, #888);
+  font-family: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+html.zp-loader-fade::after {
+  opacity: 0;
+}
+
+html[data-zp-ready]::after {
+  display: none;
+}

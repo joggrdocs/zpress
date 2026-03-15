@@ -1,0 +1,48 @@
+/**
+ * Critical CSS for the "arcade" theme.
+ *
+ * Injected inline in <head> to prevent FOUC. Must match the :root
+ * block in theme/styles/themes/arcade.css.
+ */
+
+:root {
+  --zp-c-brand-1: #00ff88;
+  --zp-c-brand-2: #00cc6a;
+  --zp-c-brand-3: #00aa55;
+  --zp-c-brand-soft: rgba(0, 255, 136, 0.14);
+  --zp-c-bg: #0d0d1a;
+  --zp-c-bg-alt: #10102a;
+  --zp-c-bg-elv: #141433;
+  --zp-c-bg-soft: #18183d;
+  --zp-c-bg-icon: #2a2a55;
+  --zp-c-text-1: #e0ffe0;
+  --zp-c-text-2: rgba(224, 255, 224, 0.72);
+  --zp-c-text-3: rgba(224, 255, 224, 0.48);
+  --zp-c-divider: #1a1a40;
+  --zp-c-border: #252560;
+  --zp-c-gutter: #10102a;
+  --zp-code-block-bg: #10102a;
+  --zp-button-brand-bg: #00aa55;
+  --zp-button-brand-hover-bg: #00cc6a;
+  --zp-button-brand-active-bg: #008844;
+  --zp-button-brand-text: #0d0d1a;
+  --rp-c-brand: #00ff88;
+  --rp-c-brand-light: #66ffbb;
+  --rp-c-brand-lighter: #99ffcc;
+  --rp-c-brand-dark: #00cc6a;
+  --rp-c-brand-darker: #00aa55;
+  --rp-c-brand-tint: rgba(0, 255, 136, 0.14);
+  --rp-home-background-bg: #0d0d1a;
+  --rp-c-bg: #0d0d1a;
+  --rp-c-bg-soft: #18183d;
+  --rp-c-text-1: #e0ffe0;
+  --rp-c-text-2: rgba(224, 255, 224, 0.72);
+  --rp-c-text-3: rgba(224, 255, 224, 0.48);
+  --rp-c-divider: #1a1a40;
+}
+
+html,
+body {
+  background-color: var(--zp-c-bg);
+  color: var(--zp-c-text-1);
+}

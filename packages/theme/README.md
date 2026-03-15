@@ -9,7 +9,7 @@ This package provides theme-related types, built-in theme definitions, and Zod s
 ## Features
 
 - **Type-safe theme definitions** with `LiteralUnion` for extensibility
-- **Built-in themes**: `base`, `midnight`, `arcade`, `arcade-fx`
+- **Built-in themes**: `base`, `midnight`, `arcade`
 - **Icon color types** with autocomplete support
 - **Zod schemas** for runtime validation
 - **Utility functions** for theme resolution and validation
@@ -45,7 +45,7 @@ const customColor: IconColor = 'my-brand-color' // ✓ Also valid
 import { THEME_NAMES, isBuiltInTheme } from '@zpress/theme'
 
 console.log(THEME_NAMES)
-// ['base', 'midnight', 'arcade', 'arcade-fx']
+// ['base', 'midnight', 'arcade']
 
 isBuiltInTheme('midnight') // true
 isBuiltInTheme('custom') // false

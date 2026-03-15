@@ -7,7 +7,8 @@ import type { BuiltInThemeName, ThemeColors, ThemeName, ZpressConfig } from '@zp
 import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 
-import { getCriticalCss } from './critical-css.ts'
+import { getThemeCss } from './css.ts'
+import { readJs } from './head/read.ts'
 import { zpressPlugin } from './plugin.ts'
 
 interface CreateRspressConfigOptions {
@@ -96,6 +97,45 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
   return {}
 }
 
+const COLOR_MODE_DARK_JS = readJs('js/color-mode-dark.js')
+const COLOR_MODE_LIGHT_JS = readJs('js/color-mode-light.js')
+const VSCODE_DETECT_JS = readJs('js/vscode-detect.js')
+const LOADER_DOTS_JS = readJs('js/loader-dots.js')
+
+interface HeadScriptOptions {
+  readonly colorMode: string
+  readonly themeName: string
+}
+
+/**
+ * Generate the color mode fragment of the inline head script.
+ * Reads from pre-minified JS asset files.
+ */
+function buildColorModeJs(colorMode: string): string {
+  if (colorMode === 'dark') {
+    return COLOR_MODE_DARK_JS
+  }
+  if (colorMode === 'light') {
+    return COLOR_MODE_LIGHT_JS
+  }
+  // 'toggle' mode — no forced color mode; Rspress controls the toggle natively
+  return ''
+}
+
+/**
+ * Build the raw JS body for the inline head script (no wrapping tags).
+ *
+ * Handles three concerns synchronously, before React hydration:
+ * 1. Force color mode — sets localStorage and toggles rp-dark class
+ * 2. Set data-zp-theme — enables theme-scoped CSS immediately
+ * 3. Detect vscode env — sets data-zpress-env so static vscode.css applies
+ */
+function buildHeadScriptBody(options: HeadScriptOptions): string {
+  const colorModeJs = buildColorModeJs(options.colorMode)
+  const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
+  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join('')
+}
+
 /**
  * Translate zpress config + sync engine output into a complete
  * Rspress configuration object.
@@ -114,14 +154,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const themeColors = resolveThemeColors(config)
   const themeDarkColors = resolveThemeDarkColors(config)
 
-  const criticalCss = getCriticalCss(themeName)
-
-  const headElements = (() => {
-    if (criticalCss) {
-      return [`<style data-zpress-critical>${criticalCss}</style>`]
-    }
-    return []
-  })()
+  const themeCss = getThemeCss(themeName)
+  const headScriptBody = buildHeadScriptBody({ colorMode, themeName })
 
   return {
     root: paths.contentDir,
@@ -142,8 +176,6 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     plugins: [zpressPlugin()],
 
-    head: headElements,
-
     builderConfig: {
       ...(() => {
         if (logLevel) {
@@ -151,6 +183,23 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
         }
         return {}
       })(),
+      html: {
+        tags: [
+          {
+            tag: 'style',
+            children: themeCss,
+            attrs: { 'data-zpress-theme-css': true },
+            append: false,
+            head: true,
+          },
+          {
+            tag: 'script',
+            children: `(function(){${headScriptBody}})()`,
+            append: false,
+            head: true,
+          },
+        ],
+      },
       resolve: {
         alias: {
           // Allow generated MDX files in .zpress/content/ to import

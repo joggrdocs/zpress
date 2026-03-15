@@ -1,58 +1,46 @@
-import { existsSync } from 'node:fs'
+import { watch } from 'node:fs'
 import path from 'node:path'
 
 import { cliLogger } from '@kidd-cli/core/logger'
-import type { ZpressConfig, Section, Paths } from '@zpress/core'
-import { loadConfig, hasGlobChars, sync } from '@zpress/core'
-import type { FSWatcher } from 'chokidar'
-import { watch } from 'chokidar'
+import type { ZpressConfig, Paths } from '@zpress/core'
+import { loadConfig, sync } from '@zpress/core'
 import { debounce } from 'es-toolkit'
-import { match } from 'ts-pattern'
 
 const CONFIG_EXTENSIONS = ['.ts', '.mts', '.cts', '.js', '.mjs', '.cjs', '.json'] as const
 
 const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
 
-const MAX_DISPLAY_PATHS = 3
+/**
+ * Directories to ignore — any event whose path contains one of these
+ * segments is silently dropped.
+ */
+const IGNORED_DIRS = new Set(['node_modules', '.git', '.zpress', 'bundle', 'dist', '.turbo'])
 
 function isMarkdownFile(filePath: string): boolean {
   return MARKDOWN_EXTENSIONS.some((ext) => filePath.endsWith(ext))
 }
 
 /**
- * Find the nearest existing ancestor directory for a given path.
- * Chokidar cannot watch non-existent paths, but can detect when missing
- * subdirectories appear under a watched parent directory.
- *
- * @param targetPath - The path to normalize (may not exist)
- * @param fallbackRoot - Fallback root if no ancestors exist
- * @returns The nearest existing ancestor directory path
+ * Check whether any path segment is in the ignored set.
  */
-function nearestExistingAncestor(targetPath: string, fallbackRoot: string): string {
-  // oxlint-disable-next-line functional/no-let -- iterative ancestor search
-  let current = targetPath
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: checking if path exists
-  if (existsSync(current)) {
-    return current
-  }
-  // Walk up parent directories until we find one that exists
-  // oxlint-disable-next-line functional/no-loop-statements -- acceptable for iterative directory traversal
-  while (current !== path.dirname(current)) {
-    current = path.dirname(current)
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: checking if path exists
-    if (existsSync(current)) {
-      return current
-    }
-  }
-  return fallbackRoot
+function isIgnored(filePath: string): boolean {
+  return filePath.split(path.sep).some((segment) => IGNORED_DIRS.has(segment))
+}
+
+/**
+ * Closeable handle returned by createWatcher.
+ */
+interface WatcherHandle {
+  close(): void
 }
 
 /**
  * Create a file watcher that re-syncs documentation on changes.
  *
- * Watches markdown/mdx files and the zpress config file. Returns the
- * chokidar `FSWatcher` instance so the caller can close it on shutdown.
- * Returns `undefined` if there are no paths to watch.
+ * Uses Node.js native fs.watch with recursive:true which on macOS
+ * creates a single FSEvents subscription — one file descriptor for
+ * the entire tree. Filtering happens in the callback, not at the
+ * OS level, so there are zero EMFILE concerns.
  *
  * @param onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
  */
@@ -60,38 +48,13 @@ export function createWatcher(
   initialConfig: ZpressConfig,
   paths: Paths,
   onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
-): FSWatcher | undefined {
+): WatcherHandle {
   const { repoRoot } = paths
-  const configFiles = CONFIG_EXTENSIONS.map((ext) => path.resolve(repoRoot, `zpress.config${ext}`))
+  const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `zpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
-  const planningDir = path.resolve(repoRoot, '.planning')
-  // Normalize content paths to nearest existing ancestors (Chokidar limitation with non-existent paths)
-  const contentPaths = extractWatchPaths(config.sections, repoRoot).map((p) =>
-    nearestExistingAncestor(p, repoRoot)
-  )
-  const initialWatchPaths = [
-    ...contentPaths,
-    nearestExistingAncestor(planningDir, repoRoot),
-    ...configFiles,
-  ]
-  // Deduplicate initial paths
-  const uniqueInitialPaths = [...new Set(initialWatchPaths)]
 
-  if (uniqueInitialPaths.length === 0) {
-    cliLogger.warn('No source paths to watch')
-    return
-  }
-
-  const relativePaths = uniqueInitialPaths.map((p) => path.relative(repoRoot, p))
-  const pathsMessage = match(relativePaths.length <= MAX_DISPLAY_PATHS)
-    .with(true, () => relativePaths.join(', '))
-    .otherwise(
-      () =>
-        `${relativePaths.slice(0, MAX_DISPLAY_PATHS).join(', ')} and ${relativePaths.length - MAX_DISPLAY_PATHS} more`
-    )
-
-  cliLogger.info(`Watching ${uniqueInitialPaths.length} paths: ${pathsMessage}`)
+  cliLogger.info(`Watching ${repoRoot}`)
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
   let syncing = false
@@ -100,70 +63,9 @@ export function createWatcher(
   // oxlint-disable-next-line functional/no-let -- bounded retry counter to prevent unbounded recursive sync
   let consecutiveFailures = 0
   const MAX_CONSECUTIVE_FAILURES = 5
-  // oxlint-disable-next-line functional/no-let -- tracks currently watched paths for dynamic updates
-  let currentWatchPaths = new Set(uniqueInitialPaths)
-
-  const watcher = watch(uniqueInitialPaths, {
-    ignoreInitial: true,
-    ignored: ['**/node_modules/**', '**/.git/**', '**/.zpress/**', '**/bundle/**'],
-    awaitWriteFinish: {
-      stabilityThreshold: 100,
-      pollInterval: 50,
-    },
-    // Limit recursion depth as a safety guard
-    depth: 99,
-  })
-
-  function updateWatchPaths(newConfig: ZpressConfig): void {
-    const newContentPaths = extractWatchPaths(newConfig.sections, repoRoot)
-    // Normalize each content path to its nearest existing ancestor
-    // (Chokidar cannot watch non-existent paths, but can detect subdirs when they appear)
-    const normalizedContentPaths = newContentPaths.map((p) => nearestExistingAncestor(p, repoRoot))
-    const newWatchPaths = [
-      ...normalizedContentPaths,
-      // Normalize planning dir to nearest existing ancestor
-      nearestExistingAncestor(planningDir, repoRoot),
-      ...configFiles,
-    ]
-    // Deduplicate normalized paths
-    const newSet = new Set(newWatchPaths)
-
-    // Add new paths
-    const toAdd = [...newSet].filter((p) => !currentWatchPaths.has(p))
-    if (toAdd.length > 0) {
-      watcher.add(toAdd)
-      const relativeAdded = toAdd.map((p) => path.relative(repoRoot, p))
-      const addedMessage = match(relativeAdded.length <= MAX_DISPLAY_PATHS)
-        .with(true, () => relativeAdded.join(', '))
-        .otherwise(
-          () =>
-            `${relativeAdded.slice(0, MAX_DISPLAY_PATHS).join(', ')} and ${relativeAdded.length - MAX_DISPLAY_PATHS} more`
-        )
-      cliLogger.info(`Added ${toAdd.length} watch paths: ${addedMessage}`)
-    }
-
-    // Remove old paths (excluding config files which should always be watched)
-    const configFileSet = new Set(configFiles)
-    const toRemove = [...currentWatchPaths].filter((p) => !newSet.has(p) && !configFileSet.has(p))
-    if (toRemove.length > 0) {
-      watcher.unwatch(toRemove)
-      const relativeRemoved = toRemove.map((p) => path.relative(repoRoot, p))
-      const removedMessage = match(relativeRemoved.length <= MAX_DISPLAY_PATHS)
-        .with(true, () => relativeRemoved.join(', '))
-        .otherwise(
-          () =>
-            `${relativeRemoved.slice(0, MAX_DISPLAY_PATHS).join(', ')} and ${relativeRemoved.length - MAX_DISPLAY_PATHS} more`
-        )
-      cliLogger.info(`Removed ${toRemove.length} watch paths: ${removedMessage}`)
-    }
-
-    currentWatchPaths = newSet
-  }
 
   async function triggerSync(reloadConfig: boolean) {
     if (syncing) {
-      // Preserve the most demanding pending value: if any pending call wants
-      // a config reload, keep it as true even if a later call passes false.
       pendingReloadConfig = pendingReloadConfig === true || reloadConfig
       return
     }
@@ -176,21 +78,20 @@ export function createWatcher(
         if (configErr) {
           cliLogger.error(`Config reload failed: ${configErr.message}`)
           if (configErr.errors && configErr.errors.length > 0) {
-            configErr.errors.map((err) => {
+            // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
+            configErr.errors.forEach((err) => {
               const pathStr = err.path.join('.')
-              return cliLogger.error(`  ${pathStr}: ${err.message}`)
+              cliLogger.error(`  ${pathStr}: ${err.message}`)
             })
           }
           return
         }
         config = newConfig
         cliLogger.info('Config reloaded')
-        updateWatchPaths(newConfig)
         didReloadConfig = true
       }
       await sync(config, { paths })
       consecutiveFailures = 0
-      // Notify caller that config was reloaded and sync completed successfully
       if (didReloadConfig && onConfigReload) {
         await onConfigReload(config)
       }
@@ -215,6 +116,8 @@ export function createWatcher(
         } else {
           const shouldReload = pendingReloadConfig
           pendingReloadConfig = null
+          // Intentionally not awaited — queues the next sync cycle without
+          // blocking the finally block. Errors are caught by triggerSync's own try/catch.
           triggerSync(shouldReload)
         }
       }
@@ -224,90 +127,50 @@ export function createWatcher(
   const debouncedSync = debounce(() => triggerSync(false), 150)
   const debouncedConfigSync = debounce(() => triggerSync(true), 150)
 
-  const configFileSet = new Set(configFiles)
-
-  function isConfigFile(filePath: string): boolean {
-    return configFileSet.has(path.resolve(filePath))
+  function isConfigFile(filename: string, filePath: string): boolean {
+    if (!configFileNames.has(filename)) {
+      return false
+    }
+    // Only treat config files at the repo root as actual config changes,
+    // not nested files (e.g. test fixtures) with the same basename.
+    const dir = path.dirname(filePath)
+    return dir === '.'
   }
 
-  watcher.on('change', (filePath) => {
-    if (isConfigFile(filePath)) {
-      cliLogger.info(`Config changed: ${path.basename(filePath)}`)
+  // Native recursive watcher — single FSEvents subscription on macOS,
+  // single inotify recursive watch on Linux (Node 22+).
+  // Note: fs.watch does NOT follow symlinks — symlinked doc directories
+  // will not trigger change events (unlike the previous chokidar watcher).
+  // _event ('rename' | 'change') is intentionally discarded — all changes
+  // trigger the same debounced re-sync regardless of event type.
+  const watcher = watch(repoRoot, { recursive: true }, (_event, filename) => {
+    if (!filename) {
+      return
+    }
+
+    if (isIgnored(filename)) {
+      return
+    }
+
+    const basename = path.basename(filename)
+
+    if (isConfigFile(basename, filename)) {
+      cliLogger.info(`Config changed: ${basename}`)
       debouncedConfigSync()
       return
     }
-    if (!isMarkdownFile(filePath)) {
+
+    if (!isMarkdownFile(filename)) {
       return
     }
-    cliLogger.step(`Changed: ${path.relative(repoRoot, filePath)}`)
+
+    cliLogger.step(`Changed: ${filename}`)
     debouncedSync()
   })
 
-  watcher.on('add', (filePath) => {
-    if (!isMarkdownFile(filePath)) {
-      return
-    }
-    cliLogger.step(`Added: ${path.relative(repoRoot, filePath)}`)
-    debouncedSync()
-  })
-
-  watcher.on('unlink', (filePath) => {
-    if (!isMarkdownFile(filePath)) {
-      return
-    }
-    cliLogger.step(`Removed: ${path.relative(repoRoot, filePath)}`)
-    debouncedSync()
-  })
-
-  return watcher
-}
-
-/**
- * Extract watch paths from the config tree.
- * - Glob entries → watch the parent directory (chokidar recurses)
- * - Single-file entries → watch just the file (avoids watching huge parent dirs)
- * Deduplicates: files inside an already-watched directory are dropped.
- */
-function extractWatchPaths(entries: readonly Section[], repoRoot: string): string[] {
-  const dirs = new Set<string>()
-  const files = new Set<string>()
-
-  function walk(items: readonly Section[]) {
-    // oxlint-disable-next-line no-unused-expressions -- walk is a private recursive helper inside extractWatchPaths; using .map for traversal with controlled mutation of the enclosing dirs/files sets is acceptable here
-    items.map((entry) => {
-      if (entry.from) {
-        if (hasGlobChars(entry.from)) {
-          // Glob: watch the directory containing the glob
-          const [beforeGlob] = entry.from.split('*')
-          const dir = match(beforeGlob.endsWith('/'))
-            .with(true, () => beforeGlob.slice(0, -1))
-            .otherwise(() => path.dirname(beforeGlob))
-          dirs.add(path.resolve(repoRoot, dir))
-        } else {
-          // Single file: watch just the file to avoid watching its entire parent tree
-          files.add(path.resolve(repoRoot, entry.from))
-        }
-      }
-      if (entry.items) {
-        walk(entry.items)
-      }
-      return null
-    })
+  return {
+    close() {
+      watcher.close()
+    },
   }
-
-  walk(entries)
-
-  // Deduplicate directories: remove children of already-watched parents
-  const sortedDirs = [...dirs].toSorted()
-  const dedupedDirs = sortedDirs.filter((dir, index) => {
-    const previousDirs = sortedDirs.slice(0, index)
-    return !previousDirs.some((parent) => dir.startsWith(`${parent}${path.sep}`))
-  })
-
-  // Drop individual files that are already inside a watched directory
-  const extraFiles = [...files].filter(
-    (file) => !dedupedDirs.some((dir) => file.startsWith(dir + path.sep))
-  )
-
-  return [...dedupedDirs, ...extraFiles]
 }

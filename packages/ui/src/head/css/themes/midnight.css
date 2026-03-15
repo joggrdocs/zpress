@@ -1,0 +1,48 @@
+/**
+ * Critical CSS for the "midnight" theme.
+ *
+ * Injected inline in <head> to prevent FOUC. Must match the
+ * html[data-zp-theme='midnight'] block in theme/styles/themes/midnight.css.
+ */
+
+:root {
+  --zp-c-brand-1: #60a5fa;
+  --zp-c-brand-2: #3b82f6;
+  --zp-c-brand-3: #2563eb;
+  --zp-c-brand-soft: rgba(96, 165, 250, 0.14);
+  --zp-c-bg: #0f0f0f;
+  --zp-c-bg-alt: #121212;
+  --zp-c-bg-elv: #161616;
+  --zp-c-bg-soft: #1a1a1a;
+  --zp-c-bg-icon: #2a2a2a;
+  --zp-c-text-1: #f0f0f0;
+  --zp-c-text-2: rgba(240, 240, 240, 0.72);
+  --zp-c-text-3: rgba(240, 240, 240, 0.48);
+  --zp-c-divider: #1e1e1e;
+  --zp-c-border: #282828;
+  --zp-c-gutter: #121212;
+  --zp-code-block-bg: #121212;
+  --zp-button-brand-bg: #2563eb;
+  --zp-button-brand-hover-bg: #3b82f6;
+  --zp-button-brand-active-bg: #1d4ed8;
+  --zp-button-brand-text: #f0f0f0;
+  --rp-c-brand: #60a5fa;
+  --rp-c-brand-light: #93c5fd;
+  --rp-c-brand-lighter: #bfdbfe;
+  --rp-c-brand-dark: #3b82f6;
+  --rp-c-brand-darker: #2563eb;
+  --rp-c-brand-tint: rgba(96, 165, 250, 0.14);
+  --rp-home-background-bg: #0f0f0f;
+  --rp-c-bg: #0f0f0f;
+  --rp-c-bg-soft: #1a1a1a;
+  --rp-c-text-1: #f0f0f0;
+  --rp-c-text-2: rgba(240, 240, 240, 0.72);
+  --rp-c-text-3: rgba(240, 240, 240, 0.48);
+  --rp-c-divider: #1e1e1e;
+}
+
+html,
+body {
+  background-color: var(--zp-c-bg);
+  color: var(--zp-c-text-1);
+}

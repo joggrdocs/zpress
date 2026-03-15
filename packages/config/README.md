@@ -52,7 +52,7 @@ export default defineConfig({
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json",
   "title": "My Documentation",
   "theme": {
     "name": "arcade",
@@ -70,7 +70,7 @@ export default defineConfig({
 ### YAML Config with Schema
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json
 
 title: My Documentation
 theme:
@@ -165,7 +165,7 @@ Add `$schema` property to your `zpress.config.json`:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json"
+  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json"
 }
 ```
 
@@ -174,7 +174,7 @@ Add `$schema` property to your `zpress.config.json`:
 Add a modeline comment to your `zpress.config.yaml`:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.1.0/packages/config/schemas/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json
 ```
 
 ### Versioned Schemas
@@ -314,7 +314,7 @@ function configErrorFromZod(zodError: z.ZodError): ConfigError
 
 Re-exported from `@zpress/theme`:
 
-- `THEME_NAMES` - Array of built-in theme names: `['base', 'midnight', 'arcade', 'arcade-fx']`
+- `THEME_NAMES` - Array of built-in theme names: `['base', 'midnight', 'arcade']`
 - `COLOR_MODES` - Array of valid color modes: `['dark', 'light', 'toggle']`
 - `ICON_COLORS` - Array of built-in icon colors: `['purple', 'blue', 'green', 'amber', 'cyan', 'red', 'pink', 'slate']`
 

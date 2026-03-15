@@ -11,12 +11,7 @@ import type { BuiltInIconColor, BuiltInThemeName, ColorMode } from './types.ts'
 /**
  * All built-in theme names — used for validation and iteration.
  */
-export const THEME_NAMES: readonly BuiltInThemeName[] = [
-  'base',
-  'midnight',
-  'arcade',
-  'arcade-fx',
-] as const
+export const THEME_NAMES: readonly BuiltInThemeName[] = ['base', 'midnight', 'arcade'] as const
 
 /**
  * All valid color modes — used for validation.
@@ -50,7 +45,6 @@ export function resolveDefaultColorMode(theme: BuiltInThemeName): ColorMode {
     .with('base', () => 'toggle' as const)
     .with('midnight', () => 'dark' as const)
     .with('arcade', () => 'dark' as const)
-    .with('arcade-fx', () => 'dark' as const)
     .exhaustive()
 }
 

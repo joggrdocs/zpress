@@ -6,82 +6,48 @@ import { BranchTag } from './branch-tag'
 import { ThemeSwitcher } from './theme-switcher'
 import { VscodeTag } from './vscode-tag'
 
-const VSCODE_OVERRIDES = `
-/* Hide left sidebar and its placeholder */
-html[data-zpress-env="vscode"] .rp-doc-layout__sidebar {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-doc-layout__sidebar-placeholder {
-  display: none;
-}
-
-/* Hide right TOC and its placeholder */
-html[data-zpress-env="vscode"] .rp-doc-layout__outline {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-doc-layout__outline-placeholder {
-  display: none;
-}
-
-/* Center content at 1200px max */
-html[data-zpress-env="vscode"] .rp-doc-layout__doc {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Hide nav items, social links, hamburger */
-html[data-zpress-env="vscode"] .rp-nav-menu__item {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-social-links {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-nav-hamburger {
-  display: none;
-}
-
-/* Hide mobile navigation elements */
-html[data-zpress-env="vscode"] .rp-nav-screen {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-nav-screen-menu {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-local-nav {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-appearance {
-  display: none;
-}
-html[data-zpress-env="vscode"] .rp-doc-layout__menu {
-  display: none;
-}
-`
-
-function useVscodeMode(): boolean {
-  const [active, setActive] = useState(false)
-
-  useEffect(() => {
+/**
+ * Detect vscode mode synchronously from sessionStorage and URL params.
+ * Returns false during SSR — client initializes correctly via lazy useState.
+ */
+function readVscodeMode(): boolean {
+  if (globalThis.window === undefined) {
+    return false
+  }
+  try {
     const params = new URLSearchParams(globalThis.location.search)
-    const isVscode =
+    return (
       params.get('env') === 'vscode' || globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
+    )
+  } catch {
+    return false
+  }
+}
 
-    if (!isVscode) {
+/**
+ * Returns true when the page is loaded in VS Code preview mode.
+ *
+ * Initializes synchronously from sessionStorage/URL so the VscodeTag
+ * renders in the same paint as the rest of the nav. The data-zpress-env
+ * attribute and static vscode.css are applied by the inline head script
+ * before React mounts, so no dynamic style injection is needed here.
+ */
+function useVscodeMode(): boolean {
+  const [active] = useState<boolean>(readVscodeMode)
+
+  // Persist vscode mode across SPA route changes — the inline head script
+  // sets sessionStorage on first load via URL param, but client-side
+  // navigation may lose the param. This ensures the flag survives.
+  useEffect(() => {
+    if (!active) {
       return
     }
-
-    globalThis.sessionStorage.setItem('zpress-env', 'vscode')
-    setActive(true)
-    document.documentElement.dataset.zpressEnv = 'vscode'
-
-    const style = document.createElement('style')
-    style.textContent = VSCODE_OVERRIDES
-    document.head.append(style)
-    return () => {
-      style.remove()
-      delete document.documentElement.dataset.zpressEnv
+    try {
+      sessionStorage.setItem('zpress-env', 'vscode')
+    } catch {
+      // sessionStorage may be blocked in some environments
     }
-  }, [])
+  }, [active])
 
   return active
 }
