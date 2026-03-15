@@ -10,9 +10,9 @@ import { readCss } from './head/read.ts'
  */
 
 const THEME_CSS_MAP: Record<BuiltInThemeName, string> = {
-  base: readCss('css/critical-base.css'),
-  midnight: readCss('css/critical-midnight.css'),
-  arcade: readCss('css/critical-arcade.css'),
+  base: readCss('css/themes/base.css'),
+  midnight: readCss('css/themes/midnight.css'),
+  arcade: readCss('css/themes/arcade.css'),
 }
 
 const BACKDROP_CSS = readCss('css/loader-backdrop.css')
