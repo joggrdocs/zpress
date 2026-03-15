@@ -25,7 +25,7 @@ html::after {
   z-index: 9999;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.2s ease;
   animation: zp-dots 1.2s steps(1) infinite;
 }
 

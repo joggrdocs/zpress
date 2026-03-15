@@ -111,13 +111,13 @@ const useIsomorphicLayoutEffect = getIsomorphicEffect()
 /**
  * Minimum time (ms) the loading overlay stays visible before fading out.
  */
-const LOADER_MIN_DISPLAY_MS = 600
+const LOADER_MIN_DISPLAY_MS = 150
 
 /**
  * Duration (ms) of the CSS fade-out transition. Must match the
  * `transition: opacity` value in loader-backdrop.css / loader-dots.css.
  */
-const LOADER_FADE_MS = 400
+const LOADER_FADE_MS = 200
 
 /**
  * Dismiss the loading overlay with a two-phase approach:
