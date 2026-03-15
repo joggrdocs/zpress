@@ -6,6 +6,16 @@ declare const __ZPRESS_COLOR_MODE__: string
 declare const __ZPRESS_THEME_COLORS__: string
 declare const __ZPRESS_THEME_DARK_COLORS__: string
 
+/**
+ * Supported color modes per built-in theme — used to set `data-zp-modes`
+ * so the appearance toggle is hidden for single-mode themes.
+ */
+const THEME_MODES: Readonly<Record<string, string>> = {
+  base: 'dark light',
+  midnight: 'dark',
+  arcade: 'dark',
+}
+
 const COLOR_VAR_MAP: Record<string, readonly string[]> = {
   brand: ['--zp-c-brand-1', '--rp-c-brand'],
   brandLight: ['--rp-c-brand-light'],
@@ -167,7 +177,15 @@ export function ThemeProvider(): React.ReactElement | null {
     // 1. Set theme attribute
     html.dataset.zpTheme = themeName
 
-    // 2. Force color mode if not toggle
+    // 2. Set supported modes — hides the appearance toggle for single-mode themes
+    const modes = THEME_MODES[themeName]
+    if (modes) {
+      html.dataset.zpModes = modes
+    } else {
+      html.dataset.zpModes = 'dark light'
+    }
+
+    // 3. Force color mode if not toggle
     if (colorMode === 'dark') {
       html.classList.add('rp-dark', 'dark')
       html.dataset.dark = 'true'
@@ -186,12 +204,12 @@ export function ThemeProvider(): React.ReactElement | null {
       }
     }
 
-    // 3. Apply base color overrides
+    // 4. Apply base color overrides
     if (hasColors) {
       applyColorOverrides(html, colors)
     }
 
-    // 4. Observe dark mode changes for dark-specific overrides
+    // 5. Observe dark mode changes for dark-specific overrides
     if (hasDarkColors) {
       const isDark = html.classList.contains('rp-dark')
       if (isDark) {
@@ -214,7 +232,7 @@ export function ThemeProvider(): React.ReactElement | null {
 
       observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
-      // 5. Dismiss loading overlay
+      // 6. Dismiss loading overlay
       const cancelLoader = dismissLoader(html)
 
       return () => {
@@ -223,7 +241,7 @@ export function ThemeProvider(): React.ReactElement | null {
       }
     }
 
-    // 5. Dismiss loading overlay (no dark-color observer needed)
+    // 6. Dismiss loading overlay (no dark-color observer needed)
     return dismissLoader(html)
   }, [])
 

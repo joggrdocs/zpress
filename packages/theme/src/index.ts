@@ -22,6 +22,7 @@ export {
   COLOR_MODES,
   ICON_COLORS,
   resolveDefaultColorMode,
+  resolveThemeModes,
   isBuiltInTheme,
   isBuiltInIconColor,
 } from './definitions.ts'

@@ -32,6 +32,12 @@ html .rp-button--big {
   border-radius: 9999px;
 }
 
+/* ── Single-mode themes — hide the appearance toggle when only one mode is supported ── */
+html[data-zp-modes='dark'] .rp-appearance,
+html[data-zp-modes='light'] .rp-appearance {
+  display: none;
+}
+
 /* ── Tables ──────────────────────────────────────────────── */
 html table {
   border-radius: var(--rp-radius);

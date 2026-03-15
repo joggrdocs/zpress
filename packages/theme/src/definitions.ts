@@ -49,6 +49,20 @@ export function resolveDefaultColorMode(theme: BuiltInThemeName): ColorMode {
 }
 
 /**
+ * Resolve the supported color modes for a given built-in theme.
+ *
+ * @param theme - Built-in theme identifier
+ * @returns The color modes the theme supports
+ */
+export function resolveThemeModes(theme: BuiltInThemeName): readonly ('dark' | 'light')[] {
+  return match(theme)
+    .with('base', () => ['dark', 'light'] as const)
+    .with('midnight', () => ['dark'] as const)
+    .with('arcade', () => ['dark'] as const)
+    .exhaustive()
+}
+
+/**
  * Check if a theme name is a built-in theme.
  *
  * @param name - Theme name to check
