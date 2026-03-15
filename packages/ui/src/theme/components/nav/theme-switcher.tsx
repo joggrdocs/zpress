@@ -19,6 +19,29 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
   { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark' },
 ]
 
+const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
+
+const LEGACY_THEME_MAP: Record<string, string> = {
+  'arcade-fx': 'arcade',
+}
+
+/**
+ * Sanitize a stored theme name: migrate legacy values, reject unknown names.
+ */
+function sanitizeThemeName(raw: string | null): string {
+  if (!raw) {
+    return 'base'
+  }
+  const migrated = LEGACY_THEME_MAP[raw]
+  if (migrated) {
+    return migrated
+  }
+  if (VALID_THEME_NAMES.has(raw)) {
+    return raw
+  }
+  return 'base'
+}
+
 /**
  * Build the className string for a theme option button.
  */
@@ -61,7 +84,7 @@ export function ThemeSwitcher(): React.ReactElement | null {
       return 'base'
     }
     try {
-      return globalThis.localStorage.getItem('zpress-theme') || 'base'
+      return sanitizeThemeName(globalThis.localStorage.getItem('zpress-theme'))
     } catch {
       return 'base'
     }
