@@ -15,8 +15,20 @@ interface ThemeOption {
 }
 
 const THEME_OPTIONS: readonly ThemeOption[] = [
-  { name: 'base', label: 'Base', swatch: '#a78bfa', defaultColorMode: 'toggle', modes: ['dark', 'light'] },
-  { name: 'midnight', label: 'Midnight', swatch: '#60a5fa', defaultColorMode: 'dark', modes: ['dark'] },
+  {
+    name: 'base',
+    label: 'Base',
+    swatch: '#a78bfa',
+    defaultColorMode: 'toggle',
+    modes: ['dark', 'light'],
+  },
+  {
+    name: 'midnight',
+    label: 'Midnight',
+    swatch: '#60a5fa',
+    defaultColorMode: 'dark',
+    modes: ['dark'],
+  },
   { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark', modes: ['dark'] },
 ]
 

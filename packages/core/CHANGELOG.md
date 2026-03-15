@@ -1,5 +1,15 @@
 # @zpress/core
 
+## 0.6.2
+
+### Patch Changes
+
+- 1b3b8e3: Add vitest test infrastructure and 122 unit tests across all packages
+- Updated dependencies [1b3b8e3]
+- Updated dependencies [c57ab70]
+  - @zpress/theme@0.3.0
+  - @zpress/config@0.2.2
+
 ## 0.6.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @zpress/theme
 
+## 0.3.0
+
+### Minor Changes
+
+- c57ab70: Add per-theme `modes` support to declare supported color modes (dark, light, or both) and hide the appearance toggle for single-mode themes like arcade and midnight
+
+### Patch Changes
+
+- 1b3b8e3: Add vitest test infrastructure and 122 unit tests across all packages
+
 ## 0.2.1
 
 ### Patch Changes
