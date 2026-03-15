@@ -6,6 +6,11 @@ declare const __ZPRESS_COLOR_MODE__: string
 declare const __ZPRESS_THEME_COLORS__: string
 declare const __ZPRESS_THEME_DARK_COLORS__: string
 
+/**
+ * Themes that only support dark mode — the appearance toggle is hidden for these.
+ */
+const DARK_ONLY_THEMES: ReadonlySet<string> = new Set(['midnight', 'arcade'])
+
 const COLOR_VAR_MAP: Record<string, readonly string[]> = {
   brand: ['--zp-c-brand-1', '--rp-c-brand'],
   brandLight: ['--rp-c-brand-light'],
@@ -167,7 +172,14 @@ export function ThemeProvider(): React.ReactElement | null {
     // 1. Set theme attribute
     html.dataset.zpTheme = themeName
 
-    // 2. Force color mode if not toggle
+    // 2. Set dark-only flag — hides the appearance toggle for dark-only themes
+    if (DARK_ONLY_THEMES.has(themeName)) {
+      html.dataset.zpDarkOnly = 'true'
+    } else {
+      delete html.dataset.zpDarkOnly
+    }
+
+    // 3. Force color mode if not toggle
     if (colorMode === 'dark') {
       html.classList.add('rp-dark', 'dark')
       html.dataset.dark = 'true'
@@ -186,12 +198,12 @@ export function ThemeProvider(): React.ReactElement | null {
       }
     }
 
-    // 3. Apply base color overrides
+    // 4. Apply base color overrides
     if (hasColors) {
       applyColorOverrides(html, colors)
     }
 
-    // 4. Observe dark mode changes for dark-specific overrides
+    // 5. Observe dark mode changes for dark-specific overrides
     if (hasDarkColors) {
       const isDark = html.classList.contains('rp-dark')
       if (isDark) {
@@ -214,7 +226,7 @@ export function ThemeProvider(): React.ReactElement | null {
 
       observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
-      // 5. Dismiss loading overlay
+      // 6. Dismiss loading overlay
       const cancelLoader = dismissLoader(html)
 
       return () => {
@@ -223,7 +235,7 @@ export function ThemeProvider(): React.ReactElement | null {
       }
     }
 
-    // 5. Dismiss loading overlay (no dark-color observer needed)
+    // 6. Dismiss loading overlay (no dark-color observer needed)
     return dismissLoader(html)
   }, [])
 

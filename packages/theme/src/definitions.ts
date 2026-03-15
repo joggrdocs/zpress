@@ -49,6 +49,20 @@ export function resolveDefaultColorMode(theme: BuiltInThemeName): ColorMode {
 }
 
 /**
+ * Resolve whether a built-in theme only supports dark mode.
+ *
+ * @param theme - Built-in theme identifier
+ * @returns True if the theme does not support light mode
+ */
+export function resolveThemeDarkOnly(theme: BuiltInThemeName): boolean {
+  return match(theme)
+    .with('base', () => false)
+    .with('midnight', () => true)
+    .with('arcade', () => true)
+    .exhaustive()
+}
+
+/**
  * Check if a theme name is a built-in theme.
  *
  * @param name - Theme name to check

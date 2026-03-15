@@ -11,12 +11,13 @@ interface ThemeOption {
   readonly label: string
   readonly swatch: string
   readonly defaultColorMode: 'dark' | 'light' | 'toggle'
+  readonly darkOnly: boolean
 }
 
 const THEME_OPTIONS: readonly ThemeOption[] = [
-  { name: 'base', label: 'Base', swatch: '#a78bfa', defaultColorMode: 'toggle' },
-  { name: 'midnight', label: 'Midnight', swatch: '#60a5fa', defaultColorMode: 'dark' },
-  { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark' },
+  { name: 'base', label: 'Base', swatch: '#a78bfa', defaultColorMode: 'toggle', darkOnly: false },
+  { name: 'midnight', label: 'Midnight', swatch: '#60a5fa', defaultColorMode: 'dark', darkOnly: true },
+  { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark', darkOnly: true },
 ]
 
 const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
@@ -51,6 +52,12 @@ function applyTheme(theme: ThemeOption): void {
   const html = document.documentElement
   html.dataset.zpTheme = theme.name
   localStorage.setItem('zpress-theme', theme.name)
+
+  if (theme.darkOnly) {
+    html.dataset.zpDarkOnly = 'true'
+  } else {
+    delete html.dataset.zpDarkOnly
+  }
 
   if (theme.defaultColorMode === 'dark') {
     // 'rp-dark' is Rspress's dark mode class; 'dark' is added for Tailwind compatibility

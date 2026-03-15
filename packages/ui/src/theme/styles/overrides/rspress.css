@@ -32,6 +32,11 @@ html .rp-button--big {
   border-radius: 9999px;
 }
 
+/* ── Dark-only themes — hide the appearance (dark/light) toggle ── */
+html[data-zp-dark-only] .rp-appearance {
+  display: none;
+}
+
 /* ── Tables ──────────────────────────────────────────────── */
 html table {
   border-radius: var(--rp-radius);
