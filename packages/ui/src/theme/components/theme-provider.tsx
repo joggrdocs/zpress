@@ -101,14 +101,6 @@ function getIsomorphicEffect(): typeof useLayoutEffect {
 const useIsomorphicLayoutEffect = getIsomorphicEffect()
 
 /**
- * ThemeProvider — global UI component that configures the active theme.
- *
- * Sets `data-zp-theme` attribute, forces color mode, and applies
- * inline CSS custom property overrides from build-time defines.
- * Sets `data-zp-ready` on <html> to dismiss the loading overlay
- * injected by critical CSS.
- */
-/**
  * Minimum time (ms) the loading overlay stays visible before fading out.
  */
 const LOADER_MIN_DISPLAY_MS = 150
@@ -124,6 +116,8 @@ const LOADER_FADE_MS = 200
  *   1. Add `zp-loader-fade` class → CSS transitions opacity to 0
  *   2. After transition completes → set `data-zp-ready` attribute → CSS hard removes (display: none)
  *
+ * Also clears the JS-driven dots animation interval set by loader-dots.js.
+ *
  * Returns a cleanup function that cancels pending timers.
  */
 function dismissLoader(html: HTMLElement): () => void {
@@ -134,6 +128,11 @@ function dismissLoader(html: HTMLElement): () => void {
   const removeTimer = setTimeout(() => {
     html.dataset.zpReady = 'true'
     html.classList.remove('zp-loader-fade')
+    // Clear the dots animation interval started by the inline head script
+    const dotsInterval = (globalThis as Record<string, unknown>).__zpDotsInterval
+    if (typeof dotsInterval === 'number') {
+      clearInterval(dotsInterval)
+    }
   }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
 
   return () => {
@@ -142,6 +141,14 @@ function dismissLoader(html: HTMLElement): () => void {
   }
 }
 
+/**
+ * ThemeProvider — global UI component that configures the active theme.
+ *
+ * Sets `data-zp-theme` attribute, forces color mode, and applies
+ * inline CSS custom property overrides from build-time defines.
+ * Sets `data-zp-ready` on <html> to dismiss the loading overlay
+ * injected by critical CSS.
+ */
 export function ThemeProvider(): React.ReactElement | null {
   useIsomorphicLayoutEffect(() => {
     const html = document.documentElement

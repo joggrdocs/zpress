@@ -67,7 +67,10 @@ function buildNavEntry(entry: ResolvedEntry): RspressNavItem {
  * @param resolved - Resolved entry tree from the sync engine
  * @returns Rspress nav items array
  */
-export function generateNav(config: ZpressConfig, resolved: readonly ResolvedEntry[]): RspressNavItem[] {
+export function generateNav(
+  config: ZpressConfig,
+  resolved: readonly ResolvedEntry[]
+): RspressNavItem[] {
   if (config.nav !== 'auto' && config.nav !== undefined) {
     return config.nav.map(mapNavItem)
   }
@@ -149,11 +152,25 @@ function maybeChildren(children: RspressNavItem[] | undefined): { items?: Rspres
 /**
  * Map a user-facing NavItem (title) to an Rspress NavItem (text).
  */
+function maybeActiveMatch(item: NavItem): Pick<RspressNavItem, 'activeMatch'> {
+  if (item.activeMatch) {
+    return { activeMatch: item.activeMatch }
+  }
+  return {}
+}
+
+function maybeItems(item: NavItem): Pick<RspressNavItem, 'items'> {
+  if (item.items) {
+    return { items: item.items.map(mapNavItem) }
+  }
+  return {}
+}
+
 function mapNavItem(item: NavItem): RspressNavItem {
   return {
     text: item.title,
     link: item.link,
-    ...(item.activeMatch ? { activeMatch: item.activeMatch } : {}),
-    ...(item.items ? { items: item.items.map(mapNavItem) } : {}),
+    ...maybeActiveMatch(item),
+    ...maybeItems(item),
   }
 }

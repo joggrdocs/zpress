@@ -100,6 +100,7 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
 const COLOR_MODE_DARK_JS = readJs('js/color-mode-dark.js')
 const COLOR_MODE_LIGHT_JS = readJs('js/color-mode-light.js')
 const VSCODE_DETECT_JS = readJs('js/vscode-detect.js')
+const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 
 interface HeadScriptOptions {
   readonly colorMode: string
@@ -131,7 +132,7 @@ function buildColorModeJs(colorMode: string): string {
 function buildHeadScriptBody(options: HeadScriptOptions): string {
   const colorModeJs = buildColorModeJs(options.colorMode)
   const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
-  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS].filter(Boolean).join('')
+  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join('')
 }
 
 /**
