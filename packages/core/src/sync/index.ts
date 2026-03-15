@@ -18,7 +18,7 @@ import { buildSourceMap } from './rewrite-links.ts'
 import { generateNav } from './sidebar/index.ts'
 import { injectLandingPages } from './sidebar/inject.ts'
 import { buildMultiSidebar } from './sidebar/multi.ts'
-import type { PageData, ResolvedEntry, SidebarItem, SyncContext } from './types.ts'
+import type { PageData, ResolvedEntry, SyncContext } from './types.ts'
 import { enrichWorkspaceCards, synthesizeWorkspaceSections } from './workspace.ts'
 
 export interface SyncResult {
@@ -123,8 +123,6 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 2.5 Discover planning pages (hidden — not in sidebar/nav)
   const planningPages = await discoverPlanningPages(ctx)
 
-  const openapiSidebar: SidebarItem[] = []
-
   // 3. Copy/generate all pages (sections + home + planning)
   const allPages = [...pages, ...planningPages]
 
@@ -160,7 +158,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     .otherwise(() => Promise.resolve(0))
 
   // 6. Generate sidebar + nav
-  const sortedSidebar = buildMultiSidebar(resolved, openapiSidebar)
+  const sortedSidebar = buildMultiSidebar(resolved)
   const nav = generateNav(config, resolved)
 
   await fs.writeFile(

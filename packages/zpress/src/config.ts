@@ -26,8 +26,9 @@ export type {
   Frontmatter,
   NavItem,
   CardConfig,
-  OpenAPIConfig,
   IconConfig,
   IconColor,
   IconId,
+  SidebarConfig,
+  SidebarLink,
 } from '@zpress/core'

@@ -137,13 +137,9 @@ export async function generateDefaultHomePage(
     ...match(tagline)
       .with(P.nonNullable, (t) => ({ tagline: t }))
       .otherwise(() => ({})),
-    actions: [
-      {
-        theme: 'brand',
-        text: 'Get Started',
-        link: firstLink,
-      },
-    ],
+    actions: match(config.actions)
+      .with(P.nonNullable, (a) => a)
+      .otherwise(() => [{ theme: 'brand', text: 'Get Started', link: firstLink }]),
     image: {
       src: '/banner.svg',
       alt: title,

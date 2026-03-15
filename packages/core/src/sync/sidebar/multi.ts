@@ -7,16 +7,14 @@ import { generateSidebar } from './index.ts'
  * Build a multi-sidebar record from resolved entries.
  *
  * Root entries go under `"/"`, each isolated section gets its own namespace
- * keyed by `link`, and OpenAPI sidebars (if any) each get their own prefix key.
+ * keyed by `link`.
  * Keys are sorted by string length (descending) for Rspress matching precedence.
  *
  * @param resolved - Fully resolved entry tree
- * @param openapiSidebar - Flat sidebar items from OpenAPI sync (currently unused)
  * @returns Sorted sidebar record ready for JSON serialization
  */
 export function buildMultiSidebar(
-  resolved: readonly ResolvedEntry[],
-  openapiSidebar: readonly SidebarItem[]
+  resolved: readonly ResolvedEntry[]
 ): Record<string, unknown[]> {
   const rootEntries = resolved.filter((e) => !e.isolated)
   const isolatedEntries = resolved.filter((e) => e.isolated && e.link)
@@ -100,12 +98,9 @@ export function buildMultiSidebar(
     })
   )
 
-  const openapiEntries = buildOpenapiSidebarEntries(openapiSidebar)
-
   const sidebar: Record<string, unknown[]> = {
     '/': docsSidebar,
     ...isolatedSidebar,
-    ...openapiEntries,
   }
 
   // Sort sidebar keys by string length (descending)
@@ -151,10 +146,4 @@ function buildSidebarGroup(
     return { text, link, collapsed, items: children }
   }
   return { text, link }
-}
-
-function buildOpenapiSidebarEntries(
-  _openapiSidebar: readonly SidebarItem[]
-): Record<string, readonly SidebarItem[]> {
-  return {}
 }

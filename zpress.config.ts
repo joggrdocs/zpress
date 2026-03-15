@@ -5,43 +5,95 @@ export default defineConfig({
   description: 'Beautiful Docs, Zero Config',
   tagline: 'An opinionated documentation framework for monorepos. Just point it at your code.',
   theme: { switcher: true },
+  sidebar: {
+    below: [
+      { text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' },
+    ],
+  },
+  actions: [
+    { theme: 'brand', text: 'Introduction', link: '/getting-started/introduction' },
+    { theme: 'alt', text: 'Quick Start', link: '/getting-started/quick-start' },
+  ],
   sections: [
     {
       title: 'Getting Started',
-      link: '/getting-started',
-      from: 'docs/getting-started.md',
       icon: 'pixelarticons:speed-fast',
+      prefix: '/getting-started',
+      items: [
+        {
+          title: 'Introduction',
+          link: '/getting-started/introduction',
+          from: 'docs/getting-started/introduction.mdx',
+        },
+        {
+          title: 'Quick Start',
+          link: '/getting-started/quick-start',
+          from: 'docs/getting-started/quick-start.md',
+        },
+      ],
     },
     {
-      title: 'Guides',
+      title: 'Concepts',
       icon: 'pixelarticons:book-open',
-      prefix: '/guides',
+      prefix: '/concepts',
       items: [
         {
           title: 'Sections and Pages',
-          link: '/guides/sections-and-pages',
-          from: 'docs/guides/sections-and-pages.md',
+          link: '/concepts/sections-and-pages',
+          from: 'docs/concepts/sections-and-pages.md',
         },
         {
           title: 'Auto-Discovery',
-          link: '/guides/auto-discovery',
-          from: 'docs/guides/auto-discovery.md',
+          link: '/concepts/auto-discovery',
+          from: 'docs/concepts/auto-discovery.md',
         },
-        { title: 'Frontmatter', link: '/guides/frontmatter', from: 'docs/guides/frontmatter.md' },
-        { title: 'Workspaces', link: '/guides/workspaces', from: 'docs/guides/workspaces.md' },
-        { title: 'Navigation', link: '/guides/navigation', from: 'docs/guides/navigation.md' },
+        { title: 'Frontmatter', link: '/concepts/frontmatter', from: 'docs/concepts/frontmatter.md' },
+        { title: 'Workspaces', link: '/concepts/workspaces', from: 'docs/concepts/workspaces.md' },
+        { title: 'Navigation', link: '/concepts/navigation', from: 'docs/concepts/navigation.md' },
         {
           title: 'Landing Pages',
-          link: '/guides/landing-pages',
-          from: 'docs/guides/landing-pages.md',
+          link: '/concepts/landing-pages',
+          from: 'docs/concepts/landing-pages.md',
         },
         {
           title: 'Dynamic Content',
-          link: '/guides/dynamic-content',
-          from: 'docs/guides/dynamic-content.md',
+          link: '/concepts/dynamic-content',
+          from: 'docs/concepts/dynamic-content.md',
         },
-        { title: 'Themes', link: '/guides/themes', from: 'docs/guides/themes.mdx' },
-        { title: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
+        { title: 'Themes', link: '/concepts/themes', from: 'docs/concepts/themes.mdx' },
+        { title: 'Deployment', link: '/concepts/deployment', from: 'docs/concepts/deployment.md' },
+      ],
+    },
+    {
+      title: 'Documentation Framework',
+      icon: 'pixelarticons:notes',
+      prefix: '/documentation-framework',
+      items: [
+        {
+          title: 'Overview',
+          link: '/documentation-framework/overview',
+          from: 'docs/documentation-framework/overview.md',
+        },
+        {
+          title: 'Types',
+          link: '/documentation-framework/types',
+          from: 'docs/documentation-framework/types.md',
+        },
+        {
+          title: 'Recommended',
+          link: '/documentation-framework/recommended',
+          from: 'docs/documentation-framework/recommended.md',
+        },
+        {
+          title: 'Templates',
+          link: '/documentation-framework/templates',
+          from: 'docs/documentation-framework/templates.md',
+        },
+        {
+          title: 'Scaling',
+          link: '/documentation-framework/scaling',
+          from: 'docs/documentation-framework/scaling.md',
+        },
       ],
     },
     {
@@ -123,6 +175,7 @@ export default defineConfig({
     {
       title: 'Contributing',
       icon: 'pixelarticons:git-merge',
+      isolated: true,
       items: [
         {
           title: 'Overview',
@@ -167,5 +220,10 @@ export default defineConfig({
       ],
     },
   ],
-  nav: 'auto',
+  nav: [
+    { text: 'Getting Started', link: '/getting-started/introduction' },
+    { text: 'Concepts', link: '/concepts/sections-and-pages' },
+    { text: 'Documentation Framework', link: '/documentation-framework/overview' },
+    { text: 'Reference', link: '/reference/configuration' },
+  ],
 })

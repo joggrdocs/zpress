@@ -213,7 +213,6 @@ You can reference a specific version using GitHub tags:
 #### System Types
 
 - `Paths` - Directory paths configuration
-- `OpenAPIConfig` - OpenAPI spec integration config
 - `ResolvedPage` - Resolved page metadata
 - `ResolvedSection` - Resolved section with pages
 

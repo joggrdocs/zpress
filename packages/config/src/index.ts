@@ -30,13 +30,14 @@ export type {
   RecursiveDiscoveryConfig,
   FlatDiscoveryConfig,
   SeoConfig,
-  HeroConfig,
+  HeroAction,
+  SidebarConfig,
+  SidebarLink,
   // Backward compatibility aliases
   WorkspaceItem,
   WorkspaceGroup,
   ResolvedPage,
   ResolvedSection,
-  OpenAPIConfig,
   Feature,
   Result,
 } from './types.ts'

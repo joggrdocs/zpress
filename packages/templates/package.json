@@ -1,23 +1,21 @@
 {
-  "name": "@zpress/cli",
-  "version": "0.3.2",
-  "description": "CLI for building and serving zpress documentation sites",
+  "name": "@zpress/templates",
+  "version": "0.1.0",
+  "description": "Documentation templates SDK for zpress — use built-in templates, extend them, or register custom ones",
   "keywords": [
-    "cli",
+    "templates",
     "docs",
-    "rspress",
+    "documentation",
+    "scaffold",
     "zpress"
   ],
-  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/cli#readme",
+  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/templates#readme",
   "bugs": "https://github.com/joggrdocs/zpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/joggrdocs/zpress.git",
-    "directory": "packages/cli"
-  },
-  "bin": {
-    "zpress": "./dist/index.mjs"
+    "directory": "packages/templates"
   },
   "files": [
     "dist"
@@ -35,19 +33,12 @@
   },
   "scripts": {
     "build": "rslib build",
-    "dev": "node ./dist/index.mjs dev --cwd ../..",
+    "dev": "rslib build --watch --no-clean",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kidd-cli/core": "^0.4.0",
-    "@rspress/core": "catalog:",
-    "@zpress/core": "workspace:*",
-    "@zpress/templates": "workspace:*",
-    "@zpress/ui": "workspace:*",
-    "es-toolkit": "catalog:",
-    "ts-pattern": "catalog:",
-    "zod": "catalog:"
+    "es-toolkit": "catalog:"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",

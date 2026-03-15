@@ -15,6 +15,7 @@ import { buildCommand } from './commands/build.ts'
 import { checkCommand } from './commands/check.ts'
 import { cleanCommand } from './commands/clean.ts'
 import { devCommand } from './commands/dev.ts'
+import { draftCommand } from './commands/draft.ts'
 import { dumpCommand } from './commands/dump.ts'
 import { generateCommand } from './commands/generate.ts'
 import { serveCommand } from './commands/serve.ts'
@@ -32,6 +33,7 @@ await cli({
     dev: devCommand,
     build: buildCommand,
     check: checkCommand,
+    draft: draftCommand,
     serve: serveCommand,
     clean: cleanCommand,
     dump: dumpCommand,

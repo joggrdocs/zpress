@@ -1,0 +1,77 @@
+---
+title: Introduction
+description: What zpress is, why it exists, and what it gives you out of the box.
+---
+
+import { FeatureCard, FeatureGrid, Icon } from '@zpress/ui/theme'
+
+# Introduction
+
+## What is zpress
+
+zpress is an information-architecture-driven documentation framework for monorepos. Your config file _is_ the architecture — it defines what content exists, where it comes from, and how it's organized in a single tree. Source markdown files are never edited by the tool. zpress syncs them into a build directory, injects frontmatter, generates sidebars and nav, and produces a static site.
+
+## Why zpress
+
+There are excellent documentation tools out there — [VitePress](https://vitepress.dev), [Rspress](https://rspress.dev), [Docusaurus](https://docusaurus.io), and others. They were direct inspirations for this project. So why build another one?
+
+**Zero config, real defaults.** Most documentation tools need significant setup before they produce anything useful. zpress ships with opinionated defaults that work immediately. Point it at a repo with a `docs/` directory and you get a working site — sidebar, navigation, and all.
+
+**Your structure, not ours.** When you _do_ configure zpress, the config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
+
+**Built for the vibe.** AI coding tools are everywhere now. When you're vibing on a project — spinning up features with Claude, Copilot, Cursor, or whatever you reach for — documentation shouldn't be the part that slows you down. Tell your AI to create a `docs/` directory, write some markdown, and run `zpress dev`. It just works. No plugin config, no theme wiring, no boilerplate. The whole point is that a docs site is one command away from existing.
+
+## Features
+
+Dive deeper into what zpress offers.
+
+<FeatureGrid>
+  <FeatureCard
+    title="Zero Config"
+    description="Real defaults, no setup required."
+    href="/getting-started/quick-start"
+    icon={<Icon icon="pixelarticons:speed-fast" />}
+    iconColor="purple"
+    span={4}
+  />
+  <FeatureCard
+    title="Your Structure"
+    description="Config fits your docs, not the other way around."
+    href="/concepts/sections-and-pages"
+    icon={<Icon icon="pixelarticons:layout" />}
+    iconColor="blue"
+    span={4}
+  />
+  <FeatureCard
+    title="Built for AI"
+    description="One command from markdown to site."
+    href="/concepts/auto-discovery"
+    icon={<Icon icon="pixelarticons:zap" />}
+    iconColor="green"
+    span={4}
+  />
+  <FeatureCard
+    title="Monorepo Native"
+    description="First-class workspace and multi-package support."
+    href="/concepts/workspaces"
+    icon={<Icon icon="pixelarticons:git-merge" />}
+    iconColor="orange"
+    span={4}
+  />
+  <FeatureCard
+    title="Themes"
+    description="Built-in themes with dark mode."
+    href="/concepts/themes"
+    icon={<Icon icon="pixelarticons:paint-bucket" />}
+    iconColor="pink"
+    span={4}
+  />
+  <FeatureCard
+    title="Auto Navigation"
+    description="Sidebar and nav generated from config."
+    href="/concepts/navigation"
+    icon={<Icon icon="pixelarticons:list-box" />}
+    iconColor="teal"
+    span={4}
+  />
+</FeatureGrid>

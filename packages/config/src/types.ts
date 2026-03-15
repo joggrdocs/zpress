@@ -315,37 +315,51 @@ export interface SeoConfig {
 }
 
 /**
- * Hero section configuration override.
+ * A single call-to-action button on the home page hero.
  */
-export interface HeroConfig {
+export interface HeroAction {
+  readonly theme: 'brand' | 'alt'
+  readonly text: string
+  readonly link: string
+}
+
+// ── Sidebar ─────────────────────────────────────────────────
+
+/**
+ * A persistent link rendered above or below the sidebar nav tree.
+ */
+export interface SidebarLink {
+  readonly text: string
+  readonly link: string
+  readonly icon?: IconConfig
+}
+
+/**
+ * Sidebar configuration.
+ *
+ * @example
+ * ```ts
+ * sidebar: {
+ *   above: [
+ *     { text: 'Home', link: '/', icon: 'pixelarticons:home' },
+ *   ],
+ *   below: [
+ *     { text: 'GitHub', link: 'https://github.com/...', icon: 'pixelarticons:github' },
+ *     { text: 'Discord', link: 'https://discord.gg/...', icon: 'pixelarticons:message' },
+ *   ],
+ * }
+ * ```
+ */
+export interface SidebarConfig {
   /**
-   * Main hero title. Overrides site title on home page.
+   * Links rendered above the nav tree.
    */
-  readonly title?: string
+  readonly above?: readonly SidebarLink[]
 
   /**
-   * Hero subtitle/headline. Overrides site description on home page.
+   * Links rendered below the nav tree.
    */
-  readonly subtitle?: string
-
-  /**
-   * Hero tagline. Overrides site tagline on home page.
-   */
-  readonly tagline?: string
-
-  /**
-   * Hero image path. Defaults to "/banner.svg".
-   */
-  readonly image?: string
-
-  /**
-   * Call-to-action buttons.
-   */
-  readonly actions?: readonly {
-    readonly theme: 'brand' | 'alt'
-    readonly text: string
-    readonly link: string
-  }[]
+  readonly below?: readonly SidebarLink[]
 }
 
 // ── Card — display metadata for parent landing pages ─────────
@@ -716,26 +730,6 @@ export interface ResolvedSection {
   readonly items: readonly (ResolvedPage | ResolvedSection)[]
 }
 
-// ── OpenAPI ──────────────────────────────────────────────────
-
-/**
- * Configuration for OpenAPI spec integration.
- */
-export interface OpenAPIConfig {
-  /**
-   * Path to openapi.json relative to repo root.
-   */
-  spec: FilePath
-  /**
-   * URL prefix for API operation pages (e.g., '/api').
-   */
-  prefix: UrlPath
-  /**
-   * Sidebar group title.
-   * @default 'API Reference'
-   */
-  title?: string
-}
 
 // ── Feature — home page feature card ─────────────────────────
 
@@ -795,10 +789,10 @@ export interface ZpressConfig {
   readonly tagline?: string
 
   /**
-   * Hero section override for the home page.
-   * When omitted, uses site-level title, description, and tagline.
+   * Call-to-action buttons on the home page hero.
+   * When omitted, a single "Get Started" button linking to the first section is generated.
    */
-  readonly hero?: HeroConfig
+  readonly actions?: readonly HeroAction[]
 
   /**
    * SEO meta tag configuration for the entire site.
@@ -837,6 +831,12 @@ export interface ZpressConfig {
   readonly features?: readonly Feature[]
 
   /**
+   * Sidebar configuration.
+   * Add persistent links above or below the navigation tree.
+   */
+  readonly sidebar?: SidebarConfig
+
+  /**
    * The information architecture.
    * Defines content sources, sidebar structure, and routing in a single tree.
    */
@@ -857,10 +857,6 @@ export interface ZpressConfig {
    */
   readonly exclude?: readonly GlobPattern[]
 
-  /**
-   * OpenAPI spec integration for interactive API docs.
-   */
-  readonly openapi?: OpenAPIConfig
 }
 
 // ── Backward compatibility aliases ───────────────────────────

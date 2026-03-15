@@ -149,16 +149,6 @@ const featureSchema = z
   })
   .strict()
 
-// ── OpenAPI schema ───────────────────────────────────────────
-
-const openapiConfigSchema = z
-  .object({
-    spec: z.string(),
-    prefix: z.string(),
-    title: z.string().optional(),
-  })
-  .strict()
-
 // ── Theme schema ─────────────────────────────────────────────
 
 const themeColorsSchema = z
@@ -190,6 +180,33 @@ const themeConfigSchema = z
   })
   .strict()
 
+// ── Sidebar schema ──────────────────────────────────────────
+
+const sidebarLinkSchema = z
+  .object({
+    text: z.string(),
+    link: z.string(),
+    icon: z.union([z.string(), z.object({ id: z.string(), color: z.string() }).strict()]).optional(),
+  })
+  .strict()
+
+const sidebarConfigSchema = z
+  .object({
+    above: z.array(sidebarLinkSchema).optional(),
+    below: z.array(sidebarLinkSchema).optional(),
+  })
+  .strict()
+
+// ── Hero action schema ──────────────────────────────────────
+
+const heroActionSchema = z
+  .object({
+    theme: z.enum(['brand', 'alt']),
+    text: z.string(),
+    link: z.string(),
+  })
+  .strict()
+
 // ── Main config schema ───────────────────────────────────────
 
 export const zpressConfigSchema = z
@@ -203,10 +220,11 @@ export const zpressConfigSchema = z
     packages: z.array(workspaceItemSchema).optional(),
     workspaces: z.array(workspaceGroupSchema).optional(),
     features: z.array(featureSchema).optional(),
+    actions: z.array(heroActionSchema).optional(),
+    sidebar: sidebarConfigSchema.optional(),
     sections: z.array(entrySchema).min(1, 'config.sections must have at least one entry'),
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
     exclude: z.array(z.string()).optional(),
-    openapi: openapiConfigSchema.optional(),
   })
   .strict()
 

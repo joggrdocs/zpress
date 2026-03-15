@@ -29,13 +29,14 @@ export type {
   RecursiveDiscoveryConfig,
   FlatDiscoveryConfig,
   SeoConfig,
-  HeroConfig,
+  HeroAction,
+  SidebarConfig,
+  SidebarLink,
   // Backward compatibility
   WorkspaceItem,
   WorkspaceGroup,
   ResolvedPage,
   ResolvedSection,
-  OpenAPIConfig,
   Feature,
   Result,
 } from '@zpress/config'
