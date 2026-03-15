@@ -33,7 +33,7 @@ interface OverviewMarkdownInput {
  * @returns Markdown string
  */
 export function generateOperationMarkdown(input: OperationMarkdownInput): string {
-  const operation = resolveOperation(input.spec, input.path, input.method)
+  const operation = resolveOperation({ spec: input.spec, urlPath: input.path, method: input.method })
 
   if (operation === null) {
     return [`# ${input.method.toUpperCase()} ${input.path}`, '', 'Operation not found.'].join('\n')
@@ -45,7 +45,7 @@ export function generateOperationMarkdown(input: OperationMarkdownInput): string
   const requestBody = operation['requestBody'] as Record<string, unknown> | undefined
   const responses = (operation['responses'] ?? {}) as Record<string, unknown>
   const deprecated = operation['deprecated'] === true
-  const securities = resolveSecurities(operation, input.spec)
+  const securities = resolveSecurities({ operation, spec: input.spec })
   const baseUrl = resolveBaseUrl(input.spec)
 
   const sections: readonly string[] = [
@@ -104,20 +104,20 @@ export function generateOverviewMarkdown(input: OverviewMarkdownInput): string {
 
 // ── Shared spec helpers ──────────────────────────────────────
 
-function resolveOperation(
-  spec: Record<string, unknown>,
-  urlPath: string,
-  method: string
-): Record<string, unknown> | null {
-  const paths = spec['paths'] as Record<string, Record<string, unknown>> | undefined
+function resolveOperation(input: {
+  readonly spec: Record<string, unknown>
+  readonly urlPath: string
+  readonly method: string
+}): Record<string, unknown> | null {
+  const paths = input.spec['paths'] as Record<string, Record<string, unknown>> | undefined
   if (paths === null || paths === undefined) {
     return null
   }
-  const pathItem = paths[urlPath]
+  const pathItem = paths[input.urlPath]
   if (pathItem === null || pathItem === undefined) {
     return null
   }
-  const op = pathItem[method.toLowerCase()]
+  const op = pathItem[input.method.toLowerCase()]
   if (op === null || op === undefined) {
     return null
   }
@@ -132,21 +132,19 @@ function resolveBaseUrl(spec: Record<string, unknown>): string {
   return 'https://api.example.com'
 }
 
-function resolveSecurities(
-  operation: Record<string, unknown>,
-  spec: Record<string, unknown>
-): Record<string, unknown> {
-  const opSecurity = operation['security'] as readonly Record<string, unknown>[] | undefined
-  const globalSecurity = spec['security'] as readonly Record<string, unknown>[] | undefined
-  const securityList = match(opSecurity)
+function resolveSecurities(input: {
+  readonly operation: Record<string, unknown>
+  readonly spec: Record<string, unknown>
+}): readonly Record<string, unknown>[] {
+  const opSecurity = input.operation['security'] as readonly Record<string, unknown>[] | undefined
+  const globalSecurity = input.spec['security'] as readonly Record<string, unknown>[] | undefined
+  return match(opSecurity)
     .with(P.nonNullable, (s) => s)
     .otherwise(() =>
       match(globalSecurity)
         .with(P.nonNullable, (s) => s)
         .otherwise(() => [] as readonly Record<string, unknown>[])
     )
-
-  return securityList.reduce<Record<string, unknown>>((acc, item) => Object.assign(acc, item), {})
 }
 
 // ── Operation section builders ───────────────────────────────
@@ -258,14 +256,37 @@ function buildResponsesSection(responses: Record<string, unknown>): string {
   return ['## Responses', '', ...responseSections].join('\n\n')
 }
 
-function buildSecuritySection(securities: Record<string, unknown>): string {
-  const keys = Object.keys(securities)
-  if (keys.length === 0) {
+function buildSecuritySection(securities: readonly Record<string, unknown>[]): string {
+  if (securities.length === 0) {
     return ''
   }
 
-  const items = keys.map((name) => `- ${name}`)
+  const items = securities.map((requirement, index) => {
+    const schemes = Object.entries(requirement).map(([name, scopes]) => {
+      const scopeSuffix = match(scopes)
+        .with(
+          P.when((s): s is readonly string[] => Array.isArray(s) && s.length > 0),
+          (s) => ` (${s.join(', ')})`
+        )
+        .otherwise(() => '')
+      return `${name}${scopeSuffix}`
+    })
+
+    if (schemes.length === 0) {
+      return '- No authentication'
+    }
+
+    const prefix = match(securities.length > 1)
+      .with(true, () => `Option ${String(index + 1)}: `)
+      .otherwise(() => '')
+    return `- ${prefix}${schemes.join(' + ')}`
+  })
+
   return ['## Authentication', '', ...items].join('\n')
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replaceAll("'", "'\"'\"'")}'`
 }
 
 function buildCurlSection(
@@ -274,9 +295,11 @@ function buildCurlSection(
   baseUrl: string,
   requestBody: Record<string, unknown> | undefined
 ): string {
+  const normalizedMethod = method.toLowerCase()
   const url = `${baseUrl}${urlPath}`
-  const upper = method.toUpperCase()
-  const isBody = method === 'post' || method === 'put' || method === 'patch'
+  const upper = normalizedMethod.toUpperCase()
+  const isBody =
+    normalizedMethod === 'post' || normalizedMethod === 'put' || normalizedMethod === 'patch'
 
   const headerPart = match(isBody)
     .with(true, () => " \\\n  -H 'Content-Type: application/json'")
@@ -284,10 +307,10 @@ function buildCurlSection(
 
   const bodyExample = extractBodyExample(requestBody)
   const bodyPart = match(bodyExample)
-    .with(P.nonNullable, (ex) => ` \\\n  -d '${JSON.stringify(ex)}'`)
+    .with(P.nonNullable, (ex) => ` \\\n  -d ${shellQuote(JSON.stringify(ex))}`)
     .otherwise(() => '')
 
-  const curl = `curl -X ${upper} '${url}'${headerPart}${bodyPart}`
+  const curl = `curl -X ${upper} ${shellQuote(url)}${headerPart}${bodyPart}`
 
   return ['## Example', '', '```bash', curl, '```'].join('\n')
 }

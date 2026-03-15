@@ -105,7 +105,9 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     return { sidebar: [], pages: [] }
   }
 
-  const api = await SwaggerParser.dereference(specAbsPath)
+  const api = await SwaggerParser.dereference(specAbsPath, {
+    dereference: { circular: 'ignore' },
+  })
   const paths = (api as Record<string, unknown>).paths as
     | Record<string, Record<string, unknown>>
     | undefined
@@ -131,6 +133,14 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   const operationPages = tagGroups.flatMap((group) =>
     group.operations.map((op) => buildOperationPage(op, prefix))
   )
+
+  // Validate slug uniqueness — duplicate slugs would overwrite pages
+  const slugCounts = Map.groupBy(operationPages, (page) => page.outputPath)
+  const duplicates = [...slugCounts.entries()].filter(([, pages]) => pages.length > 1)
+  if (duplicates.length > 0) {
+    const duplicatePaths = duplicates.map(([p]) => p).join(', ')
+    console.warn(`[zpress] Duplicate OpenAPI slugs detected: ${duplicatePaths}. Later operations will overwrite earlier ones.`)
+  }
 
   const indexPage = buildIndexPage(title, prefix)
   const pages = [specPage, indexPage, ...operationPages]
@@ -242,7 +252,7 @@ function buildOperationPage(op: OperationInfo, prefix: string): PageData {
 
   const content = [
     '---',
-    `title: ${title}`,
+    `title: ${JSON.stringify(title)}`,
     '---',
     '',
     "import spec from './openapi.json'",
@@ -250,9 +260,9 @@ function buildOperationPage(op: OperationInfo, prefix: string): PageData {
     '',
     '<OpenAPIOperation',
     '  spec={spec}',
-    `  method="${op.method}"`,
-    `  path="${op.path}"`,
-    `  operationId="${op.operationId}"`,
+    `  method={${JSON.stringify(op.method)}}`,
+    `  path={${JSON.stringify(op.path)}}`,
+    `  operationId={${JSON.stringify(op.operationId)}}`,
     '/>',
     '',
   ].join('\n')
@@ -272,7 +282,7 @@ function buildIndexPage(title: string, prefix: string): PageData {
 
   const content = [
     '---',
-    `title: ${title}`,
+    `title: ${JSON.stringify(title)}`,
     '---',
     '',
     "import spec from './openapi.json'",

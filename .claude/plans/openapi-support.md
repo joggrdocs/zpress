@@ -10,7 +10,7 @@ Add OpenAPI documentation rendering to zpress — a custom sidebar + custom page
 
 ### Layout: Two-Column Operation Page
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ Sidebar (Rspress)          │  Main Content                  │
 │                            │                                │
@@ -30,7 +30,7 @@ Add OpenAPI documentation rendering to zpress — a custom sidebar + custom page
 
 ### Data Flow
 
-```
+```text
 openapi.json
     │
     ▼
@@ -233,7 +233,7 @@ Each entry produces two sidebar keys (`{prefix}/` and `{prefix}`) for Rspress ro
 
 **Files (all new under `packages/ui/src/theme/components/openapi/`):**
 
-```
+```text
 openapi/
 ├── index.ts                        # barrel export
 ├── operation.tsx + operation.css    # <OpenAPIOperation /> — full operation page
@@ -279,7 +279,7 @@ Renders:
 
 **`<MethodBadge />`** — Colored HTTP method indicator
 
-```
+```text
 GET    → green    (--zp-openapi-get)
 POST   → blue     (--zp-openapi-post)
 PUT    → amber    (--zp-openapi-put)
@@ -433,7 +433,7 @@ Add `openapi` to the API app entry:
 
 The API app sidebar becomes:
 
-```
+```text
 API
 ├── Authentication
 ├── Endpoints

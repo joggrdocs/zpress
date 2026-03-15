@@ -42,30 +42,38 @@ interface TagInfo {
   readonly firstOperationMethod: string
 }
 
+interface TagAccEntry {
+  readonly count: number
+  readonly firstPath: string
+  readonly firstMethod: string
+}
+
 function collectTags(spec: Record<string, unknown>): readonly TagInfo[] {
   const paths = (spec['paths'] ?? {}) as Record<string, Record<string, unknown>>
-  const tagMap: Record<string, { count: number; firstPath: string; firstMethod: string }> = {}
+  const methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace']
 
-  Object.entries(paths).map(([pathStr, pathItem]) => {
-    const methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head']
-    methods.map((method) => {
-      const operation = pathItem[method] as Record<string, unknown> | undefined
-      if (operation !== undefined) {
-        const tags = (operation['tags'] ?? ['default']) as readonly string[]
-        tags.map((tag) => {
-          const existing = tagMap[tag]
-          if (existing === undefined) {
-            tagMap[tag] = { count: 1, firstPath: pathStr, firstMethod: method }
-          } else {
-            existing.count += 1
-          }
-          return tag
-        })
-      }
-      return method
-    })
-    return pathStr
-  })
+  const tagMap = Object.entries(paths).reduce<Record<string, TagAccEntry>>(
+    (pathAcc, [pathStr, pathItem]) =>
+      methods
+        .filter((method) => pathItem[method] !== undefined)
+        .reduce<Record<string, TagAccEntry>>((methodAcc, method) => {
+          const operation = pathItem[method] as Record<string, unknown>
+          const tags = (operation['tags'] ?? ['default']) as readonly string[]
+          return tags.reduce<Record<string, TagAccEntry>>((tagAcc, tag) => {
+            const existing = tagAcc[tag]
+            return match(existing)
+              .with(P.nonNullable, (e) => ({
+                ...tagAcc,
+                [tag]: { ...e, count: e.count + 1 },
+              }))
+              .otherwise(() => ({
+                ...tagAcc,
+                [tag]: { count: 1, firstPath: pathStr, firstMethod: method },
+              }))
+          }, methodAcc)
+        }, pathAcc),
+    {}
+  )
 
   const specTags = (spec['tags'] ?? []) as readonly Record<string, unknown>[]
   const specTagMap = Object.fromEntries(

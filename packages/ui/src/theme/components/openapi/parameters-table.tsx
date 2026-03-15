@@ -18,18 +18,8 @@ interface ParameterGroup {
 // ── Helpers ──────────────────────────────────────────────────
 
 function groupByIn(params: readonly Record<string, unknown>[]): readonly ParameterGroup[] {
-  const groups: Record<string, Record<string, unknown>[]> = {}
-  params.map((param) => {
-    const location = String(param['in'] ?? 'other')
-    const existing = groups[location]
-    if (existing === undefined) {
-      groups[location] = [param]
-    } else {
-      existing.push(param)
-    }
-    return param
-  })
-  return Object.entries(groups).map(([label, items]) => ({ label, items }))
+  const grouped = Map.groupBy(params, (param) => String(param['in'] ?? 'other'))
+  return [...grouped.entries()].map(([label, items]) => ({ label, items }))
 }
 
 function renderRequired(param: Record<string, unknown>): React.ReactElement | null {
@@ -99,7 +89,7 @@ function renderGroup(group: ParameterGroup): React.ReactElement {
  *
  * Each group displays a table with name, type, required, description, and default columns.
  */
-export function ParametersTable({ parameters }: ParametersTableProps): React.ReactElement {
+export function ParametersTable({ parameters }: ParametersTableProps): React.ReactElement | null {
   const groups = groupByIn(parameters)
 
   return match(groups)
@@ -112,5 +102,5 @@ export function ParametersTable({ parameters }: ParametersTableProps): React.Rea
         </div>
       )
     )
-    .otherwise(() => <div />)
+    .otherwise(() => null)
 }

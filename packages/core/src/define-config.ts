@@ -431,6 +431,18 @@ function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<
     return [configError('invalid_openapi', `${context}: "spec" must be a non-empty string`), null]
   }
 
+  const validExtensions = ['.json', '.yaml', '.yml']
+  const hasValidExtension = validExtensions.some((ext) => openapi.spec.endsWith(ext))
+  if (!hasValidExtension) {
+    return [
+      configError(
+        'invalid_openapi',
+        `${context}: "spec" ("${openapi.spec}") must end with ${validExtensions.join(', ')}`
+      ),
+      null,
+    ]
+  }
+
   if (!openapi.prefix || !openapi.prefix.startsWith('/')) {
     return [configError('invalid_openapi', `${context}: "prefix" must start with "/"`), null]
   }
@@ -489,10 +501,13 @@ function validateAllOpenAPI(
     if (acc) {
       return acc
     }
-    if (!entry.config.prefix.startsWith(entry.workspacePrefix)) {
+    const workspaceRoot = match(entry.workspacePrefix.endsWith('/'))
+      .with(true, () => entry.workspacePrefix)
+      .otherwise(() => `${entry.workspacePrefix}/`)
+    if (!entry.config.prefix.startsWith(workspaceRoot)) {
       return configError(
         'invalid_openapi',
-        `${entry.context}: "prefix" ("${entry.config.prefix}") must start with workspace prefix "${entry.workspacePrefix}"`
+        `${entry.context}: "prefix" ("${entry.config.prefix}") must be nested under "${workspaceRoot}"`
       )
     }
     return null

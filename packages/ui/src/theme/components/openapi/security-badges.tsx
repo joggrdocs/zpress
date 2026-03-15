@@ -6,8 +6,9 @@ import { match, P } from 'ts-pattern'
 export interface SecurityBadgesProps {
   /**
    * Security requirement objects from the OpenAPI operation.
+   * Each entry is an alternative (OR); schemes within an entry are combined (AND).
    */
-  readonly securities: Record<string, unknown>
+  readonly securities: readonly Record<string, unknown>[]
 }
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -29,34 +30,45 @@ function LockIcon(): React.ReactElement {
   )
 }
 
+function formatSchemes(requirement: Record<string, unknown>): string {
+  return Object.entries(requirement)
+    .map(([name, scopes]) => {
+      const scopeSuffix = match(scopes)
+        .with(
+          P.when((s): s is readonly string[] => Array.isArray(s) && s.length > 0),
+          (s) => ` (${s.join(', ')})`
+        )
+        .otherwise(() => '')
+      return `${name}${scopeSuffix}`
+    })
+    .join(' + ')
+}
+
 // ── Component ────────────────────────────────────────────────
 
 /**
- * Renders badges for each security scheme required by an operation.
+ * Renders badges for each security requirement of an operation.
  *
- * Displays a lock icon alongside the scheme name.
+ * Each requirement is an alternative (OR). Schemes within a single
+ * requirement are combined (AND). OAuth scopes are shown in parentheses.
  */
-export function SecurityBadges({ securities }: SecurityBadgesProps): React.ReactElement {
-  const keys = Object.keys(securities)
-
-  const content = match(keys)
+export function SecurityBadges({ securities }: SecurityBadgesProps): React.ReactElement | null {
+  return match(securities)
     .with(
-      P.when((k): k is string[] => k.length > 0),
-      (k) => (
+      P.when((s): s is readonly Record<string, unknown>[] => s.length > 0),
+      (s) => (
         <div className="zp-oas-security">
           <div className="zp-oas-security__title">Authentication</div>
           <div className="zp-oas-security__list">
-            {k.map((name) => (
-              <span key={name} className="zp-oas-security__badge">
+            {s.map((requirement, idx) => (
+              <span key={String(idx)} className="zp-oas-security__badge">
                 <LockIcon />
-                {name}
+                {formatSchemes(requirement)}
               </span>
             ))}
           </div>
         </div>
       )
     )
-    .otherwise(() => <div />)
-
-  return content
+    .otherwise(() => null)
 }

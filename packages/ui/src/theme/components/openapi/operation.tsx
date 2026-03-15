@@ -34,18 +34,18 @@ export interface OpenAPIOperationProps {
 
 // ── Helpers ──────────────────────────────────────────────────
 
-function resolveOperation(
-  spec: Record<string, unknown>,
-  path: string,
-  method: string
-): Record<string, unknown> | null {
-  const paths = spec['paths'] as Record<string, Record<string, unknown>> | undefined
+function resolveOperation(input: {
+  readonly spec: Record<string, unknown>
+  readonly path: string
+  readonly method: string
+}): Record<string, unknown> | null {
+  const paths = input.spec['paths'] as Record<string, Record<string, unknown>> | undefined
   return match(paths)
     .with(P.nonNullable, (p) => {
-      const pathItem = p[path]
+      const pathItem = p[input.path]
       return match(pathItem)
         .with(P.nonNullable, (pi) => {
-          const op = pi[method.toLowerCase()]
+          const op = pi[input.method.toLowerCase()]
           return match(op)
             .with(P.nonNullable, (o) => o as Record<string, unknown>)
             .otherwise(() => null)
@@ -65,21 +65,19 @@ function resolveBaseUrl(spec: Record<string, unknown>): string {
     .otherwise(() => 'https://api.example.com')
 }
 
-function resolveSecurities(
-  operation: Record<string, unknown>,
-  spec: Record<string, unknown>
-): Record<string, unknown> {
-  const opSecurity = operation['security'] as readonly Record<string, unknown>[] | undefined
-  const globalSecurity = spec['security'] as readonly Record<string, unknown>[] | undefined
-  const securityList = match(opSecurity)
+function resolveSecurities(input: {
+  readonly operation: Record<string, unknown>
+  readonly spec: Record<string, unknown>
+}): readonly Record<string, unknown>[] {
+  const opSecurity = input.operation['security'] as readonly Record<string, unknown>[] | undefined
+  const globalSecurity = input.spec['security'] as readonly Record<string, unknown>[] | undefined
+  return match(opSecurity)
     .with(P.nonNullable, (s) => s)
     .otherwise(() =>
       match(globalSecurity)
         .with(P.nonNullable, (s) => s)
         .otherwise(() => [] as readonly Record<string, unknown>[])
     )
-
-  return securityList.reduce<Record<string, unknown>>((acc, item) => Object.assign(acc, item), {})
 }
 
 // ── Sub-components ───────────────────────────────────────────
@@ -153,7 +151,7 @@ export function OpenAPIOperation({
   path,
   operationId,
 }: OpenAPIOperationProps): React.ReactElement {
-  const operation = resolveOperation(spec, path, method)
+  const operation = resolveOperation({ spec, path, method })
   const markdown = useMemo(
     () => generateOperationMarkdown({ spec, method, path, operationId }),
     [spec, method, path, operationId]
@@ -167,7 +165,7 @@ export function OpenAPIOperation({
       const summary = op['summary'] as string | undefined
       const description = op['description'] as string | undefined
       const deprecated = op['deprecated'] === true
-      const securities = resolveSecurities(op, spec)
+      const securities = resolveSecurities({ operation: op, spec })
       const baseUrl = resolveBaseUrl(spec)
 
       const displaySummary: string | undefined = match(summary)
@@ -196,10 +194,10 @@ export function OpenAPIOperation({
         )
         .otherwise(() => null)
 
-      const securityEl = match(Object.keys(securities))
+      const securityEl = match(securities)
         .with(
-          P.when((k): k is string[] => k.length > 0),
-          () => <SecurityBadges securities={securities} />
+          P.when((s): s is readonly Record<string, unknown>[] => s.length > 0),
+          (s) => <SecurityBadges securities={s} />
         )
         .otherwise(() => null)
 

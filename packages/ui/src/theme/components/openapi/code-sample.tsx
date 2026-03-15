@@ -214,7 +214,7 @@ function generateRuby(props: CodeSampleProps): string {
     ...requestLines,
     ...bodyLines,
     '',
-    'response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|',
+    `response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: ${String(props.baseUrl.startsWith('https'))}) do |http|`,
     '  http.request(request)',
     'end',
     '',
