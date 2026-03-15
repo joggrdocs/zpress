@@ -42,7 +42,7 @@ export async function startDevServer(
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
-  async function startServer(config: ZpressConfig): Promise<void> {
+  async function startServer(config: ZpressConfig): Promise<boolean> {
     const rspressConfig = createRspressConfig({ config, paths })
     try {
       serverInstance = await dev({
@@ -56,6 +56,7 @@ export async function startDevServer(
           },
         },
       })
+      return true
     } catch (error) {
       const errorMessage = (() => {
         if (error instanceof Error) {
@@ -64,12 +65,15 @@ export async function startDevServer(
         return String(error)
       })()
       process.stderr.write(`Dev server error: ${errorMessage}\n`)
-      process.exit(1)
+      return false
     }
   }
 
-  // Start initial server
-  await startServer(options.config)
+  // Start initial server — exit if it fails on first boot
+  const started = await startServer(options.config)
+  if (!started) {
+    process.exit(1)
+  }
 
   // Return callback that restarts server with new config
   return async (newConfig: ZpressConfig) => {
@@ -88,12 +92,16 @@ export async function startDevServer(
         })()
         process.stderr.write(`Error closing server: ${errorMessage}\n`)
       }
+      serverInstance = null
     }
 
     // Start new server with fresh config
-    await startServer(newConfig)
-
-    process.stdout.write('✅ Dev server restarted\n\n')
+    const restarted = await startServer(newConfig)
+    if (restarted) {
+      process.stdout.write('✅ Dev server restarted\n\n')
+    } else {
+      process.stderr.write('⚠️  Dev server failed to restart — fix the config and save again\n\n')
+    }
   }
 }
 
