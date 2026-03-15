@@ -23,11 +23,7 @@
             },
             "colorMode": {
               "type": "string",
-              "enum": [
-                "dark",
-                "light",
-                "toggle"
-              ]
+              "enum": ["dark", "light", "toggle"]
             },
             "switcher": {
               "type": "boolean"
@@ -107,17 +103,10 @@
                     "properties": {
                       "from": {
                         "type": "string",
-                        "enum": [
-                          "auto",
-                          "filename",
-                          "heading",
-                          "frontmatter"
-                        ]
+                        "enum": ["auto", "filename", "heading", "frontmatter"]
                       }
                     },
-                    "required": [
-                      "from"
-                    ],
+                    "required": ["from"],
                     "additionalProperties": false
                   }
                 ]
@@ -147,10 +136,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "src",
-                  "alt"
-                ],
+                "required": ["src", "alt"],
                 "additionalProperties": false
               },
               "prefix": {
@@ -169,10 +155,7 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": [
-                          "alpha",
-                          "filename"
-                        ]
+                        "enum": ["alpha", "filename"]
                       }
                     ]
                   },
@@ -189,10 +172,7 @@
                         "type": "string"
                       },
                       "titleTemplate": {
-                        "type": [
-                          "string",
-                          "boolean"
-                        ]
+                        "type": ["string", "boolean"]
                       },
                       "description": {
                         "type": "string"
@@ -322,11 +302,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "auto",
-                            "cards",
-                            "overview"
-                          ]
+                          "enum": ["auto", "cards", "overview"]
                         },
                         {
                           "type": "boolean",
@@ -353,10 +329,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "alpha",
-                            "filename"
-                          ]
+                          "enum": ["alpha", "filename"]
                         }
                       ]
                     },
@@ -403,10 +376,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "src",
-                            "alt"
-                          ],
+                          "required": ["src", "alt"],
                           "additionalProperties": false
                         }
                       },
@@ -417,26 +387,15 @@
                     },
                     "titleFrom": {
                       "type": "string",
-                      "enum": [
-                        "filename",
-                        "heading",
-                        "frontmatter",
-                        "auto"
-                      ]
+                      "enum": ["filename", "heading", "frontmatter", "auto"]
                     }
                   },
-                  "required": [
-                    "title"
-                  ],
+                  "required": ["title"],
                   "additionalProperties": false
                 }
               }
             },
-            "required": [
-              "title",
-              "description",
-              "prefix"
-            ],
+            "required": ["title", "description", "prefix"],
             "additionalProperties": false
           }
         },
@@ -471,12 +430,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "title",
-              "description",
-              "icon",
-              "items"
-            ],
+            "required": ["title", "description", "icon", "items"],
             "additionalProperties": false
           }
         },
@@ -498,10 +452,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "title",
-              "description"
-            ],
+            "required": ["title", "description"],
             "additionalProperties": false
           }
         },
@@ -539,9 +490,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "text"
-                ],
+                "required": ["text"],
                 "additionalProperties": false
               }
             }
@@ -566,16 +515,11 @@
               "type": "string"
             }
           },
-          "required": [
-            "spec",
-            "prefix"
-          ],
+          "required": ["spec", "prefix"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "sections"
-      ],
+      "required": ["sections"],
       "additionalProperties": false
     }
   }
