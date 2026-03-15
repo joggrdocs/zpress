@@ -11,6 +11,10 @@
       "inputs": ["src/**", "tsconfig.json", "package.json"],
       "dependsOn": ["^build"]
     },
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$", "src/**", "test/**", "vitest.config.ts"],
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

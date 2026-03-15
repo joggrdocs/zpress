@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsx scripts/generate-schema.ts && rslib build",
     "dev": "rslib build --watch --no-clean",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "generate:schema": "tsx scripts/generate-schema.ts"
   },

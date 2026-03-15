@@ -36,6 +36,7 @@
   "scripts": {
     "build": "rslib build",
     "dev": "node ./dist/index.mjs dev --cwd ../..",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
