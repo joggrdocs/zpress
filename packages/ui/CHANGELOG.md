@@ -1,5 +1,19 @@
 # @zpress/ui
 
+## 0.5.1
+
+### Patch Changes
+
+- 6df5ab7: fix(packages/core): map nav items with `text` instead of `title` for Rspress compatibility
+  fix(packages/ui): inject critical CSS via Rsbuild `html.tags` so loading screen works in dev mode
+  fix(packages/ui): re-enable `data-zp-ready` dismiss flag in ThemeProvider
+  fix(packages/ui): replace pong/invaders loaders with simple dots loader
+  fix(packages/theme): remove `arcade-fx` as standalone theme (effects already apply with arcade)
+- Updated dependencies [6df5ab7]
+  - @zpress/config@0.2.1
+  - @zpress/core@0.6.1
+  - @zpress/theme@0.2.1
+
 ## 0.5.0
 
 ### Minor Changes

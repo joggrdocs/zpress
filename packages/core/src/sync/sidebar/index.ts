@@ -148,9 +148,9 @@ function resolveChildLink(child: ResolvedEntry): string | undefined {
   return findFirstLink(child)
 }
 
-function maybeChildren(
-  children: readonly RspressNavItem[] | undefined,
-): { items?: readonly RspressNavItem[] } {
+function maybeChildren(children: readonly RspressNavItem[] | undefined): {
+  items?: readonly RspressNavItem[]
+} {
   if (children && children.length > 0) {
     return { items: children }
   }
