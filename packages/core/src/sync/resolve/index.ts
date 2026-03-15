@@ -335,7 +335,7 @@ async function resolveGlob(
  *
  * Given children with links like `/a/b/c`, `/a/b/d`, `/a/b/e`,
  * returns `/a/b`. Returns `undefined` when no common prefix exists
- * or there are fewer than 2 children with links.
+ * or there are no children with links.
  */
 function deriveCommonPrefix(children: readonly ResolvedEntry[]): string | undefined {
   const links = children.filter((c) => c.link).map((c) => c.link as string)

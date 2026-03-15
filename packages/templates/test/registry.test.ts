@@ -15,7 +15,10 @@ describe('createRegistry()', () => {
     TEMPLATE_TYPES.map((type) => {
       const template = registry.get(type)
       expect(template).toBeDefined()
-      return expect(template?.type).toBe(type)
+      if (template === undefined) {
+        return
+      }
+      return expect(template.type).toBe(type)
     })
   })
 
@@ -60,7 +63,12 @@ describe('registry.add()', () => {
     })
     const updated = registry.add(adr)
     expect(updated.has('adr')).toBe(true)
-    expect(updated.get('adr')?.label).toBe('ADR')
+    const result = updated.get('adr')
+    expect(result).toBeDefined()
+    if (result === undefined) {
+      return
+    }
+    expect(result.label).toBe('ADR')
   })
 
   it('should not mutate the original registry', () => {
@@ -84,7 +92,12 @@ describe('registry.add()', () => {
       body: '# Custom {{title}}',
     })
     const updated = registry.add(customGuide)
-    expect(updated.get('guide')?.label).toBe('Custom Guide')
+    const guide = updated.get('guide')
+    expect(guide).toBeDefined()
+    if (guide === undefined) {
+      return
+    }
+    expect(guide.label).toBe('Custom Guide')
   })
 })
 
@@ -92,7 +105,12 @@ describe('registry.extend()', () => {
   it('should extend body with a string replacement', () => {
     const registry = createRegistry()
     const updated = registry.extend('guide', { body: '# Custom Body' })
-    expect(updated.get('guide')?.body).toBe('# Custom Body')
+    const guide = updated.get('guide')
+    expect(guide).toBeDefined()
+    if (guide === undefined) {
+      return
+    }
+    expect(guide.body).toBe('# Custom Body')
   })
 
   it('should extend body with a transform function', () => {
@@ -100,8 +118,13 @@ describe('registry.extend()', () => {
     const updated = registry.extend('guide', {
       body: (base) => `${base}\n## Internal Notes\n`,
     })
-    expect(updated.get('guide')?.body).toContain('## Internal Notes')
-    expect(updated.get('guide')?.body).toContain('## Prerequisites')
+    const guide = updated.get('guide')
+    expect(guide).toBeDefined()
+    if (guide === undefined) {
+      return
+    }
+    expect(guide.body).toContain('## Internal Notes')
+    expect(guide.body).toContain('## Prerequisites')
   })
 
   it('should extend label and hint', () => {
@@ -110,16 +133,30 @@ describe('registry.extend()', () => {
       label: 'How-To',
       hint: 'Step-by-step instructions',
     })
-    expect(updated.get('guide')?.label).toBe('How-To')
-    expect(updated.get('guide')?.hint).toBe('Step-by-step instructions')
+    const guide = updated.get('guide')
+    expect(guide).toBeDefined()
+    if (guide === undefined) {
+      return
+    }
+    expect(guide.label).toBe('How-To')
+    expect(guide.hint).toBe('Step-by-step instructions')
   })
 
   it('should preserve original fields when not overridden', () => {
     const registry = createRegistry()
     const original = registry.get('guide')
+    expect(original).toBeDefined()
+    if (original === undefined) {
+      return
+    }
     const updated = registry.extend('guide', { label: 'How-To' })
-    expect(updated.get('guide')?.hint).toBe(original?.hint)
-    expect(updated.get('guide')?.body).toBe(original?.body)
+    const guide = updated.get('guide')
+    expect(guide).toBeDefined()
+    if (guide === undefined) {
+      return
+    }
+    expect(guide.hint).toBe(original.hint)
+    expect(guide.body).toBe(original.body)
   })
 
   it('should return unchanged registry when extending nonexistent type', () => {
@@ -130,9 +167,19 @@ describe('registry.extend()', () => {
 
   it('should not mutate the original registry', () => {
     const registry = createRegistry()
-    const originalLabel = registry.get('guide')?.label
+    const original = registry.get('guide')
+    expect(original).toBeDefined()
+    if (original === undefined) {
+      return
+    }
+    const originalLabel = original.label
     registry.extend('guide', { label: 'Changed' })
-    expect(registry.get('guide')?.label).toBe(originalLabel)
+    const guide = registry.get('guide')
+    expect(guide).toBeDefined()
+    if (guide === undefined) {
+      return
+    }
+    expect(guide.label).toBe(originalLabel)
   })
 })
 
@@ -157,7 +204,12 @@ describe('registry.merge()', () => {
       defineTemplate({ type: 'adr', label: 'Override', hint: 'b', body: '# B' })
     )
     const merged = a.merge(b)
-    expect(merged.get('adr')?.label).toBe('Override')
+    const adr = merged.get('adr')
+    expect(adr).toBeDefined()
+    if (adr === undefined) {
+      return
+    }
+    expect(adr.label).toBe('Override')
   })
 
   it('should not mutate either source registry', () => {
