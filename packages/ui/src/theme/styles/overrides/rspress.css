@@ -33,8 +33,10 @@ html .rp-button--big {
 }
 
 /* ── Single-mode themes — hide the appearance toggle when only one mode is supported ── */
-html[data-zp-modes='dark'] .rp-appearance,
-html[data-zp-modes='light'] .rp-appearance {
+html[data-zp-modes='dark'] .rp-switch-appearance,
+html[data-zp-modes='light'] .rp-switch-appearance,
+html[data-zp-modes='dark'] .rp-nav-screen-appearance,
+html[data-zp-modes='light'] .rp-nav-screen-appearance {
   display: none;
 }
 
