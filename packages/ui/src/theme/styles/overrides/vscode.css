@@ -30,7 +30,8 @@ html[data-zpress-env='vscode'] .rp-nav-hamburger,
 html[data-zpress-env='vscode'] .rp-nav-screen,
 html[data-zpress-env='vscode'] .rp-nav-screen-menu,
 html[data-zpress-env='vscode'] .rp-local-nav,
-html[data-zpress-env='vscode'] .rp-appearance,
+html[data-zpress-env='vscode'] .rp-switch-appearance,
+html[data-zpress-env='vscode'] .rp-nav-screen-appearance,
 html[data-zpress-env='vscode'] .rp-doc-layout__menu {
   display: none;
 }
