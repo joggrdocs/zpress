@@ -1,0 +1,36 @@
+/**
+ * VS Code preview mode overrides.
+ *
+ * Applied when html[data-zpress-env="vscode"] is set — injected synchronously
+ * by the inline head script before first paint.
+ */
+
+/* Hide left sidebar and its placeholder */
+html[data-zpress-env='vscode'] .rp-doc-layout__sidebar,
+html[data-zpress-env='vscode'] .rp-doc-layout__sidebar-placeholder {
+  display: none;
+}
+
+/* Hide right TOC and its placeholder */
+html[data-zpress-env='vscode'] .rp-doc-layout__outline,
+html[data-zpress-env='vscode'] .rp-doc-layout__outline-placeholder {
+  display: none;
+}
+
+/* Center content at 1200px max */
+html[data-zpress-env='vscode'] .rp-doc-layout__doc {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Hide nav items, social links, hamburger, mobile nav, appearance toggle */
+html[data-zpress-env='vscode'] .rp-nav-menu__item,
+html[data-zpress-env='vscode'] .rp-social-links,
+html[data-zpress-env='vscode'] .rp-nav-hamburger,
+html[data-zpress-env='vscode'] .rp-nav-screen,
+html[data-zpress-env='vscode'] .rp-nav-screen-menu,
+html[data-zpress-env='vscode'] .rp-local-nav,
+html[data-zpress-env='vscode'] .rp-appearance,
+html[data-zpress-env='vscode'] .rp-doc-layout__menu {
+  display: none;
+}

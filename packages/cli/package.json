@@ -43,7 +43,6 @@
     "@rspress/core": "catalog:",
     "@zpress/core": "workspace:*",
     "@zpress/ui": "workspace:*",
-    "chokidar": "^5.0.0",
     "es-toolkit": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"

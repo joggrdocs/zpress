@@ -11,11 +11,7 @@ import type { BuiltInIconColor, BuiltInThemeName, ColorMode } from './types.ts'
 /**
  * All built-in theme names — used for validation and iteration.
  */
-export const THEME_NAMES: readonly BuiltInThemeName[] = [
-  'base',
-  'midnight',
-  'arcade',
-] as const
+export const THEME_NAMES: readonly BuiltInThemeName[] = ['base', 'midnight', 'arcade'] as const
 
 /**
  * All valid color modes — used for validation.

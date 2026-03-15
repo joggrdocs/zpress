@@ -23,6 +23,7 @@ import './styles/overrides/sidebar.css'
 import './styles/overrides/home.css'
 import './styles/overrides/home-card.css'
 import './styles/overrides/section-card.css'
+import './styles/overrides/vscode.css'
 
 // Re-export everything from the original Rspress theme
 // (theme-original avoids circular resolution when used inside a themeDir)

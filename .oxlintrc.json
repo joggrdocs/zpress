@@ -117,6 +117,8 @@
     ".claude",
     ".vitepress",
     ".zpress",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "packages/ui/src/head/js",
+    "packages/ui/scripts"
   ]
 }

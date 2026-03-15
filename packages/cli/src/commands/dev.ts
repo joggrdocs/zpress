@@ -49,9 +49,7 @@ export const devCommand = command({
     const watcher = createWatcher(config, paths, onConfigReload)
 
     function cleanup(): void {
-      if (watcher) {
-        watcher.close()
-      }
+      watcher.close()
     }
 
     process.on('SIGINT', cleanup)
