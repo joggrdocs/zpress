@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
-import { TEMPLATE_TYPES } from '../src/types'
-import { createRegistry, createEmptyRegistry } from '../src/registry'
 import { defineTemplate } from '../src/define'
+import { createRegistry, createEmptyRegistry } from '../src/registry'
+import { TEMPLATE_TYPES } from '../src/types'
 
 describe('createRegistry()', () => {
   it('should include all built-in templates', () => {

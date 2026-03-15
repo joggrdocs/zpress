@@ -8,7 +8,7 @@ import type { Section, Frontmatter } from '../../types.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { sortEntries } from './sort.ts'
-import { deriveText, kebabToTitle } from './text.ts'
+import { deriveText, kebabToTitle, resolveSectionTitle } from './text.ts'
 
 // ── Recursive glob resolution ────────────────────────────────
 
@@ -56,9 +56,7 @@ export async function resolveRecursiveGlob(
     onlyFiles: true,
   })
 
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
+  const titleStr = resolveSectionTitle(section)
 
   if (files.length === 0) {
     if (!ctx.quiet) {

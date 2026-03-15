@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generate:schema": {
+      "inputs": ["src/**", "scripts/generate-schema.ts"],
+      "outputs": ["schemas/**"]
+    },
+    "build": {
+      "dependsOn": ["generate:schema", "^build"],
+      "inputs": ["src/**", "rslib.config.ts", "package.json"],
+      "outputs": ["dist/**"]
+    }
+  }
+}

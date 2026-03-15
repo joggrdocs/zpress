@@ -1,13 +1,10 @@
 // Types
 export type {
   ZpressConfig,
-  Entry,
   Section,
   Feature,
   Workspace,
   WorkspaceCategory,
-  WorkspaceItem,
-  WorkspaceGroup,
   Frontmatter,
   NavItem,
   CardConfig,

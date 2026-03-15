@@ -369,7 +369,6 @@ function workspaceToSection(item: Workspace): Section {
   const base: Section = {
     title: item.title,
     icon: item.icon,
-    description: item.description,
     link: item.prefix,
   }
 
@@ -446,7 +445,6 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
       recursive,
       indexFile,
       exclude,
-      collapsible: item.collapsible,
       frontmatter,
     },
     isUndefined

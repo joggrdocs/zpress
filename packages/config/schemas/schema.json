@@ -113,7 +113,8 @@
                           "heading",
                           "frontmatter"
                         ]
-                      }
+                      },
+                      "transform": {}
                     },
                     "required": [
                       "from"
@@ -173,7 +174,8 @@
                           "alpha",
                           "filename"
                         ]
-                      }
+                      },
+                      {}
                     ]
                   },
                   "exclude": {
@@ -309,7 +311,8 @@
                       "anyOf": [
                         {
                           "type": "string"
-                        }
+                        },
+                        {}
                       ]
                     },
                     "items": {
@@ -357,6 +360,9 @@
                             "alpha",
                             "filename"
                           ]
+                        },
+                        {
+                          "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/discovery/properties/sort/anyOf/1"
                         }
                       ]
                     },
@@ -423,6 +429,9 @@
                         "frontmatter",
                         "auto"
                       ]
+                    },
+                    "titleTransform": {
+                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title/anyOf/1/properties/transform"
                     }
                   },
                   "required": [
@@ -604,7 +613,7 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "text": {
+                  "title": {
                     "type": "string"
                   },
                   "link": {
@@ -621,7 +630,7 @@
                   }
                 },
                 "required": [
-                  "text"
+                  "title"
                 ],
                 "additionalProperties": false
               }

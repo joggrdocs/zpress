@@ -20,24 +20,24 @@ A framework gives you two things:
 
 This framework is heavily inspired by [Diataxis](https://diataxis.fr), a documentation system created by Daniele Procida. Diataxis defines four content types along two axes: learning vs. working, and theory vs. practice.
 
-|                | Learning         | Working           |
-| -------------- | ---------------- | ----------------- |
-| **Theory**     | Explanation       | Reference         |
-| **Practice**   | Tutorials        | Guides            |
+|              | Learning    | Working   |
+| ------------ | ----------- | --------- |
+| **Theory**   | Explanation | Reference |
+| **Practice** | Tutorials   | Guides    |
 
 We extend this with three additional types that most real-world projects need: **Standards**, **Troubleshooting**, and **Runbooks**.
 
 ## The seven doc types
 
-| Type              | Purpose                                      | Reader mindset              |
-| ----------------- | -------------------------------------------- | --------------------------- |
-| **Tutorial**      | Guided learning experience                   | "Teach me"                  |
-| **Guide**         | Step-by-step task instructions               | "Help me do this"           |
-| **Explanation**   | Conceptual background and architecture       | "Help me understand"        |
-| **Reference**     | Technical descriptions and API surfaces      | "Give me the details"       |
-| **Standard**      | Rules and conventions                        | "What are the rules?"       |
-| **Troubleshooting** | Common problems and fixes                  | "Something is broken"       |
-| **Runbook**       | Operational procedures                       | "Walk me through this safely" |
+| Type                | Purpose                                 | Reader mindset                |
+| ------------------- | --------------------------------------- | ----------------------------- |
+| **Tutorial**        | Guided learning experience              | "Teach me"                    |
+| **Guide**           | Step-by-step task instructions          | "Help me do this"             |
+| **Explanation**     | Conceptual background and architecture  | "Help me understand"          |
+| **Reference**       | Technical descriptions and API surfaces | "Give me the details"         |
+| **Standard**        | Rules and conventions                   | "What are the rules?"         |
+| **Troubleshooting** | Common problems and fixes               | "Something is broken"         |
+| **Runbook**         | Operational procedures                  | "Walk me through this safely" |
 
 Each type has its own structure, rules, and templates. See [Types](/documentation-framework/types) for details.
 
@@ -47,12 +47,12 @@ The framework maps directly to zpress sections. A typical project might look lik
 
 ```ts
 sections: [
-  { title: 'Getting Started',    /* tutorials + quickstarts */  },
-  { title: 'Guides',             /* task-oriented how-tos */    },
-  { title: 'Concepts',           /* explanations */             },
-  { title: 'Reference',          /* API, config, CLI */         },
-  { title: 'Standards',          /* coding conventions */       },
-  { title: 'Troubleshooting',    /* common issues and fixes */  },
+  { title: 'Getting Started' /* tutorials + quickstarts */ },
+  { title: 'Guides' /* task-oriented how-tos */ },
+  { title: 'Concepts' /* explanations */ },
+  { title: 'Reference' /* API, config, CLI */ },
+  { title: 'Standards' /* coding conventions */ },
+  { title: 'Troubleshooting' /* common issues and fixes */ },
 ]
 ```
 

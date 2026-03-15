@@ -37,12 +37,14 @@ const guide = registry.get('guide')
 const content = render(guide, { title: 'Deploy to Vercel' })
 
 // Add custom templates
-const custom = registry.add(defineTemplate({
-  type: 'adr',
-  label: 'ADR',
-  hint: 'Architecture decision record',
-  body: '# {{title}}\n\n## Context\n\n## Decision\n\n## Consequences\n',
-}))
+const custom = registry.add(
+  defineTemplate({
+    type: 'adr',
+    label: 'ADR',
+    hint: 'Architecture decision record',
+    body: '# {{title}}\n\n## Context\n\n## Decision\n\n## Consequences\n',
+  })
+)
 
 // Extend a built-in template
 const extended = registry.extend('guide', {
@@ -52,16 +54,16 @@ const extended = registry.extend('guide', {
 
 ## Available templates
 
-| Template | Type | Diataxis quadrant |
-| --- | --- | --- |
-| [Tutorial](#tutorial) | `tutorial` | Tutorial |
-| [Guide](#guide) | `guide` | How-To |
-| [Quickstart](#quickstart) | `quickstart` | Tutorial |
-| [Explanation](#explanation) | `explanation` | Explanation |
-| [Reference](#reference) | `reference` | Reference |
-| [Standard](#standard) | `standard` | — |
-| [Troubleshooting](#troubleshooting) | `troubleshooting` | — |
-| [Runbook](#runbook) | `runbook` | — |
+| Template                            | Type              | Diataxis quadrant |
+| ----------------------------------- | ----------------- | ----------------- |
+| [Tutorial](#tutorial)               | `tutorial`        | Tutorial          |
+| [Guide](#guide)                     | `guide`           | How-To            |
+| [Quickstart](#quickstart)           | `quickstart`      | Tutorial          |
+| [Explanation](#explanation)         | `explanation`     | Explanation       |
+| [Reference](#reference)             | `reference`       | Reference         |
+| [Standard](#standard)               | `standard`        | —                 |
+| [Troubleshooting](#troubleshooting) | `troubleshooting` | —                 |
+| [Runbook](#runbook)                 | `runbook`         | —                 |
 
 Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 
@@ -81,7 +83,9 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Steps
 
 ### 1. First Step
+
 ### 2. Second Step
+
 ### 3. Third Step
 
 ## Summary
@@ -101,7 +105,9 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Steps
 
 ### 1. First Step
+
 ### 2. Second Step
+
 ### 3. Third Step
 
 ## Verification
@@ -125,7 +131,9 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Steps
 
 ### 1. First Step
+
 ### 2. Second Step
+
 ### 3. Third Step
 
 ## Result
@@ -145,11 +153,13 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Key Concepts
 
 ### Concept 1
+
 ### Concept 2
 
 ## Usage
 
 ### Basic Usage
+
 ### Advanced Usage
 
 ## References
@@ -165,7 +175,7 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Options
 
 | Option | Type | Default | Description |
-| --- | --- | --- | --- |
+| ------ | ---- | ------- | ----------- |
 
 ## Examples
 
@@ -188,6 +198,7 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Examples
 
 ### Good
+
 ### Bad
 
 ## Enforcement
@@ -228,7 +239,9 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ## Procedure
 
 ### 1. Assess
+
 ### 2. Execute
+
 ### 3. Confirm
 
 ## Rollback

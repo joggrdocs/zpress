@@ -18,11 +18,7 @@ export type {
   Frontmatter,
   NavItem,
   CardConfig,
-  // New base Entry type
-  Entry,
-  // Section (renamed from old Entry)
   Section,
-  // New types
   Workspace,
   WorkspaceCategory,
   TitleConfig,
@@ -33,9 +29,6 @@ export type {
   HeroAction,
   SidebarConfig,
   SidebarLink,
-  // Backward compatibility aliases
-  WorkspaceItem,
-  WorkspaceGroup,
   ResolvedPage,
   ResolvedSection,
   Feature,

@@ -62,8 +62,16 @@ sections: [
     title: 'Getting Started',
     prefix: '/getting-started',
     items: [
-      { title: 'Introduction', link: '/getting-started/intro', from: 'docs/getting-started/intro.md' },
-      { title: 'Quick Start', link: '/getting-started/quick-start', from: 'docs/getting-started/quick-start.md' },
+      {
+        title: 'Introduction',
+        link: '/getting-started/intro',
+        from: 'docs/getting-started/intro.md',
+      },
+      {
+        title: 'Quick Start',
+        link: '/getting-started/quick-start',
+        from: 'docs/getting-started/quick-start.md',
+      },
     ],
   },
   {

@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "description": "Documentation templates SDK for zpress — use built-in templates, extend them, or register custom ones",
   "keywords": [
-    "templates",
     "docs",
     "documentation",
     "scaffold",
+    "templates",
     "zpress"
   ],
   "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/templates#readme",

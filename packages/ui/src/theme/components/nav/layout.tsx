@@ -2,6 +2,8 @@ import { Layout as OriginalLayout } from '@rspress/core/theme-original'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 
+import { useZpress } from '../../hooks/use-zpress'
+import { SidebarLinks } from '../sidebar/sidebar-links'
 import { BranchTag } from './branch-tag'
 import { ThemeSwitcher } from './theme-switcher'
 import { VscodeTag } from './vscode-tag'
@@ -56,9 +58,11 @@ function useVscodeMode(): boolean {
  * Custom Layout override for zpress.
  * Wraps the original Rspress Layout and injects BranchTag
  * into `beforeNavMenu` and ThemeSwitcher into `afterNavMenu`.
+ * Sidebar above/below links are injected via `beforeSidebar`/`afterSidebar`.
  */
 export function Layout(): React.ReactElement {
   const vscode = useVscodeMode()
+  const { sidebarAbove, sidebarBelow } = useZpress()
   const navSlot = (() => {
     if (vscode) {
       return (
@@ -70,5 +74,22 @@ export function Layout(): React.ReactElement {
     }
     return <BranchTag />
   })()
-  return <OriginalLayout beforeNavMenu={navSlot} afterNavMenu={<ThemeSwitcher />} />
+
+  const aboveItems = sidebarAbove ?? []
+  const belowItems = sidebarBelow ?? []
+
+  const sidebarSlots = (() => {
+    const slots: { beforeSidebar?: React.ReactNode; afterSidebar?: React.ReactNode } = {}
+    if (aboveItems.length > 0) {
+      slots.beforeSidebar = <SidebarLinks items={aboveItems} position="above" />
+    }
+    if (belowItems.length > 0) {
+      slots.afterSidebar = <SidebarLinks items={belowItems} position="below" />
+    }
+    return slots
+  })()
+
+  return (
+    <OriginalLayout beforeNavMenu={navSlot} afterNavMenu={<ThemeSwitcher />} {...sidebarSlots} />
+  )
 }

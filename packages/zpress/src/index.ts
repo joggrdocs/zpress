@@ -27,10 +27,10 @@ export { createRspressConfig, zpressPlugin } from '@zpress/ui'
 export type {
   // Config types
   ZpressConfig,
-  Entry,
+  Section,
   Feature,
-  WorkspaceItem,
-  WorkspaceGroup,
+  Workspace,
+  WorkspaceCategory,
   Frontmatter,
   NavItem,
   CardConfig,

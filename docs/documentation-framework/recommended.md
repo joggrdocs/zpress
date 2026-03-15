@@ -20,8 +20,16 @@ export default defineConfig({
       icon: 'pixelarticons:speed-fast',
       prefix: '/getting-started',
       items: [
-        { title: 'Introduction', link: '/getting-started/intro', from: 'docs/getting-started/intro.md' },
-        { title: 'Quick Start', link: '/getting-started/quick-start', from: 'docs/getting-started/quick-start.md' },
+        {
+          title: 'Introduction',
+          link: '/getting-started/intro',
+          from: 'docs/getting-started/intro.md',
+        },
+        {
+          title: 'Quick Start',
+          link: '/getting-started/quick-start',
+          from: 'docs/getting-started/quick-start.md',
+        },
       ],
     },
 
@@ -83,14 +91,14 @@ export default defineConfig({
 
 ## Section-to-type mapping
 
-| Section           | Doc types                | Directory            |
-| ----------------- | ------------------------ | -------------------- |
-| Getting Started   | Tutorials, Quickstarts   | `docs/getting-started/` |
-| Guides            | Guides                   | `docs/guides/`       |
-| Concepts          | Explanations             | `docs/concepts/`     |
-| Reference         | Reference                | `docs/reference/`    |
-| Standards         | Standards                | `docs/standards/`    |
-| Troubleshooting   | Troubleshooting, Runbooks | `docs/troubleshooting/` |
+| Section         | Doc types                 | Directory               |
+| --------------- | ------------------------- | ----------------------- |
+| Getting Started | Tutorials, Quickstarts    | `docs/getting-started/` |
+| Guides          | Guides                    | `docs/guides/`          |
+| Concepts        | Explanations              | `docs/concepts/`        |
+| Reference       | Reference                 | `docs/reference/`       |
+| Standards       | Standards                 | `docs/standards/`       |
+| Troubleshooting | Troubleshooting, Runbooks | `docs/troubleshooting/` |
 
 ## Monorepo additions
 
@@ -177,12 +185,12 @@ docs/
 
 Not every project needs all sections. Start with what you have:
 
-| Project size | Recommended sections                                |
-| ------------ | --------------------------------------------------- |
-| Small        | Getting Started, Reference                          |
-| Medium       | Getting Started, Guides, Concepts, Reference        |
-| Large        | All sections                                        |
-| Monorepo     | All sections + isolated Apps/Packages               |
+| Project size | Recommended sections                         |
+| ------------ | -------------------------------------------- |
+| Small        | Getting Started, Reference                   |
+| Medium       | Getting Started, Guides, Concepts, Reference |
+| Large        | All sections                                 |
+| Monorepo     | All sections + isolated Apps/Packages        |
 
 Add sections as your docs grow. Removing an empty section is easier than reorganizing a flat pile of docs later.
 

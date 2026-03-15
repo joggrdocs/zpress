@@ -6,9 +6,7 @@ export default defineConfig({
   tagline: 'An opinionated documentation framework for monorepos. Just point it at your code.',
   theme: { switcher: true },
   sidebar: {
-    below: [
-      { text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' },
-    ],
+    below: [{ text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' }],
   },
   actions: [
     { theme: 'brand', text: 'Introduction', link: '/getting-started/introduction' },
@@ -47,7 +45,11 @@ export default defineConfig({
           link: '/concepts/auto-discovery',
           from: 'docs/concepts/auto-discovery.md',
         },
-        { title: 'Frontmatter', link: '/concepts/frontmatter', from: 'docs/concepts/frontmatter.md' },
+        {
+          title: 'Frontmatter',
+          link: '/concepts/frontmatter',
+          from: 'docs/concepts/frontmatter.md',
+        },
         { title: 'Workspaces', link: '/concepts/workspaces', from: 'docs/concepts/workspaces.md' },
         { title: 'Navigation', link: '/concepts/navigation', from: 'docs/concepts/navigation.md' },
         {
@@ -175,6 +177,7 @@ export default defineConfig({
     {
       title: 'Contributing',
       icon: 'pixelarticons:git-merge',
+      link: '/contributing',
       isolated: true,
       items: [
         {
@@ -221,9 +224,9 @@ export default defineConfig({
     },
   ],
   nav: [
-    { text: 'Getting Started', link: '/getting-started/introduction' },
-    { text: 'Concepts', link: '/concepts/sections-and-pages' },
-    { text: 'Documentation Framework', link: '/documentation-framework/overview' },
-    { text: 'Reference', link: '/reference/configuration' },
+    { title: 'Getting Started', link: '/getting-started/introduction' },
+    { title: 'Concepts', link: '/concepts/sections-and-pages' },
+    { title: 'Documentation Framework', link: '/documentation-framework/overview' },
+    { title: 'Reference', link: '/reference/configuration' },
   ],
 })

@@ -13,9 +13,7 @@ import { generateSidebar } from './index.ts'
  * @param resolved - Fully resolved entry tree
  * @returns Sorted sidebar record ready for JSON serialization
  */
-export function buildMultiSidebar(
-  resolved: readonly ResolvedEntry[]
-): Record<string, unknown[]> {
+export function buildMultiSidebar(resolved: readonly ResolvedEntry[]): Record<string, unknown[]> {
   const rootEntries = resolved.filter((e) => !e.isolated)
   const isolatedEntries = resolved.filter((e) => e.isolated && e.link)
 
@@ -88,7 +86,13 @@ export function buildMultiSidebar(
             )
             .otherwise(() => [])
 
-          return [landing, ...children, ...childGroups]
+          // Skip landing when a child already links to the same page
+          const firstChildLink = resolveFirstChildLink(children)
+          const items = match(firstChildLink === entryLink)
+            .with(true, () => [...children, ...childGroups])
+            .otherwise(() => [landing, ...children, ...childGroups])
+
+          return items
         })
 
       return [
@@ -134,6 +138,13 @@ function resolveParentLink(entryLink: string): string | null {
     return segments
   }
   return null
+}
+
+function resolveFirstChildLink(children: readonly SidebarItem[]): string | undefined {
+  if (children.length > 0 && children[0].link) {
+    return children[0].link
+  }
+  return undefined
 }
 
 function buildSidebarGroup(

@@ -94,7 +94,7 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
         return acc
       }
 
-      // title is inherited from Entry base and can be string | TitleConfig
+      // title can be string | TitleConfig
       // For workspace items, it should be a string
       if (!item.title) {
         return {
@@ -165,7 +165,7 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
       return acc
     }
 
-    // title is inherited from Entry base
+    // title can be string | TitleConfig
     if (!category.title) {
       return configError('missing_field', 'WorkspaceCategory: "title" is required')
     }

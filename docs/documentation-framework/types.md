@@ -23,8 +23,8 @@ A guided learning experience that teaches through doing.
 
 **Structure:**
 
-| Section            | Required |
-| ------------------ | -------- |
+| Section             | Required |
+| ------------------- | -------- |
 | What You Will Learn | Yes      |
 | What You Will Build | Yes      |
 | Prerequisites       | Yes      |
@@ -49,13 +49,13 @@ Step-by-step instructions for completing a specific task.
 
 **Structure:**
 
-| Section         | Required |
-| --------------- | -------- |
-| Prerequisites   | Yes      |
-| Steps (numbered)| Yes      |
-| Verification    | Yes      |
-| Next Steps      | No       |
-| Troubleshooting | No       |
+| Section          | Required |
+| ---------------- | -------- |
+| Prerequisites    | Yes      |
+| Steps (numbered) | Yes      |
+| Verification     | Yes      |
+| Next Steps       | No       |
+| Troubleshooting  | No       |
 
 **Example title:** "Configure Custom Themes"
 
@@ -74,8 +74,8 @@ A fast-track from zero to working result. A compressed tutorial that prioritizes
 
 **Structure:**
 
-| Section            | Required |
-| ------------------ | -------- |
+| Section             | Required |
+| ------------------- | -------- |
 | What You Will Build | Yes      |
 | Prerequisites       | Yes      |
 | Steps (numbered)    | Yes      |
@@ -99,13 +99,13 @@ Conceptual background that helps the reader understand a topic.
 
 **Structure:**
 
-| Section       | Required |
-| ------------- | -------- |
-| Overview      | Yes      |
-| Architecture  | No       |
-| Key Concepts  | Yes      |
-| Usage         | No       |
-| References    | Yes      |
+| Section      | Required |
+| ------------ | -------- |
+| Overview     | Yes      |
+| Architecture | No       |
+| Key Concepts | Yes      |
+| Usage        | No       |
+| References   | Yes      |
 
 **Example title:** "Authentication"
 
@@ -124,12 +124,12 @@ Technical descriptions of APIs, configuration, CLI commands, or data models.
 
 **Structure:**
 
-| Section       | Required |
-| ------------- | -------- |
-| Overview      | No       |
-| Fields/Options| Yes      |
-| Examples      | No       |
-| References    | No       |
+| Section        | Required |
+| -------------- | -------- |
+| Overview       | No       |
+| Fields/Options | Yes      |
+| Examples       | No       |
+| References     | No       |
 
 **Example title:** "Configuration Reference"
 
@@ -147,12 +147,12 @@ Rules and conventions that contributors must follow.
 
 **Structure:**
 
-| Section      | Required |
-| ------------ | -------- |
-| Overview     | Yes      |
-| Rules        | Yes      |
-| Examples     | Yes      |
-| Enforcement  | No       |
+| Section     | Required |
+| ----------- | -------- |
+| Overview    | Yes      |
+| Rules       | Yes      |
+| Examples    | Yes      |
+| Enforcement | No       |
 
 **Example title:** "Git Commit Conventions"
 
@@ -171,12 +171,12 @@ Common problems and their fixes.
 
 **Structure:**
 
-| Section                    | Required |
-| -------------------------- | -------- |
-| Issue (H2, one per issue)  | Yes      |
-| Symptom                    | Yes      |
-| Fix                        | Yes      |
-| Cause                      | No       |
+| Section                   | Required |
+| ------------------------- | -------- |
+| Issue (H2, one per issue) | Yes      |
+| Symptom                   | Yes      |
+| Fix                       | Yes      |
+| Cause                     | No       |
 
 **Example title:** "Deployment Troubleshooting"
 
@@ -195,13 +195,13 @@ Step-by-step operational procedures for recurring tasks that require care.
 
 **Structure:**
 
-| Section     | Required |
-| ----------- | -------- |
-| When to Use | Yes      |
-| Prerequisites | Yes    |
-| Procedure   | Yes      |
-| Rollback    | Yes      |
-| Escalation  | No       |
+| Section       | Required |
+| ------------- | -------- |
+| When to Use   | Yes      |
+| Prerequisites | Yes      |
+| Procedure     | Yes      |
+| Rollback      | Yes      |
+| Escalation    | No       |
 
 **Example title:** "Database Migration Rollback"
 

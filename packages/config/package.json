@@ -35,7 +35,7 @@
     "provenance": true
   },
   "scripts": {
-    "build": "tsx scripts/generate-schema.ts && rslib build",
+    "build": "rslib build",
     "dev": "rslib build --watch --no-clean",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

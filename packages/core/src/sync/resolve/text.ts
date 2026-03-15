@@ -4,6 +4,8 @@ import { capitalize, words } from 'es-toolkit'
 import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
+import type { Section } from '../../types.ts'
+
 /**
  * Derive display text for a page.
  *
@@ -28,6 +30,32 @@ export function deriveText(
     .with('heading', () => deriveFromHeading(sourcePath, slug))
     .with('filename', () => Promise.resolve(kebabToTitle(slug)))
     .exhaustive()
+}
+
+/**
+ * Resolve a display title for a section header.
+ *
+ * When `title` is a string, returns it directly.
+ * When `title` is a TitleConfig object (e.g. `{ from: 'heading' }`),
+ * derives a human-readable name from the prefix or link's last segment.
+ * Falls back to `'Section'` only when no prefix or link is available.
+ *
+ * @param section - Section with title and optional prefix/link
+ * @returns Display title string
+ */
+export function resolveSectionTitle(section: Section): string {
+  return match(section.title)
+    .with(P.string, (t) => t)
+    .otherwise(() => {
+      const prefix = section.prefix ?? section.link
+      if (prefix) {
+        const lastSegment = prefix.split('/').filter(Boolean).pop()
+        if (lastSegment) {
+          return kebabToTitle(lastSegment)
+        }
+      }
+      return 'Section'
+    })
 }
 
 /**

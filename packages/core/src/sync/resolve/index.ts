@@ -13,7 +13,7 @@ import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { resolveRecursiveGlob } from './recursive.ts'
 import { sortEntries } from './sort.ts'
-import { deriveText } from './text.ts'
+import { deriveText, resolveSectionTitle } from './text.ts'
 
 /**
  * Walk the Section tree and produce a ResolvedEntry tree.
@@ -98,14 +98,11 @@ function resolveFilePage(
   }
 
   const ext = sourceExt(section.from)
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
 
   return [
     null,
     {
-      title: titleStr,
+      title: resolveSectionTitle(section),
       link: section.link,
       hidden: section.hidden,
       card: section.card,
@@ -129,14 +126,10 @@ function resolveVirtualPage(
     return [syncError('missing_link', 'resolveVirtualPage called without section.link'), null]
   }
 
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
-
   return [
     null,
     {
-      title: titleStr,
+      title: resolveSectionTitle(section),
       link: section.link,
       hidden: section.hidden,
       card: section.card,
@@ -199,19 +192,22 @@ async function resolveNestedSection(
   })()
   const collapsible = section.collapsible ?? autoCollapsible
 
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
+  // Auto-derive link so the group is navigable and gets a landing page.
+  // Priority: explicit link > prefix > common prefix of children's links
+  const derivedLink = section.prefix ?? deriveCommonPrefix(sorted)
+  const link = section.link ?? derivedLink
+  const autoLink = !section.link && link !== undefined
 
   return [
     null,
     {
-      title: titleStr,
-      link: section.link,
+      title: resolveSectionTitle(section),
+      link,
       collapsible,
       hidden: section.hidden,
       card: section.card,
       isolated: section.isolated,
+      autoLink,
       items: sorted,
       page: sectionPage,
     },
@@ -280,9 +276,7 @@ async function resolveGlob(
     onlyFiles: true,
   })
 
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
+  const titleStr = resolveSectionTitle(section)
 
   if (files.length === 0) {
     if (!ctx.quiet) {
@@ -334,6 +328,46 @@ async function resolveGlob(
       } satisfies ResolvedEntry
     })
   )
+}
+
+/**
+ * Derive a common path prefix from children's links.
+ *
+ * Given children with links like `/a/b/c`, `/a/b/d`, `/a/b/e`,
+ * returns `/a/b`. Returns `undefined` when no common prefix exists
+ * or there are fewer than 2 children with links.
+ */
+function deriveCommonPrefix(children: readonly ResolvedEntry[]): string | undefined {
+  const links = children.filter((c) => c.link).map((c) => c.link as string)
+  if (links.length === 0) {
+    return undefined
+  }
+
+  const segmentArrays = links.map((link) => link.split('/').filter(Boolean))
+  const shortest = segmentArrays.reduce(
+    (min, segs) => Math.min(min, segs.length),
+    Number.POSITIVE_INFINITY
+  )
+
+  const common: string[] = []
+  // Walk segments left-to-right until they diverge
+  Array.from({ length: shortest }).reduce<boolean>((matching, _, i) => {
+    if (!matching) {
+      return false
+    }
+    const seg = segmentArrays[0][i]
+    if (segmentArrays.every((segs) => segs[i] === seg)) {
+      common.push(seg)
+      return true
+    }
+    return false
+  }, true)
+
+  if (common.length === 0) {
+    return undefined
+  }
+
+  return `/${common.join('/')}`
 }
 
 /**
