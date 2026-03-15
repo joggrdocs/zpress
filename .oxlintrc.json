@@ -93,7 +93,8 @@
         "functional/no-throw-statements": "off",
         "functional/no-classes": "off",
         "security/detect-object-injection": "off",
-        "security/detect-non-literal-fs-filename": "off"
+        "security/detect-non-literal-fs-filename": "off",
+        "vitest/no-importing-vitest-globals": "off"
       }
     },
     {
