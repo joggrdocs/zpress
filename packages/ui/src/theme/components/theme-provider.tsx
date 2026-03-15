@@ -7,9 +7,14 @@ declare const __ZPRESS_THEME_COLORS__: string
 declare const __ZPRESS_THEME_DARK_COLORS__: string
 
 /**
- * Themes that only support dark mode — the appearance toggle is hidden for these.
+ * Supported color modes per built-in theme — used to set `data-zp-modes`
+ * so the appearance toggle is hidden for single-mode themes.
  */
-const DARK_ONLY_THEMES: ReadonlySet<string> = new Set(['midnight', 'arcade'])
+const THEME_MODES: Readonly<Record<string, string>> = {
+  base: 'dark light',
+  midnight: 'dark',
+  arcade: 'dark',
+}
 
 const COLOR_VAR_MAP: Record<string, readonly string[]> = {
   brand: ['--zp-c-brand-1', '--rp-c-brand'],
@@ -172,11 +177,12 @@ export function ThemeProvider(): React.ReactElement | null {
     // 1. Set theme attribute
     html.dataset.zpTheme = themeName
 
-    // 2. Set dark-only flag — hides the appearance toggle for dark-only themes
-    if (DARK_ONLY_THEMES.has(themeName)) {
-      html.dataset.zpDarkOnly = 'true'
+    // 2. Set supported modes — hides the appearance toggle for single-mode themes
+    const modes = THEME_MODES[themeName]
+    if (modes) {
+      html.dataset.zpModes = modes
     } else {
-      delete html.dataset.zpDarkOnly
+      html.dataset.zpModes = 'dark light'
     }
 
     // 3. Force color mode if not toggle

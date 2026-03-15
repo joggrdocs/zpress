@@ -32,8 +32,9 @@ html .rp-button--big {
   border-radius: 9999px;
 }
 
-/* ── Dark-only themes — hide the appearance (dark/light) toggle ── */
-html[data-zp-dark-only] .rp-appearance {
+/* ── Single-mode themes — hide the appearance toggle when only one mode is supported ── */
+html[data-zp-modes='dark'] .rp-appearance,
+html[data-zp-modes='light'] .rp-appearance {
   display: none;
 }
 
