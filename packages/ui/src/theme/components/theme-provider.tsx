@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import type React from 'react'
 
 declare const __ZPRESS_THEME_NAME__: string
@@ -113,9 +113,36 @@ const useIsomorphicLayoutEffect = getIsomorphicEffect()
  */
 const LOADER_MIN_DISPLAY_MS = 600
 
-export function ThemeProvider(): React.ReactElement | null {
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+/**
+ * Duration (ms) of the CSS fade-out transition. Must match the
+ * `transition: opacity` value in loader-backdrop.css / loader-dots.css.
+ */
+const LOADER_FADE_MS = 400
 
+/**
+ * Dismiss the loading overlay with a two-phase approach:
+ *   1. Add `zp-loader-fade` class → CSS transitions opacity to 0
+ *   2. After transition completes → set `data-zp-ready` attribute → CSS hard removes (display: none)
+ *
+ * Returns a cleanup function that cancels pending timers.
+ */
+function dismissLoader(html: HTMLElement): () => void {
+  const fadeTimer = setTimeout(() => {
+    html.classList.add('zp-loader-fade')
+  }, LOADER_MIN_DISPLAY_MS)
+
+  const removeTimer = setTimeout(() => {
+    html.dataset.zpReady = 'true'
+    html.classList.remove('zp-loader-fade')
+  }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
+
+  return () => {
+    clearTimeout(fadeTimer)
+    clearTimeout(removeTimer)
+  }
+}
+
+export function ThemeProvider(): React.ReactElement | null {
   useIsomorphicLayoutEffect(() => {
     const html = document.documentElement
     const themeName = safeGetItem('zpress-theme') || __ZPRESS_THEME_NAME__
@@ -175,28 +202,20 @@ export function ThemeProvider(): React.ReactElement | null {
 
       observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
-      // 5. Dismiss loading overlay after minimum display time
-      timerRef.current = setTimeout(() => {
-        html.dataset.zpReady = 'true'
-      }, LOADER_MIN_DISPLAY_MS)
+      // 5. Dismiss loading overlay
+      const cancelLoader = dismissLoader(html)
 
       return () => {
         observer.disconnect()
-        if (timerRef.current) {
-          clearTimeout(timerRef.current)
-        }
+        cancelLoader()
       }
     }
 
-    // 5. Dismiss loading overlay after minimum display time
-    timerRef.current = setTimeout(() => {
-      html.dataset.zpReady = 'true'
-    }, LOADER_MIN_DISPLAY_MS)
+    // 5. Dismiss loading overlay
+    const cancelLoader = dismissLoader(html)
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-      }
+      cancelLoader()
     }
   }, [])
 

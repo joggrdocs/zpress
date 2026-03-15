@@ -2,9 +2,10 @@
  * Loading overlay backdrop — full-page cover.
  *
  * Covers the entire viewport with the theme background color.
- * Fades out over 400ms when ThemeProvider sets data-zp-ready on <html>.
- * After the transition, pointer-events and visibility are removed
- * so the overlay doesn't block interaction.
+ * Lifecycle:
+ *   1. Visible by default (opacity 1)
+ *   2. .zp-loader-fade → opacity transitions to 0 over 400ms
+ *   3. [data-zp-ready] → hard removed (display none)
  */
 
 html::before {
@@ -18,7 +19,10 @@ html::before {
   transition: opacity 0.4s ease;
 }
 
-html[data-zp-ready]::before {
+html.zp-loader-fade::before {
   opacity: 0;
-  visibility: hidden;
+}
+
+html[data-zp-ready]::before {
+  display: none;
 }

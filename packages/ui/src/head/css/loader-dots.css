@@ -2,7 +2,10 @@
  * Loading text with animated dots — "loading..." in center of viewport.
  *
  * Uses a fixed-width container so the dots append without shifting
- * the text. Fades out with the backdrop when data-zp-ready is set.
+ * the text. Lifecycle mirrors loader-backdrop.css:
+ *   1. Visible by default (opacity 1)
+ *   2. .zp-loader-fade → opacity transitions to 0 over 400ms
+ *   3. [data-zp-ready] → hard removed (display none)
  */
 
 html::after {
@@ -26,10 +29,12 @@ html::after {
   animation: zp-dots 1.2s steps(1) infinite;
 }
 
-html[data-zp-ready]::after {
+html.zp-loader-fade::after {
   opacity: 0;
-  visibility: hidden;
-  animation: none;
+}
+
+html[data-zp-ready]::after {
+  display: none;
 }
 
 @keyframes zp-dots {
