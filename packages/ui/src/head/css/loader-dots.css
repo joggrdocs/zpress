@@ -2,11 +2,10 @@
  * Loading text with animated dots — "loading..." in center of viewport.
  *
  * Uses a fixed-width container so the dots append without shifting
- * the text. The width fits "loading..." and text is left-aligned
- * within the centered box.
+ * the text. Fades out with the backdrop when data-zp-ready is set.
  */
 
-html:not([data-zp-ready])::after {
+html::after {
   content: 'loading';
   position: fixed;
   top: 50%;
@@ -22,7 +21,15 @@ html:not([data-zp-ready])::after {
   letter-spacing: 0.04em;
   z-index: 9999;
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.4s ease;
   animation: zp-dots 1.2s steps(1) infinite;
+}
+
+html[data-zp-ready]::after {
+  opacity: 0;
+  visibility: hidden;
+  animation: none;
 }
 
 @keyframes zp-dots {

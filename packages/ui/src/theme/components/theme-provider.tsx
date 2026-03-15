@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import type React from 'react'
 
 declare const __ZPRESS_THEME_NAME__: string
@@ -108,7 +108,14 @@ const useIsomorphicLayoutEffect = getIsomorphicEffect()
  * Sets `data-zp-ready` on <html> to dismiss the loading overlay
  * injected by critical CSS.
  */
+/**
+ * Minimum time (ms) the loading overlay stays visible before fading out.
+ */
+const LOADER_MIN_DISPLAY_MS = 600
+
 export function ThemeProvider(): React.ReactElement | null {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   useIsomorphicLayoutEffect(() => {
     const html = document.documentElement
     const themeName = safeGetItem('zpress-theme') || __ZPRESS_THEME_NAME__
@@ -168,16 +175,29 @@ export function ThemeProvider(): React.ReactElement | null {
 
       observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
-      // 5. Dismiss loading overlay — all theme setup complete
-      html.dataset.zpReady = 'true'
+      // 5. Dismiss loading overlay after minimum display time
+      timerRef.current = setTimeout(() => {
+        html.dataset.zpReady = 'true'
+      }, LOADER_MIN_DISPLAY_MS)
 
       return () => {
         observer.disconnect()
+        if (timerRef.current) {
+          clearTimeout(timerRef.current)
+        }
       }
     }
 
-    // 5. Dismiss loading overlay — all theme setup complete
-    html.dataset.zpReady = 'true'
+    // 5. Dismiss loading overlay after minimum display time
+    timerRef.current = setTimeout(() => {
+      html.dataset.zpReady = 'true'
+    }, LOADER_MIN_DISPLAY_MS)
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+    }
   }, [])
 
   return null
