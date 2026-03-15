@@ -1,5 +1,15 @@
 # @zpress/cli
 
+## 0.3.2
+
+### Patch Changes
+
+- 1b3b8e3: Add vitest test infrastructure and 122 unit tests across all packages
+- Updated dependencies [1b3b8e3]
+- Updated dependencies [c57ab70]
+  - @zpress/core@0.6.2
+  - @zpress/ui@0.6.0
+
 ## 0.3.1
 
 ### Patch Changes
