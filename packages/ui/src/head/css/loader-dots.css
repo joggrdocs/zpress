@@ -10,7 +10,7 @@
  * Uses a fixed-width container so the dots append without shifting
  * the text. Lifecycle mirrors loader-backdrop.css:
  *   1. Visible by default (opacity 1)
- *   2. .zp-loader-fade → opacity transitions to 0 over 400ms
+ *   2. .zp-loader-fade → opacity transitions to 0 over 200ms
  *   3. [data-zp-ready] → hard removed (display none)
  */
 

@@ -4,7 +4,7 @@
  * Covers the entire viewport with the theme background color.
  * Lifecycle:
  *   1. Visible by default (opacity 1)
- *   2. .zp-loader-fade → opacity transitions to 0 over 400ms
+ *   2. .zp-loader-fade → opacity transitions to 0 over 200ms
  *   3. [data-zp-ready] → hard removed (display none)
  */
 
