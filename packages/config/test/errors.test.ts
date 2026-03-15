@@ -28,40 +28,48 @@ describe('configError()', () => {
 describe('configErrorFromZod()', () => {
   it('should return object with _tag ConfigError', () => {
     const parseResult = z.string().safeParse(123)
-    if (!parseResult.success) {
-      const result = configErrorFromZod(parseResult.error)
-      expect(result._tag).toBe('ConfigError')
+    expect(parseResult.success).toBeFalsy()
+    if (parseResult.success) {
+      return
     }
+    const result = configErrorFromZod(parseResult.error)
+    expect(result._tag).toBe('ConfigError')
   })
 
   it('should return type validation_failed', () => {
     const parseResult = z.string().safeParse(123)
-    if (!parseResult.success) {
-      const result = configErrorFromZod(parseResult.error)
-      expect(result.type).toBe('validation_failed')
+    expect(parseResult.success).toBeFalsy()
+    if (parseResult.success) {
+      return
     }
+    const result = configErrorFromZod(parseResult.error)
+    expect(result.type).toBe('validation_failed')
   })
 
   it('should return message Configuration validation failed', () => {
     const parseResult = z.string().safeParse(123)
-    if (!parseResult.success) {
-      const result = configErrorFromZod(parseResult.error)
-      expect(result.message).toBe('Configuration validation failed')
+    expect(parseResult.success).toBeFalsy()
+    if (parseResult.success) {
+      return
     }
+    const result = configErrorFromZod(parseResult.error)
+    expect(result.message).toBe('Configuration validation failed')
   })
 
   it('should map ZodError issues to errors array with path and message', () => {
     const parseResult = z.object({ name: z.string() }).safeParse({ name: 123 })
-    if (!parseResult.success) {
-      const result = configErrorFromZod(parseResult.error)
-      expect(result.errors).toBeDefined()
-      expect(result.errors).toHaveLength(1)
-      if (result.errors) {
-        expect(result.errors[0]).toMatchObject({
-          path: ['name'],
-          message: expect.any(String),
-        })
-      }
+    expect(parseResult.success).toBeFalsy()
+    if (parseResult.success) {
+      return
+    }
+    const result = configErrorFromZod(parseResult.error)
+    expect(result.errors).toBeDefined()
+    expect(result.errors).toHaveLength(1)
+    if (result.errors) {
+      expect(result.errors[0]).toMatchObject({
+        path: ['name'],
+        message: expect.any(String),
+      })
     }
   })
 })
