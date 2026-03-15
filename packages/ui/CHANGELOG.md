@@ -1,5 +1,11 @@
 # @zpress/ui
 
+## 0.6.1
+
+### Patch Changes
+
+- 77e872e: Fix appearance toggle not hiding for single-mode themes by using correct Rspress class selectors
+
 ## 0.6.0
 
 ### Minor Changes
