@@ -17,7 +17,6 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
   { name: 'base', label: 'Base', swatch: '#a78bfa', defaultColorMode: 'toggle' },
   { name: 'midnight', label: 'Midnight', swatch: '#60a5fa', defaultColorMode: 'dark' },
   { name: 'arcade', label: 'Arcade', swatch: '#00ff88', defaultColorMode: 'dark' },
-  { name: 'arcade-fx', label: 'Arcade FX', swatch: '#ff00ff', defaultColorMode: 'dark' },
 ]
 
 /**
@@ -41,11 +40,11 @@ function applyTheme(theme: ThemeOption): void {
   if (theme.defaultColorMode === 'dark') {
     html.classList.add('rp-dark')
     html.dataset.dark = 'true'
-    localStorage.setItem('rspress-theme', 'dark')
+    localStorage.setItem('rspress-theme-appearance', 'dark')
   } else if (theme.defaultColorMode === 'light') {
     html.classList.remove('rp-dark')
     html.dataset.dark = 'false'
-    localStorage.setItem('rspress-theme', 'light')
+    localStorage.setItem('rspress-theme-appearance', 'light')
   }
 }
 
@@ -56,11 +55,11 @@ function applyTheme(theme: ThemeOption): void {
 export function ThemeSwitcher(): React.ReactElement | null {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTheme, setActiveTheme] = useState(() => {
-    if (typeof globalThis === 'undefined') {
+    if (globalThis.window === undefined) {
       return 'base'
     }
     try {
-      return localStorage.getItem('zpress-theme') || 'base'
+      return globalThis.localStorage.getItem('zpress-theme') || 'base'
     } catch {
       return 'base'
     }

@@ -1,0 +1,33 @@
+/**
+ * Loading text with animated dots — "loading..." in center of viewport.
+ *
+ * Uses a fixed-width container so the dots append without shifting
+ * the text. The width fits "loading..." and text is left-aligned
+ * within the centered box.
+ */
+
+html:not([data-zp-ready])::after {
+  content: 'loading';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 8em;
+  margin-left: -4em;
+  margin-top: -0.5em;
+  text-align: left;
+  color: var(--zp-c-text-2, #888);
+  font-family: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  z-index: 9999;
+  pointer-events: none;
+  animation: zp-dots 1.2s steps(1) infinite;
+}
+
+@keyframes zp-dots {
+  0%      { content: 'loading'; }
+  25%     { content: 'loading.'; }
+  50%     { content: 'loading..'; }
+  75%     { content: 'loading...'; }
+}

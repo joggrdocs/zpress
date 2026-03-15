@@ -144,3 +144,15 @@ export interface SidebarItem {
   readonly collapsed?: boolean
   readonly items?: readonly SidebarItem[]
 }
+
+/**
+ * Rspress nav item shape.
+ *
+ * Uses `text` (not `title`) to match Rspress's expected NavItem interface.
+ */
+export interface RspressNavItem {
+  readonly text: string
+  readonly link?: string
+  readonly items?: readonly RspressNavItem[]
+  readonly activeMatch?: string
+}

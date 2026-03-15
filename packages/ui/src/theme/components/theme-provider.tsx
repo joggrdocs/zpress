@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import type React from 'react'
 
 declare const __ZPRESS_THEME_NAME__: string
@@ -88,13 +88,28 @@ function parseColors(raw: string): Record<string, string> {
 }
 
 /**
+ * useLayoutEffect on the client, useEffect on the server (avoids SSR warning).
+ * Ensures DOM mutations happen synchronously before browser paint.
+ */
+function getIsomorphicEffect(): typeof useLayoutEffect {
+  if (globalThis.window !== undefined) {
+    return useLayoutEffect
+  }
+  return useEffect
+}
+
+const useIsomorphicLayoutEffect = getIsomorphicEffect()
+
+/**
  * ThemeProvider — global UI component that configures the active theme.
  *
  * Sets `data-zp-theme` attribute, forces color mode, and applies
  * inline CSS custom property overrides from build-time defines.
+ * Sets `data-zp-ready` on <html> to dismiss the loading overlay
+ * injected by critical CSS.
  */
 export function ThemeProvider(): React.ReactElement | null {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const html = document.documentElement
     const themeName = safeGetItem('zpress-theme') || __ZPRESS_THEME_NAME__
     const colorMode = __ZPRESS_COLOR_MODE__
@@ -110,11 +125,19 @@ export function ThemeProvider(): React.ReactElement | null {
     if (colorMode === 'dark') {
       html.classList.add('rp-dark')
       html.dataset.dark = 'true'
-      localStorage.setItem('rspress-theme', 'dark')
+      try {
+        localStorage.setItem('rspress-theme-appearance', 'dark')
+      } catch {
+        // storage unavailable
+      }
     } else if (colorMode === 'light') {
       html.classList.remove('rp-dark')
       html.dataset.dark = 'false'
-      localStorage.setItem('rspress-theme', 'light')
+      try {
+        localStorage.setItem('rspress-theme-appearance', 'light')
+      } catch {
+        // storage unavailable
+      }
     }
 
     // 3. Apply base color overrides
@@ -145,12 +168,16 @@ export function ThemeProvider(): React.ReactElement | null {
 
       observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
+      // 5. Dismiss loading overlay — all theme setup complete
+      html.dataset.zpReady = 'true'
+
       return () => {
         observer.disconnect()
       }
     }
 
-    // no cleanup needed when dark color overrides are absent
+    // 5. Dismiss loading overlay — all theme setup complete
+    html.dataset.zpReady = 'true'
   }, [])
 
   return null

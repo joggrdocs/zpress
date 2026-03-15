@@ -1,7 +1,7 @@
 import { log } from '@clack/prompts'
 
-import type { ZpressConfig, NavItem } from '../../types.ts'
-import type { ResolvedEntry, SidebarItem } from '../types.ts'
+import type { NavItem, ZpressConfig } from '../../types.ts'
+import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
 
 /**
  * Build a SidebarItem from a resolved entry.
@@ -46,12 +46,12 @@ export function generateSidebar(entries: readonly ResolvedEntry[]): SidebarItem[
 /**
  * Build a NavItem from a resolved entry.
  */
-function buildNavEntry(entry: ResolvedEntry): NavItem {
+function buildNavEntry(entry: ResolvedEntry): RspressNavItem {
   const link = resolveLink(entry)
   const children = resolveChildren(entry)
 
   return {
-    title: entry.title,
+    text: entry.title,
     link,
     ...maybeChildren(children),
   }
@@ -67,9 +67,9 @@ function buildNavEntry(entry: ResolvedEntry): NavItem {
  * @param resolved - Resolved entry tree from the sync engine
  * @returns Rspress nav items array
  */
-export function generateNav(config: ZpressConfig, resolved: readonly ResolvedEntry[]): NavItem[] {
+export function generateNav(config: ZpressConfig, resolved: readonly ResolvedEntry[]): RspressNavItem[] {
   if (config.nav !== 'auto' && config.nav !== undefined) {
-    return [...config.nav]
+    return config.nav.map(mapNavItem)
   }
 
   // Auto: first 3 non-isolated sections (matching home page features),
@@ -117,13 +117,13 @@ function resolveLink(entry: ResolvedEntry): string | undefined {
   return findFirstLink(entry)
 }
 
-function resolveChildren(entry: ResolvedEntry): NavItem[] | undefined {
+function resolveChildren(entry: ResolvedEntry): RspressNavItem[] | undefined {
   if (entry.isolated && entry.items && entry.items.length > 0) {
     return entry.items
       .filter((child) => !child.hidden)
       .map(
-        (child): NavItem => ({
-          title: child.title,
+        (child): RspressNavItem => ({
+          text: child.title,
           link: resolveChildLink(child),
         })
       )
@@ -139,9 +139,21 @@ function resolveChildLink(child: ResolvedEntry): string | undefined {
   return findFirstLink(child)
 }
 
-function maybeChildren(children: NavItem[] | undefined): { items?: NavItem[] } {
+function maybeChildren(children: RspressNavItem[] | undefined): { items?: RspressNavItem[] } {
   if (children && children.length > 0) {
     return { items: children }
   }
   return {}
+}
+
+/**
+ * Map a user-facing NavItem (title) to an Rspress NavItem (text).
+ */
+function mapNavItem(item: NavItem): RspressNavItem {
+  return {
+    text: item.title,
+    link: item.link,
+    ...(item.activeMatch ? { activeMatch: item.activeMatch } : {}),
+    ...(item.items ? { items: item.items.map(mapNavItem) } : {}),
+  }
 }

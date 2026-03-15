@@ -12,15 +12,15 @@ import type { LiteralUnion } from 'type-fest'
 /**
  * Theme name with autocomplete for built-in themes and support for custom themes.
  *
- * Built-in themes: 'base', 'midnight', 'arcade', 'arcade-fx'
+ * Built-in themes: 'base', 'midnight', 'arcade'
  * Custom themes: any string value
  */
-export type ThemeName = LiteralUnion<'base' | 'midnight' | 'arcade' | 'arcade-fx', string>
+export type ThemeName = LiteralUnion<'base' | 'midnight' | 'arcade', string>
 
 /**
  * Built-in theme names for validation and iteration.
  */
-export type BuiltInThemeName = 'base' | 'midnight' | 'arcade' | 'arcade-fx'
+export type BuiltInThemeName = 'base' | 'midnight' | 'arcade'
 
 // ── Icon color ──────────────────────────────────────────────
 

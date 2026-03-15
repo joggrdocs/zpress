@@ -314,7 +314,7 @@ function configErrorFromZod(zodError: z.ZodError): ConfigError
 
 Re-exported from `@zpress/theme`:
 
-- `THEME_NAMES` - Array of built-in theme names: `['base', 'midnight', 'arcade', 'arcade-fx']`
+- `THEME_NAMES` - Array of built-in theme names: `['base', 'midnight', 'arcade']`
 - `COLOR_MODES` - Array of valid color modes: `['dark', 'light', 'toggle']`
 - `ICON_COLORS` - Array of built-in icon colors: `['purple', 'blue', 'green', 'amber', 'cyan', 'red', 'pink', 'slate']`
 
