@@ -85,10 +85,7 @@ function createFromMap(templates: ReadonlyMap<string, Template>): TemplateRegist
  * ```
  */
 export function createRegistry(): TemplateRegistry {
-  const entries: ReadonlyArray<readonly [string, Template]> = Object.values(BUILT_IN_TEMPLATES).map(
-    (t) => [t.type, t] as const
-  )
-  return createFromMap(new Map(entries))
+  return createFromMap(new Map(Object.entries(BUILT_IN_TEMPLATES)))
 }
 
 /**

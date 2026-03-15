@@ -18,10 +18,5 @@ import type { Template } from './types.ts'
  * ```
  */
 export function defineTemplate(options: Template): Template {
-  return {
-    type: options.type,
-    label: options.label,
-    hint: options.hint,
-    body: options.body,
-  }
+  return { ...options }
 }

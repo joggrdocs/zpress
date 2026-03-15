@@ -78,16 +78,14 @@ export function Layout(): React.ReactElement {
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []
 
-  const sidebarSlots = (() => {
-    const slots: { beforeSidebar?: React.ReactNode; afterSidebar?: React.ReactNode } = {}
-    if (aboveItems.length > 0) {
-      slots.beforeSidebar = <SidebarLinks items={aboveItems} position="above" />
-    }
-    if (belowItems.length > 0) {
-      slots.afterSidebar = <SidebarLinks items={belowItems} position="below" />
-    }
-    return slots
-  })()
+  const sidebarSlots = {
+    ...(aboveItems.length > 0
+      ? { beforeSidebar: <SidebarLinks items={aboveItems} position="above" /> }
+      : {}),
+    ...(belowItems.length > 0
+      ? { afterSidebar: <SidebarLinks items={belowItems} position="below" /> }
+      : {}),
+  }
 
   return (
     <OriginalLayout beforeNavMenu={navSlot} afterNavMenu={<ThemeSwitcher />} {...sidebarSlots} />

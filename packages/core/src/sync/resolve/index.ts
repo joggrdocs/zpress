@@ -349,19 +349,16 @@ function deriveCommonPrefix(children: readonly ResolvedEntry[]): string | undefi
     Number.POSITIVE_INFINITY
   )
 
-  const common: string[] = []
-  // Walk segments left-to-right until they diverge
-  Array.from({ length: shortest }).reduce<boolean>((matching, _, i) => {
-    if (!matching) {
-      return false
+  // Walk segments left-to-right, accumulating matches until divergence
+  const common = segmentArrays[0].slice(0, shortest).reduce<readonly string[]>((acc, seg, i) => {
+    if (acc.length !== i) {
+      return acc
     }
-    const seg = segmentArrays[0][i]
     if (segmentArrays.every((segs) => segs[i] === seg)) {
-      common.push(seg)
-      return true
+      return [...acc, seg]
     }
-    return false
-  }, true)
+    return acc
+  }, [])
 
   if (common.length === 0) {
     return undefined

@@ -4,6 +4,7 @@ import path from 'node:path'
 import { command } from '@kidd-cli/core'
 import { createRegistry, render, toSlug } from '@zpress/templates'
 import type { Template } from '@zpress/templates'
+import { match, P } from 'ts-pattern'
 import { z } from 'zod'
 
 const registry = createRegistry()
@@ -25,9 +26,14 @@ export const draftCommand = command({
     ctx.logger.intro('zpress draft')
 
     const typeArg = ctx.args.type
-    const selectedType: string = registry.has(typeArg ?? '')
-      ? (typeArg as string)
-      : await ctx.prompts.select<string>({
+    const hasValidType = match(typeArg)
+      .with(P.string.minLength(1), (t) => registry.has(t))
+      .otherwise(() => false)
+
+    const selectedType: string = await match(hasValidType)
+      .with(true, () => Promise.resolve(typeArg as string))
+      .otherwise(() =>
+        ctx.prompts.select<string>({
           message: 'Select a doc type',
           options: registry.list().map((t: Template) => ({
             value: t.type,
@@ -35,6 +41,7 @@ export const draftCommand = command({
             hint: t.hint,
           })),
         })
+      )
 
     const template = registry.get(selectedType)
     if (!template) {
@@ -42,18 +49,18 @@ export const draftCommand = command({
       process.exit(1)
     }
 
-    const title =
-      ctx.args.title ??
-      (await ctx.prompts.text({
-        message: 'Document title',
-        placeholder: 'e.g. Authentication',
-        validate: (value) => {
-          if (!value || value.trim().length === 0) {
-            return 'Title is required'
-          }
-          return undefined
-        },
-      }))
+    const title = await match(ctx.args.title)
+      .with(P.string.minLength(1), (t) => Promise.resolve(t))
+      .otherwise(() =>
+        ctx.prompts.text({
+          message: 'Document title',
+          placeholder: 'e.g. Authentication',
+          validate: (value) =>
+            match(!value || value.trim().length === 0)
+              .with(true, () => 'Title is required')
+              .otherwise(() => undefined),
+        })
+      )
 
     const content = render(template, { title })
     const filename = `${toSlug(title)}.md`
