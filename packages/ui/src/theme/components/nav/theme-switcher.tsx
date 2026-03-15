@@ -21,20 +21,12 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
 
 const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
 
-const LEGACY_THEME_MAP: Record<string, string> = {
-  'arcade-fx': 'arcade',
-}
-
 /**
- * Sanitize a stored theme name: migrate legacy values, reject unknown names.
+ * Validate a stored theme name, rejecting unknown values.
  */
 function sanitizeThemeName(raw: string | null): string {
   if (!raw) {
     return 'base'
-  }
-  const migrated = LEGACY_THEME_MAP[raw]
-  if (migrated) {
-    return migrated
   }
   if (VALID_THEME_NAMES.has(raw)) {
     return raw
