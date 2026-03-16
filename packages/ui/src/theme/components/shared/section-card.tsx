@@ -30,13 +30,13 @@ export function SectionCard({
 
   return (
     <Card href={href} className="section-card">
-      <span className={`section-icon section-icon--${iconColor}`}>
-        <Icon icon={icon} />
-      </span>
-      <div className="section-info">
+      <div className="section-header">
+        <span className={`section-icon section-icon--${iconColor}`}>
+          <Icon icon={icon} />
+        </span>
         <span className="section-title">{title}</span>
-        {descEl}
       </div>
+      {descEl}
     </Card>
   )
 }

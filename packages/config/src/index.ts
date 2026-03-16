@@ -18,11 +18,7 @@ export type {
   Frontmatter,
   NavItem,
   CardConfig,
-  // New base Entry type
-  Entry,
-  // Section (renamed from old Entry)
   Section,
-  // New types
   Workspace,
   WorkspaceCategory,
   TitleConfig,
@@ -30,14 +26,13 @@ export type {
   RecursiveDiscoveryConfig,
   FlatDiscoveryConfig,
   SeoConfig,
-  HeroConfig,
-  // Backward compatibility aliases
-  WorkspaceItem,
-  WorkspaceGroup,
+  HeroAction,
+  SidebarConfig,
+  SidebarLink,
   ResolvedPage,
   ResolvedSection,
-  OpenAPIConfig,
   Feature,
+  OpenAPIConfig,
   Result,
 } from './types.ts'
 

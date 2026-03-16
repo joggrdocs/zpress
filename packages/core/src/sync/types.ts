@@ -106,6 +106,11 @@ export interface ResolvedEntry {
    * When true, this section gets its own sidebar namespace keyed by `link`.
    */
   readonly isolated?: boolean
+  /**
+   * When true, `link` was auto-derived from `prefix` or children's common prefix
+   * rather than explicitly set in the config. Used to skip overview child promotion.
+   */
+  readonly autoLink?: boolean
 }
 
 /**

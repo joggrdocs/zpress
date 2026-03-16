@@ -97,6 +97,19 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
   return {}
 }
 
+/**
+ * Resolve sidebar link items for a given position, defaulting to empty array.
+ */
+function resolveSidebarLinks(
+  config: ZpressConfig,
+  position: 'above' | 'below'
+): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
+  if (config.sidebar && config.sidebar[position]) {
+    return config.sidebar[position]
+  }
+  return []
+}
+
 const COLOR_MODE_DARK_JS = readJs('js/color-mode-dark.js')
 const COLOR_MODE_LIGHT_JS = readJs('js/color-mode-light.js')
 const VSCODE_DETECT_JS = readJs('js/vscode-detect.js')
@@ -232,6 +245,10 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Custom zpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces } as Record<string, unknown>),
+      ...({
+        sidebarAbove: resolveSidebarLinks(config, 'above'),
+        sidebarBelow: resolveSidebarLinks(config, 'below'),
+      } as Record<string, unknown>),
     },
   }
 }

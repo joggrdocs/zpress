@@ -60,7 +60,7 @@ When workspace metadata (from `apps`, `packages`, or `workspaces`) matches a sec
 - Technology tag badges
 - Optional deploy badge
 
-See the [Workspaces guide](/guides/workspaces) for workspace configuration.
+See the [Workspaces guide](/concepts/workspaces) for workspace configuration.
 
 ## Controlling card content
 
@@ -85,4 +85,4 @@ Card descriptions are resolved in this order (highest priority first):
 ## References
 
 - [Configuration reference — CardConfig](/reference/configuration#cardconfig)
-- [Workspaces guide](/guides/workspaces)
+- [Workspaces guide](/concepts/workspaces)

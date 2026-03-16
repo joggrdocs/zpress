@@ -43,6 +43,7 @@
     "@kidd-cli/core": "^0.4.0",
     "@rspress/core": "catalog:",
     "@zpress/core": "workspace:*",
+    "@zpress/templates": "workspace:*",
     "@zpress/ui": "workspace:*",
     "es-toolkit": "catalog:",
     "ts-pattern": "catalog:",

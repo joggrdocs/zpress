@@ -130,5 +130,9 @@ export default defineConfig({
       ],
     },
   ],
+  sidebar: {
+    above: [{ text: 'Home', link: '/', icon: 'pixelarticons:home' }],
+    below: [{ text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link' }],
+  },
   nav: 'auto',
 })

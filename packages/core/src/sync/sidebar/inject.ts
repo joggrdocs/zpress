@@ -23,7 +23,7 @@ const OVERVIEW_SLUGS: readonly string[] = ['overview', 'index', 'readme']
  * @private
  */
 function promoteOverviewChild(entry: ResolvedEntry): void {
-  if (!entry.link || !entry.items || entry.items.length === 0 || entry.page) {
+  if (!entry.link || entry.autoLink || !entry.items || entry.items.length === 0 || entry.page) {
     return
   }
 

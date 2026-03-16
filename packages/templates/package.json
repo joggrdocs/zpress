@@ -1,0 +1,50 @@
+{
+  "name": "@zpress/templates",
+  "version": "0.1.0",
+  "description": "Documentation templates SDK for zpress — use built-in templates, extend them, or register custom ones",
+  "keywords": [
+    "docs",
+    "documentation",
+    "scaffold",
+    "templates",
+    "zpress"
+  ],
+  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/templates#readme",
+  "bugs": "https://github.com/joggrdocs/zpress/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joggrdocs/zpress.git",
+    "directory": "packages/templates"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch --no-clean",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "es-toolkit": "catalog:"
+  },
+  "devDependencies": {
+    "@rslib/core": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

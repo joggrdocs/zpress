@@ -12,14 +12,19 @@
     "lint": "oxlint --ignore-pattern node_modules",
     "lint:fix": "oxlint --fix --ignore-pattern node_modules",
     "test": "turbo run test",
-    "check": "turbo run typecheck && pnpm lint && pnpm format",
+    "check": "turbo run typecheck //#lint //#format",
     "changeset": "changeset",
-    "version": "changeset version && oxfmt --write",
-    "release": "pnpm build && changeset publish",
+    "version": "changeset version",
+    "postversion": "oxfmt --write",
+    "prerelease": "turbo run build",
+    "release": "changeset publish",
     "docs:build": "node packages/zpress/dist/cli.mjs build",
     "docs:serve": "node packages/zpress/dist/cli.mjs serve",
-    "dev": "pnpm build && lauf run docs && turbo run dev",
-    "dev:playground": "pnpm build && pnpm --filter @zpress/ui dev"
+    "docs:generate": "lauf run docs",
+    "predev": "turbo run //#docs:generate",
+    "dev": "turbo run dev",
+    "predev:playground": "turbo run build --force",
+    "dev:playground": "pnpm --filter @zpress/ui dev"
   },
   "dependencies": {
     "@zpress/kit": "workspace:*"

@@ -19,15 +19,16 @@ export { defineConfig } from '@zpress/core'
 
 export type {
   ZpressConfig,
-  Entry,
+  Section,
   Feature,
-  WorkspaceItem,
-  WorkspaceGroup,
+  Workspace,
+  WorkspaceCategory,
   Frontmatter,
   NavItem,
   CardConfig,
-  OpenAPIConfig,
   IconConfig,
   IconColor,
   IconId,
+  SidebarConfig,
+  SidebarLink,
 } from '@zpress/core'

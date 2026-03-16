@@ -89,6 +89,11 @@ html .rp-home-hero__actions {
   }
 }
 
+/* ── Feature grid home padding ───────────────────────────── */
+html [class*='rp-home'] .feature-grid {
+  padding: 0 16px 64px;
+}
+
 /* ── Code blocks ─────────────────────────────────────────── */
 div[class*='language-'] {
   border-radius: var(--rp-radius) !important;

@@ -8,7 +8,7 @@ import { generateSidebar } from './index.ts'
  * Build a multi-sidebar record from resolved entries.
  *
  * Root entries go under `"/"`, each isolated section gets its own namespace
- * keyed by `link`, and OpenAPI sidebars (if any) each get their own prefix key.
+ * keyed by `link`.
  * Keys are sorted by string length (descending) for Rspress matching precedence.
  *
  * @param resolved - Fully resolved entry tree
@@ -91,7 +91,13 @@ export function buildMultiSidebar(
             )
             .otherwise(() => [])
 
-          return [landing, ...children, ...childGroups]
+          // Skip landing when a child already links to the same page
+          const firstChildLink = resolveFirstChildLink(children)
+          const items = match(firstChildLink === entryLink)
+            .with(true, () => [...children, ...childGroups])
+            .otherwise(() => [landing, ...children, ...childGroups])
+
+          return items
         })
 
       return [
@@ -153,6 +159,13 @@ function resolveParentLink(entryLink: string): string | null {
     return segments
   }
   return null
+}
+
+function resolveFirstChildLink(children: readonly SidebarItem[]): string | undefined {
+  if (children.length > 0 && children[0].link) {
+    return children[0].link
+  }
+  return undefined
 }
 
 function buildSidebarGroup(

@@ -154,4 +154,4 @@ When navigating to `/api/`, only that section's sidebar appears.
 
 ## References
 
-- [Navigation guide](/guides/navigation) — configuring the top navigation bar
+- [Navigation guide](/concepts/navigation) — configuring the top navigation bar

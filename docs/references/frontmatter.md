@@ -16,7 +16,7 @@ description: A short summary of this page.
 # My Page
 ```
 
-See the [Frontmatter guide](/guides/frontmatter) for injection and inheritance patterns.
+See the [Frontmatter guide](/concepts/frontmatter) for injection and inheritance patterns.
 
 ## Standard fields
 

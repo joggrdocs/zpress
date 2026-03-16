@@ -104,7 +104,8 @@
                       "from": {
                         "type": "string",
                         "enum": ["auto", "filename", "heading", "frontmatter"]
-                      }
+                      },
+                      "transform": {}
                     },
                     "required": ["from"],
                     "additionalProperties": false
@@ -156,7 +157,8 @@
                       {
                         "type": "string",
                         "enum": ["alpha", "filename"]
-                      }
+                      },
+                      {}
                     ]
                   },
                   "exclude": {
@@ -289,7 +291,8 @@
                       "anyOf": [
                         {
                           "type": "string"
-                        }
+                        },
+                        {}
                       ]
                     },
                     "items": {
@@ -330,6 +333,9 @@
                         {
                           "type": "string",
                           "enum": ["alpha", "filename"]
+                        },
+                        {
+                          "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/discovery/properties/sort/anyOf/1"
                         }
                       ]
                     },
@@ -388,6 +394,9 @@
                     "titleFrom": {
                       "type": "string",
                       "enum": ["filename", "heading", "frontmatter", "auto"]
+                    },
+                    "titleTransform": {
+                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title/anyOf/1/properties/transform"
                     }
                   },
                   "required": ["title"],
@@ -406,7 +415,7 @@
                   "title": {
                     "type": "string"
                   },
-                  "sidebarStyle": {
+                  "sidebarLayout": {
                     "type": "string",
                     "enum": ["method-path", "title"]
                   }
@@ -476,6 +485,74 @@
             "additionalProperties": false
           }
         },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "theme": {
+                "type": "string",
+                "enum": ["brand", "alt"]
+              },
+              "text": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              }
+            },
+            "required": ["theme", "text", "link"],
+            "additionalProperties": false
+          }
+        },
+        "sidebar": {
+          "type": "object",
+          "properties": {
+            "above": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "link": {
+                    "type": "string"
+                  },
+                  "icon": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["id", "color"],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "required": ["text", "link"],
+                "additionalProperties": false
+              }
+            },
+            "below": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ZpressConfig/properties/sidebar/properties/above/items"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
         "sections": {
           "type": "array",
           "items": {
@@ -494,7 +571,7 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "text": {
+                  "title": {
                     "type": "string"
                   },
                   "link": {
@@ -510,7 +587,7 @@
                     "type": "string"
                   }
                 },
-                "required": ["text"],
+                "required": ["title"],
                 "additionalProperties": false
               }
             }
@@ -521,9 +598,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "openapi": {
-          "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/openapi"
         }
       },
       "required": ["sections"],

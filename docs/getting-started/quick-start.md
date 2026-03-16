@@ -1,23 +1,9 @@
 ---
-title: Getting Started
-description: Install zpress and create your first documentation site.
+title: Quick Start
+description: Install zpress and create your first documentation site in minutes.
 ---
 
-# Getting Started
-
-## What is zpress
-
-zpress is an information-architecture-driven documentation framework for monorepos. Your config file _is_ the architecture — it defines what content exists, where it comes from, and how it's organized in a single tree. Source markdown files are never edited by the tool. zpress syncs them into a build directory, injects frontmatter, generates sidebars and nav, and produces a static site.
-
-## Why zpress
-
-There are excellent documentation tools out there — [VitePress](https://vitepress.dev), [Rspress](https://rspress.dev), [Docusaurus](https://docusaurus.io), and others. They were direct inspirations for this project. So why build another one?
-
-**Zero config, real defaults.** Most documentation tools need significant setup before they produce anything useful. zpress ships with opinionated defaults that work immediately. Point it at a repo with a `docs/` directory and you get a working site — sidebar, navigation, and all.
-
-**Your structure, not ours.** When you _do_ configure zpress, the config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
-
-**Built for the vibe.** AI coding tools are everywhere now. When you're vibing on a project — spinning up features with Claude, Copilot, Cursor, or whatever you reach for — documentation shouldn't be the part that slows you down. Tell your AI to create a `docs/` directory, write some markdown, and run `zpress dev`. It just works. No plugin config, no theme wiring, no boilerplate. The whole point is that a docs site is one command away from existing.
+# Quick Start
 
 ## Install
 
@@ -101,5 +87,5 @@ Add `.zpress/content/`, `.zpress/dist/`, and `.zpress/cache/` to your `.gitignor
 
 ## Next steps
 
-- [Sections and Pages](/guides/sections-and-pages) — understand the building blocks of your information architecture
+- [Sections and Pages](/concepts/sections-and-pages) — understand the building blocks of your information architecture
 - [Configuration reference](/reference/configuration) — complete field reference for `zpress.config.ts`

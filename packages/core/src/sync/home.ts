@@ -8,6 +8,7 @@ import { hasGlobChars } from '../glob.ts'
 import { ICON_COLORS, resolveOptionalIcon } from '../icon.ts'
 import type { IconColor } from '../icon.ts'
 import type { Section, Feature, ZpressConfig, Workspace } from '../types.ts'
+import { resolveSectionTitle } from './resolve/text.ts'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -137,13 +138,9 @@ export async function generateDefaultHomePage(
     ...match(tagline)
       .with(P.nonNullable, (t) => ({ tagline: t }))
       .otherwise(() => ({})),
-    actions: [
-      {
-        theme: 'brand',
-        text: 'Get Started',
-        link: firstLink,
-      },
-    ],
+    actions: match(config.actions)
+      .with(P.nonNullable, (a) => a)
+      .otherwise(() => [{ theme: 'brand', text: 'Get Started', link: firstLink }]),
     image: {
       src: '/banner.svg',
       alt: title,
@@ -354,9 +351,7 @@ function buildFeatures(
       const iconColor: IconColor = match(resolved)
         .with(P.nonNullable, (r) => r.color)
         .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
-      const titleStr = match(section.title)
-        .with(P.string, (t) => t)
-        .otherwise(() => 'Section')
+      const titleStr = resolveSectionTitle(section)
       return { title: titleStr, details, link, iconId, iconColor }
     })
   )
@@ -408,9 +403,7 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
   }
 
   // Well-known section name → curated default
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
+  const titleStr = resolveSectionTitle(section)
   const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {
     return knownDesc

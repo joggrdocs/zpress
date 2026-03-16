@@ -141,6 +141,9 @@ importers:
       '@zpress/core':
         specifier: workspace:*
         version: link:../core
+      '@zpress/templates':
+        specifier: workspace:*
+        version: link:../templates
       '@zpress/ui':
         specifier: workspace:*
         version: link:../ui
@@ -237,6 +240,19 @@ importers:
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/templates:
+    dependencies:
+      es-toolkit:
+        specifier: 'catalog:'
+        version: 1.45.1
+    devDependencies:
+      '@rslib/core':
+        specifier: 'catalog:'
+        version: 0.20.0(@microsoft/api-extractor@7.57.7(@types/node@25.5.0))(core-js@3.47.0)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

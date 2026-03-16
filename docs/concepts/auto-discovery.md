@@ -104,4 +104,4 @@ When combining `items` with `from`, explicit entries win. If an explicit entry h
 ## References
 
 - [Configuration — Entry fields](/reference/configuration#entry-fields)
-- [Sections and pages](/guides/sections-and-pages)
+- [Sections and pages](/concepts/sections-and-pages)

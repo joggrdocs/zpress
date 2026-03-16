@@ -17,11 +17,7 @@ export type {
   Frontmatter,
   NavItem,
   CardConfig,
-  // New base Entry type
-  Entry,
-  // Section (renamed from old Entry)
   Section,
-  // New types from refactor
   Workspace,
   WorkspaceCategory,
   TitleConfig,
@@ -29,13 +25,12 @@ export type {
   RecursiveDiscoveryConfig,
   FlatDiscoveryConfig,
   SeoConfig,
-  HeroConfig,
-  // Backward compatibility
-  WorkspaceItem,
-  WorkspaceGroup,
+  HeroAction,
+  SidebarConfig,
+  SidebarLink,
   ResolvedPage,
   ResolvedSection,
-  OpenAPIConfig,
   Feature,
+  OpenAPIConfig,
   Result,
 } from '@zpress/config'

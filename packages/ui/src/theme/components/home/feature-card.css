@@ -10,7 +10,7 @@
   gap: var(--feature-grid-gap);
   max-width: 1152px;
   margin: 0 auto;
-  padding: 0 16px 64px;
+  padding-bottom: 24px;
 }
 
 /* ── Grid item + span system ────────────────────────────────── */

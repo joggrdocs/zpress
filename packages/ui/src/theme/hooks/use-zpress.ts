@@ -10,6 +10,12 @@ export interface ZpressSidebarItem {
   readonly items?: readonly ZpressSidebarItem[]
 }
 
+export interface ZpressSidebarLink {
+  readonly text: string
+  readonly link: string
+  readonly icon?: string | { readonly id: string; readonly color: string }
+}
+
 // ── Workspace types ─────────────────────────────────────────
 
 export interface WorkspaceCardData {
@@ -34,6 +40,8 @@ export interface WorkspaceGroupData {
 
 interface ZpressThemeConfig {
   readonly sidebar: Record<string, readonly ZpressSidebarItem[]>
+  readonly sidebarAbove: readonly ZpressSidebarLink[] | undefined
+  readonly sidebarBelow: readonly ZpressSidebarLink[] | undefined
   readonly workspaces: readonly WorkspaceGroupData[] | undefined
 }
 

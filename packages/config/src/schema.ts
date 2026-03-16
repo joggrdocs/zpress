@@ -4,9 +4,38 @@
  * Note: Using 'zod/v3' import for compatibility with zod-to-json-schema@3.25.1
  * which requires Zod v3 schema objects even when Zod v4 is installed as peer dependency.
  * All schemas are redefined here using zod/v3 to avoid type incompatibilities.
+ *
+ * Recursive schemas (navItemSchema, entrySchema) are annotated with z.ZodType<T>
+ * to enforce compile-time consistency between schemas and their TypeScript types.
+ * If a schema field is renamed or changed without updating the type (or vice versa),
+ * TypeScript will error here.
+ *
+ * Function fields use z.custom<T> with typed signatures to avoid z.function()'s
+ * lossy (...args: unknown[]) => unknown inference, preserving exact call signatures.
  */
 
 import { z } from 'zod/v3'
+
+import type { CardConfig, Frontmatter, NavItem, ResolvedPage, Section } from './types.ts'
+
+// ── Helpers ──────────────────────────────────────────────────
+
+/**
+ * Runtime check for function values. Used by z.custom<T> to validate
+ * function-typed config fields while preserving their exact TypeScript signature.
+ */
+function isFunction(val: unknown): boolean {
+  return typeof val === 'function'
+}
+
+// ── Typed function schemas ───────────────────────────────────
+// z.function() infers to (...args: unknown[]) => unknown, which loses
+// parameter and return types. z.custom<T> preserves exact signatures
+// while still validating typeof === 'function' at runtime.
+
+const titleTransformSchema = z.custom<(text: string, slug: string) => string>(isFunction)
+const sortFnSchema = z.custom<(a: ResolvedPage, b: ResolvedPage) => number>(isFunction)
+const contentFnSchema = z.custom<() => string | Promise<string>>(isFunction)
 
 // ── Frontmatter schema ───────────────────────────────────────
 
@@ -32,10 +61,10 @@ const frontmatterSchema = z
 
 // ── Nav schema ───────────────────────────────────────────────
 
-const navItemSchema: z.ZodType<unknown> = z.lazy(() =>
+const navItemSchema: z.ZodType<NavItem> = z.lazy(() =>
   z
     .object({
-      text: z.string(),
+      title: z.string(),
       link: z.string().optional(),
       items: z.array(navItemSchema).optional(),
       activeMatch: z.string().optional(),
@@ -50,7 +79,7 @@ const titleConfigSchema = z.union([
   z
     .object({
       from: z.enum(['auto', 'filename', 'heading', 'frontmatter']),
-      transform: z.function().optional(),
+      transform: titleTransformSchema.optional(),
     })
     .strict(),
 ])
@@ -61,7 +90,7 @@ const discoverySchema = z
   .object({
     from: z.string().optional(),
     title: titleConfigSchema.optional(),
-    sort: z.union([z.enum(['alpha', 'filename']), z.function()]).optional(),
+    sort: z.union([z.enum(['alpha', 'filename']), sortFnSchema]).optional(),
     exclude: z.array(z.string()).optional(),
     frontmatter: frontmatterSchema.optional(),
     recursive: z.boolean().optional(),
@@ -84,21 +113,21 @@ const cardConfigSchema = z
 
 // ── Entry schema ─────────────────────────────────────────────
 
-const entrySchema: z.ZodType<unknown> = z.lazy(() =>
+const entrySchema: z.ZodType<Section> = z.lazy(() =>
   z
     .object({
       title: titleConfigSchema,
       link: z.string().optional(),
       from: z.string().optional(),
       prefix: z.string().optional(),
-      content: z.union([z.string(), z.function()]).optional(),
+      content: z.union([z.string(), contentFnSchema]).optional(),
       items: z.array(entrySchema).optional(),
       landing: z.union([z.enum(['auto', 'cards', 'overview']), z.literal(false)]).optional(),
       collapsible: z.boolean().optional(),
       exclude: z.array(z.string()).optional(),
       hidden: z.boolean().optional(),
       frontmatter: frontmatterSchema.optional(),
-      sort: z.union([z.enum(['alpha', 'filename']), z.function()]).optional(),
+      sort: z.union([z.enum(['alpha', 'filename']), sortFnSchema]).optional(),
       recursive: z.boolean().optional(),
       indexFile: z.string().optional(),
       icon: z.string().optional(),
@@ -107,7 +136,7 @@ const entrySchema: z.ZodType<unknown> = z.lazy(() =>
       isolated: z.boolean().optional(),
       // Deprecated fields for backward compatibility
       titleFrom: z.enum(['filename', 'heading', 'frontmatter', 'auto']).optional(),
-      titleTransform: z.function().optional(),
+      titleTransform: titleTransformSchema.optional(),
     })
     .strict()
 )
@@ -192,6 +221,35 @@ const themeConfigSchema = z
   })
   .strict()
 
+// ── Sidebar schema ──────────────────────────────────────────
+
+const sidebarLinkSchema = z
+  .object({
+    text: z.string(),
+    link: z.string(),
+    icon: z
+      .union([z.string(), z.object({ id: z.string(), color: z.string() }).strict()])
+      .optional(),
+  })
+  .strict()
+
+const sidebarConfigSchema = z
+  .object({
+    above: z.array(sidebarLinkSchema).optional(),
+    below: z.array(sidebarLinkSchema).optional(),
+  })
+  .strict()
+
+// ── Hero action schema ──────────────────────────────────────
+
+const heroActionSchema = z
+  .object({
+    theme: z.enum(['brand', 'alt']),
+    text: z.string(),
+    link: z.string(),
+  })
+  .strict()
+
 // ── Main config schema ───────────────────────────────────────
 
 export const zpressConfigSchema = z
@@ -205,10 +263,11 @@ export const zpressConfigSchema = z
     packages: z.array(workspaceItemSchema).optional(),
     workspaces: z.array(workspaceGroupSchema).optional(),
     features: z.array(featureSchema).optional(),
+    actions: z.array(heroActionSchema).optional(),
+    sidebar: sidebarConfigSchema.optional(),
     sections: z.array(entrySchema).min(1, 'config.sections must have at least one entry'),
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
     exclude: z.array(z.string()).optional(),
-    openapi: openapiConfigSchema.optional(),
   })
   .strict()
 
@@ -224,3 +283,15 @@ export const pathsSchema = z
     cacheDir: z.string(),
   })
   .strict()
+
+// ── Schema–type consistency guards ──────────────────────────
+// These compile-time assertions ensure non-recursive schemas stay
+// in sync with their TypeScript types. If a schema field is added,
+// removed, or renamed without updating the type, TypeScript errors.
+// Recursive schemas (navItemSchema, entrySchema) are already guarded
+// via their z.ZodType<T> annotations above.
+
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema

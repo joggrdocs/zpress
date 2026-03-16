@@ -19,6 +19,17 @@
       "cache": false,
       "persistent": true
     },
+    "generate:schema": {},
+    "//#lint": {
+      "dependsOn": ["typecheck"]
+    },
+    "//#format": {
+      "dependsOn": ["typecheck"]
+    },
+    "//#docs:generate": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
     "clean": {
       "cache": false
     }

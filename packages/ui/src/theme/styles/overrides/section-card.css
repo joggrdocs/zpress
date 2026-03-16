@@ -12,9 +12,9 @@
 
 .section-card {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 16px 18px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
   border-radius: var(--rp-radius);
   border: 1px solid var(--zp-c-border);
   background: var(--zp-c-bg-soft);
@@ -23,6 +23,12 @@
     border-color 0.2s,
     background 0.2s,
     box-shadow 0.2s;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .section-card:hover {
@@ -35,15 +41,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 4px;
   flex-shrink: 0;
 }
 
 .section-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 /* ── Section icon colors ─────────────────────────────────── */
@@ -87,24 +93,17 @@
   color: #f472b6;
 }
 
-.section-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
 .section-title {
   font-size: 14px;
   font-weight: 600;
   color: var(--zp-c-text-1);
-  line-height: 1.4;
+  line-height: 1;
 }
 
 .section-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--zp-c-text-2);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 /* ── Responsive ──────────────────────────────────────────── */

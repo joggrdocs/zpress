@@ -86,7 +86,7 @@ Cards display:
 
 Sections with children but no explicit page source automatically get a generated landing page. When workspace metadata matches, the landing page uses workspace-style cards. Without workspace metadata, sections use simpler section cards with descriptions extracted from child page frontmatter.
 
-See the [Landing Pages guide](/guides/landing-pages) for details on auto-generated pages, section cards, and overview file promotion.
+See the [Landing Pages guide](/concepts/landing-pages) for details on auto-generated pages, section cards, and overview file promotion.
 
 ## Custom workspace categories
 

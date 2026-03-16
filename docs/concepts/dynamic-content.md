@@ -81,4 +81,4 @@ Hidden pages are still accessible by URL and can be linked to from other pages. 
 ## References
 
 - [Configuration reference — Entry fields](/reference/configuration#entry-fields)
-- [Sections and Pages guide](/guides/sections-and-pages)
+- [Sections and Pages guide](/concepts/sections-and-pages)
