@@ -3,8 +3,10 @@ import { useMemo } from 'react'
 import { match, P } from 'ts-pattern'
 
 import { CopyMarkdownButton } from './copy-markdown-button'
+import { LockIcon } from './icons'
 import { generateOverviewMarkdown } from './markdown'
 import { MethodBadge } from './method-badge'
+import { HTTP_METHODS } from './spec-utils'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -16,23 +18,6 @@ export interface OpenAPIOverviewProps {
 }
 
 // ── Helpers ──────────────────────────────────────────────────
-
-function LockIcon(): React.ReactElement {
-  return (
-    <svg
-      className="zp-oas-security__lock"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  )
-}
 
 interface TagInfo {
   readonly name: string
@@ -50,28 +35,27 @@ interface TagAccEntry {
 
 function collectTags(spec: Record<string, unknown>): readonly TagInfo[] {
   const paths = (spec['paths'] ?? {}) as Record<string, Record<string, unknown>>
-  const methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace']
 
   const tagMap = Object.entries(paths).reduce<Record<string, TagAccEntry>>(
     (pathAcc, [pathStr, pathItem]) =>
-      methods
-        .filter((method) => pathItem[method] !== undefined)
-        .reduce<Record<string, TagAccEntry>>((methodAcc, method) => {
-          const operation = pathItem[method] as Record<string, unknown>
-          const tags = (operation['tags'] ?? ['default']) as readonly string[]
-          return tags.reduce<Record<string, TagAccEntry>>((tagAcc, tag) => {
-            const existing = tagAcc[tag]
-            return match(existing)
-              .with(P.nonNullable, (e) => ({
-                ...tagAcc,
-                [tag]: { ...e, count: e.count + 1 },
-              }))
-              .otherwise(() => ({
-                ...tagAcc,
-                [tag]: { count: 1, firstPath: pathStr, firstMethod: method },
-              }))
-          }, methodAcc)
-        }, pathAcc),
+      HTTP_METHODS.filter((method) => pathItem[method] !== undefined).reduce<
+        Record<string, TagAccEntry>
+      >((methodAcc, method) => {
+        const operation = pathItem[method] as Record<string, unknown>
+        const tags = (operation['tags'] ?? ['default']) as readonly string[]
+        return tags.reduce<Record<string, TagAccEntry>>((tagAcc, tag) => {
+          const existing = tagAcc[tag]
+          return match(existing)
+            .with(P.nonNullable, (e) => ({
+              ...tagAcc,
+              [tag]: { ...e, count: e.count + 1 },
+            }))
+            .otherwise(() => ({
+              ...tagAcc,
+              [tag]: { count: 1, firstPath: pathStr, firstMethod: method },
+            }))
+        }, methodAcc)
+      }, pathAcc),
     {}
   )
 
@@ -213,7 +197,7 @@ export function OpenAPIOverview({ spec }: OpenAPIOverviewProps): React.ReactElem
     string,
     Record<string, unknown>
   >
-  const tags = collectTags(spec)
+  const tags = useMemo(() => collectTags(spec), [spec])
 
   const descEl = match(description)
     .with(P.nonNullable, (d) => <div className="zp-oas-overview__description">{d}</div>)

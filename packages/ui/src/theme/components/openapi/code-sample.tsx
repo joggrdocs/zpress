@@ -3,6 +3,8 @@ import type React from 'react'
 import { useState } from 'react'
 import { match, P } from 'ts-pattern'
 
+import { extractBodyExample, isBodyMethod } from './spec-utils'
+
 // ── Types ────────────────────────────────────────────────────
 
 export interface CodeSampleProps {
@@ -32,35 +34,6 @@ export interface CodeSampleProps {
 
 function buildUrl(baseUrl: string, urlPath: string): string {
   return `${baseUrl}${urlPath}`
-}
-
-function isBodyMethod(method: string): boolean {
-  return method === 'post' || method === 'put' || method === 'patch'
-}
-
-function extractBodyExample(requestBody: Record<string, unknown> | undefined): unknown | null {
-  return match(requestBody)
-    .with(P.nonNullable, (rb) => {
-      const content = rb['content'] as Record<string, Record<string, unknown>> | undefined
-      return match(content)
-        .with(P.nonNullable, (c) => {
-          const entries = Object.entries(c)
-          return match(entries)
-            .with(
-              P.when((e): e is [string, Record<string, unknown>][] => e.length > 0),
-              (e) => {
-                const [[, mediaType]] = e
-                const { example } = mediaType as { readonly example: unknown }
-                return match(example)
-                  .with(P.nonNullable, (ex) => ex)
-                  .otherwise(() => null)
-              }
-            )
-            .otherwise(() => null)
-        })
-        .otherwise(() => null)
-    })
-    .otherwise(() => null)
 }
 
 // ── Language generators ──────────────────────────────────────

@@ -2,6 +2,7 @@ import type React from 'react'
 import { Button, Disclosure, DisclosurePanel } from 'react-aria-components'
 import { match, P } from 'ts-pattern'
 
+import { ChevronIcon } from './icons'
 import { SchemaViewer } from './schema-viewer'
 
 // ── Types ────────────────────────────────────────────────────
@@ -14,22 +15,6 @@ export interface ResponseListProps {
 }
 
 // ── Helpers ──────────────────────────────────────────────────
-
-function ChevronIcon(): React.ReactElement {
-  return (
-    <svg
-      className="zp-oas-response__chevron"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  )
-}
 
 function statusClass(code: string): string {
   return match(code.charAt(0))
@@ -72,7 +57,7 @@ function renderResponseItem([code, value]: readonly [string, unknown]): React.Re
       <Button className="zp-oas-response__trigger" slot="trigger">
         <span className={`zp-oas-response__status ${statusClass(code)}`}>{code}</span>
         <span className="zp-oas-response__description">{description}</span>
-        <ChevronIcon />
+        <ChevronIcon className="zp-oas-response__chevron" />
       </Button>
       <DisclosurePanel>
         <div className="zp-oas-response__content">{schemaEl}</div>

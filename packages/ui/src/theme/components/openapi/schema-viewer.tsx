@@ -2,6 +2,8 @@ import type React from 'react'
 import { useState } from 'react'
 import { match, P } from 'ts-pattern'
 
+import { ChevronIcon } from './icons'
+
 // ── Types ────────────────────────────────────────────────────
 
 export interface SchemaViewerProps {
@@ -28,22 +30,6 @@ export interface SchemaViewerProps {
 const MAX_DEPTH = 6
 
 // ── Sub-components ───────────────────────────────────────────
-
-function ChevronIcon(): React.ReactElement {
-  return (
-    <svg
-      className="zp-oas-schema__trigger-chevron"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  )
-}
 
 function RequiredBadge({ show }: { readonly show: boolean }): React.ReactElement | null {
   return match(show)
@@ -96,7 +82,7 @@ function ObjectProperties({
         .otherwise(() => null)}
     >
       <button type="button" className="zp-oas-schema__trigger" onClick={toggle}>
-        <ChevronIcon />
+        <ChevronIcon className="zp-oas-schema__trigger-chevron" />
         <span className="zp-oas-schema__type">{'object'}</span>
         <span className="zp-oas-schema__description">
           {`{${String(propEntries.length)} properties}`}
@@ -217,44 +203,44 @@ export function SchemaViewer({
 
   return match({ schemaType, oneOf, anyOf })
     .with({ oneOf: P.nonNullable }, ({ oneOf: variants }) => (
-      <div>
+      <>
         <div className="zp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
         </div>
         <VariantSchemas variants={variants} label="one of" depth={depth} />
-      </div>
+      </>
     ))
     .with({ anyOf: P.nonNullable }, ({ anyOf: variants }) => (
-      <div>
+      <>
         <div className="zp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
         </div>
         <VariantSchemas variants={variants} label="any of" depth={depth} />
-      </div>
+      </>
     ))
     .with({ schemaType: 'object' }, () => (
-      <div>
+      <>
         <div className="zp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
         </div>
         <ObjectProperties schema={schema} depth={depth} />
-      </div>
+      </>
     ))
     .with({ schemaType: 'array' }, () => (
-      <div>
+      <>
         <div className="zp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
         </div>
         <ArrayItems schema={schema} depth={depth} />
-      </div>
+      </>
     ))
     .otherwise(() => (
       <div className="zp-oas-schema__row">

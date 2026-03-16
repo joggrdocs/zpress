@@ -8,6 +8,15 @@
 
 import { match, P } from 'ts-pattern'
 
+import {
+  extractBodyExample,
+  HTTP_METHODS,
+  isBodyMethod,
+  resolveBaseUrl,
+  resolveOperation,
+  resolveSecurities,
+} from './spec-utils'
+
 // ── Types ────────────────────────────────────────────────────
 
 interface OperationMarkdownInput {
@@ -33,7 +42,7 @@ interface OverviewMarkdownInput {
  * @returns Markdown string
  */
 export function generateOperationMarkdown(input: OperationMarkdownInput): string {
-  const operation = resolveOperation({ spec: input.spec, urlPath: input.path, method: input.method })
+  const operation = resolveOperation({ spec: input.spec, path: input.path, method: input.method })
 
   if (operation === null) {
     return [`# ${input.method.toUpperCase()} ${input.path}`, '', 'Operation not found.'].join('\n')
@@ -102,51 +111,6 @@ export function generateOverviewMarkdown(input: OverviewMarkdownInput): string {
   return sections.join('\n\n')
 }
 
-// ── Shared spec helpers ──────────────────────────────────────
-
-function resolveOperation(input: {
-  readonly spec: Record<string, unknown>
-  readonly urlPath: string
-  readonly method: string
-}): Record<string, unknown> | null {
-  const paths = input.spec['paths'] as Record<string, Record<string, unknown>> | undefined
-  if (paths === null || paths === undefined) {
-    return null
-  }
-  const pathItem = paths[input.urlPath]
-  if (pathItem === null || pathItem === undefined) {
-    return null
-  }
-  const op = pathItem[input.method.toLowerCase()]
-  if (op === null || op === undefined) {
-    return null
-  }
-  return op as Record<string, unknown>
-}
-
-function resolveBaseUrl(spec: Record<string, unknown>): string {
-  const servers = spec['servers'] as readonly Record<string, unknown>[] | undefined
-  if (servers !== undefined && servers.length > 0) {
-    return String(servers[0]['url'] ?? 'https://api.example.com')
-  }
-  return 'https://api.example.com'
-}
-
-function resolveSecurities(input: {
-  readonly operation: Record<string, unknown>
-  readonly spec: Record<string, unknown>
-}): readonly Record<string, unknown>[] {
-  const opSecurity = input.operation['security'] as readonly Record<string, unknown>[] | undefined
-  const globalSecurity = input.spec['security'] as readonly Record<string, unknown>[] | undefined
-  return match(opSecurity)
-    .with(P.nonNullable, (s) => s)
-    .otherwise(() =>
-      match(globalSecurity)
-        .with(P.nonNullable, (s) => s)
-        .otherwise(() => [] as readonly Record<string, unknown>[])
-    )
-}
-
 // ── Operation section builders ───────────────────────────────
 
 function buildOperationHeader(method: string, urlPath: string, deprecated: boolean): string {
@@ -156,10 +120,7 @@ function buildOperationHeader(method: string, urlPath: string, deprecated: boole
   return `# ${method.toUpperCase()} \`${urlPath}\`${deprecatedTag}`
 }
 
-function buildSummarySection(
-  summary: string | undefined,
-  description: string | undefined
-): string {
+function buildSummarySection(summary: string | undefined, description: string | undefined): string {
   const parts: string[] = []
   if (summary !== undefined) {
     parts.push(summary)
@@ -298,10 +259,8 @@ function buildCurlSection(
   const normalizedMethod = method.toLowerCase()
   const url = `${baseUrl}${urlPath}`
   const upper = normalizedMethod.toUpperCase()
-  const isBody =
-    normalizedMethod === 'post' || normalizedMethod === 'put' || normalizedMethod === 'patch'
 
-  const headerPart = match(isBody)
+  const headerPart = match(isBodyMethod(normalizedMethod))
     .with(true, () => " \\\n  -H 'Content-Type: application/json'")
     .otherwise(() => '')
 
@@ -341,9 +300,7 @@ function buildServersSection(servers: readonly Record<string, unknown>[]): strin
   return ['## Servers', '', ...items].join('\n')
 }
 
-function buildAuthSchemesSection(
-  schemes: Record<string, Record<string, unknown>>
-): string {
+function buildAuthSchemesSection(schemes: Record<string, Record<string, unknown>>): string {
   const entries = Object.entries(schemes)
   if (entries.length === 0) {
     return ''
@@ -359,30 +316,21 @@ function buildAuthSchemesSection(
 
 function buildTagGroupsSection(spec: Record<string, unknown>): string {
   const paths = (spec['paths'] ?? {}) as Record<string, Record<string, unknown>>
-  const httpMethods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head']
-  const tagCounts = new Map<string, number>()
 
-  Object.values(paths).map((pathItem) => {
-    httpMethods.map((method) => {
-      const operation = pathItem[method] as Record<string, unknown> | undefined
-      if (operation !== undefined) {
-        const tags = (operation['tags'] ?? ['default']) as readonly string[]
-        tags.map((tag) => {
-          tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)
-          return tag
-        })
-      }
-      return method
+  const allTags = Object.values(paths).flatMap((pathItem) =>
+    HTTP_METHODS.filter((method) => pathItem[method] !== undefined).flatMap((method) => {
+      const operation = pathItem[method] as Record<string, unknown>
+      return (operation['tags'] ?? ['default']) as readonly string[]
     })
-    return pathItem
-  })
+  )
 
-  if (tagCounts.size === 0) {
+  if (allTags.length === 0) {
     return ''
   }
 
+  const tagCounts = Map.groupBy(allTags, (tag) => tag)
   const items = [...tagCounts.entries()].map(
-    ([tag, count]) => `- **${tag}** — ${String(count)} operations`
+    ([tag, occurrences]) => `- **${tag}** — ${String(occurrences.length)} operations`
   )
 
   return ['## Operations', '', ...items].join('\n')
@@ -402,12 +350,16 @@ function renderSchemaMarkdown(schema: Record<string, unknown>, depth: number): s
   const anyOf = schema['anyOf'] as readonly Record<string, unknown>[] | undefined
 
   if (oneOf !== undefined) {
-    const variants = oneOf.map((v, i) => `  ${String(i + 1)}. ${renderSchemaMarkdown(v, depth + 1)}`)
+    const variants = oneOf.map(
+      (v, i) => `  ${String(i + 1)}. ${renderSchemaMarkdown(v, depth + 1)}`
+    )
     return [`**One of:**`, ...variants].join('\n')
   }
 
   if (anyOf !== undefined) {
-    const variants = anyOf.map((v, i) => `  ${String(i + 1)}. ${renderSchemaMarkdown(v, depth + 1)}`)
+    const variants = anyOf.map(
+      (v, i) => `  ${String(i + 1)}. ${renderSchemaMarkdown(v, depth + 1)}`
+    )
     return [`**Any of:**`, ...variants].join('\n')
   }
 
@@ -475,19 +427,11 @@ interface ParameterGroup {
   readonly items: readonly Record<string, unknown>[]
 }
 
-function groupParametersByIn(params: readonly Record<string, unknown>[]): readonly ParameterGroup[] {
-  const groups: Record<string, Record<string, unknown>[]> = {}
-  params.map((param) => {
-    const location = String(param['in'] ?? 'other')
-    const existing = groups[location]
-    if (existing === undefined) {
-      groups[location] = [param]
-    } else {
-      existing.push(param)
-    }
-    return param
-  })
-  return Object.entries(groups).map(([label, items]) => ({ label, items }))
+function groupParametersByIn(
+  params: readonly Record<string, unknown>[]
+): readonly ParameterGroup[] {
+  const grouped = Map.groupBy(params, (param) => String(param['in'] ?? 'other'))
+  return [...grouped.entries()].map(([label, items]) => ({ label, items }))
 }
 
 function extractParamType(param: Record<string, unknown>): string {
@@ -509,24 +453,4 @@ function extractResponseSchema(response: Record<string, unknown>): Record<string
   }
   const [[, mediaType]] = entries
   return (mediaType['schema'] ?? null) as Record<string, unknown> | null
-}
-
-function extractBodyExample(requestBody: Record<string, unknown> | undefined): unknown | null {
-  if (requestBody === undefined) {
-    return null
-  }
-  const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
-  if (content === null || content === undefined) {
-    return null
-  }
-  const entries = Object.entries(content)
-  if (entries.length === 0) {
-    return null
-  }
-  const [[, mediaType]] = entries
-  const { example } = mediaType as { readonly example?: unknown }
-  if (example !== null && example !== undefined) {
-    return example
-  }
-  return null
 }

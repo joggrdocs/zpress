@@ -243,7 +243,7 @@ function collectAllLinks(sections: readonly Section[]): Set<string> {
  *
  * @private
  */
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, '-')

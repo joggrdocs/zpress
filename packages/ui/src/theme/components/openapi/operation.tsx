@@ -10,6 +10,7 @@ import { ParametersTable } from './parameters-table'
 import { RequestBody } from './request-body'
 import { ResponseList } from './response-list'
 import { SecurityBadges } from './security-badges'
+import { resolveBaseUrl, resolveOperation, resolveSecurities } from './spec-utils'
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -30,54 +31,6 @@ export interface OpenAPIOperationProps {
    * Operation ID for identification.
    */
   readonly operationId: string
-}
-
-// ── Helpers ──────────────────────────────────────────────────
-
-function resolveOperation(input: {
-  readonly spec: Record<string, unknown>
-  readonly path: string
-  readonly method: string
-}): Record<string, unknown> | null {
-  const paths = input.spec['paths'] as Record<string, Record<string, unknown>> | undefined
-  return match(paths)
-    .with(P.nonNullable, (p) => {
-      const pathItem = p[input.path]
-      return match(pathItem)
-        .with(P.nonNullable, (pi) => {
-          const op = pi[input.method.toLowerCase()]
-          return match(op)
-            .with(P.nonNullable, (o) => o as Record<string, unknown>)
-            .otherwise(() => null)
-        })
-        .otherwise(() => null)
-    })
-    .otherwise(() => null)
-}
-
-function resolveBaseUrl(spec: Record<string, unknown>): string {
-  const servers = spec['servers'] as readonly Record<string, unknown>[] | undefined
-  return match(servers)
-    .with(
-      P.when((s): s is readonly Record<string, unknown>[] => s !== undefined && s.length > 0),
-      (s) => String(s[0]['url'] ?? 'https://api.example.com')
-    )
-    .otherwise(() => 'https://api.example.com')
-}
-
-function resolveSecurities(input: {
-  readonly operation: Record<string, unknown>
-  readonly spec: Record<string, unknown>
-}): readonly Record<string, unknown>[] {
-  const opSecurity = input.operation['security'] as readonly Record<string, unknown>[] | undefined
-  const globalSecurity = input.spec['security'] as readonly Record<string, unknown>[] | undefined
-  return match(opSecurity)
-    .with(P.nonNullable, (s) => s)
-    .otherwise(() =>
-      match(globalSecurity)
-        .with(P.nonNullable, (s) => s)
-        .otherwise(() => [] as readonly Record<string, unknown>[])
-    )
 }
 
 // ── Sub-components ───────────────────────────────────────────

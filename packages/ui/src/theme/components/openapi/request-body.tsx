@@ -15,9 +15,13 @@ export interface RequestBodyProps {
 
 // ── Helpers ──────────────────────────────────────────────────
 
-function extractFirstContent(
-  requestBody: Record<string, unknown>
-): { readonly contentType: string; readonly schema: Record<string, unknown> } | null {
+interface ParsedContent {
+  readonly contentType: string
+  readonly schema: Record<string, unknown>
+  readonly example: unknown | null
+}
+
+function extractFirstContent(requestBody: Record<string, unknown>): ParsedContent | null {
   const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
   return match(content)
     .with(P.nonNullable, (c) => {
@@ -28,30 +32,8 @@ function extractFirstContent(
           (e) => {
             const [[contentType, mediaType]] = e
             const schema = (mediaType['schema'] ?? {}) as Record<string, unknown>
-            return { contentType, schema }
-          }
-        )
-        .otherwise(() => null)
-    })
-    .otherwise(() => null)
-}
-
-function renderExample(requestBody: Record<string, unknown>): React.ReactElement | null {
-  const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
-  return match(content)
-    .with(P.nonNullable, (c) => {
-      const entries = Object.entries(c)
-      return match(entries)
-        .with(
-          P.when((e): e is [string, Record<string, unknown>][] => e.length > 0),
-          (e) => {
-            const [[, mediaType]] = e
-            const { example } = mediaType as { readonly example: unknown }
-            return match(example)
-              .with(P.nonNullable, (ex) => (
-                <CodeBlockRuntime lang="json" code={JSON.stringify(ex, null, 2)} />
-              ))
-              .otherwise(() => null)
+            const { example } = mediaType as { readonly example?: unknown }
+            return { contentType, schema, example: example ?? null }
           }
         )
         .otherwise(() => null)
@@ -83,7 +65,15 @@ export function RequestBody({ requestBody }: RequestBodyProps): React.ReactEleme
     ))
     .otherwise(() => null)
 
-  const exampleEl = renderExample(requestBody)
+  const exampleEl = match(parsed)
+    .with(P.nonNullable, (p) =>
+      match(p.example)
+        .with(P.nonNullable, (ex) => (
+          <CodeBlockRuntime lang="json" code={JSON.stringify(ex, null, 2)} />
+        ))
+        .otherwise(() => null)
+    )
+    .otherwise(() => null)
 
   return (
     <div className="zp-oas-request-body">

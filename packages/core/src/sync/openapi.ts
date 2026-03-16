@@ -6,14 +6,15 @@
  * by tag, and generates one `.mdx` per operation plus an index overview page.
  */
 
-import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import SwaggerParser from '@apidevtools/swagger-parser'
+import { capitalize } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
 import type { OpenAPIConfig, Workspace, ZpressConfig } from '../types.ts'
 import type { PageData, SidebarItem, SyncContext } from './types.ts'
+import { slugify } from './workspace.ts'
 
 // ── Public types ─────────────────────────────────────────────
 
@@ -68,19 +69,15 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
     return { sidebar: [], pages: [] }
   }
 
-  const results = await allConfigs.reduce<Promise<SyncOpenAPIResult>>(
-    async (accPromise, entry) => {
-      const acc = await accPromise
-      const result = await syncOpenAPI(entry.config, ctx)
-      return {
-        sidebar: [...acc.sidebar, { prefix: entry.config.prefix, sidebar: result.sidebar }],
-        pages: [...acc.pages, ...result.pages],
-      }
-    },
-    Promise.resolve({ sidebar: [], pages: [] })
-  )
+  const configResults = await Promise.all(allConfigs.map((entry) => syncOpenAPI(entry.config, ctx)))
 
-  return results
+  return {
+    sidebar: configResults.map((result, index) => ({
+      prefix: allConfigs[index].config.prefix,
+      sidebar: result.sidebar,
+    })),
+    pages: configResults.flatMap((result) => result.pages),
+  }
 }
 
 // ── Per-spec sync ────────────────────────────────────────────
@@ -99,15 +96,13 @@ interface SingleSyncResult {
  */
 async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<SingleSyncResult> {
   const specAbsPath = path.resolve(ctx.repoRoot, config.spec)
-  const specExists = await fs.stat(specAbsPath).catch(() => null)
-
-  if (specExists === null) {
-    return { sidebar: [], pages: [] }
-  }
-
   const api = await SwaggerParser.dereference(specAbsPath, {
     dereference: { circular: 'ignore' },
-  })
+  }).catch(() => null)
+
+  if (api === null) {
+    return { sidebar: [], pages: [] }
+  }
   const paths = (api as Record<string, unknown>).paths as
     | Record<string, Record<string, unknown>>
     | undefined
@@ -139,7 +134,9 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   const duplicates = [...slugCounts.entries()].filter(([, pages]) => pages.length > 1)
   if (duplicates.length > 0) {
     const duplicatePaths = duplicates.map(([p]) => p).join(', ')
-    console.warn(`[zpress] Duplicate OpenAPI slugs detected: ${duplicatePaths}. Later operations will overwrite earlier ones.`)
+    console.warn(
+      `[zpress] Duplicate OpenAPI slugs detected: ${duplicatePaths}. Later operations will overwrite earlier ones.`
+    )
   }
 
   const indexPage = buildIndexPage(title, prefix)
@@ -357,26 +354,6 @@ function resolveTitle(config: OpenAPIConfig): string {
   return match(config.title)
     .with(P.string, (t) => t)
     .otherwise(() => 'API Reference')
-}
-
-/**
- * Convert a string to a URL-safe slug.
- */
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, '-')
-    .replaceAll(/^-+|-+$/g, '')
-}
-
-/**
- * Capitalize the first character of a string.
- */
-function capitalize(text: string): string {
-  if (text.length === 0) {
-    return text
-  }
-  return `${text[0].toUpperCase()}${text.slice(1)}`
 }
 
 /**
