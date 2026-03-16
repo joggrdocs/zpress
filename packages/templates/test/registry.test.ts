@@ -16,7 +16,7 @@ describe('createRegistry()', () => {
       const template = registry.get(type)
       expect(template).toBeDefined()
       if (template === undefined) {
-        return
+        return null
       }
       return expect(template.type).toBe(type)
     })
@@ -29,8 +29,8 @@ describe('createRegistry()', () => {
 
   it('should report has() correctly', () => {
     const registry = createRegistry()
-    expect(registry.has('guide')).toBe(true)
-    expect(registry.has('nonexistent')).toBe(false)
+    expect(registry.has('guide')).toBeTruthy()
+    expect(registry.has('nonexistent')).toBeFalsy()
   })
 
   it('should list all templates', () => {
@@ -62,7 +62,7 @@ describe('registry.add()', () => {
       body: '# {{title}}',
     })
     const updated = registry.add(adr)
-    expect(updated.has('adr')).toBe(true)
+    expect(updated.has('adr')).toBeTruthy()
     const result = updated.get('adr')
     expect(result).toBeDefined()
     if (result === undefined) {
@@ -80,7 +80,7 @@ describe('registry.add()', () => {
       body: '# {{title}}',
     })
     registry.add(adr)
-    expect(registry.has('adr')).toBe(false)
+    expect(registry.has('adr')).toBeFalsy()
   })
 
   it('should overwrite an existing template with the same type', () => {
@@ -192,8 +192,8 @@ describe('registry.merge()', () => {
       defineTemplate({ type: 'rfc', label: 'RFC', hint: 'b', body: '# B' })
     )
     const merged = a.merge(b)
-    expect(merged.has('adr')).toBe(true)
-    expect(merged.has('rfc')).toBe(true)
+    expect(merged.has('adr')).toBeTruthy()
+    expect(merged.has('rfc')).toBeTruthy()
   })
 
   it('should let the other registry win on conflicts', () => {
@@ -220,7 +220,7 @@ describe('registry.merge()', () => {
       defineTemplate({ type: 'rfc', label: 'RFC', hint: 'b', body: '# B' })
     )
     a.merge(b)
-    expect(a.has('rfc')).toBe(false)
-    expect(b.has('adr')).toBe(false)
+    expect(a.has('rfc')).toBeFalsy()
+    expect(b.has('adr')).toBeFalsy()
   })
 })

@@ -38,10 +38,16 @@ function SidebarLinkEntry({ item }: { readonly item: SidebarLinkItem }): React.R
   )
 }
 
+/**
+ * Render a group of sidebar navigation links above or below the main sidebar.
+ */
 export function SidebarLinks(props: SidebarLinksProps): React.ReactElement | null {
   return match(props.items.length > 0)
     .with(true, () => (
-      <nav className={`zp-sidebar-links zp-sidebar-links--${props.position}`}>
+      <nav
+        className={`zp-sidebar-links zp-sidebar-links--${props.position}`}
+        aria-label={`Sidebar links ${props.position}`}
+      >
         {props.items.map((item) => (
           <SidebarLinkEntry key={item.link} item={item} />
         ))}

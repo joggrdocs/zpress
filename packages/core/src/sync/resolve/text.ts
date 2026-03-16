@@ -49,8 +49,8 @@ export function resolveSectionTitle(section: Section): string {
     .otherwise(() => {
       const prefix = section.prefix ?? section.link
       const lastSegment = match(prefix)
-        .with(P.string, (p) => p.split('/').filter(Boolean).pop())
-        .otherwise(() => undefined)
+        .with(P.string, (p) => p.split('/').findLast(Boolean))
+        .otherwise(() => '')
       return match(lastSegment)
         .with(P.string, kebabToTitle)
         .otherwise(() => 'Section')

@@ -1,6 +1,7 @@
 import { Layout as OriginalLayout } from '@rspress/core/theme-original'
 import type React from 'react'
 import { useEffect, useState } from 'react'
+import { match } from 'ts-pattern'
 
 import { useZpress } from '../../hooks/use-zpress'
 import { SidebarLinks } from '../sidebar/sidebar-links'
@@ -78,16 +79,19 @@ export function Layout(): React.ReactElement {
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []
 
-  const sidebarSlots = {
-    ...(aboveItems.length > 0
-      ? { beforeSidebar: <SidebarLinks items={aboveItems} position="above" /> }
-      : {}),
-    ...(belowItems.length > 0
-      ? { afterSidebar: <SidebarLinks items={belowItems} position="below" /> }
-      : {}),
-  }
+  const beforeSidebar = match(aboveItems.length > 0)
+    .with(true, () => <SidebarLinks items={aboveItems} position="above" />)
+    .otherwise(() => null)
+  const afterSidebar = match(belowItems.length > 0)
+    .with(true, () => <SidebarLinks items={belowItems} position="below" />)
+    .otherwise(() => null)
 
   return (
-    <OriginalLayout beforeNavMenu={navSlot} afterNavMenu={<ThemeSwitcher />} {...sidebarSlots} />
+    <OriginalLayout
+      beforeNavMenu={navSlot}
+      afterNavMenu={<ThemeSwitcher />}
+      beforeSidebar={beforeSidebar}
+      afterSidebar={afterSidebar}
+    />
   )
 }

@@ -36,8 +36,8 @@ function createFromMap(templates: ReadonlyMap<string, Template>): TemplateRegist
     templates,
     get: (type) => templates.get(type),
     has: (type) => templates.has(type),
-    list: () => Array.from(templates.values()),
-    types: () => Array.from(templates.keys()),
+    list: () => [...templates.values()],
+    types: () => [...templates.keys()],
     add: (template) => createFromMap(new Map([...templates, [template.type, template]])),
     extend: (type, options) => {
       const base = templates.get(type)
