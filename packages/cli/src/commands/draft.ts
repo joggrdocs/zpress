@@ -46,7 +46,7 @@ export const draftCommand = command({
     const template = registry.get(selectedType)
     if (!template) {
       ctx.logger.error(`Unknown template type: ${selectedType}`)
-      process.exit(1)
+      return
     }
 
     const title = await match(ctx.args.title)
@@ -63,10 +63,26 @@ export const draftCommand = command({
         })
       )
 
+    const slug = toSlug(title)
+    if (slug.length === 0) {
+      ctx.logger.error('Title must include at least one letter or number')
+      return
+    }
+
     const content = render(template, { title })
-    const filename = `${toSlug(title)}.md`
+    const filename = `${slug}.md`
     const outDir = path.resolve(process.cwd(), ctx.args.out)
     const filePath = path.join(outDir, filename)
+
+    const exists = await fs
+      .access(filePath)
+      .then(() => true)
+      .catch(() => false)
+
+    if (exists) {
+      ctx.logger.error(`File already exists: ${path.relative(process.cwd(), filePath)}`)
+      return
+    }
 
     await fs.mkdir(outDir, { recursive: true })
     await fs.writeFile(filePath, content, 'utf8')

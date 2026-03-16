@@ -12,6 +12,7 @@ import type { Section, ZpressConfig } from '../types.ts'
 import { copyPage } from './copy.ts'
 import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
+import { syncAllOpenAPI } from './openapi.ts'
 import { discoverPlanningPages } from './planning.ts'
 import { resolveEntries } from './resolve/index.ts'
 import { buildSourceMap } from './rewrite-links.ts'
@@ -123,8 +124,11 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 2.5 Discover planning pages (hidden — not in sidebar/nav)
   const planningPages = await discoverPlanningPages(ctx)
 
-  // 3. Copy/generate all pages (sections + home + planning)
-  const allPages = [...pages, ...planningPages]
+  // 2.6 Sync OpenAPI specs
+  const openapiResult = await syncAllOpenAPI(ctx)
+
+  // 3. Copy/generate all pages (sections + home + planning + openapi)
+  const allPages = [...pages, ...planningPages, ...openapiResult.pages]
 
   // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
@@ -158,7 +162,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     .otherwise(() => Promise.resolve(0))
 
   // 6. Generate sidebar + nav
-  const sortedSidebar = buildMultiSidebar(resolved)
+  const sortedSidebar = buildMultiSidebar(resolved, openapiResult.sidebar)
   const nav = generateNav(config, resolved)
 
   await fs.writeFile(

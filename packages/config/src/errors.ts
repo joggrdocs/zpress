@@ -20,6 +20,7 @@ export type ConfigErrorType =
   | 'invalid_icon'
   | 'invalid_theme'
   | 'duplicate_prefix'
+  | 'invalid_openapi'
   | 'unknown'
 
 export interface ConfigError {

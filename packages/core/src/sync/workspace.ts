@@ -1,4 +1,4 @@
-import { isUndefined, omitBy } from 'es-toolkit'
+import { isNil, isString, isUndefined, omitBy } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
 import { resolveOptionalIcon } from '../icon.ts'
@@ -243,7 +243,7 @@ function collectAllLinks(sections: readonly Section[]): Set<string> {
  *
  * @private
  */
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, '-')
@@ -392,13 +392,13 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
     .otherwise(() => null)
   const titleFrom = match(titleConfig)
     .when(
-      (tc) => tc !== undefined && typeof tc !== 'string',
+      (tc) => !isNil(tc) && !isString(tc),
       (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).from
     )
     .otherwise(() => null)
   const titleTransform = match(titleConfig)
     .when(
-      (tc) => tc !== undefined && typeof tc !== 'string',
+      (tc) => !isNil(tc) && !isString(tc),
       (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).transform
     )
     .otherwise(() => null)
@@ -409,14 +409,14 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
 
   const recursive = match(discovery)
     .when(
-      (d): d is { recursive: boolean } => d !== undefined && 'recursive' in d,
+      (d): d is { recursive: boolean } => !isNil(d) && 'recursive' in d,
       (d) => d.recursive
     )
     .otherwise(() => null)
 
   const indexFile = match(discovery)
     .when(
-      (d) => d !== undefined && 'recursive' in d && d.recursive === true,
+      (d) => !isNil(d) && 'recursive' in d && d.recursive === true,
       (d) => (d as { recursive: true; indexFile?: string }).indexFile
     )
     .otherwise(() => null)
@@ -452,7 +452,7 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
 }
 
 function collectSelfLinks(link: string | undefined): string[] {
-  if (link !== null && link !== undefined) {
+  if (!isNil(link)) {
     return [link]
   }
   return []

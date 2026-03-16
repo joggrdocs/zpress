@@ -32,6 +32,7 @@ export type {
   ResolvedPage,
   ResolvedSection,
   Feature,
+  OpenAPIConfig,
   Result,
 } from './types.ts'
 

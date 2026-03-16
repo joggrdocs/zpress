@@ -13,6 +13,7 @@ import type {
   IconConfig,
   ThemeConfig,
   ThemeColors,
+  OpenAPIConfig,
 } from './types.ts'
 
 /**
@@ -54,6 +55,16 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
   ])
   if (wsErr) {
     return [wsErr, null]
+  }
+
+  const workspaceItems = [
+    ...(config.apps ?? []),
+    ...(config.packages ?? []),
+    ...workspaceCategoryItems,
+  ]
+  const [openapiErr] = validateAllOpenAPI(config.openapi, workspaceItems)
+  if (openapiErr) {
+    return [openapiErr, null]
   }
 
   const sectionErrors = config.sections.reduce<ConfigError | null>((acc, section) => {
@@ -403,6 +414,134 @@ function validateIconConfig(icon: IconConfig | undefined, context: string): Conf
       ),
       null,
     ]
+  }
+
+  return [null, true]
+}
+
+/**
+ * Validate a single OpenAPI config.
+ *
+ * @param openapi - OpenAPI config to validate
+ * @param context - Label for error messages
+ * @returns A `ConfigResult` tuple
+ */
+function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<true> {
+  if (!openapi.spec || openapi.spec.length === 0) {
+    return [configError('invalid_openapi', `${context}: "spec" must be a non-empty string`), null]
+  }
+
+  const validExtensions = ['.json', '.yaml', '.yml']
+  const hasValidExtension = validExtensions.some((ext) => openapi.spec.endsWith(ext))
+  if (!hasValidExtension) {
+    return [
+      configError(
+        'invalid_openapi',
+        `${context}: "spec" ("${openapi.spec}") must end with ${validExtensions.join(', ')}`
+      ),
+      null,
+    ]
+  }
+
+  if (!openapi.prefix || !openapi.prefix.startsWith('/')) {
+    return [configError('invalid_openapi', `${context}: "prefix" must start with "/"`), null]
+  }
+
+  return [null, true]
+}
+
+/**
+ * Validate all OpenAPI configs from root and workspace items.
+ * Ensures no duplicate prefixes and workspace-level prefixes are scoped correctly.
+ *
+ * @param rootOpenapi - Root-level OpenAPI config (if any)
+ * @param workspaces - All workspace items
+ * @returns A `ConfigResult` tuple
+ */
+function validateAllOpenAPI(
+  rootOpenapi: OpenAPIConfig | undefined,
+  workspaces: readonly Workspace[]
+): ConfigResult<true> {
+  const rootConfigs: readonly { readonly config: OpenAPIConfig; readonly context: string }[] =
+    match(rootOpenapi)
+      .with(P.nonNullable, (o) => [{ config: o, context: 'openapi' }])
+      .otherwise(() => [])
+
+  const workspaceConfigs = workspaces
+    .filter(
+      (ws): ws is Workspace & { readonly openapi: OpenAPIConfig } =>
+        ws.openapi !== null && ws.openapi !== undefined
+    )
+    .map((ws) => ({
+      config: ws.openapi,
+      context: `Workspace "${String(ws.title)}".openapi`,
+      workspacePrefix: ws.prefix,
+    }))
+
+  const allConfigs = [...rootConfigs, ...workspaceConfigs]
+
+  // Validate each config individually
+  const individualError = allConfigs.reduce<ConfigError | null>((acc, entry) => {
+    if (acc) {
+      return acc
+    }
+    const [err] = validateOpenAPI(entry.config, entry.context)
+    if (err) {
+      return err
+    }
+    return null
+  }, null)
+
+  if (individualError) {
+    return [individualError, null]
+  }
+
+  // Validate workspace-level prefixes are scoped under the workspace prefix
+  const scopeError = workspaceConfigs.reduce<ConfigError | null>((acc, entry) => {
+    if (acc) {
+      return acc
+    }
+    const workspaceRoot = match(entry.workspacePrefix.endsWith('/'))
+      .with(true, () => entry.workspacePrefix)
+      .otherwise(() => `${entry.workspacePrefix}/`)
+    if (!entry.config.prefix.startsWith(workspaceRoot)) {
+      return configError(
+        'invalid_openapi',
+        `${entry.context}: "prefix" ("${entry.config.prefix}") must be nested under "${workspaceRoot}"`
+      )
+    }
+    return null
+  }, null)
+
+  if (scopeError) {
+    return [scopeError, null]
+  }
+
+  // Check for duplicate prefixes
+  const duplicateError = allConfigs.reduce<{
+    readonly error: ConfigError | null
+    readonly seen: ReadonlySet<string>
+  }>(
+    (acc, entry) => {
+      if (acc.error) {
+        return acc
+      }
+      if (acc.seen.has(entry.config.prefix)) {
+        return {
+          error: configError(
+            'invalid_openapi',
+            `${entry.context}: duplicate OpenAPI prefix "${entry.config.prefix}"`
+          ),
+          seen: acc.seen,
+        }
+      }
+      return { error: null, seen: new Set([...acc.seen, entry.config.prefix]) }
+    },
+    { error: null, seen: new Set<string>() }
+  )
+
+  if (duplicateError.error) {
+    return [duplicateError.error, null]
   }
 
   return [null, true]

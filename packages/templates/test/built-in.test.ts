@@ -11,9 +11,7 @@ describe('built-in templates', () => {
   })
 
   it('should have matching type field on every template', () => {
-    Object.entries(BUILT_IN_TEMPLATES).map(([key, template]) =>
-      expect(template.type).toBe(key)
-    )
+    Object.entries(BUILT_IN_TEMPLATES).map(([key, template]) => expect(template.type).toBe(key))
   })
 
   it('should have non-empty label and hint on every template', () => {
@@ -30,8 +28,6 @@ describe('built-in templates', () => {
   })
 
   it('should have a markdown heading in every template body', () => {
-    Object.values(BUILT_IN_TEMPLATES).map((template) =>
-      expect(template.body).toMatch(/^# /m)
-    )
+    Object.values(BUILT_IN_TEMPLATES).map((template) => expect(template.body).toMatch(/^# /m))
   })
 })

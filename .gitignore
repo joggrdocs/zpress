@@ -43,6 +43,9 @@ Thumbs.db
 .env.*
 !.env.example
 
+# Claude
+.claude/plans/
+
 # Misc
 *.tgz
 *.vsix

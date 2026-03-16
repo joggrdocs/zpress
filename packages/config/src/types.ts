@@ -32,6 +32,18 @@ export type IconId = string
  */
 export type IconConfig = IconId | { readonly id: IconId; readonly color: IconColor }
 
+// ── Branded string aliases ──────────────────────────────────
+
+/**
+ * File-system path (absolute or relative).
+ */
+type FilePath = string
+
+/**
+ * URL path segment (e.g. `"/api"`, `"/guides/auth"`).
+ */
+type UrlPath = string
+
 // ── Result type ─────────────────────────────────────────────
 
 /**
@@ -342,6 +354,7 @@ export interface Workspace {
   readonly prefix: string
   readonly discovery?: Discovery
   readonly items?: readonly Section[]
+  readonly openapi?: OpenAPIConfig
 }
 
 /**
@@ -389,6 +402,36 @@ export interface ResolvedSection {
   readonly link?: string
   readonly collapsible?: boolean
   readonly items: readonly (ResolvedPage | ResolvedSection)[]
+}
+
+// ── OpenAPI ──────────────────────────────────────────────────
+
+/**
+ * Configuration for OpenAPI spec integration.
+ */
+export interface OpenAPIConfig {
+  /**
+   * Path to openapi.json relative to repo root.
+   */
+  spec: FilePath
+  /**
+   * URL prefix for API operation pages (e.g., '/api').
+   */
+  prefix: UrlPath
+  /**
+   * Sidebar group title.
+   * @default 'API Reference'
+   */
+  title?: string
+  /**
+   * How operations appear in the sidebar.
+   *
+   * - `'method-path'` — shows `GET /users` with method badge and path in code font
+   * - `'title'` — shows the operation summary (e.g., "List Users")
+   *
+   * @default 'method-path'
+   */
+  sidebarLayout?: 'method-path' | 'title'
 }
 
 // ── Feature ──────────────────────────────────────────────────
@@ -440,4 +483,5 @@ export interface ZpressConfig {
   readonly sections: readonly Section[]
   readonly nav?: 'auto' | readonly NavItem[]
   readonly exclude?: readonly string[]
+  readonly openapi?: OpenAPIConfig
 }
