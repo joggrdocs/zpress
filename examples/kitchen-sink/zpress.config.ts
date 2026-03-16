@@ -27,7 +27,7 @@ export default defineConfig({
         spec: 'apps/api/openapi.json',
         prefix: '/apps/api/reference',
         title: 'API Reference',
-        sidebarStyle: 'method-path',
+        sidebarLayout: 'method-path',
       },
     },
   ],

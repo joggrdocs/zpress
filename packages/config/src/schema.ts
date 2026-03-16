@@ -119,7 +119,7 @@ const openapiConfigSchema = z
     spec: z.string(),
     prefix: z.string(),
     title: z.string().optional(),
-    sidebarStyle: z.enum(['method-path', 'title']).optional(),
+    sidebarLayout: z.enum(['method-path', 'title']).optional(),
   })
   .strict()
 

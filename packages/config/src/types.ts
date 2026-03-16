@@ -749,7 +749,7 @@ export interface OpenAPIConfig {
    *
    * @default 'method-path'
    */
-  sidebarStyle?: 'method-path' | 'title'
+  sidebarLayout?: 'method-path' | 'title'
 }
 
 // ── Feature — home page feature card ─────────────────────────

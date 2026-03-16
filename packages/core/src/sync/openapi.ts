@@ -142,10 +142,10 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   const indexPage = buildIndexPage(title, prefix)
   const pages = [specPage, indexPage, ...operationPages]
 
-  const sidebarStyle = match(config.sidebarStyle)
+  const sidebarLayout = match(config.sidebarLayout)
     .with('title', () => 'title' as const)
     .otherwise(() => 'method-path' as const)
-  const sidebarItems = buildSidebarItems(title, prefix, tagGroups, sidebarStyle)
+  const sidebarItems = buildSidebarItems(title, prefix, tagGroups, sidebarLayout)
 
   return { sidebar: sidebarItems, pages }
 }
@@ -305,13 +305,13 @@ function buildSidebarItems(
   title: string,
   prefix: string,
   tagGroups: readonly TagGroup[],
-  sidebarStyle: 'method-path' | 'title'
+  sidebarLayout: 'method-path' | 'title'
 ): readonly SidebarItem[] {
   const tagItems: readonly SidebarItem[] = tagGroups.map((group) => ({
     text: capitalize(group.tag),
     collapsed: false,
     items: group.operations.map((op) => ({
-      text: formatSidebarText(op, sidebarStyle),
+      text: formatSidebarText(op, sidebarLayout),
       link: `${prefix}/${slugify(op.operationId)}`,
     })),
   }))
