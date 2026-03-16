@@ -53,6 +53,14 @@ html[data-zp-theme='arcade'] {
 
   --rp-code-block-bg: #10102a;
 
+  --zp-oas-get: #00ff88;
+  --zp-oas-post: #00ccff;
+  --zp-oas-put: #ffaa00;
+  --zp-oas-patch: #ffaa00;
+  --zp-oas-delete: #ff4466;
+  --zp-oas-deprecated: var(--zp-c-text-3);
+  --zp-oas-required: #ff4466;
+
   --rp-home-background-bg: #0d0d1a;
 }
 
@@ -91,6 +99,14 @@ html[data-zp-theme='arcade'].rp-dark {
   --rp-c-link: var(--rp-c-brand-light);
 
   --rp-code-block-bg: #0a0a1a;
+
+  --zp-oas-get: #33ff99;
+  --zp-oas-post: #33ddff;
+  --zp-oas-put: #ffbb33;
+  --zp-oas-patch: #ffbb33;
+  --zp-oas-delete: #ff6688;
+  --zp-oas-deprecated: var(--zp-c-text-3);
+  --zp-oas-required: #ff6688;
 
   --rp-home-background-bg: #080812;
 }

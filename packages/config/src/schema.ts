@@ -112,6 +112,17 @@ const entrySchema: z.ZodType<unknown> = z.lazy(() =>
     .strict()
 )
 
+// ── OpenAPI schema ───────────────────────────────────────────
+
+const openapiConfigSchema = z
+  .object({
+    spec: z.string(),
+    prefix: z.string(),
+    title: z.string().optional(),
+    sidebarLayout: z.enum(['method-path', 'title']).optional(),
+  })
+  .strict()
+
 // ── Workspace schemas ────────────────────────────────────────
 
 const workspaceItemSchema = z
@@ -125,6 +136,7 @@ const workspaceItemSchema = z
     prefix: z.string(),
     discovery: discoverySchema.optional(),
     items: z.array(entrySchema).optional(),
+    openapi: openapiConfigSchema.optional(),
   })
   .strict()
 
@@ -146,16 +158,6 @@ const featureSchema = z
     description: z.string(),
     link: z.string().optional(),
     icon: z.string().optional(),
-  })
-  .strict()
-
-// ── OpenAPI schema ───────────────────────────────────────────
-
-const openapiConfigSchema = z
-  .object({
-    spec: z.string(),
-    prefix: z.string(),
-    title: z.string().optional(),
   })
   .strict()
 

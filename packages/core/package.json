@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
     "@clack/prompts": "^1.1.0",
     "@zpress/config": "workspace:*",
     "@zpress/theme": "workspace:*",
@@ -44,10 +45,12 @@
     "fast-glob": "^3.3.3",
     "gray-matter": "^4.0.3",
     "jiti": "^2.6.1",
+    "js-yaml": "^4.1.1",
     "ts-pattern": "catalog:"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",
+    "@types/js-yaml": "^4.0.9",
     "typescript": "catalog:"
   },
   "engines": {

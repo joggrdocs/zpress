@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.1/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.2/packages/config/schemas/schema.json",
   "title": "Zpress Configuration",
   "description": "Configuration file for zpress documentation framework",
   "$ref": "#/definitions/ZpressConfig",
@@ -393,6 +393,26 @@
                   "required": ["title"],
                   "additionalProperties": false
                 }
+              },
+              "openapi": {
+                "type": "object",
+                "properties": {
+                  "spec": {
+                    "type": "string"
+                  },
+                  "prefix": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "sidebarStyle": {
+                    "type": "string",
+                    "enum": ["method-path", "title"]
+                  }
+                },
+                "required": ["spec", "prefix"],
+                "additionalProperties": false
               }
             },
             "required": ["title", "description", "prefix"],
@@ -503,20 +523,7 @@
           }
         },
         "openapi": {
-          "type": "object",
-          "properties": {
-            "spec": {
-              "type": "string"
-            },
-            "prefix": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            }
-          },
-          "required": ["spec", "prefix"],
-          "additionalProperties": false
+          "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/openapi"
         }
       },
       "required": ["sections"],

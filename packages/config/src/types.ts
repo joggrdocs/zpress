@@ -452,6 +452,12 @@ export interface Workspace extends Entry {
    * Make this item's section collapsible in the sidebar.
    */
   readonly collapsible?: boolean
+
+  /**
+   * OpenAPI spec integration for this workspace item.
+   * Generates interactive API reference pages from an OpenAPI spec file.
+   */
+  readonly openapi?: OpenAPIConfig
 }
 
 /**
@@ -735,6 +741,15 @@ export interface OpenAPIConfig {
    * @default 'API Reference'
    */
   title?: string
+  /**
+   * How operations appear in the sidebar.
+   *
+   * - `'method-path'` — shows `GET /users` with method badge and path in code font
+   * - `'title'` — shows the operation summary (e.g., "List Users")
+   *
+   * @default 'method-path'
+   */
+  sidebarLayout?: 'method-path' | 'title'
 }
 
 // ── Feature — home page feature card ─────────────────────────

@@ -61,6 +61,8 @@
     "@zpress/config": "workspace:*",
     "@zpress/core": "workspace:*",
     "@zpress/theme": "workspace:*",
+    "openapi-sampler": "^1.7.2",
+    "react-aria-components": "^1.16.0",
     "ts-pattern": "catalog:"
   },
   "devDependencies": {
