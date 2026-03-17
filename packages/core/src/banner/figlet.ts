@@ -9,7 +9,6 @@ import { range } from 'es-toolkit'
 
 import { FIGLET_CHARS, FIGLET_CHAR_GAP, FIGLET_ROWS } from './figlet-data.ts'
 
-
 /**
  * Result of rendering a FIGlet text block.
  */

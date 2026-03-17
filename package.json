@@ -13,6 +13,7 @@
     "lint:fix": "oxlint --fix --ignore-pattern node_modules",
     "test": "turbo run test",
     "check": "turbo run typecheck //#lint //#format",
+    "validate": "turbo run typecheck //#lint //#format --ui=stream",
     "changeset": "changeset",
     "version": "changeset version",
     "postversion": "oxfmt --write",

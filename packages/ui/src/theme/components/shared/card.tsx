@@ -7,7 +7,6 @@ export interface CardProps {
   readonly children: React.ReactNode
 }
 
-
 /**
  * Shared base card handling link-vs-div rendering.
  * Renders `<a>` with `home-card--clickable` when `href` is provided,

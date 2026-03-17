@@ -8,7 +8,6 @@ export interface BrowserWindowProps {
   readonly children: React.ReactNode
 }
 
-
 /**
  * Fake browser window chrome that wraps content in a title bar
  * with traffic-light dots and an optional URL pill.

@@ -7,7 +7,6 @@
 
 import type { LiteralUnion } from 'type-fest'
 
-
 /**
  * Theme name with autocomplete for built-in themes and support for custom themes.
  *
@@ -20,7 +19,6 @@ export type ThemeName = LiteralUnion<'base' | 'midnight' | 'arcade', string>
  * Built-in theme names for validation and iteration.
  */
 export type BuiltInThemeName = 'base' | 'midnight' | 'arcade'
-
 
 /**
  * Icon color with autocomplete for built-in colors and support for custom colors.
@@ -46,12 +44,10 @@ export type BuiltInIconColor =
   | 'pink'
   | 'slate'
 
-
 /**
  * How dark/light mode is controlled.
  */
 export type ColorMode = 'dark' | 'light' | 'toggle'
-
 
 /**
  * Optional color overrides keyed to CSS custom properties.
@@ -75,7 +71,6 @@ export interface ThemeColors {
   readonly border?: string
   readonly homeBg?: string
 }
-
 
 /**
  * Top-level theme configuration for `zpress.config.ts`.

@@ -28,13 +28,11 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-
 const ART_TOP_PAD = 26
 const FIGLET_ROWS = 6
 const TAGLINE_GAP = 24
 const SEPARATOR_GAP = 16
 const CLI_SECTION_HEIGHT = 240
-
 
 /**
  * Compose a banner SVG string from the project title and optional tagline.

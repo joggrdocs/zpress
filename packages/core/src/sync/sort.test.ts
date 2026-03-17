@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
+import type { ResolvedPage } from '../types'
 import { sortEntries } from './resolve/sort'
 import type { ResolvedEntry } from './types'
-import type { ResolvedPage } from '../types'
 
 function reverseComparator(a: ResolvedPage, b: ResolvedPage): number {
   return b.title.localeCompare(a.title)

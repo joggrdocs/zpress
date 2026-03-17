@@ -26,7 +26,6 @@ const titleTransformSchema = z.custom<(text: string, slug: string) => string>(is
 const sortFnSchema = z.custom<(a: ResolvedPage, b: ResolvedPage) => number>(isFunction)
 const contentFnSchema = z.custom<() => string | Promise<string>>(isFunction)
 
-
 const frontmatterSchema = z
   .object({
     title: z.string().optional(),
@@ -47,7 +46,6 @@ const frontmatterSchema = z
   })
   .passthrough() // Allow additional unknown fields
 
-
 const navItemSchema: z.ZodType<NavItem> = z.lazy(() =>
   z
     .object({
@@ -59,7 +57,6 @@ const navItemSchema: z.ZodType<NavItem> = z.lazy(() =>
     .strict()
 )
 
-
 const titleConfigSchema = z.union([
   z.string(),
   z
@@ -69,7 +66,6 @@ const titleConfigSchema = z.union([
     })
     .strict(),
 ])
-
 
 const discoverySchema = z
   .object({
@@ -83,7 +79,6 @@ const discoverySchema = z
   })
   .strict()
 
-
 const cardConfigSchema = z
   .object({
     icon: z.string().optional(),
@@ -94,7 +89,6 @@ const cardConfigSchema = z
     badge: z.object({ src: z.string(), alt: z.string() }).strict().optional(),
   })
   .strict()
-
 
 const entrySchema: z.ZodType<Section> = z.lazy(() =>
   z
@@ -124,7 +118,6 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
     .strict()
 )
 
-
 const openapiConfigSchema = z
   .object({
     spec: z.string(),
@@ -133,7 +126,6 @@ const openapiConfigSchema = z
     sidebarLayout: z.enum(['method-path', 'title']).optional(),
   })
   .strict()
-
 
 const workspaceItemSchema = z
   .object({
@@ -160,7 +152,6 @@ const workspaceGroupSchema = z
   })
   .strict()
 
-
 const featureSchema = z
   .object({
     title: titleConfigSchema,
@@ -169,7 +160,6 @@ const featureSchema = z
     icon: z.string().optional(),
   })
   .strict()
-
 
 const themeColorsSchema = z
   .object({
@@ -200,7 +190,6 @@ const themeConfigSchema = z
   })
   .strict()
 
-
 const sidebarLinkSchema = z
   .object({
     text: z.string(),
@@ -218,7 +207,6 @@ const sidebarConfigSchema = z
   })
   .strict()
 
-
 const heroActionSchema = z
   .object({
     theme: z.enum(['brand', 'alt']),
@@ -226,7 +214,6 @@ const heroActionSchema = z
     link: z.string(),
   })
   .strict()
-
 
 export const zpressConfigSchema = z
   .object({
@@ -246,7 +233,6 @@ export const zpressConfigSchema = z
     exclude: z.array(z.string()).optional(),
   })
   .strict()
-
 
 export const pathsSchema = z
   .object({

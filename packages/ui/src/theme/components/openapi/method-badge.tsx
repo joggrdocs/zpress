@@ -7,7 +7,6 @@ export interface MethodBadgeProps {
   readonly method: string
 }
 
-
 /**
  * Colored badge for an HTTP method.
  *

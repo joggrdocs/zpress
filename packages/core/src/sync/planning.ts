@@ -179,7 +179,6 @@ async function generatePlanningIndex(
   return `${sections.join('\n\n')}\n`
 }
 
-
 /**
  * Natural sort comparator — numeric segments are compared by value
  * so "phase-2" sorts before "phase-10".
@@ -230,7 +229,6 @@ function naturalCompare(a: string, b: string): number {
 
   return aParts.length - bParts.length
 }
-
 
 /**
  * Extract the directory name from path segments, or undefined for root-level files.

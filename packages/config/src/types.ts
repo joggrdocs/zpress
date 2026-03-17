@@ -2,7 +2,6 @@ import type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '
 
 export type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '@zpress/theme'
 
-
 /**
  * Iconify icon identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`).
  * Find icons at https://icon-sets.iconify.design/
@@ -30,7 +29,6 @@ export type IconId = string
  */
 export type IconConfig = IconId | { readonly id: IconId; readonly color: IconColor }
 
-
 /**
  * File-system path (absolute or relative).
  */
@@ -40,7 +38,6 @@ type FilePath = string
  * URL path segment (e.g. `"/api"`, `"/guides/auth"`).
  */
 type UrlPath = string
-
 
 /**
  * Result type for error handling without exceptions.
@@ -55,7 +52,6 @@ type UrlPath = string
  * ```
  */
 export type Result<T, E = Error> = readonly [E, null] | readonly [null, T]
-
 
 /**
  * Rspress frontmatter fields injectable at build time.
@@ -80,7 +76,6 @@ export interface Frontmatter {
   readonly [key: string]: unknown
 }
 
-
 /**
  * Navigation item for the top nav bar.
  *
@@ -93,7 +88,6 @@ export interface NavItem {
   readonly items?: readonly NavItem[]
   readonly activeMatch?: string
 }
-
 
 /**
  * Title configuration — static or derived from source files.
@@ -130,7 +124,6 @@ export type TitleConfig =
       readonly transform?: (text: string, slug: string) => string
     }
 
-
 /**
  * Controls how an entry appears as a card on its parent section's
  * auto-generated landing page.
@@ -157,7 +150,6 @@ export interface CardConfig {
   readonly tags?: readonly string[]
   readonly badge?: { readonly src: string; readonly alt: string }
 }
-
 
 /**
  * Content discovery configuration for auto-generating pages from files.
@@ -195,7 +187,6 @@ export interface FlatDiscoveryConfig extends DiscoveryConfig {
  */
 export type Discovery = FlatDiscoveryConfig | RecursiveDiscoveryConfig
 
-
 /**
  * A single call-to-action button on the home page hero.
  *
@@ -206,7 +197,6 @@ export interface HeroAction {
   readonly text: string
   readonly link: string
 }
-
 
 /**
  * A persistent link rendered above or below the sidebar nav tree.
@@ -242,7 +232,6 @@ export interface SidebarConfig {
   readonly below?: readonly SidebarLink[]
 }
 
-
 /**
  * SEO meta tag configuration.
  * No schema — this is a type-only definition used for future extension.
@@ -255,7 +244,6 @@ export interface SeoConfig {
   readonly locale?: string
   readonly twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
 }
-
 
 /**
  * A single node in the information architecture (sidebar/nav tree).
@@ -312,7 +300,6 @@ export interface Section {
   readonly titleTransform?: (title: string, slug: string) => string
 }
 
-
 /**
  * Workspace item representing an app or package in the monorepo.
  *
@@ -368,7 +355,6 @@ export interface WorkspaceCategory {
   readonly link?: string
 }
 
-
 /**
  * A fully resolved page after the sync engine processes the config.
  */
@@ -388,7 +374,6 @@ export interface ResolvedSection {
   readonly collapsible?: boolean
   readonly items: readonly (ResolvedPage | ResolvedSection)[]
 }
-
 
 /**
  * Configuration for OpenAPI spec integration.
@@ -418,7 +403,6 @@ export interface OpenAPIConfig {
   sidebarLayout?: 'method-path' | 'title'
 }
 
-
 /**
  * Explicit feature card for the home page.
  *
@@ -440,7 +424,6 @@ export interface Feature {
   readonly link?: string
   readonly icon?: string
 }
-
 
 /**
  * zpress configuration.

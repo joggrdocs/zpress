@@ -19,11 +19,9 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-
 const LOGO_TOP_PAD = 28
 const LOGO_BOTTOM_PAD = 28
 const FIGLET_ROWS = 6
-
 
 /**
  * Compose a logo SVG string from the project title.

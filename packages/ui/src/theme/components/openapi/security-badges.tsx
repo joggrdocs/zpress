@@ -11,7 +11,6 @@ export interface SecurityBadgesProps {
   readonly securities: readonly Record<string, unknown>[]
 }
 
-
 /**
  * Renders badges for each security requirement of an operation.
  *

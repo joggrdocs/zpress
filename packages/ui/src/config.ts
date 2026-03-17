@@ -37,9 +37,17 @@ const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
   const { config, paths, logLevel } = options
 
-  const sidebar = loadGenerated({ contentDir: paths.contentDir, name: 'sidebar.json', fallback: {} })
+  const sidebar = loadGenerated({
+    contentDir: paths.contentDir,
+    name: 'sidebar.json',
+    fallback: {},
+  })
   const nav = loadGenerated({ contentDir: paths.contentDir, name: 'nav.json', fallback: [] })
-  const workspaces = loadGenerated({ contentDir: paths.contentDir, name: 'workspaces.json', fallback: [] })
+  const workspaces = loadGenerated({
+    contentDir: paths.contentDir,
+    name: 'workspaces.json',
+    fallback: [],
+  })
   const gitBranch = detectGitBranch()
 
   const themeName = resolveThemeName(config)
@@ -154,7 +162,9 @@ function loadGenerated<T>(params: {
   const p = path.resolve(params.contentDir, '.generated', params.name)
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
   if (!existsSync(p)) {
-    process.stderr.write(`[zpress] Generated file not found: ${params.name} — run "zpress sync" first\n`)
+    process.stderr.write(
+      `[zpress] Generated file not found: ${params.name} — run "zpress sync" first\n`
+    )
     return params.fallback
   }
   try {

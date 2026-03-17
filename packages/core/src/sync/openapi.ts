@@ -250,7 +250,6 @@ function extractOperations(
   )
 }
 
-
 /**
  * Group operations by their first tag.
  *
@@ -267,7 +266,6 @@ function groupByTag(operations: readonly OperationInfo[]): readonly TagGroup[] {
 
   return [...grouped.entries()].map(([tag, ops]) => ({ tag, operations: ops }))
 }
-
 
 /**
  * Build an MDX page for a single OpenAPI operation.
@@ -336,7 +334,6 @@ function buildIndexPage(title: string, prefix: string): PageData {
   }
 }
 
-
 /**
  * Build sidebar items grouped by tag.
  *
@@ -370,7 +367,6 @@ function buildSidebarItems(
     },
   ]
 }
-
 
 /**
  * Format sidebar text for an operation based on the configured style.

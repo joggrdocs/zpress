@@ -100,10 +100,7 @@ export function CodeSample(props: CodeSampleProps): React.ReactElement {
  * @param input - Object with baseUrl and path
  * @returns Full URL string
  */
-function buildUrl(input: {
-  readonly baseUrl: string
-  readonly path: string
-}): string {
+function buildUrl(input: { readonly baseUrl: string; readonly path: string }): string {
   const base = input.baseUrl.replace(/\/+$/, '')
   if (input.path.startsWith('/')) {
     return `${base}${input.path}`

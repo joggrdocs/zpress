@@ -17,7 +17,6 @@ export interface WorkspaceGridProps {
   readonly children: React.ReactNode
 }
 
-
 /**
  * Grid container for workspace cards — renders a heading, description,
  * and a CSS grid wrapping its children.

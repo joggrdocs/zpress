@@ -5,7 +5,6 @@
  * zpress banner aesthetic.
  */
 
-
 /**
  * Catppuccin Mocha palette colors used across all generated SVGs.
  */
@@ -22,12 +21,10 @@ export const COLORS = Object.freeze({
   brand: '#a78bfa',
 })
 
-
 /**
  * Monospace font stack used for all SVG text elements.
  */
 export const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
-
 
 /**
  * Approximate pixel width of a single monospace character at font-size 13px.
@@ -74,13 +71,11 @@ export const MIN_BANNER_WIDTH = 600
  */
 export const CONTENT_PADDING = 24
 
-
 /**
  * Comment placed as the first line of generated SVGs to distinguish
  * from user-customized files.
  */
 export const GENERATED_MARKER = '<!-- zpress-generated -->'
-
 
 /**
  * Escape special XML characters in text content.

@@ -7,7 +7,6 @@ import { resolveOptionalIcon } from '../../icon.ts'
 import type { IconColor } from '../../icon.ts'
 import type { ResolvedEntry } from '../types.ts'
 
-
 /**
  * Input data for building a workspace card JSX string.
  */
@@ -159,7 +158,6 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
   })
 }
 
-
 /**
  * Build a section card JSX string from a resolved entry.
  *
@@ -187,7 +185,6 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
 
   return `  <SectionCard ${props.join(' ')} />`
 }
-
 
 /**
  * Resolve a description for a card.
@@ -265,7 +262,6 @@ async function extractDescription(sourcePath: string): Promise<string | undefine
 function escapeJsxProp(str: string): string {
   return str.replaceAll('"', '&quot;').replaceAll('{', '&#123;').replaceAll('}', '&#125;')
 }
-
 
 /**
  * Extract the first non-empty paragraph after a heading from markdown lines.

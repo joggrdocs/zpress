@@ -345,7 +345,6 @@ async function resolveSubdirSection(
   return { sectionTitle, sectionPage: undefined }
 }
 
-
 /**
  * Determine whether a section should be auto-collapsed based on depth.
  *

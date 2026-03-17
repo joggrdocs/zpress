@@ -229,8 +229,8 @@ function parseColors(raw: string): Record<string, string> {
     }
     return Object.fromEntries(
       Object.entries(parsed as Record<string, unknown>).filter(
-        ([, value]) => typeof value === 'string',
-      ),
+        ([, value]) => typeof value === 'string'
+      )
     ) as Record<string, string>
   } catch {
     return {}

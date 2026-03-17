@@ -214,7 +214,6 @@ function findConfigSection(sections: readonly Section[], link: string): Section 
   return nested
 }
 
-
 /**
  * Resolve file extension from source path, defaulting to '.md'.
  *

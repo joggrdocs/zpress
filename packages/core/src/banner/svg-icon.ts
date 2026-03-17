@@ -17,7 +17,6 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-
 const ICON_SIZE = 512
 const ICON_RADIUS = 32
 const ICON_PADDING = 64
@@ -27,7 +26,6 @@ const FIGLET_ROWS = 6
  * to fill the 512px square.
  */
 const ICON_FALLBACK_FONT_SIZE = 320
-
 
 /**
  * Compose a favicon SVG string from the project title.
