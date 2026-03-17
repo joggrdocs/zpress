@@ -161,7 +161,7 @@ export { ThemeProvider as default }
 function resolveColorPairs(colors: Record<string, string>): readonly (readonly [string, string])[] {
   return Object.entries(colors).flatMap(([key, value]) => {
     const vars = COLOR_VAR_MAP[key]
-    if (!vars) {
+    if (!Array.isArray(vars)) {
       return []
     }
     return vars.map((cssVar) => [cssVar, value] as const)
@@ -223,7 +223,15 @@ function parseColors(raw: string): Record<string, string> {
     return {}
   }
   try {
-    return JSON.parse(raw) as Record<string, string>
+    const parsed: unknown = JSON.parse(raw)
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return {}
+    }
+    return Object.fromEntries(
+      Object.entries(parsed as Record<string, unknown>).filter(
+        ([, value]) => typeof value === 'string',
+      ),
+    ) as Record<string, string>
   } catch {
     return {}
   }

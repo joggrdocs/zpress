@@ -51,7 +51,9 @@ export function SidebarLinks(props: SidebarLinksProps): React.ReactElement | nul
 function renderIcon(icon: SidebarLinkItem['icon']): React.ReactElement | null {
   return match(icon)
     .with(P.string, (id) => <Icon icon={id} className="zp-sidebar-link-icon" />)
-    .with({ id: P.string }, (i) => <Icon icon={i.id} className="zp-sidebar-link-icon" />)
+    .with({ id: P.string, color: P.string }, (i) => (
+      <Icon icon={i.id} className="zp-sidebar-link-icon" style={{ color: i.color }} />
+    ))
     .otherwise(() => null)
 }
 

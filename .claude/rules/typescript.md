@@ -1,6 +1,6 @@
 ---
 paths:
-  - 'packages/**/*.ts'
+  - 'packages/**/*.{ts,tsx}'
 ---
 
 # TypeScript Rules

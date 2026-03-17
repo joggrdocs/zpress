@@ -37,13 +37,13 @@ const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
   const { config, paths, logLevel } = options
 
-  const sidebar = loadGenerated(paths.contentDir, 'sidebar.json', {})
-  const nav = loadGenerated(paths.contentDir, 'nav.json', [])
-  const workspaces = loadGenerated(paths.contentDir, 'workspaces.json', [])
+  const sidebar = loadGenerated({ contentDir: paths.contentDir, name: 'sidebar.json', fallback: {} })
+  const nav = loadGenerated({ contentDir: paths.contentDir, name: 'nav.json', fallback: [] })
+  const workspaces = loadGenerated({ contentDir: paths.contentDir, name: 'workspaces.json', fallback: [] })
   const gitBranch = detectGitBranch()
 
   const themeName = resolveThemeName(config)
-  const colorMode = resolveColorMode(config, themeName)
+  const colorMode = resolveColorMode({ config, themeName })
   const themeSwitcher = resolveThemeSwitcher(config)
   const themeColors = resolveThemeColors(config)
   const themeDarkColors = resolveThemeDarkColors(config)
@@ -127,8 +127,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces } as Record<string, unknown>),
       ...({
-        sidebarAbove: resolveSidebarLinks(config, 'above'),
-        sidebarBelow: resolveSidebarLinks(config, 'below'),
+        sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
+        sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
       } as Record<string, unknown>),
     },
   }
@@ -143,17 +143,19 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
  * to a default value if the file does not exist yet.
  *
  * @private
- * @param contentDir - Path to the content directory
- * @param name - Name of the generated JSON file
- * @param fallback - Default value if file is missing
+ * @param params - Content directory, file name, and fallback value
  * @returns Parsed JSON content or the fallback value
  */
-function loadGenerated<T>(contentDir: string, name: string, fallback: T): T {
-  const p = path.resolve(contentDir, '.generated', name)
+function loadGenerated<T>(params: {
+  readonly contentDir: string
+  readonly name: string
+  readonly fallback: T
+}): T {
+  const p = path.resolve(params.contentDir, '.generated', params.name)
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
   if (!existsSync(p)) {
-    process.stderr.write(`[zpress] Generated file not found: ${name} — run "zpress sync" first\n`)
-    return fallback
+    process.stderr.write(`[zpress] Generated file not found: ${params.name} — run "zpress sync" first\n`)
+    return params.fallback
   }
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
   return JSON.parse(readFileSync(p, 'utf8')) as T
@@ -192,16 +194,18 @@ function resolveThemeName(config: ZpressConfig): ThemeName {
  * For custom themes, defaults to 'toggle'.
  *
  * @private
- * @param config - Zpress config object
- * @param themeName - Resolved theme name
+ * @param params - Config and theme name
  * @returns Color mode string ('dark', 'light', or 'toggle')
  */
-function resolveColorMode(config: ZpressConfig, themeName: ThemeName): string {
-  if (config.theme && config.theme.colorMode) {
-    return config.theme.colorMode
+function resolveColorMode(params: {
+  readonly config: ZpressConfig
+  readonly themeName: ThemeName
+}): string {
+  if (params.config.theme && params.config.theme.colorMode) {
+    return params.config.theme.colorMode
   }
-  if (isBuiltInTheme(themeName)) {
-    return resolveDefaultColorMode(themeName as BuiltInThemeName)
+  if (isBuiltInTheme(params.themeName)) {
+    return resolveDefaultColorMode(params.themeName as BuiltInThemeName)
   }
   return 'toggle'
 }
@@ -252,16 +256,16 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
  * Resolve sidebar link items for a given position, defaulting to empty array.
  *
  * @private
- * @param config - Zpress config object
- * @param position - Sidebar position ('above' or 'below')
+ * @param params - Config and sidebar position
  * @returns Array of sidebar link items
  */
-function resolveSidebarLinks(
-  config: ZpressConfig,
-  position: 'above' | 'below'
-): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
-  if (config.sidebar && config.sidebar[position]) {
-    return config.sidebar[position]
+function resolveSidebarLinks(params: {
+  readonly config: ZpressConfig
+  readonly position: 'above' | 'below'
+}): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
+  const items = params.config.sidebar && params.config.sidebar[params.position]
+  if (items) {
+    return items
   }
   return []
 }
@@ -300,5 +304,5 @@ function buildColorModeJs(colorMode: string): string {
 function buildHeadScriptBody(options: HeadScriptOptions): string {
   const colorModeJs = buildColorModeJs(options.colorMode)
   const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
-  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join('')
+  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join(';')
 }

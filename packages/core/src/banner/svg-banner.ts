@@ -53,8 +53,9 @@ export function composeBanner(params: {
   const cmdName = params.title.toLowerCase().replaceAll(/\s+/g, '')
   const art = computeArtLayout({ title: params.title, minWidth: MIN_BANNER_WIDTH })
 
-  const taglineSection = match(params.tagline)
-    .with(P.string, (tagline) => {
+  const trimmedTagline = params.tagline ? params.tagline.trim() : undefined
+  const taglineSection = match(trimmedTagline)
+    .with(P.string.minLength(1), (tagline) => {
       const taglineY = art.artEndY + TAGLINE_GAP
       const separatorY = taglineY + SEPARATOR_GAP
       const centerX = Math.round(art.width / 2)

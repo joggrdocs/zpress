@@ -9,7 +9,7 @@ All tests use [Vitest](https://vitest.dev). Follow these conventions in every te
 
 ## Structure
 
-- Place test files in `test/` directory within the package (e.g., `packages/core/test/config.test.ts`)
+- Place test files alongside their source in the package's `src/` directory (e.g., `packages/core/src/config.test.ts`)
 - Name `describe` blocks after the module or function under test
 - Name test cases as `should + expected behavior`
 - One assertion focus per test case

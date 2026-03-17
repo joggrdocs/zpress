@@ -118,7 +118,7 @@ export async function generateAssets(
         return acc
       }
 
-      const [writeErr, filename] = await writeAsset(asset, params.publicDir)
+      const [writeErr, filename] = await writeAsset({ asset, publicDir: params.publicDir })
       if (writeErr) {
         return acc
       }
@@ -162,31 +162,35 @@ async function shouldGenerate(filePath: string): Promise<boolean> {
   return false
 }
 
+interface WriteAssetParams {
+  readonly asset: GeneratedAsset
+  readonly publicDir: string
+}
+
 /**
  * Write a generated asset to disk, returning either the filename or an error.
  *
  * @private
- * @param asset - Generated asset with filename and content
- * @param publicDir - Absolute path to the public directory
+ * @param params - Asset and target directory
  * @returns Result containing the written filename or a write error
  */
-async function writeAsset(asset: GeneratedAsset, publicDir: string): Promise<AssetResult<string>> {
-  const filePath = path.resolve(publicDir, asset.filename)
+async function writeAsset(params: WriteAssetParams): Promise<AssetResult<string>> {
+  const filePath = path.resolve(params.publicDir, params.asset.filename)
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
   const result = await fs
-    .writeFile(filePath, asset.content, 'utf8')
+    .writeFile(filePath, params.asset.content, 'utf8')
     .catch((error: unknown) => error)
   if (result !== undefined) {
     if (result instanceof Error) {
       return [
-        assetError('write_failed', `Failed to write ${asset.filename}: ${result.message}`),
+        assetError('write_failed', `Failed to write ${params.asset.filename}: ${result.message}`),
         null,
       ]
     }
     return [
-      assetError('write_failed', `Failed to write ${asset.filename}: ${String(result)}`),
+      assetError('write_failed', `Failed to write ${params.asset.filename}: ${String(result)}`),
       null,
     ]
   }
-  return [null, asset.filename]
+  return [null, params.asset.filename]
 }

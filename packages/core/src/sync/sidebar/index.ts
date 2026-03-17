@@ -16,7 +16,13 @@ export function generateSidebar(entries: readonly ResolvedEntry[]): SidebarItem[
   const pages = visible.filter((e) => !e.items || e.items.length === 0)
   const sections = visible.filter((e) => e.items && e.items.length > 0)
 
-  return [...pages, ...sections].map(buildSidebarEntry)
+  return [...pages, ...sections].flatMap((entry) => {
+    const item = buildSidebarEntry(entry)
+    if (item === undefined) {
+      return []
+    }
+    return [item]
+  })
 }
 
 /**
@@ -57,7 +63,7 @@ export function generateNav(
  * @param entry - Resolved entry to convert
  * @returns Sidebar item for Rspress config
  */
-function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
+function buildSidebarEntry(entry: ResolvedEntry): SidebarItem | undefined {
   if (entry.items && entry.items.length > 0) {
     return {
       text: entry.title,
@@ -69,7 +75,7 @@ function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
 
   if (entry.link === null || entry.link === undefined) {
     log.error(`[zpress] Leaf entry "${entry.title}" has no link — skipping`)
-    return { text: entry.title }
+    return undefined
   }
 
   return {

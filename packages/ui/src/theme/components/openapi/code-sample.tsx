@@ -101,8 +101,13 @@ export function CodeSample(props: CodeSampleProps): React.ReactElement {
  * @param urlPath - URL path template
  * @returns Full URL string
  */
-function buildUrl(baseUrl: string, urlPath: string): string {
-  return `${baseUrl}${urlPath}`
+function buildUrl(input: {
+  readonly baseUrl: string
+  readonly path: string
+}): string {
+  const base = input.baseUrl.replace(/\/+$/, '')
+  const urlPath = input.path.startsWith('/') ? input.path : `/${input.path}`
+  return `${base}${urlPath}`
 }
 
 /**
@@ -113,7 +118,7 @@ function buildUrl(baseUrl: string, urlPath: string): string {
  * @returns cURL command string
  */
 function generateCurl(props: CodeSampleProps): string {
-  const url = buildUrl(props.baseUrl, props.path)
+  const url = buildUrl({ baseUrl: props.baseUrl, path: props.path })
   const method = props.method.toUpperCase()
   const headers = match(isBodyMethod(props.method.toLowerCase()))
     .with(true, () => " \\\n  -H 'Content-Type: application/json'")
@@ -132,7 +137,7 @@ function generateCurl(props: CodeSampleProps): string {
  * @returns Python code string
  */
 function generatePython(props: CodeSampleProps): string {
-  const url = buildUrl(props.baseUrl, props.path)
+  const url = buildUrl({ baseUrl: props.baseUrl, path: props.path })
   const method = props.method.toLowerCase()
   const bodyExample = extractBodyExample(props.requestBody)
   const hasBody = isBodyMethod(method) && bodyExample !== null
@@ -165,7 +170,7 @@ function generatePython(props: CodeSampleProps): string {
  * @returns JavaScript code string
  */
 function generateJavascript(props: CodeSampleProps): string {
-  const url = buildUrl(props.baseUrl, props.path)
+  const url = buildUrl({ baseUrl: props.baseUrl, path: props.path })
   const method = props.method.toUpperCase()
   const hasBody = isBodyMethod(props.method.toLowerCase())
   const bodyExample = extractBodyExample(props.requestBody)
@@ -196,7 +201,7 @@ function generateJavascript(props: CodeSampleProps): string {
  * @returns Go code string
  */
 function generateGo(props: CodeSampleProps): string {
-  const url = buildUrl(props.baseUrl, props.path)
+  const url = buildUrl({ baseUrl: props.baseUrl, path: props.path })
   const method = props.method.toUpperCase()
   const hasBody = isBodyMethod(props.method.toLowerCase())
   const bodyExample = extractBodyExample(props.requestBody)
@@ -260,7 +265,7 @@ function generateGo(props: CodeSampleProps): string {
  * @returns Ruby code string
  */
 function generateRuby(props: CodeSampleProps): string {
-  const url = buildUrl(props.baseUrl, props.path)
+  const url = buildUrl({ baseUrl: props.baseUrl, path: props.path })
   const method = props.method.toLowerCase()
   const hasBody = isBodyMethod(method)
   const bodyExample = extractBodyExample(props.requestBody)
@@ -305,7 +310,7 @@ function generateRuby(props: CodeSampleProps): string {
  * @returns Java code string
  */
 function generateJava(props: CodeSampleProps): string {
-  const url = buildUrl(props.baseUrl, props.path)
+  const url = buildUrl({ baseUrl: props.baseUrl, path: props.path })
   const method = props.method.toUpperCase()
   const hasBody = isBodyMethod(props.method.toLowerCase())
   const bodyExample = extractBodyExample(props.requestBody)

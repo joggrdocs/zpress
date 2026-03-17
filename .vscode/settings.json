@@ -19,5 +19,5 @@
     "titleBar.inactiveForeground": "#15202b99"
   },
   "peacock.color": "#9f9f03",
-  "claudeCode.allowDangerouslySkipPermissions": true
+  "claudeCode.allowDangerouslySkipPermissions": false
 }

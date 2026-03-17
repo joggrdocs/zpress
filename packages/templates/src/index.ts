@@ -7,7 +7,7 @@ export type {
 } from './types.ts'
 
 export { TEMPLATE_TYPES } from './types.ts'
-export { BUILT_IN_TEMPLATES } from './built-in.ts'
+export { getBuiltInTemplates } from './built-in.ts'
 
 export { createRegistry } from './registry.ts'
 

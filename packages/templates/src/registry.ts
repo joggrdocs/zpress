@@ -1,6 +1,6 @@
 import { isFunction } from 'es-toolkit'
 
-import { BUILT_IN_TEMPLATES } from './built-in.ts'
+import { getBuiltInTemplates } from './built-in.ts'
 import type { ExtendTemplateOptions, Template, TemplateRegistry } from './types.ts'
 
 /**
@@ -41,12 +41,12 @@ import type { ExtendTemplateOptions, Template, TemplateRegistry } from './types.
  * ```
  *
  * @param templates - Optional array of templates to seed the registry with.
- *   Defaults to `BUILT_IN_TEMPLATES` when omitted.
+ *   Defaults to built-in templates when omitted.
  * @returns Template registry
  */
 export function createRegistry(templates?: readonly Template[]): TemplateRegistry {
   const entries: ReadonlyMap<string, Template> = templates === undefined
-    ? new Map(Object.entries(BUILT_IN_TEMPLATES))
+    ? new Map(Object.entries(getBuiltInTemplates()))
     : new Map(templates.map((t) => [t.type, t]))
   return createFromMap(entries)
 }
