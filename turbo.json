@@ -21,13 +21,13 @@
     },
     "generate:schema": {},
     "//#lint": {
-      "dependsOn": ["typecheck"]
+      "dependsOn": ["^typecheck"]
     },
     "//#format": {
-      "dependsOn": ["typecheck"]
+      "dependsOn": ["^typecheck"]
     },
     "//#docs:generate": {
-      "dependsOn": ["build"],
+      "dependsOn": ["^build"],
       "cache": false
     },
     "clean": {
