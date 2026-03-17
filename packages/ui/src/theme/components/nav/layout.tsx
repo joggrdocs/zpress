@@ -10,56 +10,12 @@ import { ThemeSwitcher } from './theme-switcher'
 import { VscodeTag } from './vscode-tag'
 
 /**
- * Detect vscode mode synchronously from sessionStorage and URL params.
- * Returns false during SSR — client initializes correctly via lazy useState.
- */
-function readVscodeMode(): boolean {
-  if (globalThis.window === undefined) {
-    return false
-  }
-  try {
-    const params = new URLSearchParams(globalThis.location.search)
-    return (
-      params.get('env') === 'vscode' || globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
-    )
-  } catch {
-    return false
-  }
-}
-
-/**
- * Returns true when the page is loaded in VS Code preview mode.
- *
- * Initializes synchronously from sessionStorage/URL so the VscodeTag
- * renders in the same paint as the rest of the nav. The data-zpress-env
- * attribute and static vscode.css are applied by the inline head script
- * before React mounts, so no dynamic style injection is needed here.
- */
-function useVscodeMode(): boolean {
-  const [active] = useState<boolean>(readVscodeMode)
-
-  // Persist vscode mode across SPA route changes — the inline head script
-  // sets sessionStorage on first load via URL param, but client-side
-  // navigation may lose the param. This ensures the flag survives.
-  useEffect(() => {
-    if (!active) {
-      return
-    }
-    try {
-      sessionStorage.setItem('zpress-env', 'vscode')
-    } catch {
-      // sessionStorage may be blocked in some environments
-    }
-  }, [active])
-
-  return active
-}
-
-/**
  * Custom Layout override for zpress.
  * Wraps the original Rspress Layout and injects BranchTag
  * into `beforeNavMenu` and ThemeSwitcher into `afterNavMenu`.
  * Sidebar above/below links are injected via `beforeSidebar`/`afterSidebar`.
+ *
+ * @returns React element with the custom layout
  */
 export function Layout(): React.ReactElement {
   const vscode = useVscodeMode()
@@ -94,4 +50,60 @@ export function Layout(): React.ReactElement {
       afterSidebar={afterSidebar}
     />
   )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Detect vscode mode synchronously from sessionStorage and URL params.
+ * Returns false during SSR — client initializes correctly via lazy useState.
+ *
+ * @private
+ * @returns True if running in VS Code preview mode
+ */
+function readVscodeMode(): boolean {
+  if (globalThis.window === undefined) {
+    return false
+  }
+  try {
+    const params = new URLSearchParams(globalThis.location.search)
+    return (
+      params.get('env') === 'vscode' || globalThis.sessionStorage.getItem('zpress-env') === 'vscode'
+    )
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Returns true when the page is loaded in VS Code preview mode.
+ *
+ * Initializes synchronously from sessionStorage/URL so the VscodeTag
+ * renders in the same paint as the rest of the nav. The data-zpress-env
+ * attribute and static vscode.css are applied by the inline head script
+ * before React mounts, so no dynamic style injection is needed here.
+ *
+ * @private
+ * @returns True if running in VS Code preview mode
+ */
+function useVscodeMode(): boolean {
+  const [active] = useState<boolean>(readVscodeMode)
+
+  // Persist vscode mode across SPA route changes — the inline head script
+  // sets sessionStorage on first load via URL param, but client-side
+  // navigation may lose the param. This ensures the flag survives.
+  useEffect(() => {
+    if (!active) {
+      return
+    }
+    try {
+      sessionStorage.setItem('zpress-env', 'vscode')
+    } catch {
+      // sessionStorage may be blocked in some environments
+    }
+  }, [active])
+
+  return active
 }

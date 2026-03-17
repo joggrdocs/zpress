@@ -13,54 +13,17 @@ import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
 const OVERVIEW_SLUGS: readonly string[] = ['overview', 'index', 'readme']
 
 /**
- * Promote an overview/index/readme child to section header page.
- *
- * When a section entry has children and one matches an overview slug,
- * the child's content becomes the section's landing page and the child
- * is removed from `items`.
- *
- * @param entry - Resolved entry to check for overview children
- * @private
- */
-function promoteOverviewChild(entry: ResolvedEntry): void {
-  if (!entry.link || entry.autoLink || !entry.items || entry.items.length === 0 || entry.page) {
-    return
-  }
-
-  const entryLink = entry.link
-  const { items } = entry
-  const promoted = OVERVIEW_SLUGS.map((slug) =>
-    items.find((item) => {
-      if (!item.link || !item.page) {
-        return false
-      }
-      const lastSegment = item.link.split('/').at(-1)
-      return lastSegment === slug
-    })
-  ).find((item) => item !== undefined)
-
-  if (!promoted || !promoted.page) {
-    return
-  }
-
-  const childPage = promoted.page
-  const ext = resolveExt(childPage.source)
-
-  entry.page = {
-    source: childPage.source,
-    content: childPage.content,
-    outputPath: linkToOutputPath(entryLink, ext),
-    frontmatter: childPage.frontmatter,
-  }
-  entry.items = items.filter((item) => item !== promoted)
-}
-
-/**
  * Walk the resolved tree and inject virtual landing pages
  * for any section that has a `link` and children but no page of its own.
  *
  * Landing pages with React components use `.mdx` extension;
  * simple text pages stay as `.md`.
+ *
+ * @param entries - Resolved entry tree to walk
+ * @param configSections - Original config sections for metadata lookup
+ * @param workspaces - Workspace items for generating workspace landing pages
+ * @param colorIndex - Mutable color index counter for cycling icon colors
+ * @returns Void; mutates entries in-place
  */
 export function injectLandingPages(
   entries: readonly ResolvedEntry[],
@@ -132,9 +95,58 @@ export function injectLandingPages(
   }, undefined as void)
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Promote an overview/index/readme child to section header page.
+ *
+ * When a section entry has children and one matches an overview slug,
+ * the child's content becomes the section's landing page and the child
+ * is removed from `items`.
+ *
+ * @private
+ * @param entry - Resolved entry to check for overview children
+ * @returns Void; mutates entry in-place
+ */
+function promoteOverviewChild(entry: ResolvedEntry): void {
+  if (!entry.link || entry.autoLink || !entry.items || entry.items.length === 0 || entry.page) {
+    return
+  }
+
+  const entryLink = entry.link
+  const { items } = entry
+  const promoted = OVERVIEW_SLUGS.map((slug) =>
+    items.find((item) => {
+      if (!item.link || !item.page) {
+        return false
+      }
+      const lastSegment = item.link.split('/').at(-1)
+      return lastSegment === slug
+    })
+  ).find((item) => item !== undefined)
+
+  if (!promoted || !promoted.page) {
+    return
+  }
+
+  const childPage = promoted.page
+  const ext = resolveExt(childPage.source)
+
+  entry.page = {
+    source: childPage.source,
+    content: childPage.content,
+    outputPath: linkToOutputPath(entryLink, ext),
+    frontmatter: childPage.frontmatter,
+  }
+  entry.items = items.filter((item) => item !== promoted)
+}
+
 /**
  * Generate a workspace-style landing page MDX from workspace items.
  *
+ * @private
  * @param heading - Page heading
  * @param description - Optional description below heading
  * @param items - Workspace items to render as cards
@@ -186,6 +198,9 @@ function generateWorkspaceLandingPage(
  * Look up the original config Section by link for extracting metadata.
  *
  * @private
+ * @param sections - Config sections to search
+ * @param link - Link path to match
+ * @returns Matching section, or undefined
  */
 function findConfigSection(sections: readonly Section[], link: string): Section | undefined {
   const direct = sections.find((section) => section.link === link)
@@ -199,8 +214,14 @@ function findConfigSection(sections: readonly Section[], link: string): Section 
   return nested
 }
 
-// ── Private helpers ───────────────────────────────────────────
 
+/**
+ * Resolve file extension from source path, defaulting to '.md'.
+ *
+ * @private
+ * @param source - Optional source file path
+ * @returns File extension string
+ */
 function resolveExt(source: string | undefined): string {
   if (source) {
     return sourceExt(source)
@@ -208,6 +229,13 @@ function resolveExt(source: string | undefined): string {
   return '.md'
 }
 
+/**
+ * Extract description from a config section's frontmatter.
+ *
+ * @private
+ * @param configSection - Optional config section
+ * @returns Description string, or undefined
+ */
 function resolveDescription(configSection: Section | undefined): string | undefined {
   if (
     configSection !== null &&
@@ -220,6 +248,14 @@ function resolveDescription(configSection: Section | undefined): string | undefi
   return undefined
 }
 
+/**
+ * Check if any child entry has the same link as the parent.
+ *
+ * @private
+ * @param items - Optional child entries
+ * @param link - Parent link to check against
+ * @returns True if a child has the same link
+ */
 function checkHasSelfLinkedChild(
   items: readonly ResolvedEntry[] | undefined,
   link: string | undefined
@@ -230,6 +266,13 @@ function checkHasSelfLinkedChild(
   return false
 }
 
+/**
+ * Copy tags array, or return undefined if not present.
+ *
+ * @private
+ * @param tags - Optional tags array
+ * @returns Copied tags array or undefined
+ */
 function resolveTags(tags: readonly string[] | undefined): readonly string[] | undefined {
   if (tags) {
     return [...tags]

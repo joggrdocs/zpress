@@ -6,8 +6,6 @@ import { Card } from '../shared/card'
 import { Icon } from '../shared/icon'
 import { TechTag } from '../shared/tech-tag'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface WorkspaceCardProps {
   /**
    * Display name for the card header.
@@ -43,11 +41,12 @@ export interface WorkspaceCardProps {
   readonly badge?: { readonly src: string; readonly alt: string }
 }
 
-// ── Component ────────────────────────────────────────────────
-
 /**
  * Workspace card — renders a clickable link card with icon, name,
  * description, tech tags, and optional deploy badge.
+ *
+ * @param props - Props with title, href, and optional icon, iconColor, scope, description, tags, and badge
+ * @returns React element with a workspace link card
  */
 export function WorkspaceCard({
   title,

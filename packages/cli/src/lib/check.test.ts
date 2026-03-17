@@ -1,11 +1,11 @@
 import type { ZpressConfig } from '@zpress/core'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock(import('../src/lib/rspress.ts'), () => ({
+vi.mock(import('./rspress.ts'), () => ({
   buildSiteForCheck: vi.fn(),
 }))
 
-const { runConfigCheck, presentResults } = await import('../src/lib/check.ts')
+const { runConfigCheck, presentResults } = await import('./check.ts')
 
 const validConfig = { sections: [{ title: 'Test' }] } as unknown as ZpressConfig
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { z } from 'zod/v3'
 
-import { configError, configErrorFromZod } from '../src/errors.ts'
+import { configError, configErrorFromZod } from './errors.ts'
 
 describe('configError()', () => {
   it('should return object with _tag ConfigError', () => {

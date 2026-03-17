@@ -6,20 +6,11 @@ import { Icon } from '../shared/icon.tsx'
 declare const __ZPRESS_GIT_BRANCH__: string | undefined
 
 /**
- * Resolves the current git branch name from the build-time global,
- * returning an empty string when undefined.
- */
-function resolveBranch(): string {
-  if (__ZPRESS_GIT_BRANCH__ !== undefined) {
-    return __ZPRESS_GIT_BRANCH__
-  }
-  return ''
-}
-
-/**
  * Git branch tag — pill-shaped badge rendered via the `beforeNavMenu`
  * layout slot. Hidden when on `main` (production).
  * Uses the pixelarticons:git-branch icon.
+ *
+ * @returns React element or null when on main branch
  */
 export function BranchTag(): React.ReactElement | null {
   const branch = resolveBranch()
@@ -43,3 +34,21 @@ export function BranchTag(): React.ReactElement | null {
 }
 
 export { BranchTag as default }
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolves the current git branch name from the build-time global,
+ * returning an empty string when undefined.
+ *
+ * @private
+ * @returns Current git branch name or empty string
+ */
+function resolveBranch(): string {
+  if (__ZPRESS_GIT_BRANCH__ !== undefined) {
+    return __ZPRESS_GIT_BRANCH__
+  }
+  return ''
+}

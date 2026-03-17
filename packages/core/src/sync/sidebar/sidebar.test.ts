@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-import type { ResolvedEntry } from '../../src/sync/types'
+import type { ResolvedEntry } from '../types'
 
 vi.mock(import('node:fs/promises'), () => ({
   default: {
@@ -8,7 +8,7 @@ vi.mock(import('node:fs/promises'), () => ({
   },
 }))
 
-const { injectLandingPages } = await import('../../src/sync/sidebar/inject')
+const { injectLandingPages } = await import('./inject')
 
 describe('injectLandingPages()', () => {
   beforeEach(() => {

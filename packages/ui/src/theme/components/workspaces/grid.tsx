@@ -2,8 +2,6 @@ import type React from 'react'
 
 import './card.css'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface WorkspaceGridProps {
   /**
    * Section heading (e.g. "Apps", "Packages").
@@ -19,11 +17,13 @@ export interface WorkspaceGridProps {
   readonly children: React.ReactNode
 }
 
-// ── Component ────────────────────────────────────────────────
 
 /**
  * Grid container for workspace cards — renders a heading, description,
  * and a CSS grid wrapping its children.
+ *
+ * @param props - Props with heading, description, and children workspace cards
+ * @returns React element with heading, description, and grid layout
  */
 export function WorkspaceGrid({
   heading,

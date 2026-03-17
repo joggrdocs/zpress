@@ -7,6 +7,11 @@
  * alternative exists.
  *
  * Add new entries here when new technologies need card support.
+ *
+ * @example
+ * ```ts
+ * const { icon, label } = TECH_ICONS['typescript']
+ * ```
  */
 export const TECH_ICONS = {
   // -- Languages --

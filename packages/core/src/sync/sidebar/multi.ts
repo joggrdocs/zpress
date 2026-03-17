@@ -133,8 +133,17 @@ export function buildMultiSidebar(
   return Object.fromEntries(sortedKeys.map((key) => [key, sidebar[key]]))
 }
 
-// ── Private helpers ───────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
+/**
+ * Unwrap optional entry items to a concrete array.
+ *
+ * @private
+ * @param items - Optional resolved entry items
+ * @returns Array of entries, or empty array if undefined
+ */
 function resolveEntryItems(items: readonly ResolvedEntry[] | undefined): readonly ResolvedEntry[] {
   if (items) {
     return [...items]
@@ -142,6 +151,14 @@ function resolveEntryItems(items: readonly ResolvedEntry[] | undefined): readonl
   return []
 }
 
+/**
+ * Look up sidebar children for a link, returning empty array if not found.
+ *
+ * @private
+ * @param childrenByLink - Pre-computed map of link to sidebar items
+ * @param link - Link key to look up
+ * @returns Sidebar items for the link, or empty array
+ */
 function resolveChildrenByLink(
   childrenByLink: ReadonlyMap<string, SidebarItem[]>,
   link: string
@@ -153,6 +170,13 @@ function resolveChildrenByLink(
   return []
 }
 
+/**
+ * Derive the parent link by removing the last path segment.
+ *
+ * @private
+ * @param entryLink - Link path to derive parent from
+ * @returns Parent link path, or null if at root
+ */
 function resolveParentLink(entryLink: string): string | null {
   const segments = entryLink.split('/').slice(0, -1).join('/')
   if (segments) {
@@ -161,6 +185,13 @@ function resolveParentLink(entryLink: string): string | null {
   return null
 }
 
+/**
+ * Extract the link from the first child sidebar item, if present.
+ *
+ * @private
+ * @param children - Array of sidebar items
+ * @returns First child's link, or undefined
+ */
 function resolveFirstChildLink(children: readonly SidebarItem[]): string | undefined {
   if (children.length > 0 && children[0].link) {
     return children[0].link
@@ -168,6 +199,16 @@ function resolveFirstChildLink(children: readonly SidebarItem[]): string | undef
   return undefined
 }
 
+/**
+ * Build a sidebar group item with optional collapsed children.
+ *
+ * @private
+ * @param text - Display text for the group
+ * @param link - Link path for the group
+ * @param children - Child sidebar items
+ * @param collapsed - Whether the group starts collapsed
+ * @returns Sidebar item with children if present, or leaf item
+ */
 function buildSidebarGroup(
   text: string,
   link: string,
@@ -187,6 +228,7 @@ function buildSidebarGroup(
  * appends the OpenAPI sidebar items to that isolated sidebar. Both trailing-slash
  * and non-trailing-slash variants are updated.
  *
+ * @private
  * @param isolatedSidebar - Existing isolated sidebar record
  * @param openapiEntries - Workspace-scoped OpenAPI entries to merge
  * @returns Updated sidebar record with OpenAPI items injected
@@ -230,6 +272,7 @@ function mergeOpenapiIntoIsolated(
  * Each entry gets both a trailing-slash and non-trailing-slash key
  * for Rspress matching.
  *
+ * @private
  * @param entries - OpenAPI sidebar entries with prefix and sidebar items
  * @returns Record of sidebar items keyed by prefix paths
  */

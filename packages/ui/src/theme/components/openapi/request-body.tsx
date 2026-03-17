@@ -4,8 +4,6 @@ import { match, P } from 'ts-pattern'
 
 import { SchemaViewer } from './schema-viewer'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface RequestBodyProps {
   /**
    * OpenAPI requestBody object.
@@ -13,40 +11,19 @@ export interface RequestBodyProps {
   readonly requestBody: Record<string, unknown>
 }
 
-// ── Helpers ──────────────────────────────────────────────────
-
 interface ParsedContent {
   readonly contentType: string
   readonly schema: Record<string, unknown>
   readonly example: unknown | null
 }
 
-function extractFirstContent(requestBody: Record<string, unknown>): ParsedContent | null {
-  const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
-  return match(content)
-    .with(P.nonNullable, (c) => {
-      const entries = Object.entries(c)
-      return match(entries)
-        .with(
-          P.when((e): e is [string, Record<string, unknown>][] => e.length > 0),
-          (e) => {
-            const [[contentType, mediaType]] = e
-            const schema = (mediaType['schema'] ?? {}) as Record<string, unknown>
-            const { example } = mediaType as { readonly example?: unknown }
-            return { contentType, schema, example: example ?? null }
-          }
-        )
-        .otherwise(() => null)
-    })
-    .otherwise(() => null)
-}
-
-// ── Component ────────────────────────────────────────────────
-
 /**
  * Renders the request body section of an OpenAPI operation.
  *
  * Shows the content type, description, schema tree, and example payload.
+ *
+ * @param props - Request body props
+ * @returns React element with request body details
  */
 export function RequestBody({ requestBody }: RequestBodyProps): React.ReactElement {
   const description = requestBody['description'] as string | undefined
@@ -83,4 +60,35 @@ export function RequestBody({ requestBody }: RequestBodyProps): React.ReactEleme
       {exampleEl}
     </div>
   )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract the first content type entry from a request body.
+ *
+ * @private
+ * @param requestBody - OpenAPI request body object
+ * @returns Parsed content with type, schema, and example, or null
+ */
+function extractFirstContent(requestBody: Record<string, unknown>): ParsedContent | null {
+  const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
+  return match(content)
+    .with(P.nonNullable, (c) => {
+      const entries = Object.entries(c)
+      return match(entries)
+        .with(
+          P.when((e): e is [string, Record<string, unknown>][] => e.length > 0),
+          (e) => {
+            const [[contentType, mediaType]] = e
+            const schema = (mediaType['schema'] ?? {}) as Record<string, unknown>
+            const { example } = mediaType as { readonly example?: unknown }
+            return { contentType, schema, example: example ?? null }
+          }
+        )
+        .otherwise(() => null)
+    })
+    .otherwise(() => null)
 }

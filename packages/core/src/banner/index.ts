@@ -15,11 +15,7 @@ import { GENERATED_MARKER } from './svg-shared.ts'
 import { assetError } from './types.ts'
 import type { AssetConfig, AssetResult, GeneratedAsset } from './types.ts'
 
-// ── Re-exports ──────────────────────────────────────────────
-
 export type { AssetConfig, AssetError, AssetResult, GeneratedAsset } from './types.ts'
-
-// ── Single-asset generators ─────────────────────────────────
 
 /**
  * Generate a banner SVG from the project config.
@@ -81,57 +77,6 @@ export function generateIconSvg(config: AssetConfig): AssetResult<GeneratedAsset
   ]
 }
 
-// ── File-level helpers ──────────────────────────────────────
-
-/**
- * Determine whether a file should be (re)generated.
- *
- * Returns `true` when:
- * - The file does not exist (first generation)
- * - The file exists and contains the zpress-generated marker (regeneration)
- *
- * Returns `false` when:
- * - The file exists without the marker (user-customized)
- */
-async function shouldGenerate(filePath: string): Promise<boolean> {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
-  const content = await fs.readFile(filePath, 'utf8').catch(() => null)
-  if (content === null) {
-    return true
-  }
-  const [firstLine] = content.split('\n')
-  if (firstLine === GENERATED_MARKER) {
-    return true
-  }
-  return false
-}
-
-/**
- * Write a generated asset to disk, returning either the filename or an error.
- */
-async function writeAsset(asset: GeneratedAsset, publicDir: string): Promise<AssetResult<string>> {
-  const filePath = path.resolve(publicDir, asset.filename)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
-  const result = await fs
-    .writeFile(filePath, asset.content, 'utf8')
-    .catch((error: unknown) => error)
-  if (result !== undefined) {
-    if (result instanceof Error) {
-      return [
-        assetError('write_failed', `Failed to write ${asset.filename}: ${result.message}`),
-        null,
-      ]
-    }
-    return [
-      assetError('write_failed', `Failed to write ${asset.filename}: ${String(result)}`),
-      null,
-    ]
-  }
-  return [null, asset.filename]
-}
-
-// ── Batch generator ─────────────────────────────────────────
-
 interface GenerateAssetsParams {
   readonly config: AssetConfig
   readonly publicDir: string
@@ -173,7 +118,7 @@ export async function generateAssets(
         return acc
       }
 
-      const [writeErr, filename] = await writeAsset(asset, params.publicDir)
+      const [writeErr, filename] = await writeAsset({ asset, publicDir: params.publicDir })
       if (writeErr) {
         return acc
       }
@@ -184,4 +129,68 @@ export async function generateAssets(
   )
 
   return [null, written]
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Determine whether a file should be (re)generated.
+ *
+ * Returns `true` when:
+ * - The file does not exist (first generation)
+ * - The file exists and contains the zpress-generated marker (regeneration)
+ *
+ * Returns `false` when:
+ * - The file exists without the marker (user-customized)
+ *
+ * @private
+ * @param filePath - Absolute path to the file to check
+ * @returns Whether the file should be (re)generated
+ */
+async function shouldGenerate(filePath: string): Promise<boolean> {
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
+  const content = await fs.readFile(filePath, 'utf8').catch(() => null)
+  if (content === null) {
+    return true
+  }
+  const [firstLine] = content.split('\n')
+  if (firstLine === GENERATED_MARKER) {
+    return true
+  }
+  return false
+}
+
+interface WriteAssetParams {
+  readonly asset: GeneratedAsset
+  readonly publicDir: string
+}
+
+/**
+ * Write a generated asset to disk, returning either the filename or an error.
+ *
+ * @private
+ * @param params - Asset and target directory
+ * @returns Result containing the written filename or a write error
+ */
+async function writeAsset(params: WriteAssetParams): Promise<AssetResult<string>> {
+  const filePath = path.resolve(params.publicDir, params.asset.filename)
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
+  const result = await fs
+    .writeFile(filePath, params.asset.content, 'utf8')
+    .catch((error: unknown) => error)
+  if (result !== undefined) {
+    if (result instanceof Error) {
+      return [
+        assetError('write_failed', `Failed to write ${params.asset.filename}: ${result.message}`),
+        null,
+      ]
+    }
+    return [
+      assetError('write_failed', `Failed to write ${params.asset.filename}: ${String(result)}`),
+      null,
+    ]
+  }
+  return [null, params.asset.filename]
 }

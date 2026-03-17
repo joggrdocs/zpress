@@ -7,7 +7,6 @@ import { resolveOptionalIcon } from '../../icon.ts'
 import type { IconColor } from '../../icon.ts'
 import type { ResolvedEntry } from '../types.ts'
 
-// ── Shared card data ─────────────────────────────────────────
 
 /**
  * Input data for building a workspace card JSX string.
@@ -50,8 +49,6 @@ export interface WorkspaceCardData {
    */
   readonly hasChildren?: boolean
 }
-
-// ── Public API ───────────────────────────────────────────────
 
 /**
  * Generate section landing page MDX from resolved children.
@@ -125,8 +122,17 @@ export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
   return `  <WorkspaceCard ${props.join(' ')} />`
 }
 
-// ── Workspace cards (rich — icon, scope, badges, tags) ───────
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
+/**
+ * Build a workspace card JSX string from a resolved entry with card metadata.
+ *
+ * @private
+ * @param entry - Resolved entry with card metadata
+ * @returns JSX string for a WorkspaceCard component
+ */
 async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
   const card = entry.card ?? {}
   const description = card.description ?? (await resolveDescription(entry))
@@ -153,11 +159,11 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
   })
 }
 
-// ── Section cards (simple — icon + title + description) ──────
 
 /**
  * Build a section card JSX string from a resolved entry.
  *
+ * @private
  * @param entry - Resolved entry to render as a card
  * @param iconColor - Color theme for the icon
  * @returns JSX string for a single SectionCard component
@@ -182,11 +188,14 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
   return `  <SectionCard ${props.join(' ')} />`
 }
 
-// ── Shared helpers ───────────────────────────────────────────
 
 /**
  * Resolve a description for a card.
  * Priority: card.description > source file frontmatter > first paragraph > page frontmatter.
+ *
+ * @private
+ * @param entry - Resolved entry to extract description from
+ * @returns Description string, or undefined if none found
  */
 async function resolveDescription(entry: ResolvedEntry): Promise<string | undefined> {
   // Explicit card description wins
@@ -223,6 +232,10 @@ async function resolveDescription(entry: ResolvedEntry): Promise<string | undefi
 /**
  * Extract a short description from a markdown file.
  * Checks frontmatter `description` first, then first paragraph after heading.
+ *
+ * @private
+ * @param sourcePath - Absolute path to the markdown file
+ * @returns Description string, or undefined if none found
  */
 async function extractDescription(sourcePath: string): Promise<string | undefined> {
   const raw = await fs.readFile(sourcePath, 'utf8')
@@ -245,6 +258,7 @@ async function extractDescription(sourcePath: string): Promise<string | undefine
 /**
  * Escape special characters in JSX prop values.
  *
+ * @private
  * @param str - Raw string to escape for use in JSX attribute values
  * @returns Escaped string safe for JSX prop interpolation
  */
@@ -252,8 +266,15 @@ function escapeJsxProp(str: string): string {
   return str.replaceAll('"', '&quot;').replaceAll('{', '&#123;').replaceAll('}', '&#125;')
 }
 
-// ── Private helpers ───────────────────────────────────────────
 
+/**
+ * Extract the first non-empty paragraph after a heading from markdown lines.
+ *
+ * @private
+ * @param lines - Array of markdown lines
+ * @param headingIdx - Index of the heading line (-1 if none found)
+ * @returns Array of trimmed paragraph lines
+ */
 function resolveParagraph(lines: readonly string[], headingIdx: number): readonly string[] {
   if (headingIdx === -1) {
     return []
@@ -288,6 +309,13 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
     ).result
 }
 
+/**
+ * Return a scope JSX prop array if scope is defined.
+ *
+ * @private
+ * @param scope - Optional scope string
+ * @returns Array with scope prop string, or empty
+ */
 function maybeScopeProp(scope: string | undefined): readonly string[] {
   if (scope) {
     return [`scope="${escapeJsxProp(scope)}"`]
@@ -295,6 +323,13 @@ function maybeScopeProp(scope: string | undefined): readonly string[] {
   return []
 }
 
+/**
+ * Return a description JSX prop array if description is defined.
+ *
+ * @private
+ * @param description - Optional description string
+ * @returns Array with description prop string, or empty
+ */
 function maybeDescriptionProp(description: string | undefined): readonly string[] {
   if (description) {
     return [`description="${escapeJsxProp(description)}"`]
@@ -302,6 +337,13 @@ function maybeDescriptionProp(description: string | undefined): readonly string[
   return []
 }
 
+/**
+ * Return a tags JSX prop array if tags are present and non-empty.
+ *
+ * @private
+ * @param tags - Optional array of tag strings
+ * @returns Array with tags prop string, or empty
+ */
 function maybeTagsProp(tags: readonly string[] | undefined): readonly string[] {
   if (tags && tags.length > 0) {
     return [`tags={${JSON.stringify(tags)}}`]
@@ -309,6 +351,13 @@ function maybeTagsProp(tags: readonly string[] | undefined): readonly string[] {
   return []
 }
 
+/**
+ * Return a badge JSX prop array if badge is defined.
+ *
+ * @private
+ * @param badge - Optional badge object with src and alt
+ * @returns Array with badge prop string, or empty
+ */
 function maybeBadgeProp(
   badge: { readonly src: string; readonly alt: string } | undefined
 ): readonly string[] {

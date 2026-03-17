@@ -6,14 +6,10 @@ import type { Section, ZpressConfig, Workspace } from '../types.ts'
 import { buildWorkspaceCardJsx } from './sidebar/landing.ts'
 import type { ResolvedEntry } from './types.ts'
 
-// ── Types ────────────────────────────────────────────────────
-
 interface WorkspaceArrays {
   readonly apps: readonly Workspace[]
   readonly packages: readonly Workspace[]
 }
-
-// ── Public API ───────────────────────────────────────────────
 
 /**
  * Enrich resolved entries with card metadata derived from workspace items.
@@ -219,13 +215,31 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
   )
 }
 
-// ── Internal helpers ─────────────────────────────────────────
+/**
+ * Convert display text to a URL-safe slug.
+ * E.g. "Getting Started" → "getting-started"
+ *
+ * @param text - Display text to slugify
+ * @returns URL-safe lowercase slug
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
 /**
  * Recursively collect all links from a section tree.
  * Walks sections and their nested items to find every defined link.
  *
  * @private
+ * @param sections - Section tree to walk
+ * @returns Set of all link strings found in the tree
  */
 function collectAllLinks(sections: readonly Section[]): Set<string> {
   return new Set(
@@ -238,22 +252,12 @@ function collectAllLinks(sections: readonly Section[]): Set<string> {
 }
 
 /**
- * Convert display text to a URL-safe slug.
- * E.g. "Getting Started" → "getting-started"
- *
- * @private
- */
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, '-')
-    .replaceAll(/^-+|-+$/g, '')
-}
-
-/**
  * Recursively produce a new entry tree with card metadata from workspace items.
  *
  * @private
+ * @param entries - Resolved entry tree to enrich
+ * @param items - Workspace items containing card metadata
+ * @returns New entry tree with card metadata added where matched
  */
 function enrichEntries(
   entries: readonly ResolvedEntry[],
@@ -296,6 +300,8 @@ function enrichEntries(
  * E.g. "/apps/api" → "apps/", "/packages/database" → "packages/"
  *
  * @private
+ * @param itemPath - Workspace item path
+ * @returns Scope label string (first segment with trailing slash)
  */
 function deriveScope(itemPath: string): string {
   const segments = itemPath.split('/').filter(Boolean)
@@ -309,6 +315,11 @@ function deriveScope(itemPath: string): string {
  * Build a workspace section (heading + description + card grid) for the home page.
  *
  * @private
+ * @param heading - Section heading text
+ * @param description - Section description text
+ * @param items - Workspace items to render as cards
+ * @param scopePrefix - Prefix for scoping items
+ * @returns Markdown string with heading, description, and card grid
  */
 function buildWorkspaceSection(
   heading: string,
@@ -364,6 +375,8 @@ function buildWorkspaceSection(
  * For example, `prefix: "/apps/api"` + `discovery.from: "docs/*.md"` resolves to `"apps/api/docs/*.md"`.
  *
  * @private
+ * @param item - Workspace item to convert
+ * @returns Section config derived from the workspace item
  */
 function workspaceToSection(item: Workspace): Section {
   const base: Section = {
@@ -375,6 +388,14 @@ function workspaceToSection(item: Workspace): Section {
   return applyOptionalFields(base, item)
 }
 
+/**
+ * Apply optional discovery fields to a base section from a workspace item.
+ *
+ * @private
+ * @param base - Base section with title, icon, and link
+ * @param item - Workspace item with optional discovery config
+ * @returns Complete section with all discovery fields resolved
+ */
 function applyOptionalFields(base: Section, item: Workspace): Section {
   // Extract discovery config or use defaults
   const { discovery } = item
@@ -451,6 +472,13 @@ function applyOptionalFields(base: Section, item: Workspace): Section {
   ) as Section
 }
 
+/**
+ * Return the link as a single-element array, or empty if undefined.
+ *
+ * @private
+ * @param link - Optional link string
+ * @returns Array with the link, or empty array
+ */
 function collectSelfLinks(link: string | undefined): string[] {
   if (!isNil(link)) {
     return [link]
@@ -458,6 +486,13 @@ function collectSelfLinks(link: string | undefined): string[] {
   return []
 }
 
+/**
+ * Collect links from nested section items.
+ *
+ * @private
+ * @param items - Optional array of child sections
+ * @returns Array of link strings from nested items
+ */
 function collectNestedLinks(items: readonly Section[] | undefined): string[] {
   if (items) {
     return [...collectAllLinks(items)]
@@ -465,6 +500,14 @@ function collectNestedLinks(items: readonly Section[] | undefined): string[] {
   return []
 }
 
+/**
+ * Recursively enrich child items with workspace card metadata.
+ *
+ * @private
+ * @param items - Optional child entries to enrich
+ * @param workspaceItems - Workspace items containing card metadata
+ * @returns Enriched entries or undefined if no items
+ */
 function resolveEnrichedItems(
   items: readonly ResolvedEntry[] | undefined,
   workspaceItems: readonly Workspace[]
@@ -475,6 +518,13 @@ function resolveEnrichedItems(
   return undefined
 }
 
+/**
+ * Copy tags array, or return undefined if not present.
+ *
+ * @private
+ * @param tags - Optional tags array
+ * @returns Copied tags array or undefined
+ */
 function resolveTags(tags: readonly string[] | undefined): string[] | undefined {
   if (tags) {
     return [...tags]
@@ -482,6 +532,13 @@ function resolveTags(tags: readonly string[] | undefined): string[] | undefined 
   return undefined
 }
 
+/**
+ * Copy badge object, or return undefined if not present.
+ *
+ * @private
+ * @param badge - Optional badge with src and alt
+ * @returns Copied badge object or undefined
+ */
 function resolveBadge(
   badge: { readonly src: string; readonly alt: string } | undefined
 ): { readonly src: string; readonly alt: string } | undefined {

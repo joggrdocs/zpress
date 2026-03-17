@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@zpress/theme": "workspace:*",
-    "c12": "4.0.0-beta.3",
+    "c12": "4.0.0-beta.4",
     "es-toolkit": "catalog:",
     "ts-pattern": "catalog:",
     "type-fest": "catalog:",
@@ -54,6 +54,7 @@
     "@types/node": "^25.5.0",
     "tsx": "^4.21.0",
     "typescript": "catalog:",
+    "vitest": "catalog:",
     "zod-to-json-schema": "^3.25.1"
   },
   "engines": {

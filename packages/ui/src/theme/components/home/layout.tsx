@@ -3,8 +3,6 @@ import type React from 'react'
 
 import { HomeWorkspaces } from './workspaces'
 
-// ── Types ────────────────────────────────────────────────────
-
 interface HomeLayoutProps {
   readonly beforeHero?: React.ReactNode
   readonly afterHero?: React.ReactNode
@@ -14,12 +12,13 @@ interface HomeLayoutProps {
   readonly afterHeroActions?: React.ReactNode
 }
 
-// ── Component ────────────────────────────────────────────────
-
 /**
  * Custom HomeLayout override for zpress.
  * Wraps the original Rspress HomeLayout and injects HomeWorkspaces
  * into the afterFeatures slot.
+ *
+ * @param props - Home layout slot props forwarded to the original Rspress HomeLayout
+ * @returns React element with injected workspace section
  */
 export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   return (

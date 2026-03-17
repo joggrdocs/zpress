@@ -5,20 +5,6 @@ import { createPaths, generateAssets, loadConfig } from '@zpress/core'
 import type { AssetConfig } from '@zpress/core'
 
 /**
- * Build an `AssetConfig` from the loaded zpress config.
- * Returns `null` when no title is configured (fallback to default assets).
- */
-function buildAssetConfig(config: {
-  readonly title?: string
-  readonly tagline?: string
-}): AssetConfig | null {
-  if (!config.title) {
-    return null
-  }
-  return { title: config.title, tagline: config.tagline }
-}
-
-/**
  * Standalone command to generate branded banner, logo, and icon SVGs.
  *
  * Reads the project config, generates assets from the configured title,
@@ -67,3 +53,25 @@ export const generateCommand = command({
     ctx.logger.outro('Done')
   },
 })
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build an `AssetConfig` from the loaded zpress config.
+ * Returns `null` when no title is configured (fallback to default assets).
+ *
+ * @private
+ * @param config - Config object with optional title and tagline
+ * @returns Asset config or null when no title is present
+ */
+function buildAssetConfig(config: {
+  readonly title?: string
+  readonly tagline?: string
+}): AssetConfig | null {
+  if (!config.title) {
+    return null
+  }
+  return { title: config.title, tagline: config.tagline }
+}

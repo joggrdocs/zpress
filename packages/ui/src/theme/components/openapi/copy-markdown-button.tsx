@@ -2,8 +2,6 @@ import { LlmsCopyButton } from '@rspress/core/theme'
 import type React from 'react'
 import { useCallback } from 'react'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface CopyMarkdownButtonProps {
   /**
    * Markdown content to copy to the clipboard.
@@ -11,13 +9,14 @@ export interface CopyMarkdownButtonProps {
   readonly markdown: string
 }
 
-// ── Component ────────────────────────────────────────────────
-
 /**
  * Copy Markdown button that overrides Rspress's default copy behavior.
  *
  * Uses the native Clipboard API to copy pre-generated markdown content
  * instead of the raw MDX source.
+ *
+ * @param props - Props with the markdown string to copy to the clipboard
+ * @returns React element with the copy button
  */
 export function CopyMarkdownButton({ markdown }: CopyMarkdownButtonProps): React.ReactElement {
   const handleClick = useCallback(

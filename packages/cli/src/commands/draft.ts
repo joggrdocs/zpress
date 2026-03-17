@@ -17,7 +17,7 @@ const registry = createRegistry()
  */
 export const draftCommand = command({
   description: 'Scaffold a new documentation file from a template',
-  args: z.object({
+  options: z.object({
     type: z.string().optional(),
     title: z.string().optional(),
     out: z.string().optional().default('.'),

@@ -9,7 +9,7 @@ import { DEFAULT_PORT, openBrowser, serveSite } from '../lib/rspress.ts'
  */
 export const serveCommand = command({
   description: 'Preview the built Rspress site',
-  args: z.object({
+  options: z.object({
     open: z.boolean().optional().default(true),
   }),
   handler: async (ctx) => {

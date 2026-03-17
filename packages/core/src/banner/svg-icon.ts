@@ -17,7 +17,6 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-// ── Layout constants ────────────────────────────────────────
 
 const ICON_SIZE = 512
 const ICON_RADIUS = 32
@@ -29,8 +28,42 @@ const FIGLET_ROWS = 6
  */
 const ICON_FALLBACK_FONT_SIZE = 320
 
-// ── Builders ────────────────────────────────────────────────
 
+/**
+ * Compose a favicon SVG string from the project title.
+ *
+ * Extracts the first character, renders it as FIGlet block art
+ * centered on a dark rounded square. Falls back to a large
+ * monospace character when the glyph is unavailable.
+ *
+ * @param params - Icon configuration
+ * @returns Complete SVG markup string with generated marker
+ */
+export function composeIcon(params: { readonly title: string }): string {
+  const [firstChar = 'Z'] = [...params.title.trimStart()]
+  const figlet = renderFigletText(firstChar)
+  const hasFigletGlyph = figlet.lines.some((line) => line.trim().length > 0)
+
+  if (hasFigletGlyph) {
+    return buildFigletIcon({ lines: figlet.lines, width: figlet.width })
+  }
+
+  return buildFallbackIcon({ char: firstChar })
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a FIGlet-based icon SVG with the glyph scaled and centered in a 512px square.
+ *
+ * @private
+ * @param params - FIGlet icon configuration
+ * @param params.lines - Rendered FIGlet text rows for the character
+ * @param params.width - Width of the FIGlet glyph in character columns
+ * @returns Complete SVG markup string for the FIGlet icon
+ */
 function buildFigletIcon(params: {
   readonly lines: readonly string[]
   readonly width: number
@@ -72,6 +105,14 @@ function buildFigletIcon(params: {
   ].join('\n')
 }
 
+/**
+ * Build a fallback icon SVG with a single large character centered in a 512px square.
+ *
+ * @private
+ * @param params - Fallback icon configuration
+ * @param params.char - Single character to render
+ * @returns Complete SVG markup string for the fallback icon
+ */
 function buildFallbackIcon(params: { readonly char: string }): string {
   const centerX = ICON_SIZE / 2
   const centerY = ICON_SIZE / 2 + ICON_FALLBACK_FONT_SIZE * 0.35
@@ -94,28 +135,4 @@ function buildFallbackIcon(params: { readonly char: string }): string {
     `  <text class="text brand" font-size="${ICON_FALLBACK_FONT_SIZE}" x="${centerX}" y="${centerY}" text-anchor="middle">${escaped}</text>`,
     '</svg>',
   ].join('\n')
-}
-
-// ── Public API ──────────────────────────────────────────────
-
-/**
- * Compose a favicon SVG string from the project title.
- *
- * Extracts the first character, renders it as FIGlet block art
- * centered on a dark rounded square. Falls back to a large
- * monospace character when the glyph is unavailable.
- *
- * @param params - Icon configuration
- * @returns Complete SVG markup string with generated marker
- */
-export function composeIcon(params: { readonly title: string }): string {
-  const [firstChar = 'Z'] = [...params.title.trimStart()]
-  const figlet = renderFigletText(firstChar)
-  const hasFigletGlyph = figlet.lines.some((line) => line.trim().length > 0)
-
-  if (hasFigletGlyph) {
-    return buildFigletIcon({ lines: figlet.lines, width: figlet.width })
-  }
-
-  return buildFallbackIcon({ char: firstChar })
 }

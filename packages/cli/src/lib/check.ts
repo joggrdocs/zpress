@@ -15,7 +15,12 @@ import type { ConfigError, Paths, ZpressConfig } from '@zpress/core'
 
 import { buildSiteForCheck } from './rspress.ts'
 
-// ── Types ──────────────────────────────────────────────────────
+// oxlint-disable-next-line prefer-regex-literals, no-control-regex -- regex literal is clearer for a well-known ANSI escape pattern
+const ANSI_PATTERN = /\u001B\[[0-9;]*m/g
+
+const RED = '\u001B[31m'
+const DIM = '\u001B[2m'
+const RESET = '\u001B[0m'
 
 interface DeadlinkInfo {
   readonly file: string
@@ -50,23 +55,6 @@ interface RunBuildCheckParams {
   readonly paths: Paths
 }
 
-// ── ANSI stripping ─────────────────────────────────────────────
-
-// oxlint-disable-next-line prefer-regex-literals, no-control-regex -- regex literal is clearer for a well-known ANSI escape pattern
-const ANSI_PATTERN = /\u001B\[[0-9;]*m/g
-
-/**
- * Strip ANSI escape codes from a string.
- *
- * @param text - Text potentially containing ANSI color codes
- * @returns The text with all ANSI escape sequences removed
- */
-function stripAnsi(text: string): string {
-  return text.replace(ANSI_PATTERN, '')
-}
-
-// ── Config validation ──────────────────────────────────────────
-
 interface RunConfigCheckParams {
   readonly config: ZpressConfig | null
   readonly loadError: ConfigError | null
@@ -93,10 +81,98 @@ export function runConfigCheck(params: RunConfigCheckParams): ConfigCheckResult 
   return { passed: true, errors: [] }
 }
 
-// ── Output capture ─────────────────────────────────────────────
+/**
+ * Run a silent Rspress build to detect deadlinks.
+ *
+ * Rspress's `remarkLink` plugin checks internal links during build. In
+ * production mode it logs colored error messages per file via `logger.error()`
+ * then throws `Error("Dead link found")`. We capture stderr to parse the
+ * diagnostics and present them in our own clean format.
+ *
+ * @param params - Config and paths for the build
+ * @returns A `BuildCheckResult` with pass/fail status and any deadlinks found
+ */
+export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildCheckResult> {
+  const { error, captured } = await captureOutput(() =>
+    buildSiteForCheck({ config: params.config, paths: params.paths })
+  )
+
+  // Rspress wraps the "Dead link found" error inside an Rspack build failure,
+  // so we check captured output for deadlink patterns rather than the error message.
+  if (error) {
+    const { repoRoot } = params.paths
+    const deadlinks = parseDeadlinks(captured).map((info) => ({
+      file: path.relative(repoRoot, info.file),
+      links: info.links,
+    }))
+    if (deadlinks.length > 0) {
+      return { status: 'failed', deadlinks }
+    }
+
+    // Non-deadlink build error — surface as a generic failure
+    return { status: 'error', message: error.message }
+  }
+
+  return { status: 'passed' }
+}
+
+/**
+ * Format and display check results using the CLI logger.
+ *
+ * @param params - Config check result, build check result, and logger instance
+ * @returns `true` if all checks passed, `false` otherwise
+ */
+export function presentResults(params: PresentResultsParams): boolean {
+  const { configResult, buildResult, logger } = params
+
+  if (configResult.passed) {
+    logger.success('Config valid')
+  } else {
+    logger.error('Config validation failed:')
+    // oxlint-disable-next-line no-unused-expressions -- side-effect logging over config errors
+    configResult.errors.map((err) => {
+      logger.message(`  ${err.message}`)
+      return null
+    })
+  }
+
+  if (buildResult.status === 'passed') {
+    logger.success('No broken links')
+  } else if (buildResult.status === 'skipped') {
+    // Build was skipped (e.g. config invalid) — nothing to report
+  } else if (buildResult.status === 'error') {
+    logger.error(`Build failed: ${buildResult.message}`)
+  } else {
+    const totalLinks = buildResult.deadlinks.reduce((sum, info) => sum + info.links.length, 0)
+    logger.error(`Found ${totalLinks} broken link(s):`)
+    const block = buildResult.deadlinks.map(formatDeadlinkGroup).join('\n')
+    logger.message(block)
+  }
+
+  return configResult.passed && buildResult.status === 'passed'
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Strip ANSI escape codes from a string.
+ *
+ * @private
+ * @param text - Text potentially containing ANSI color codes
+ * @returns The text with all ANSI escape sequences removed
+ */
+function stripAnsi(text: string): string {
+  return text.replace(ANSI_PATTERN, '')
+}
 
 /**
  * Coerce a chunk to a UTF-8 string.
+ *
+ * @private
+ * @param chunk - Buffer or string from a writable stream
+ * @returns UTF-8 string representation
  */
 function chunkToString(chunk: Uint8Array | string): string {
   if (typeof chunk === 'string') {
@@ -107,6 +183,10 @@ function chunkToString(chunk: Uint8Array | string): string {
 
 /**
  * Coerce an unknown caught value to an `Error`.
+ *
+ * @private
+ * @param value - Unknown value caught in a try/catch
+ * @returns Error instance
  */
 function toError(value: unknown): Error {
   if (value instanceof Error) {
@@ -120,6 +200,10 @@ function toError(value: unknown): Error {
  *
  * Invokes any callback passed via Node's overloaded `write` signature
  * so callers that rely on write-completion callbacks are not left hanging.
+ *
+ * @private
+ * @param chunks - Mutable array to accumulate captured text
+ * @returns Interceptor function matching the `process.stdout.write` signature
  */
 function createInterceptor(chunks: string[]): typeof process.stdout.write {
   return function interceptWrite(
@@ -153,6 +237,7 @@ function createInterceptor(chunks: string[]): typeof process.stdout.write {
  * streams. All output is swallowed — the check command presents its own
  * clean results. Original write functions are always restored.
  *
+ * @private
  * @param fn - The async function to execute while capturing output
  * @returns The function result (or null on error), any thrown error, and captured output text
  */
@@ -179,10 +264,14 @@ async function captureOutput<T>(fn: () => Promise<T>): Promise<CaptureResult<T>>
   }
 }
 
-// ── Deadlink parsing ───────────────────────────────────────────
-
 /**
  * Flush accumulated deadlink state into a result entry if present.
+ *
+ * @private
+ * @param results - Accumulated deadlink results so far
+ * @param file - Current file being parsed, or null
+ * @param links - Links accumulated for the current file
+ * @returns Updated results array with the current group appended if non-empty
  */
 function flushGroup(
   results: readonly DeadlinkInfo[],
@@ -205,6 +294,7 @@ function flushGroup(
  *   "[..](/another-bad)" /resolved/path
  * ```
  *
+ * @private
  * @param stderr - Raw captured stderr text (may contain ANSI codes)
  * @returns Array of `DeadlinkInfo` grouped by file
  */
@@ -252,51 +342,6 @@ function parseDeadlinks(stderr: string): readonly DeadlinkInfo[] {
   return flushGroup(acc.results, acc.currentFile, acc.currentLinks)
 }
 
-// ── Build check ────────────────────────────────────────────────
-
-/**
- * Run a silent Rspress build to detect deadlinks.
- *
- * Rspress's `remarkLink` plugin checks internal links during build. In
- * production mode it logs colored error messages per file via `logger.error()`
- * then throws `Error("Dead link found")`. We capture stderr to parse the
- * diagnostics and present them in our own clean format.
- *
- * @param params - Config and paths for the build
- * @returns A `BuildCheckResult` with pass/fail status and any deadlinks found
- */
-export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildCheckResult> {
-  const { error, captured } = await captureOutput(() =>
-    buildSiteForCheck({ config: params.config, paths: params.paths })
-  )
-
-  // Rspress wraps the "Dead link found" error inside an Rspack build failure,
-  // so we check captured output for deadlink patterns rather than the error message.
-  if (error) {
-    const { repoRoot } = params.paths
-    const deadlinks = parseDeadlinks(captured).map((info) => ({
-      file: path.relative(repoRoot, info.file),
-      links: info.links,
-    }))
-    if (deadlinks.length > 0) {
-      return { status: 'failed', deadlinks }
-    }
-
-    // Non-deadlink build error — surface as a generic failure
-    return { status: 'error', message: error.message }
-  }
-
-  return { status: 'passed' }
-}
-
-// ── ANSI helpers ───────────────────────────────────────────────
-
-const RED = '\u001B[31m'
-const DIM = '\u001B[2m'
-const RESET = '\u001B[0m'
-
-// ── Presentation ───────────────────────────────────────────────
-
 /**
  * Format a single deadlink group as a compact multi-line string.
  *
@@ -306,45 +351,13 @@ const RESET = '\u001B[0m'
  *       → /this-does-not-exist
  *       → /another/bad-link
  * ```
+ *
+ * @private
+ * @param info - Deadlink info with file path and broken links
+ * @returns Formatted multi-line string for CLI output
  */
 function formatDeadlinkGroup(info: DeadlinkInfo): string {
   const header = `  ${RED}✖${RESET} ${info.file}`
   const links = info.links.map((link) => `      ${DIM}→${RESET} ${link}`)
   return [header, ...links].join('\n')
-}
-
-/**
- * Format and display check results using the CLI logger.
- *
- * @param params - Config check result, build check result, and logger instance
- * @returns `true` if all checks passed, `false` otherwise
- */
-export function presentResults(params: PresentResultsParams): boolean {
-  const { configResult, buildResult, logger } = params
-
-  if (configResult.passed) {
-    logger.success('Config valid')
-  } else {
-    logger.error('Config validation failed:')
-    // oxlint-disable-next-line no-unused-expressions -- side-effect logging over config errors
-    configResult.errors.map((err) => {
-      logger.message(`  ${err.message}`)
-      return null
-    })
-  }
-
-  if (buildResult.status === 'passed') {
-    logger.success('No broken links')
-  } else if (buildResult.status === 'skipped') {
-    // Build was skipped (e.g. config invalid) — nothing to report
-  } else if (buildResult.status === 'error') {
-    logger.error(`Build failed: ${buildResult.message}`)
-  } else {
-    const totalLinks = buildResult.deadlinks.reduce((sum, info) => sum + info.links.length, 0)
-    logger.error(`Found ${totalLinks} broken link(s):`)
-    const block = buildResult.deadlinks.map(formatDeadlinkGroup).join('\n')
-    logger.message(block)
-  }
-
-  return configResult.passed && buildResult.status === 'passed'
 }

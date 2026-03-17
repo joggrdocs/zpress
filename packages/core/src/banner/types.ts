@@ -4,8 +4,6 @@
 
 import type { Result } from '../types.ts'
 
-// ── Error type ──────────────────────────────────────────────
-
 /**
  * Error produced during asset generation or file writing.
  */
@@ -30,8 +28,6 @@ export type AssetResult<T> = Result<T, AssetError>
 export function assetError(type: AssetError['type'], message: string): AssetError {
   return Object.freeze({ _tag: 'AssetError' as const, type, message })
 }
-
-// ── Config & output types ───────────────────────────────────
 
 /**
  * Input configuration for asset generation, extracted from ZpressConfig.

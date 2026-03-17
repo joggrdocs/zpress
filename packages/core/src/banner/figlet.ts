@@ -9,7 +9,6 @@ import { range } from 'es-toolkit'
 
 import { FIGLET_CHARS, FIGLET_CHAR_GAP, FIGLET_ROWS } from './figlet-data.ts'
 
-// ── Types ───────────────────────────────────────────────────
 
 /**
  * Result of rendering a FIGlet text block.
@@ -25,21 +24,7 @@ export interface FigletResult {
   readonly width: number
 }
 
-// ── Renderer ────────────────────────────────────────────────
-
 const SPACE_GLYPH = FIGLET_CHARS[' ']
-
-/**
- * Look up the FIGlet glyph for a single character.
- * Falls back to the space glyph for unknown characters.
- */
-function lookupGlyph(c: string): readonly [string, string, string, string, string, string] {
-  const glyph = FIGLET_CHARS[c]
-  if (glyph) {
-    return glyph
-  }
-  return SPACE_GLYPH
-}
 
 /**
  * Render a plain-text string as FIGlet block art.
@@ -61,4 +46,24 @@ export function renderFigletText(text: string): FigletResult {
   const width = Math.max(...lines.map((line) => line.length))
 
   return { lines, width }
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Look up the FIGlet glyph for a single character.
+ * Falls back to the space glyph for unknown characters.
+ *
+ * @private
+ * @param c - Single character to look up
+ * @returns Six-row tuple of glyph strings
+ */
+function lookupGlyph(c: string): readonly [string, string, string, string, string, string] {
+  const glyph = FIGLET_CHARS[c]
+  if (glyph) {
+    return glyph
+  }
+  return SPACE_GLYPH
 }

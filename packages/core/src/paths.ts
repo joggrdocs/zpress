@@ -14,6 +14,9 @@ export interface Paths {
 
 /**
  * Create all derived project paths from a resolved directory.
+ *
+ * @param dir - Directory path to resolve as the repo root
+ * @returns All derived project paths under the `.zpress/` output root
  */
 export function createPaths(dir: string): Paths {
   const repoRoot = path.resolve(dir)

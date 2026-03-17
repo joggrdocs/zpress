@@ -11,6 +11,9 @@ export interface TechTagProps {
 /**
  * Technology tag — resolves a tech name to icon + label using the tech map.
  * Falls back to raw name string if not in map.
+ *
+ * @param props - Props with the technology name to resolve
+ * @returns React element with icon and label, or the raw name as fallback
  */
 export function TechTag({ name }: TechTagProps): React.ReactElement {
   const entry = (TECH_ICONS as Record<string, { readonly icon: string; readonly label: string }>)[

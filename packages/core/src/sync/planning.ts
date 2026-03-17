@@ -79,10 +79,14 @@ export async function discoverPlanningPages(ctx: SyncContext): Promise<readonly 
   return [indexPage, ...docPages]
 }
 
-// ── Index generation ─────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
 /**
  * File entry with derived title and path info.
+ *
+ * @private
  */
 interface FileEntry {
   readonly slug: string
@@ -91,6 +95,8 @@ interface FileEntry {
 
 /**
  * Directory node grouping files under a heading.
+ *
+ * @private
  */
 interface DirNode {
   readonly name: string
@@ -100,6 +106,8 @@ interface DirNode {
 
 /**
  * Enriched file entry with directory context for partitioning.
+ *
+ * @private
  */
 interface EnrichedEntry {
   readonly slug: string
@@ -115,6 +123,9 @@ interface EnrichedEntry {
  * Files within directories are sorted naturally (numeric-aware).
  *
  * @private
+ * @param files - Relative file paths discovered in the planning directory
+ * @param planningDir - Absolute path to the planning directory
+ * @returns Markdown string for the planning index page
  */
 async function generatePlanningIndex(
   files: readonly string[],
@@ -168,13 +179,15 @@ async function generatePlanningIndex(
   return `${sections.join('\n\n')}\n`
 }
 
-// ── Sorting ──────────────────────────────────────────────────
 
 /**
  * Natural sort comparator — numeric segments are compared by value
  * so "phase-2" sorts before "phase-10".
  *
  * @private
+ * @param a - First string to compare
+ * @param b - Second string to compare
+ * @returns Negative, zero, or positive number for sort ordering
  */
 function naturalCompare(a: string, b: string): number {
   const aParts = a.split(/(\d+)/)
@@ -218,8 +231,14 @@ function naturalCompare(a: string, b: string): number {
   return aParts.length - bParts.length
 }
 
-// ── Private helpers ───────────────────────────────────────────
 
+/**
+ * Extract the directory name from path segments, or undefined for root-level files.
+ *
+ * @private
+ * @param segments - Path segments split by '/'
+ * @returns First segment as directory name, or undefined for single-segment paths
+ */
 function resolveDirName(segments: readonly string[]): string | undefined {
   if (segments.length > 1) {
     return segments[0]
@@ -227,6 +246,13 @@ function resolveDirName(segments: readonly string[]): string | undefined {
   return undefined
 }
 
+/**
+ * Render root-level planning files as a markdown link list.
+ *
+ * @private
+ * @param rootFiles - File entries at the planning directory root
+ * @returns Array with a single markdown string, or empty if no root files
+ */
 function resolveRootSection(rootFiles: readonly FileEntry[]): readonly string[] {
   if (rootFiles.length === 0) {
     return []

@@ -16,17 +16,6 @@ const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
  */
 const IGNORED_DIRS = new Set(['node_modules', '.git', '.zpress', 'bundle', 'dist', '.turbo'])
 
-function isMarkdownFile(filePath: string): boolean {
-  return MARKDOWN_EXTENSIONS.some((ext) => filePath.endsWith(ext))
-}
-
-/**
- * Check whether any path segment is in the ignored set.
- */
-function isIgnored(filePath: string): boolean {
-  return filePath.split(path.sep).some((segment) => IGNORED_DIRS.has(segment))
-}
-
 /**
  * Closeable handle returned by createWatcher.
  */
@@ -42,7 +31,10 @@ interface WatcherHandle {
  * the entire tree. Filtering happens in the callback, not at the
  * OS level, so there are zero EMFILE concerns.
  *
+ * @param initialConfig - Initial zpress config to use for syncing
+ * @param paths - Resolved project paths
  * @param onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
+ * @returns Closeable watcher handle
  */
 export function createWatcher(
   initialConfig: ZpressConfig,
@@ -173,4 +165,30 @@ export function createWatcher(
       watcher.close()
     },
   }
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Check whether a file path has a markdown extension.
+ *
+ * @private
+ * @param filePath - File path to check
+ * @returns True if the path ends with a markdown extension
+ */
+function isMarkdownFile(filePath: string): boolean {
+  return MARKDOWN_EXTENSIONS.some((ext) => filePath.endsWith(ext))
+}
+
+/**
+ * Check whether any path segment is in the ignored directory set.
+ *
+ * @private
+ * @param filePath - File path to check for ignored segments
+ * @returns True if any segment matches an ignored directory name
+ */
+function isIgnored(filePath: string): boolean {
+  return filePath.split(path.sep).some((segment) => IGNORED_DIRS.has(segment))
 }

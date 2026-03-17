@@ -15,7 +15,7 @@ import { clean } from './clean.ts'
  */
 export const buildCommand = command({
   description: 'Run sync and build the Rspress site',
-  args: z.object({
+  options: z.object({
     quiet: z.boolean().optional().default(false),
     clean: z.boolean().optional().default(false),
     check: z.boolean().optional().default(true),

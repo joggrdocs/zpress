@@ -51,7 +51,8 @@
   "devDependencies": {
     "@rslib/core": "catalog:",
     "@types/js-yaml": "^4.0.9",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=24.0.0"

@@ -7,7 +7,7 @@ vi.mock(import('node:fs/promises'), () => ({
 }))
 
 const fs = await import('node:fs/promises')
-const { deriveText, kebabToTitle } = await import('../../src/sync/resolve/text')
+const { deriveText, kebabToTitle } = await import('./resolve/text')
 
 describe('kebabToTitle()', () => {
   it('should convert multi-word kebab slug to title case', () => {

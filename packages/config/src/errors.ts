@@ -6,8 +6,6 @@ import type { ZodError } from 'zod/v3'
 
 import type { Result } from './types.ts'
 
-// ── Error types ──────────────────────────────────────────────
-
 export type ConfigErrorType =
   | 'not_found'
   | 'parse_error'
@@ -33,12 +31,15 @@ export interface ConfigError {
   }[]
 }
 
-// ── Result types ─────────────────────────────────────────────
-
 export type ConfigResult<T> = Result<T, ConfigError>
 
-// ── Error constructors ───────────────────────────────────────
-
+/**
+ * Create a ConfigError with the given type and message.
+ *
+ * @param type - The error type discriminant
+ * @param message - Human-readable error message
+ * @returns A ConfigError object
+ */
 export function configError(type: ConfigErrorType, message: string): ConfigError {
   return {
     _tag: 'ConfigError',
@@ -47,6 +48,12 @@ export function configError(type: ConfigErrorType, message: string): ConfigError
   }
 }
 
+/**
+ * Convert a Zod validation error into a ConfigError.
+ *
+ * @param zodError - The ZodError produced by a failed safeParse call
+ * @returns A ConfigError with type `'validation_failed'` and mapped issue list
+ */
 export function configErrorFromZod(zodError: ZodError): ConfigError {
   return {
     _tag: 'ConfigError',

@@ -1,31 +1,22 @@
 /**
- * zpress — public API
+ * Public API for `@zpress/kit` — re-exports all user-facing functions,
+ * values, and types from `@zpress/core` and `@zpress/ui`.
  *
- * Re-exports everything from @zpress/core and @zpress/ui
- * for convenience. Users install `zpress` and import from here.
+ * @module
  */
 export {
-  // Config
   defineConfig,
   loadConfig,
-
-  // Sync engine
   sync,
   resolveEntries,
   loadManifest,
-
-  // Paths
   createPaths,
-
-  // Utilities
   hasGlobChars,
 } from '@zpress/core'
 
-// Rspress integration
 export { createRspressConfig, zpressPlugin } from '@zpress/ui'
 
 export type {
-  // Config types
   ZpressConfig,
   Section,
   Feature,
@@ -39,17 +30,11 @@ export type {
   ResolvedPage,
   ResolvedSection,
   Result,
-
-  // Icon types
   IconConfig,
   IconColor,
   IconId,
   IconPrefix,
-
-  // Path types
   Paths,
-
-  // Sync types
   SyncResult,
   SyncOptions,
   SyncContext,

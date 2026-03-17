@@ -37,7 +37,12 @@ export async function saveManifest(outDir: string, manifest: Manifest): Promise<
 
 /**
  * Delete output files that exist in the old manifest but not the new one.
- * Prunes empty parent directories.
+ * Prunes empty parent directories after removing stale files.
+ *
+ * @param outDir - Absolute path to the output directory
+ * @param oldManifest - Manifest from the previous sync
+ * @param newManifest - Manifest from the current sync
+ * @returns Number of stale files removed
  */
 export async function cleanStaleFiles(
   outDir: string,
@@ -58,6 +63,18 @@ export async function cleanStaleFiles(
   return stalePaths.length
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Recursively remove empty parent directories up to the stop boundary.
+ *
+ * @private
+ * @param dir - Absolute path to the directory to check and possibly remove
+ * @param stopAt - Absolute path to the boundary directory (never removed)
+ * @returns Promise that resolves when pruning is complete
+ */
 async function pruneEmptyDirs(dir: string, stopAt: string): Promise<void> {
   if (dir === stopAt || !dir.startsWith(stopAt)) {
     return

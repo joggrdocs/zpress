@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { render, toSlug } from '../src/render'
-import type { Template } from '../src/types'
+import { render, toSlug } from './render'
+import type { Template } from './types'
 
 const MOCK_TEMPLATE: Template = {
   type: 'test',

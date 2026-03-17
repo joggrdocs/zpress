@@ -15,84 +15,10 @@ interface DumpEntry {
 }
 
 /**
- * @private
+ * Registers the `dump` CLI command to resolve and print the full entry tree as JSON.
+ *
+ * @returns A CLI command that outputs the resolved entry tree as formatted JSON
  */
-function maybeLink(link: string | undefined): { readonly link: string } | Record<string, never> {
-  if (link) {
-    return { link }
-  }
-  return {}
-}
-
-/**
- * @private
- */
-function maybeCollapsible(
-  collapsible: boolean | undefined
-): { readonly collapsible: boolean } | Record<string, never> {
-  if (collapsible) {
-    return { collapsible }
-  }
-  return {}
-}
-
-/**
- * @private
- */
-function maybeHidden(
-  hidden: boolean | undefined
-): { readonly hidden: boolean } | Record<string, never> {
-  if (hidden) {
-    return { hidden }
-  }
-  return {}
-}
-
-/**
- * @private
- */
-function maybeIsolated(
-  isolated: boolean | undefined
-): { readonly isolated: boolean } | Record<string, never> {
-  if (isolated) {
-    return { isolated }
-  }
-  return {}
-}
-
-/**
- * @private
- */
-function maybeItems(
-  items: readonly ResolvedEntry[] | undefined
-): { readonly items: DumpEntry[] } | Record<string, never> {
-  if (items && items.length > 0) {
-    return { items: toTree(items) }
-  }
-  return {}
-}
-
-/**
- * @private
- */
-function toTree(entries: readonly ResolvedEntry[]): DumpEntry[] {
-  return entries.map(buildDumpEntry)
-}
-
-/**
- * @private
- */
-function buildDumpEntry(entry: ResolvedEntry): DumpEntry {
-  return {
-    text: entry.title,
-    ...maybeLink(entry.link),
-    ...maybeCollapsible(entry.collapsible),
-    ...maybeHidden(entry.hidden),
-    ...maybeIsolated(entry.isolated),
-    ...maybeItems(entry.items as readonly ResolvedEntry[] | undefined),
-  }
-}
-
 export const dumpCommand = command({
   description: 'Resolve and print the full entry tree as JSON',
   handler: async (ctx) => {
@@ -125,6 +51,117 @@ export const dumpCommand = command({
       process.exit(1)
     }
     const tree = toTree(resolved)
-    ctx.output.raw(`${JSON.stringify(tree, null, 2)}\n`)
+    process.stdout.write(`${JSON.stringify(tree, null, 2)}\n`)
   },
 })
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Conditionally include a `link` property in the spread object.
+ *
+ * @private
+ * @param link - Optional link string
+ * @returns Object with `link` if defined, empty object otherwise
+ */
+function maybeLink(link: string | undefined): { readonly link: string } | Record<string, never> {
+  if (link) {
+    return { link }
+  }
+  return {}
+}
+
+/**
+ * Conditionally include a `collapsible` property in the spread object.
+ *
+ * @private
+ * @param collapsible - Optional collapsible flag
+ * @returns Object with `collapsible` if truthy, empty object otherwise
+ */
+function maybeCollapsible(
+  collapsible: boolean | undefined
+): { readonly collapsible: boolean } | Record<string, never> {
+  if (collapsible) {
+    return { collapsible }
+  }
+  return {}
+}
+
+/**
+ * Conditionally include a `hidden` property in the spread object.
+ *
+ * @private
+ * @param hidden - Optional hidden flag
+ * @returns Object with `hidden` if truthy, empty object otherwise
+ */
+function maybeHidden(
+  hidden: boolean | undefined
+): { readonly hidden: boolean } | Record<string, never> {
+  if (hidden) {
+    return { hidden }
+  }
+  return {}
+}
+
+/**
+ * Conditionally include an `isolated` property in the spread object.
+ *
+ * @private
+ * @param isolated - Optional isolated flag
+ * @returns Object with `isolated` if truthy, empty object otherwise
+ */
+function maybeIsolated(
+  isolated: boolean | undefined
+): { readonly isolated: boolean } | Record<string, never> {
+  if (isolated) {
+    return { isolated }
+  }
+  return {}
+}
+
+/**
+ * Conditionally include nested `items` by recursively converting child entries.
+ *
+ * @private
+ * @param items - Optional resolved child entries
+ * @returns Object with `items` if non-empty, empty object otherwise
+ */
+function maybeItems(
+  items: readonly ResolvedEntry[] | undefined
+): { readonly items: DumpEntry[] } | Record<string, never> {
+  if (items && items.length > 0) {
+    return { items: toTree(items) }
+  }
+  return {}
+}
+
+/**
+ * Convert a list of resolved entries into a slim dump tree for JSON output.
+ *
+ * @private
+ * @param entries - Resolved entries from the sync engine
+ * @returns Array of slim dump entries
+ */
+function toTree(entries: readonly ResolvedEntry[]): DumpEntry[] {
+  return entries.map(buildDumpEntry)
+}
+
+/**
+ * Build a single dump entry from a resolved entry, spreading optional fields.
+ *
+ * @private
+ * @param entry - Resolved entry to convert
+ * @returns Slim dump entry for JSON serialization
+ */
+function buildDumpEntry(entry: ResolvedEntry): DumpEntry {
+  return {
+    text: entry.title,
+    ...maybeLink(entry.link),
+    ...maybeCollapsible(entry.collapsible),
+    ...maybeHidden(entry.hidden),
+    ...maybeIsolated(entry.isolated),
+    ...maybeItems(entry.items as readonly ResolvedEntry[] | undefined),
+  }
+}

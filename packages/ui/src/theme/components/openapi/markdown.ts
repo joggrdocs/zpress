@@ -17,8 +17,6 @@ import {
   resolveSecurities,
 } from './spec-utils'
 
-// ── Types ────────────────────────────────────────────────────
-
 interface OperationMarkdownInput {
   readonly spec: Record<string, unknown>
   readonly method: string
@@ -30,7 +28,10 @@ interface OverviewMarkdownInput {
   readonly spec: Record<string, unknown>
 }
 
-// ── Operation markdown ───────────────────────────────────────
+interface ParameterGroup {
+  readonly label: string
+  readonly items: readonly Record<string, unknown>[]
+}
 
 /**
  * Generate a complete markdown document for an OpenAPI operation.
@@ -69,8 +70,6 @@ export function generateOperationMarkdown(input: OperationMarkdownInput): string
 
   return sections.join('\n\n')
 }
-
-// ── Overview markdown ────────────────────────────────────────
 
 /**
  * Generate a complete markdown document for an OpenAPI overview page.
@@ -111,8 +110,19 @@ export function generateOverviewMarkdown(input: OverviewMarkdownInput): string {
   return sections.join('\n\n')
 }
 
-// ── Operation section builders ───────────────────────────────
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
+/**
+ * Build the markdown header for an operation.
+ *
+ * @private
+ * @param method - HTTP method
+ * @param urlPath - URL path template
+ * @param deprecated - Whether the operation is deprecated
+ * @returns Markdown heading string
+ */
 function buildOperationHeader(method: string, urlPath: string, deprecated: boolean): string {
   const deprecatedTag = match(deprecated)
     .with(true, () => ' ⚠️ DEPRECATED')
@@ -120,6 +130,14 @@ function buildOperationHeader(method: string, urlPath: string, deprecated: boole
   return `# ${method.toUpperCase()} \`${urlPath}\`${deprecatedTag}`
 }
 
+/**
+ * Build the summary/description section for an operation.
+ *
+ * @private
+ * @param summary - Operation summary
+ * @param description - Operation description
+ * @returns Combined summary and description text
+ */
 function buildSummarySection(summary: string | undefined, description: string | undefined): string {
   const parts: string[] = []
   if (summary !== undefined) {
@@ -131,6 +149,13 @@ function buildSummarySection(summary: string | undefined, description: string | 
   return parts.join('\n\n')
 }
 
+/**
+ * Build the parameters section as markdown tables grouped by location.
+ *
+ * @private
+ * @param parameters - OpenAPI parameter objects
+ * @returns Markdown parameters section or empty string
+ */
 function buildParametersSection(parameters: readonly Record<string, unknown>[]): string {
   if (parameters.length === 0) {
     return ''
@@ -160,6 +185,13 @@ function buildParametersSection(parameters: readonly Record<string, unknown>[]):
   return ['## Parameters', '', ...groupSections].join('\n\n')
 }
 
+/**
+ * Build the request body section as markdown.
+ *
+ * @private
+ * @param requestBody - OpenAPI request body object
+ * @returns Markdown request body section or empty string
+ */
 function buildRequestBodySection(requestBody: Record<string, unknown> | undefined): string {
   if (requestBody === undefined) {
     return ''
@@ -195,6 +227,13 @@ function buildRequestBodySection(requestBody: Record<string, unknown> | undefine
   return lines.join('\n')
 }
 
+/**
+ * Build the responses section as markdown.
+ *
+ * @private
+ * @param responses - OpenAPI responses object keyed by status code
+ * @returns Markdown responses section or empty string
+ */
 function buildResponsesSection(responses: Record<string, unknown>): string {
   const entries = Object.entries(responses)
   if (entries.length === 0) {
@@ -217,6 +256,13 @@ function buildResponsesSection(responses: Record<string, unknown>): string {
   return ['## Responses', '', ...responseSections].join('\n\n')
 }
 
+/**
+ * Build the security/authentication section as markdown.
+ *
+ * @private
+ * @param securities - Security requirement objects
+ * @returns Markdown security section or empty string
+ */
 function buildSecuritySection(securities: readonly Record<string, unknown>[]): string {
   if (securities.length === 0) {
     return ''
@@ -246,10 +292,27 @@ function buildSecuritySection(securities: readonly Record<string, unknown>[]): s
   return ['## Authentication', '', ...items].join('\n')
 }
 
+/**
+ * Shell-quote a string value for use in cURL commands.
+ *
+ * @private
+ * @param value - String to quote
+ * @returns Shell-quoted string
+ */
 function shellQuote(value: string): string {
   return `'${value.replaceAll("'", "'\"'\"'")}'`
 }
 
+/**
+ * Build a cURL example section as markdown.
+ *
+ * @private
+ * @param method - HTTP method
+ * @param urlPath - URL path template
+ * @param baseUrl - API base URL
+ * @param requestBody - Optional request body object
+ * @returns Markdown cURL example section
+ */
 function buildCurlSection(
   method: string,
   urlPath: string,
@@ -274,8 +337,13 @@ function buildCurlSection(
   return ['## Example', '', '```bash', curl, '```'].join('\n')
 }
 
-// ── Overview section builders ────────────────────────────────
-
+/**
+ * Build a description block, returning empty string if undefined.
+ *
+ * @private
+ * @param description - Optional description text
+ * @returns Description string or empty string
+ */
 function buildDescriptionBlock(description: string | undefined): string {
   if (description === undefined) {
     return ''
@@ -283,6 +351,13 @@ function buildDescriptionBlock(description: string | undefined): string {
   return description
 }
 
+/**
+ * Build the servers section as markdown.
+ *
+ * @private
+ * @param servers - Array of server objects
+ * @returns Markdown servers section or empty string
+ */
 function buildServersSection(servers: readonly Record<string, unknown>[]): string {
   if (servers.length === 0) {
     return ''
@@ -300,6 +375,13 @@ function buildServersSection(servers: readonly Record<string, unknown>[]): strin
   return ['## Servers', '', ...items].join('\n')
 }
 
+/**
+ * Build the authentication schemes section as markdown.
+ *
+ * @private
+ * @param schemes - Security scheme definitions keyed by name
+ * @returns Markdown auth schemes section or empty string
+ */
 function buildAuthSchemesSection(schemes: Record<string, Record<string, unknown>>): string {
   const entries = Object.entries(schemes)
   if (entries.length === 0) {
@@ -314,6 +396,13 @@ function buildAuthSchemesSection(schemes: Record<string, Record<string, unknown>
   return ['## Authentication', '', ...items].join('\n')
 }
 
+/**
+ * Build the tag groups / operations section as markdown.
+ *
+ * @private
+ * @param spec - Parsed OpenAPI spec object
+ * @returns Markdown operations section or empty string
+ */
 function buildTagGroupsSection(spec: Record<string, unknown>): string {
   const paths = (spec['paths'] ?? {}) as Record<string, Record<string, unknown>>
 
@@ -336,8 +425,14 @@ function buildTagGroupsSection(spec: Record<string, unknown>): string {
   return ['## Operations', '', ...items].join('\n')
 }
 
-// ── Schema rendering ─────────────────────────────────────────
-
+/**
+ * Recursively render a JSON Schema as a markdown string.
+ *
+ * @private
+ * @param schema - JSON Schema object
+ * @param depth - Current nesting depth (max 4)
+ * @returns Markdown representation of the schema
+ */
 function renderSchemaMarkdown(schema: Record<string, unknown>, depth: number): string {
   if (depth > 4) {
     return '_...(nested)_'
@@ -386,6 +481,15 @@ function renderSchemaMarkdown(schema: Record<string, unknown>, depth: number): s
   return `\`${schemaType}\`${enumSuffix}${descSuffix}`
 }
 
+/**
+ * Render an object schema as markdown with property listing.
+ *
+ * @private
+ * @param schema - Object JSON Schema
+ * @param depth - Current nesting depth
+ * @param description - Optional schema description
+ * @returns Markdown representation of the object schema
+ */
 function renderObjectSchemaMarkdown(
   schema: Record<string, unknown>,
   depth: number,
@@ -413,6 +517,13 @@ function renderObjectSchemaMarkdown(
   return [`\`object\`${descLine}`, ...rows].join('\n')
 }
 
+/**
+ * Build a description suffix string for inline schema annotations.
+ *
+ * @private
+ * @param description - Optional description text
+ * @returns Formatted suffix string or empty string
+ */
 function buildDescSuffix(description: string | undefined): string {
   if (description !== undefined) {
     return ` — ${description}`
@@ -420,13 +531,13 @@ function buildDescSuffix(description: string | undefined): string {
   return ''
 }
 
-// ── Shared helpers ───────────────────────────────────────────
-
-interface ParameterGroup {
-  readonly label: string
-  readonly items: readonly Record<string, unknown>[]
-}
-
+/**
+ * Group parameters by their `in` field (path, query, header, etc.).
+ *
+ * @private
+ * @param params - OpenAPI parameter objects
+ * @returns Array of parameter groups
+ */
 function groupParametersByIn(
   params: readonly Record<string, unknown>[]
 ): readonly ParameterGroup[] {
@@ -434,6 +545,13 @@ function groupParametersByIn(
   return [...grouped.entries()].map(([label, items]) => ({ label, items }))
 }
 
+/**
+ * Extract the type string from a parameter's schema.
+ *
+ * @private
+ * @param param - OpenAPI parameter object
+ * @returns Type string or dash placeholder
+ */
 function extractParamType(param: Record<string, unknown>): string {
   const schema = param['schema'] as Record<string, unknown> | undefined
   if (schema !== undefined) {
@@ -442,6 +560,13 @@ function extractParamType(param: Record<string, unknown>): string {
   return '—'
 }
 
+/**
+ * Extract the response schema from the first content type entry.
+ *
+ * @private
+ * @param response - OpenAPI response object
+ * @returns Schema object or null
+ */
 function extractResponseSchema(response: Record<string, unknown>): Record<string, unknown> | null {
   const content = response['content'] as Record<string, Record<string, unknown>> | undefined
   if (content === null || content === undefined) {

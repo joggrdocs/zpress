@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
-import { defineTemplate } from '../src/define'
-import { createRegistry, createEmptyRegistry } from '../src/registry'
-import { TEMPLATE_TYPES } from '../src/types'
+import { defineTemplate } from './define'
+import { createRegistry } from './registry'
+import { TEMPLATE_TYPES } from './types'
 
 describe('createRegistry()', () => {
   it('should include all built-in templates', () => {
@@ -39,22 +39,22 @@ describe('createRegistry()', () => {
   })
 })
 
-describe('createEmptyRegistry()', () => {
+describe('createRegistry([])', () => {
   it('should have no templates', () => {
-    const registry = createEmptyRegistry()
+    const registry = createRegistry([])
     expect(registry.list().length).toBe(0)
     expect(registry.types().length).toBe(0)
   })
 
   it('should return undefined for any type', () => {
-    const registry = createEmptyRegistry()
+    const registry = createRegistry([])
     expect(registry.get('guide')).toBeUndefined()
   })
 })
 
 describe('registry.add()', () => {
   it('should add a custom template', () => {
-    const registry = createEmptyRegistry()
+    const registry = createRegistry([])
     const adr = defineTemplate({
       type: 'adr',
       label: 'ADR',
@@ -72,7 +72,7 @@ describe('registry.add()', () => {
   })
 
   it('should not mutate the original registry', () => {
-    const registry = createEmptyRegistry()
+    const registry = createRegistry([])
     const adr = defineTemplate({
       type: 'adr',
       label: 'ADR',
@@ -185,10 +185,10 @@ describe('registry.extend()', () => {
 
 describe('registry.merge()', () => {
   it('should combine two registries', () => {
-    const a = createEmptyRegistry().add(
+    const a = createRegistry([]).add(
       defineTemplate({ type: 'adr', label: 'ADR', hint: 'a', body: '# A' })
     )
-    const b = createEmptyRegistry().add(
+    const b = createRegistry([]).add(
       defineTemplate({ type: 'rfc', label: 'RFC', hint: 'b', body: '# B' })
     )
     const merged = a.merge(b)
@@ -197,10 +197,10 @@ describe('registry.merge()', () => {
   })
 
   it('should let the other registry win on conflicts', () => {
-    const a = createEmptyRegistry().add(
+    const a = createRegistry([]).add(
       defineTemplate({ type: 'adr', label: 'Original', hint: 'a', body: '# A' })
     )
-    const b = createEmptyRegistry().add(
+    const b = createRegistry([]).add(
       defineTemplate({ type: 'adr', label: 'Override', hint: 'b', body: '# B' })
     )
     const merged = a.merge(b)
@@ -213,10 +213,10 @@ describe('registry.merge()', () => {
   })
 
   it('should not mutate either source registry', () => {
-    const a = createEmptyRegistry().add(
+    const a = createRegistry([]).add(
       defineTemplate({ type: 'adr', label: 'ADR', hint: 'a', body: '# A' })
     )
-    const b = createEmptyRegistry().add(
+    const b = createRegistry([]).add(
       defineTemplate({ type: 'rfc', label: 'RFC', hint: 'b', body: '# B' })
     )
     a.merge(b)

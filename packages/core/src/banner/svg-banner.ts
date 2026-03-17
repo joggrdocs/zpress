@@ -28,7 +28,6 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-// ── Layout constants ────────────────────────────────────────
 
 const ART_TOP_PAD = 26
 const FIGLET_ROWS = 6
@@ -36,8 +35,95 @@ const TAGLINE_GAP = 24
 const SEPARATOR_GAP = 16
 const CLI_SECTION_HEIGHT = 240
 
-// ── SVG section builders ────────────────────────────────────
 
+/**
+ * Compose a banner SVG string from the project title and optional tagline.
+ *
+ * For titles ≤ 12 characters, renders FIGlet block art.
+ * For longer titles, falls back to large monospace text.
+ * The banner includes a terminal chrome frame and fake CLI output.
+ *
+ * @param params - Banner configuration
+ * @returns Complete SVG markup string with generated marker
+ */
+export function composeBanner(params: {
+  readonly title: string
+  readonly tagline: string | undefined
+}): string {
+  const cmdName = params.title.toLowerCase().replaceAll(/\s+/g, '')
+  const art = computeArtLayout({ title: params.title, minWidth: MIN_BANNER_WIDTH })
+
+  const trimmedTagline = resolveTagline(params.tagline)
+  const taglineSection = match(trimmedTagline)
+    .with(P.string.minLength(1), (tagline) => {
+      const taglineY = art.artEndY + TAGLINE_GAP
+      const separatorY = taglineY + SEPARATOR_GAP
+      const centerX = Math.round(art.width / 2)
+
+      return {
+        markup: buildTagline({ text: tagline, centerX, y: taglineY }),
+        separatorY,
+      }
+    })
+    .otherwise(() => ({
+      markup: '',
+      separatorY: art.artEndY + SEPARATOR_GAP,
+    }))
+
+  const height = taglineSection.separatorY + CLI_SECTION_HEIGHT
+
+  const sections = [
+    GENERATED_MARKER,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${art.width} ${height}">`,
+    buildStyles(),
+    buildBackground({ width: art.width, height }),
+    buildTitleBar({ width: art.width, name: cmdName }),
+    art.artSection,
+    taglineSection.markup,
+    buildSeparator({ width: art.width, y: taglineSection.separatorY }),
+    buildCliOutput({ name: cmdName, separatorY: taglineSection.separatorY }),
+    '</svg>',
+  ]
+
+  return sections.filter((s) => s.length > 0).join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Trim a tagline string, returning undefined if absent or empty.
+ *
+ * @private
+ * @param tagline - Raw tagline string or undefined
+ * @returns Trimmed tagline or undefined
+ */
+function resolveTagline(tagline: string | undefined): string | undefined {
+  if (tagline) {
+    return tagline.trim()
+  }
+  return undefined
+}
+
+/**
+ * Computed layout dimensions and pre-rendered art SVG for the banner.
+ *
+ * @private
+ */
+interface BannerLayout {
+  readonly width: number
+  readonly height: number
+  readonly artSection: string
+  readonly artEndY: number
+}
+
+/**
+ * Build the inline CSS `<defs>` block for the banner SVG.
+ *
+ * @private
+ * @returns SVG `<defs>` string containing all style rules
+ */
 function buildStyles(): string {
   return [
     '  <defs>',
@@ -55,6 +141,15 @@ function buildStyles(): string {
   ].join('\n')
 }
 
+/**
+ * Build the background rectangle for the banner SVG.
+ *
+ * @private
+ * @param params - Dimensions for the background
+ * @param params.width - Banner width in pixels
+ * @param params.height - Banner height in pixels
+ * @returns SVG rect element string
+ */
 function buildBackground(params: { readonly width: number; readonly height: number }): string {
   return [
     '',
@@ -63,6 +158,15 @@ function buildBackground(params: { readonly width: number; readonly height: numb
   ].join('\n')
 }
 
+/**
+ * Build the macOS-style title bar with traffic-light buttons.
+ *
+ * @private
+ * @param params - Title bar configuration
+ * @param params.width - Banner width in pixels
+ * @param params.name - Display name shown in the title bar
+ * @returns SVG elements for the title bar, traffic lights, and title text
+ */
 function buildTitleBar(params: { readonly width: number; readonly name: string }): string {
   const centerX = Math.round(params.width / 2)
   const escaped = escapeXml(params.name)
@@ -82,6 +186,16 @@ function buildTitleBar(params: { readonly width: number; readonly name: string }
   ].join('\n')
 }
 
+/**
+ * Build FIGlet ASCII art as SVG text elements within a positioned group.
+ *
+ * @private
+ * @param params - FIGlet art configuration
+ * @param params.lines - Rendered FIGlet text rows
+ * @param params.translateX - Horizontal offset for centering
+ * @param params.startY - Vertical start position
+ * @returns SVG group element containing the ASCII art text lines
+ */
 function buildFigletArt(params: {
   readonly lines: readonly string[]
   readonly translateX: number
@@ -103,6 +217,16 @@ function buildFigletArt(params: {
   ].join('\n')
 }
 
+/**
+ * Build a large monospace text fallback when FIGlet art is unavailable.
+ *
+ * @private
+ * @param params - Fallback art configuration
+ * @param params.title - Plain text title to render
+ * @param params.centerX - Horizontal center position
+ * @param params.y - Vertical position
+ * @returns SVG text element with centered fallback title
+ */
 function buildFallbackArt(params: {
   readonly title: string
   readonly centerX: number
@@ -116,6 +240,16 @@ function buildFallbackArt(params: {
   ].join('\n')
 }
 
+/**
+ * Build the tagline text element centered below the art section.
+ *
+ * @private
+ * @param params - Tagline configuration
+ * @param params.text - Tagline string to display
+ * @param params.centerX - Horizontal center position
+ * @param params.y - Vertical position
+ * @returns SVG text element for the tagline
+ */
 function buildTagline(params: {
   readonly text: string
   readonly centerX: number
@@ -129,6 +263,15 @@ function buildTagline(params: {
   ].join('\n')
 }
 
+/**
+ * Build a horizontal separator line across the banner width.
+ *
+ * @private
+ * @param params - Separator configuration
+ * @param params.width - Banner width in pixels
+ * @param params.y - Vertical position of the line
+ * @returns SVG line element string
+ */
 function buildSeparator(params: { readonly width: number; readonly y: number }): string {
   return [
     '',
@@ -137,6 +280,15 @@ function buildSeparator(params: { readonly width: number; readonly y: number }):
   ].join('\n')
 }
 
+/**
+ * Build the fake CLI terminal output section of the banner.
+ *
+ * @private
+ * @param params - CLI output configuration
+ * @param params.name - Command name shown in terminal prompts
+ * @param params.separatorY - Y position of the separator above this section
+ * @returns SVG elements representing terminal tab, commands, and output
+ */
 function buildCliOutput(params: { readonly name: string; readonly separatorY: number }): string {
   const baseY = params.separatorY
   const x = 18
@@ -162,15 +314,18 @@ function buildCliOutput(params: { readonly name: string; readonly separatorY: nu
   ].join('\n')
 }
 
-// ── Layout computation ──────────────────────────────────────
-
-interface BannerLayout {
-  readonly width: number
-  readonly height: number
-  readonly artSection: string
-  readonly artEndY: number
-}
-
+/**
+ * Compute the art layout dimensions and SVG content for the banner title.
+ *
+ * Chooses between FIGlet block art (for short titles) and a large monospace
+ * fallback, then calculates the width, art SVG content, and vertical end position.
+ *
+ * @private
+ * @param params - Layout computation parameters
+ * @param params.title - Project title to render
+ * @param params.minWidth - Minimum banner width in pixels
+ * @returns Layout dimensions and pre-rendered art SVG section
+ */
 function computeArtLayout(params: {
   readonly title: string
   readonly minWidth: number
@@ -209,57 +364,4 @@ function computeArtLayout(params: {
   })
 
   return { width, height: 0, artSection, artEndY }
-}
-
-// ── Public API ──────────────────────────────────────────────
-
-/**
- * Compose a banner SVG string from the project title and optional tagline.
- *
- * For titles ≤ 12 characters, renders FIGlet block art.
- * For longer titles, falls back to large monospace text.
- * The banner includes a terminal chrome frame and fake CLI output.
- *
- * @param params - Banner configuration
- * @returns Complete SVG markup string with generated marker
- */
-export function composeBanner(params: {
-  readonly title: string
-  readonly tagline: string | undefined
-}): string {
-  const cmdName = params.title.toLowerCase().replaceAll(/\s+/g, '')
-  const art = computeArtLayout({ title: params.title, minWidth: MIN_BANNER_WIDTH })
-
-  const taglineSection = match(params.tagline)
-    .with(P.string, (tagline) => {
-      const taglineY = art.artEndY + TAGLINE_GAP
-      const separatorY = taglineY + SEPARATOR_GAP
-      const centerX = Math.round(art.width / 2)
-
-      return {
-        markup: buildTagline({ text: tagline, centerX, y: taglineY }),
-        separatorY,
-      }
-    })
-    .otherwise(() => ({
-      markup: '',
-      separatorY: art.artEndY + SEPARATOR_GAP,
-    }))
-
-  const height = taglineSection.separatorY + CLI_SECTION_HEIGHT
-
-  const sections = [
-    GENERATED_MARKER,
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${art.width} ${height}">`,
-    buildStyles(),
-    buildBackground({ width: art.width, height }),
-    buildTitleBar({ width: art.width, name: cmdName }),
-    art.artSection,
-    taglineSection.markup,
-    buildSeparator({ width: art.width, y: taglineSection.separatorY }),
-    buildCliOutput({ name: cmdName, separatorY: taglineSection.separatorY }),
-    '</svg>',
-  ]
-
-  return sections.filter((s) => s.length > 0).join('\n')
 }

@@ -10,19 +10,6 @@ import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { sortEntries } from './sort.ts'
 import { deriveText, kebabToTitle, resolveSectionTitle } from './text.ts'
 
-// ── Recursive glob resolution ────────────────────────────────
-
-interface DirNode {
-  /**
-   * Files directly in this directory (repo-relative paths).
-   */
-  readonly files: readonly string[]
-  /**
-   * Subdirectories keyed by directory name.
-   */
-  readonly subdirs: ReadonlyMap<string, DirNode>
-}
-
 /**
  * Resolve a recursive glob pattern into a nested section tree.
  *
@@ -102,9 +89,30 @@ export async function resolveRecursiveGlob(
   })
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * A node in the directory tree built from glob results.
+ *
+ * @private
+ */
+interface DirNode {
+  /**
+   * Files directly in this directory (repo-relative paths).
+   */
+  readonly files: readonly string[]
+  /**
+   * Subdirectories keyed by directory name.
+   */
+  readonly subdirs: ReadonlyMap<string, DirNode>
+}
+
 /**
  * Group a flat file list into a directory tree.
  *
+ * @private
  * @param files - Repo-relative file paths from the glob
  * @param baseDir - Static base directory prefix to strip
  * @returns Root directory node containing the full tree
@@ -152,6 +160,8 @@ function buildDirTree(files: readonly string[], baseDir: string): DirNode {
 
 /**
  * Parameters for `buildEntryTree` — grouped into an object to avoid positional ambiguity.
+ *
+ * @private
  */
 interface BuildEntryTreeParams {
   readonly node: DirNode
@@ -171,6 +181,10 @@ interface BuildEntryTreeParams {
  *
  * The `indexFile` (default `"overview"`) in each directory becomes the section
  * header page and is excluded from the child list to avoid duplication.
+ *
+ * @private
+ * @param params - Tree building parameters including node, prefix, and context
+ * @returns Resolved entries for all files and subdirectories
  */
 async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEntry[]> {
   const {
@@ -271,6 +285,8 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
 
 /**
  * Parameters for `resolveSubdirSection`.
+ *
+ * @private
  */
 interface ResolveSubdirSectionParams {
   readonly indexFilePath: string | undefined
@@ -289,6 +305,10 @@ interface ResolveSubdirSectionParams {
  * When an index file exists, derives the section heading from it and
  * creates a page entry. Otherwise falls back to kebab-to-title of the
  * directory name.
+ *
+ * @private
+ * @param params - Subdirectory resolution parameters
+ * @returns Object with section title and optional page data
  */
 async function resolveSubdirSection(
   params: ResolveSubdirSectionParams
@@ -325,8 +345,14 @@ async function resolveSubdirSection(
   return { sectionTitle, sectionPage: undefined }
 }
 
-// ── Private helpers ───────────────────────────────────────────
 
+/**
+ * Determine whether a section should be auto-collapsed based on depth.
+ *
+ * @private
+ * @param depth - Current nesting depth
+ * @returns True for depths greater than 0, undefined otherwise
+ */
 function resolveAutoCollapsible(depth: number): true | undefined {
   if (depth > 0) {
     return true as const
@@ -334,6 +360,15 @@ function resolveAutoCollapsible(depth: number): true | undefined {
   return undefined
 }
 
+/**
+ * Resolve the section link when an index file exists.
+ *
+ * @private
+ * @param indexFilePath - Path to the index file, or undefined
+ * @param subPrefix - URL prefix for the subdirectory
+ * @param indexFile - Index file name (e.g. 'overview')
+ * @returns Link to the index page, or undefined
+ */
 function resolveSectionLink(
   indexFilePath: string | undefined,
   subPrefix: string,

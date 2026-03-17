@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { buildSourceMap, rewriteLinks } from '../../src/sync/rewrite-links.ts'
+import { buildSourceMap, rewriteLinks } from './rewrite-links.ts'
 
 describe('buildSourceMap()', () => {
   it('should create map from pages with source paths', () => {

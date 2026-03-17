@@ -5,8 +5,6 @@ import { match, P } from 'ts-pattern'
 import { ChevronIcon } from './icons'
 import { SchemaViewer } from './schema-viewer'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface ResponseListProps {
   /**
    * OpenAPI responses object keyed by status code.
@@ -14,8 +12,37 @@ export interface ResponseListProps {
   readonly responses: Record<string, unknown>
 }
 
-// ── Helpers ──────────────────────────────────────────────────
+/**
+ * Renders the list of response status codes for an OpenAPI operation.
+ *
+ * Each response is collapsible via react-aria-components Disclosure,
+ * showing the response schema when expanded.
+ *
+ * @param props - Response list props
+ * @returns React element with collapsible response entries
+ */
+export function ResponseList({ responses }: ResponseListProps): React.ReactElement {
+  const entries = Object.entries(responses)
 
+  return (
+    <div className="zp-oas-responses">
+      <div className="zp-oas-responses__title">Responses</div>
+      {entries.map(renderResponseItem)}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Determine the CSS class for a status code badge.
+ *
+ * @private
+ * @param code - HTTP status code string
+ * @returns CSS class name for the status code range
+ */
 function statusClass(code: string): string {
   return match(code.charAt(0))
     .with('2', () => 'zp-oas-response__status--2xx')
@@ -25,6 +52,13 @@ function statusClass(code: string): string {
     .otherwise(() => '')
 }
 
+/**
+ * Extract the schema from a response's first content type entry.
+ *
+ * @private
+ * @param response - OpenAPI response object
+ * @returns Schema object or null
+ */
 function extractSchema(response: Record<string, unknown>): Record<string, unknown> | null {
   const content = response['content'] as Record<string, Record<string, unknown>> | undefined
   return match(content)
@@ -43,6 +77,13 @@ function extractSchema(response: Record<string, unknown>): Record<string, unknow
     .otherwise(() => null)
 }
 
+/**
+ * Render a single response item as a collapsible disclosure.
+ *
+ * @private
+ * @param entry - Tuple of [status code, response value]
+ * @returns Collapsible response element
+ */
 function renderResponseItem([code, value]: readonly [string, unknown]): React.ReactElement {
   const response = (value ?? {}) as Record<string, unknown>
   const description = String(response['description'] ?? '')
@@ -63,24 +104,5 @@ function renderResponseItem([code, value]: readonly [string, unknown]): React.Re
         <div className="zp-oas-response__content">{schemaEl}</div>
       </DisclosurePanel>
     </Disclosure>
-  )
-}
-
-// ── Component ────────────────────────────────────────────────
-
-/**
- * Renders the list of response status codes for an OpenAPI operation.
- *
- * Each response is collapsible via react-aria-components Disclosure,
- * showing the response schema when expanded.
- */
-export function ResponseList({ responses }: ResponseListProps): React.ReactElement {
-  const entries = Object.entries(responses)
-
-  return (
-    <div className="zp-oas-responses">
-      <div className="zp-oas-responses__title">Responses</div>
-      {entries.map(renderResponseItem)}
-    </div>
   )
 }

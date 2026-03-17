@@ -1,7 +1,8 @@
 import { match, P } from 'ts-pattern'
 
-// ── Constants ────────────────────────────────────────────────
-
+/**
+ * All HTTP methods recognised by the OpenAPI specification.
+ */
 export const HTTP_METHODS: readonly string[] = [
   'get',
   'post',
@@ -13,10 +14,11 @@ export const HTTP_METHODS: readonly string[] = [
   'trace',
 ]
 
-// ── Spec traversal helpers ───────────────────────────────────
-
 /**
  * Resolve an operation object from the spec by path and method.
+ *
+ * @param input - Spec object, URL path, and HTTP method
+ * @returns The matched operation object or null if not found
  */
 export function resolveOperation(input: {
   readonly spec: Record<string, unknown>
@@ -41,6 +43,9 @@ export function resolveOperation(input: {
 
 /**
  * Extract the first server URL from the spec, falling back to a placeholder.
+ *
+ * @param spec - Parsed OpenAPI spec object
+ * @returns First server URL string or `'https://api.example.com'`
  */
 export function resolveBaseUrl(spec: Record<string, unknown>): string {
   const servers = spec['servers'] as readonly Record<string, unknown>[] | undefined
@@ -54,6 +59,9 @@ export function resolveBaseUrl(spec: Record<string, unknown>): string {
 
 /**
  * Resolve security requirements from the operation or global spec.
+ *
+ * @param input - Operation object and full spec object
+ * @returns Array of security requirement objects (operation-level takes precedence)
  */
 export function resolveSecurities(input: {
   readonly operation: Record<string, unknown>
@@ -72,6 +80,9 @@ export function resolveSecurities(input: {
 
 /**
  * Extract the first example value from a request body's content map.
+ *
+ * @param requestBody - OpenAPI request body object, or undefined
+ * @returns The first example value found, or null
  */
 export function extractBodyExample(
   requestBody: Record<string, unknown> | undefined
@@ -102,6 +113,9 @@ export function extractBodyExample(
 
 /**
  * Check if an HTTP method typically carries a request body.
+ *
+ * @param method - Lowercase HTTP method string
+ * @returns True if the method is POST, PUT, or PATCH
  */
 export function isBodyMethod(method: string): boolean {
   return method === 'post' || method === 'put' || method === 'patch'

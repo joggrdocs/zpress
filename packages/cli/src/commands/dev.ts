@@ -10,7 +10,7 @@ import { clean } from './clean.ts'
  */
 export const devCommand = command({
   description: 'Run sync + watcher and start Rspress dev server',
-  args: z.object({
+  options: z.object({
     quiet: z.boolean().optional().default(false),
     clean: z.boolean().optional().default(false),
   }),
