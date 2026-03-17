@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import { attemptAsync } from 'es-toolkit'
+
 import type { Manifest } from './types.ts'
 
 const MANIFEST_FILE = '.generated/manifest.json'
@@ -53,12 +55,15 @@ export async function cleanStaleFiles(
   const newPaths = new Set(Object.keys(newManifest.files))
   const stalePaths = [...oldPaths].filter((p) => !newPaths.has(p))
 
-  await stalePaths.reduce(async (prev, oldPath) => {
-    await prev
-    const abs = path.resolve(outDir, oldPath)
-    await fs.rm(abs, { force: true })
-    await pruneEmptyDirs(path.dirname(abs), outDir)
-  }, Promise.resolve())
+  await Promise.all(
+    stalePaths.map((oldPath) =>
+      attemptAsync(async () => {
+        const abs = path.resolve(outDir, oldPath)
+        await fs.rm(abs, { force: true })
+        await pruneEmptyDirs(path.dirname(abs), outDir)
+      })
+    )
+  )
 
   return stalePaths.length
 }

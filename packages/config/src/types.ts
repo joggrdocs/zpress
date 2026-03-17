@@ -382,16 +382,16 @@ export interface OpenAPIConfig {
   /**
    * Path to openapi.json relative to repo root.
    */
-  spec: FilePath
+  readonly spec: FilePath
   /**
    * URL prefix for API operation pages (e.g., '/api').
    */
-  prefix: UrlPath
+  readonly prefix: UrlPath
   /**
    * Sidebar group title.
    * @default 'API Reference'
    */
-  title?: string
+  readonly title?: string
   /**
    * How operations appear in the sidebar.
    *
@@ -400,7 +400,7 @@ export interface OpenAPIConfig {
    *
    * @default 'method-path'
    */
-  sidebarLayout?: 'method-path' | 'title'
+  readonly sidebarLayout?: 'method-path' | 'title'
 }
 
 /**
