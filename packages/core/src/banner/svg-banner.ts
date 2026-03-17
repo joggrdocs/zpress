@@ -53,7 +53,7 @@ export function composeBanner(params: {
   const cmdName = params.title.toLowerCase().replaceAll(/\s+/g, '')
   const art = computeArtLayout({ title: params.title, minWidth: MIN_BANNER_WIDTH })
 
-  const trimmedTagline = params.tagline ? params.tagline.trim() : undefined
+  const trimmedTagline = resolveTagline(params.tagline)
   const taglineSection = match(trimmedTagline)
     .with(P.string.minLength(1), (tagline) => {
       const taglineY = art.artEndY + TAGLINE_GAP
@@ -91,6 +91,20 @@ export function composeBanner(params: {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Trim a tagline string, returning undefined if absent or empty.
+ *
+ * @private
+ * @param tagline - Raw tagline string or undefined
+ * @returns Trimmed tagline or undefined
+ */
+function resolveTagline(tagline: string | undefined): string | undefined {
+  if (tagline) {
+    return tagline.trim()
+  }
+  return undefined
+}
 
 /**
  * Computed layout dimensions and pre-rendered art SVG for the banner.

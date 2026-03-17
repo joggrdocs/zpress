@@ -157,8 +157,8 @@ function loadGenerated<T>(params: {
     process.stderr.write(`[zpress] Generated file not found: ${params.name} — run "zpress sync" first\n`)
     return params.fallback
   }
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
   try {
+    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
     return JSON.parse(readFileSync(p, 'utf8')) as T
   } catch {
     process.stderr.write(`[zpress] Failed to parse ${params.name} — returning fallback\n`)

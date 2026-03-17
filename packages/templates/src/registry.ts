@@ -45,15 +45,27 @@ import type { ExtendTemplateOptions, Template, TemplateRegistry } from './types.
  * @returns Template registry
  */
 export function createRegistry(templates?: readonly Template[]): TemplateRegistry {
-  const entries: ReadonlyMap<string, Template> = templates === undefined
-    ? new Map(Object.entries(getBuiltInTemplates()))
-    : new Map(templates.map((t) => [t.type, t]))
+  const entries: ReadonlyMap<string, Template> = resolveEntries(templates)
   return createFromMap(entries)
 }
 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Resolve template entries from optional input, defaulting to built-in templates.
+ *
+ * @private
+ * @param templates - Optional array of templates
+ * @returns ReadonlyMap of template type to template
+ */
+function resolveEntries(templates: readonly Template[] | undefined): ReadonlyMap<string, Template> {
+  if (templates === undefined) {
+    return new Map(Object.entries(getBuiltInTemplates()))
+  }
+  return new Map(templates.map((t) => [t.type, t]))
+}
 
 /**
  * Resolve the body for an extension, applying the transform function if provided.

@@ -105,8 +105,10 @@ function buildUrl(input: {
   readonly path: string
 }): string {
   const base = input.baseUrl.replace(/\/+$/, '')
-  const urlPath = input.path.startsWith('/') ? input.path : `/${input.path}`
-  return `${base}${urlPath}`
+  if (input.path.startsWith('/')) {
+    return `${base}${input.path}`
+  }
+  return `${base}/${input.path}`
 }
 
 /**
