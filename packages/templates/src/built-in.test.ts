@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { BUILT_IN_TEMPLATES } from '../src/built-in'
-import { TEMPLATE_TYPES } from '../src/types'
+import { BUILT_IN_TEMPLATES } from './built-in'
+import { TEMPLATE_TYPES } from './types'
 
 describe('built-in templates', () => {
   it('should have an entry for every template type', () => {

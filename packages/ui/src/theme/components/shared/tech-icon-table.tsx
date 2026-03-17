@@ -33,6 +33,9 @@ const iconWrapperStyle: React.CSSProperties = {
 /**
  * Renders a table of technology icons with tag, label, and identifier columns.
  * Used in generated icon reference docs.
+ *
+ * @param props - Props with an array of tech icon entries to render
+ * @returns React element with an icon reference table
  */
 export function TechIconTable({ entries }: TechIconTableProps): React.ReactElement {
   return (

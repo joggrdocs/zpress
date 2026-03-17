@@ -7,7 +7,7 @@ import {
   isBuiltInTheme,
   isBuiltInIconColor,
   resolveDefaultColorMode,
-} from '../src/definitions.ts'
+} from './definitions.ts'
 
 describe('THEME_NAMES constant', () => {
   it('should contain exactly the built-in theme names', () => {

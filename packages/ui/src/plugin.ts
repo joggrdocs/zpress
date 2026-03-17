@@ -11,6 +11,8 @@ import type { RspressPlugin } from '@rspress/core'
  * slot props in the custom Layout component, not globalUIComponents.
  * ThemeProvider is registered as a globalUIComponent to configure
  * the active theme on every page.
+ *
+ * @returns Configured RspressPlugin object
  */
 export function zpressPlugin(): RspressPlugin {
   const componentsDir = path.resolve(import.meta.dirname, 'theme', 'components')

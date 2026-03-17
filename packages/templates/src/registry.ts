@@ -4,7 +4,64 @@ import { BUILT_IN_TEMPLATES } from './built-in.ts'
 import type { ExtendTemplateOptions, Template, TemplateRegistry } from './types.ts'
 
 /**
+ * Create a template registry, optionally pre-loaded with the given templates.
+ *
+ * When called with no arguments, the registry is populated with all built-in
+ * templates. Pass an explicit array to provide a custom set, or an empty array
+ * to start from scratch.
+ *
+ * @example
+ * ```ts
+ * import { createRegistry } from '@zpress/templates'
+ *
+ * // Use built-in templates as-is
+ * const registry = createRegistry()
+ * const guide = registry.get('guide')
+ * ```
+ *
+ * @example
+ * ```ts
+ * // Start with an empty registry
+ * const registry = createRegistry([])
+ *   .add(defineTemplate({
+ *     type: 'adr',
+ *     label: 'ADR',
+ *     hint: 'Architecture decision record',
+ *     body: '# {{title}}\n\n## Context\n\n## Decision\n\n## Consequences\n',
+ *   }))
+ * ```
+ *
+ * @example
+ * ```ts
+ * // Extend a built-in template
+ * const registry = createRegistry()
+ *   .extend('guide', {
+ *     body: (base) => base + '\n## Internal Notes\n',
+ *   })
+ * ```
+ *
+ * @param templates - Optional array of templates to seed the registry with.
+ *   Defaults to `BUILT_IN_TEMPLATES` when omitted.
+ * @returns Template registry
+ */
+export function createRegistry(templates?: readonly Template[]): TemplateRegistry {
+  const entries: ReadonlyMap<string, Template> = templates === undefined
+    ? new Map(Object.entries(BUILT_IN_TEMPLATES))
+    : new Map(templates.map((t) => [t.type, t]))
+  return createFromMap(entries)
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
  * Resolve the body for an extension, applying the transform function if provided.
+ *
+ * @private
+ * @param base - Base template body string
+ * @param override - Optional override: a string replacement or transform function
+ * @returns Resolved body string
  */
 function resolveBody(base: string, override: ExtendTemplateOptions['body']): string {
   if (override === undefined) {
@@ -18,6 +75,11 @@ function resolveBody(base: string, override: ExtendTemplateOptions['body']): str
 
 /**
  * Apply extension options to a base template, producing a new template.
+ *
+ * @private
+ * @param base - Base template to extend
+ * @param options - Extension options with optional label, hint, and body overrides
+ * @returns New template with overrides applied
  */
 function applyExtension(base: Template, options: ExtendTemplateOptions): Template {
   return {
@@ -30,6 +92,10 @@ function applyExtension(base: Template, options: ExtendTemplateOptions): Templat
 
 /**
  * Create a new immutable template registry from a map of templates.
+ *
+ * @private
+ * @param templates - Immutable map of template type to template
+ * @returns Template registry with get, add, extend, and merge operations
  */
 function createFromMap(templates: ReadonlyMap<string, Template>): TemplateRegistry {
   return {
@@ -49,56 +115,4 @@ function createFromMap(templates: ReadonlyMap<string, Template>): TemplateRegist
     },
     merge: (other) => createFromMap(new Map([...templates, ...other.templates])),
   }
-}
-
-/**
- * Create a template registry pre-loaded with all built-in templates.
- *
- * @example
- * ```ts
- * import { createRegistry } from '@zpress/templates'
- *
- * // Use built-in templates as-is
- * const registry = createRegistry()
- * const guide = registry.get('guide')
- * ```
- *
- * @example
- * ```ts
- * // Add a custom template
- * const registry = createRegistry()
- *   .add(defineTemplate({
- *     type: 'adr',
- *     label: 'ADR',
- *     hint: 'Architecture decision record',
- *     body: '# {{title}}\n\n## Context\n\n## Decision\n\n## Consequences\n',
- *   }))
- * ```
- *
- * @example
- * ```ts
- * // Extend a built-in template
- * const registry = createRegistry()
- *   .extend('guide', {
- *     body: (base) => base + '\n## Internal Notes\n',
- *   })
- * ```
- */
-export function createRegistry(): TemplateRegistry {
-  return createFromMap(new Map(Object.entries(BUILT_IN_TEMPLATES)))
-}
-
-/**
- * Create an empty template registry with no built-in templates.
- *
- * Useful when building a fully custom template set from scratch.
- *
- * @example
- * ```ts
- * const registry = createEmptyRegistry()
- *   .add(defineTemplate({ type: 'adr', label: 'ADR', hint: '...', body: '...' }))
- * ```
- */
-export function createEmptyRegistry(): TemplateRegistry {
-  return createFromMap(new Map())
 }

@@ -42,8 +42,16 @@ export async function loadConfig(
   return await loadAndValidateConfig({ cwd, configFile })
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
 /**
  * Internal helper to load and validate config with proper error handling.
+ *
+ * @private
+ * @param options - Config loading options with cwd and optional configFile
+ * @returns ConfigResult tuple with validated config or error
  */
 async function loadAndValidateConfig(
   options: LoadConfigOptions
@@ -87,6 +95,10 @@ async function loadAndValidateConfig(
 
 /**
  * Resolve options from string or object input.
+ *
+ * @private
+ * @param dirOrOptions - Directory path string or options object
+ * @returns Normalized LoadConfigOptions
  */
 function resolveOptions(dirOrOptions: string | LoadConfigOptions): LoadConfigOptions {
   if (typeof dirOrOptions === 'string') {
@@ -97,6 +109,10 @@ function resolveOptions(dirOrOptions: string | LoadConfigOptions): LoadConfigOpt
 
 /**
  * Extract error message from unknown error value.
+ *
+ * @private
+ * @param error - Unknown error to extract message from
+ * @returns Error message string
  */
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {

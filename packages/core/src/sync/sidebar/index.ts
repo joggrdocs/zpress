@@ -4,30 +4,6 @@ import type { NavItem, ZpressConfig } from '../../types.ts'
 import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
 
 /**
- * Build a SidebarItem from a resolved entry.
- */
-function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
-  if (entry.items && entry.items.length > 0) {
-    return {
-      text: entry.title,
-      items: generateSidebar(entry.items),
-      ...maybeCollapsed(entry.collapsible),
-      ...maybeLink(entry.link),
-    }
-  }
-
-  if (entry.link === null || entry.link === undefined) {
-    log.error(`[zpress] Leaf entry "${entry.title}" has no link — skipping`)
-    return { text: entry.title }
-  }
-
-  return {
-    text: entry.title,
-    link: entry.link,
-  }
-}
-
-/**
  * Convert resolved entry tree to Rspress sidebar config.
  *
  * Leaf pages are placed before sections (directories) at every level.
@@ -41,20 +17,6 @@ export function generateSidebar(entries: readonly ResolvedEntry[]): SidebarItem[
   const sections = visible.filter((e) => e.items && e.items.length > 0)
 
   return [...pages, ...sections].map(buildSidebarEntry)
-}
-
-/**
- * Build a NavItem from a resolved entry.
- */
-function buildNavEntry(entry: ResolvedEntry): RspressNavItem {
-  const link = resolveLink(entry)
-  const children = resolveChildren(entry)
-
-  return {
-    text: entry.title,
-    link,
-    ...maybeChildren(children),
-  }
 }
 
 /**
@@ -84,8 +46,62 @@ export function generateNav(
   return [...nonIsolated, ...isolated].map(buildNavEntry).filter((item) => item.link !== undefined)
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a SidebarItem from a resolved entry.
+ *
+ * @private
+ * @param entry - Resolved entry to convert
+ * @returns Sidebar item for Rspress config
+ */
+function buildSidebarEntry(entry: ResolvedEntry): SidebarItem {
+  if (entry.items && entry.items.length > 0) {
+    return {
+      text: entry.title,
+      items: generateSidebar(entry.items),
+      ...maybeCollapsed(entry.collapsible),
+      ...maybeLink(entry.link),
+    }
+  }
+
+  if (entry.link === null || entry.link === undefined) {
+    log.error(`[zpress] Leaf entry "${entry.title}" has no link — skipping`)
+    return { text: entry.title }
+  }
+
+  return {
+    text: entry.title,
+    link: entry.link,
+  }
+}
+
+/**
+ * Build a NavItem from a resolved entry.
+ *
+ * @private
+ * @param entry - Resolved entry to convert
+ * @returns Rspress nav item with text, link, and optional children
+ */
+function buildNavEntry(entry: ResolvedEntry): RspressNavItem {
+  const link = resolveLink(entry)
+  const children = resolveChildren(entry)
+
+  return {
+    text: entry.title,
+    link,
+    ...maybeChildren(children),
+  }
+}
+
 /**
  * Recursively find the first link in an entry tree.
+ *
+ * @private
+ * @param entry - Entry to search for a link
+ * @returns First link found, or undefined
  */
 function findFirstLink(entry: ResolvedEntry): string | undefined {
   if (entry.link) {
@@ -98,8 +114,13 @@ function findFirstLink(entry: ResolvedEntry): string | undefined {
   return undefined
 }
 
-// ── Private helpers ───────────────────────────────────────────
-
+/**
+ * Return a collapsed property object if collapsible is true.
+ *
+ * @private
+ * @param collapsible - Whether the sidebar group is collapsible
+ * @returns Object with collapsed property, or empty object
+ */
 function maybeCollapsed(collapsible: boolean | undefined): { collapsed?: true } {
   if (collapsible) {
     return { collapsed: true as const }
@@ -107,6 +128,13 @@ function maybeCollapsed(collapsible: boolean | undefined): { collapsed?: true } 
   return {}
 }
 
+/**
+ * Return a link property object if link is defined.
+ *
+ * @private
+ * @param link - Optional link string
+ * @returns Object with link property, or empty object
+ */
 function maybeLink(link: string | undefined): { link?: string } {
   if (link) {
     return { link }
@@ -114,6 +142,13 @@ function maybeLink(link: string | undefined): { link?: string } {
   return {}
 }
 
+/**
+ * Resolve the link for a nav entry, falling back to the first child link.
+ *
+ * @private
+ * @param entry - Resolved entry to extract link from
+ * @returns Link string or undefined
+ */
 function resolveLink(entry: ResolvedEntry): string | undefined {
   if (entry.link) {
     return entry.link
@@ -125,6 +160,10 @@ function resolveLink(entry: ResolvedEntry): string | undefined {
  * Resolve children for isolated nav dropdowns (one level deep).
  * Only isolated sections produce dropdown children — nested sub-items
  * within those children are intentionally flattened to { text, link }.
+ *
+ * @private
+ * @param entry - Resolved entry to check for isolated children
+ * @returns Array of nav items for dropdown, or undefined
  */
 function resolveChildren(entry: ResolvedEntry): readonly RspressNavItem[] | undefined {
   if (entry.isolated && entry.items && entry.items.length > 0) {
@@ -141,6 +180,13 @@ function resolveChildren(entry: ResolvedEntry): readonly RspressNavItem[] | unde
   return undefined
 }
 
+/**
+ * Resolve the link for a child nav entry, falling back to first nested link.
+ *
+ * @private
+ * @param child - Child resolved entry
+ * @returns Link string or undefined
+ */
 function resolveChildLink(child: ResolvedEntry): string | undefined {
   if (child.link) {
     return child.link
@@ -148,6 +194,13 @@ function resolveChildLink(child: ResolvedEntry): string | undefined {
   return findFirstLink(child)
 }
 
+/**
+ * Return an items property object if children are present.
+ *
+ * @private
+ * @param children - Optional array of nav items
+ * @returns Object with items property, or empty object
+ */
 function maybeChildren(children: readonly RspressNavItem[] | undefined): {
   items?: readonly RspressNavItem[]
 } {
@@ -158,7 +211,11 @@ function maybeChildren(children: readonly RspressNavItem[] | undefined): {
 }
 
 /**
- * Map a user-facing NavItem (title) to an Rspress NavItem (text).
+ * Return an activeMatch property object if defined on the nav item.
+ *
+ * @private
+ * @param item - Nav item config from user
+ * @returns Object with activeMatch property, or empty object
  */
 function maybeActiveMatch(item: NavItem): Pick<RspressNavItem, 'activeMatch'> {
   if (item.activeMatch) {
@@ -167,6 +224,13 @@ function maybeActiveMatch(item: NavItem): Pick<RspressNavItem, 'activeMatch'> {
   return {}
 }
 
+/**
+ * Return an items property object if the nav item has children.
+ *
+ * @private
+ * @param item - Nav item config from user
+ * @returns Object with recursively mapped items, or empty object
+ */
 function maybeItems(item: NavItem): Pick<RspressNavItem, 'items'> {
   if (item.items) {
     return { items: item.items.map(mapNavItem) }
@@ -174,6 +238,13 @@ function maybeItems(item: NavItem): Pick<RspressNavItem, 'items'> {
   return {}
 }
 
+/**
+ * Map a user-facing NavItem (title) to an Rspress NavItem (text).
+ *
+ * @private
+ * @param item - User-facing nav item config
+ * @returns Rspress-compatible nav item
+ */
 function mapNavItem(item: NavItem): RspressNavItem {
   return {
     text: item.title,

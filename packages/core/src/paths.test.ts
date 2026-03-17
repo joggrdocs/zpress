@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { createPaths } from '../src/paths'
+import { createPaths } from './paths'
 
 describe('createPaths()', () => {
   it('should set repoRoot to resolved path', () => {

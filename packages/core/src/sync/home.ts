@@ -10,27 +10,6 @@ import type { IconColor } from '../icon.ts'
 import type { Section, Feature, ZpressConfig, Workspace } from '../types.ts'
 import { resolveSectionTitle } from './resolve/text.ts'
 
-// ── Types ────────────────────────────────────────────────────
-
-interface ResolvedFeature {
-  readonly title: string
-  readonly details: string
-  readonly link: string | undefined
-  readonly iconId: string | null
-  readonly iconColor: IconColor
-}
-
-/**
- * Frontmatter-serializable feature shape for YAML output.
- */
-interface FrontmatterFeature {
-  readonly title: string
-  readonly details: string
-  readonly link?: string
-  readonly icon?: string
-  readonly iconColor: IconColor
-}
-
 /**
  * Serializable workspace card data for a single item.
  */
@@ -69,8 +48,6 @@ export interface HomePageResult {
   readonly workspaces: HomeWorkspaceData
 }
 
-// ── Default descriptions ─────────────────────────────────────
-
 /**
  * Sensible fallback descriptions for common section names.
  * Used when no frontmatter description is available.
@@ -94,18 +71,6 @@ const DEFAULT_SECTION_DESCRIPTIONS: Readonly<Record<string, string>> = {
   configuration: 'Available settings, environment variables, and how to customize behavior.',
   reference: 'Detailed technical reference covering APIs, types, and configuration options.',
 }
-
-// ── Internal result types ────────────────────────────────────
-
-interface WorkspaceDataResult {
-  readonly data: HomeWorkspaceData
-}
-
-interface GroupDataResult {
-  readonly group: HomeWorkspaceGroupData
-}
-
-// ── Public API ───────────────────────────────────────────────
 
 /**
  * Generate a default Rspress home page from config metadata.
@@ -160,66 +125,12 @@ export async function generateDefaultHomePage(
   return { content, workspaces: workspaceResult.data }
 }
 
-// ── Feature data ─────────────────────────────────────────────
-
-/**
- * Convert resolved features into frontmatter-serializable objects.
- * Icon identifiers are stored as Iconify strings for YAML serialization.
- *
- * @private
- */
-function buildFrontmatterFeatures(
-  features: readonly ResolvedFeature[]
-): readonly FrontmatterFeature[] {
-  return features.map((f) => ({
-    title: f.title,
-    details: f.details,
-    ...match(f.link)
-      .with(P.nonNullable, (l) => ({ link: l }))
-      .otherwise(() => ({})),
-    ...match(f.iconId)
-      .with(P.nonNullable, (id) => ({ icon: id }))
-      .otherwise(() => ({})),
-    iconColor: f.iconColor,
-  }))
-}
-
-/**
- * Convert explicit user-defined features into resolved features.
- * Icon colors are cycled in the same way as auto-generated features.
- *
- * @private
- */
-function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly ResolvedFeature[]> {
-  return Promise.resolve(
-    features.map((f, index) => {
-      const resolved = resolveOptionalIcon(f.icon)
-      const titleStr = match(f.title)
-        .with(P.string, (t) => t)
-        .otherwise(String)
-      const descStr = f.description ?? ''
-      return {
-        title: titleStr,
-        details: descStr,
-        link: f.link,
-        iconId: match(resolved)
-          .with(P.nonNullable, (r) => r.id)
-          .otherwise(() => null),
-        iconColor: match(resolved)
-          .with(P.nonNullable, (r) => r.color)
-          .otherwise(() => ICON_COLORS[index % ICON_COLORS.length]),
-      }
-    })
-  )
-}
-
-// ── Workspace data ───────────────────────────────────────────
-
 /**
  * Build serializable workspace data from config apps/packages/workspaces.
  * Returns typed group data for the home page.
  *
- * @private
+ * @param config - Zpress config with apps, packages, and workspace groups
+ * @returns Workspace data result containing all groups
  */
 export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
   const apps = config.apps ?? []
@@ -273,10 +184,119 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Internal result wrapper returned by `buildWorkspaceData`.
+ *
+ * @private
+ */
+interface WorkspaceDataResult {
+  readonly data: HomeWorkspaceData
+}
+
+/**
+ * Internal result wrapper returned by `buildGroupData`.
+ *
+ * @private
+ */
+interface GroupDataResult {
+  readonly group: HomeWorkspaceGroupData
+}
+
+/**
+ * Resolved feature data used internally before serializing to frontmatter.
+ *
+ * @private
+ */
+interface ResolvedFeature {
+  readonly title: string
+  readonly details: string
+  readonly link: string | undefined
+  readonly iconId: string | null
+  readonly iconColor: IconColor
+}
+
+/**
+ * Frontmatter-serializable feature shape for YAML output.
+ *
+ * @private
+ */
+interface FrontmatterFeature {
+  readonly title: string
+  readonly details: string
+  readonly link?: string
+  readonly icon?: string
+  readonly iconColor: IconColor
+}
+
+/**
+ * Convert resolved features into frontmatter-serializable objects.
+ * Icon identifiers are stored as Iconify strings for YAML serialization.
+ *
+ * @private
+ * @param features - Resolved feature data
+ * @returns Frontmatter-compatible feature objects
+ */
+function buildFrontmatterFeatures(
+  features: readonly ResolvedFeature[]
+): readonly FrontmatterFeature[] {
+  return features.map((f) => ({
+    title: f.title,
+    details: f.details,
+    ...match(f.link)
+      .with(P.nonNullable, (l) => ({ link: l }))
+      .otherwise(() => ({})),
+    ...match(f.iconId)
+      .with(P.nonNullable, (id) => ({ icon: id }))
+      .otherwise(() => ({})),
+    iconColor: f.iconColor,
+  }))
+}
+
+/**
+ * Convert explicit user-defined features into resolved features.
+ * Icon colors are cycled in the same way as auto-generated features.
+ *
+ * @private
+ * @param features - User-defined feature config entries
+ * @returns Resolved feature data with icon identifiers and colors
+ */
+function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly ResolvedFeature[]> {
+  return Promise.resolve(
+    features.map((f, index) => {
+      const resolved = resolveOptionalIcon(f.icon)
+      const titleStr = match(f.title)
+        .with(P.string, (t) => t)
+        .otherwise(String)
+      const descStr = f.description ?? ''
+      return {
+        title: titleStr,
+        details: descStr,
+        link: f.link,
+        iconId: match(resolved)
+          .with(P.nonNullable, (r) => r.id)
+          .otherwise(() => null),
+        iconColor: match(resolved)
+          .with(P.nonNullable, (r) => r.color)
+          .otherwise(() => ICON_COLORS[index % ICON_COLORS.length]),
+      }
+    })
+  )
+}
+
 /**
  * Build a single workspace group with card data.
  *
  * @private
+ * @param type - Group type identifier
+ * @param heading - Display heading for the group
+ * @param description - Group description text
+ * @param items - Workspace items in the group
+ * @param scopePrefix - Prefix for scoping workspace items
+ * @returns Group data result containing the workspace group
  */
 function buildGroupData(
   type: 'apps' | 'packages' | 'workspaces',
@@ -315,12 +335,12 @@ function buildGroupData(
   }
 }
 
-// ── Internal helpers ─────────────────────────────────────────
-
 /**
  * Find the first navigable link from the sections array.
  *
  * @private
+ * @param sections - Config sections to search
+ * @returns First available link path, or '/' as fallback
  */
 function findFirstLink(sections: readonly Section[]): string {
   const [first] = sections
@@ -335,6 +355,9 @@ function findFirstLink(sections: readonly Section[]): string {
  * with Iconify identifiers and cycled icon colors.
  *
  * @private
+ * @param sections - Config sections to derive features from
+ * @param repoRoot - Absolute path to repo root for resolving source files
+ * @returns Resolved feature data for up to 3 sections
  */
 function buildFeatures(
   sections: readonly Section[],
@@ -361,6 +384,8 @@ function buildFeatures(
  * Recursively find the first child link in a section's items.
  *
  * @private
+ * @param section - Section to search for child links
+ * @returns First child link path, or undefined if none found
  */
 function findFirstChildLink(section: Section): string | undefined {
   if (!section.items) {
@@ -380,9 +405,12 @@ function findFirstChildLink(section: Section): string | undefined {
 /**
  * Extract a description for a config section.
  *
- * Priority: source file frontmatter -> config frontmatter -> section title.
+ * Priority: source file frontmatter -> config frontmatter -> well-known defaults -> section title.
  *
  * @private
+ * @param section - Section to extract description from
+ * @param repoRoot - Absolute path to repo root for resolving source files
+ * @returns Description string for the section
  */
 async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
   // Single-file source — read frontmatter description
@@ -416,6 +444,8 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
  * Read the `description` field from a markdown file's frontmatter.
  *
  * @private
+ * @param filePath - Absolute path to the markdown file
+ * @returns Description string if found, or undefined
  */
 async function readFrontmatterDescription(filePath: string): Promise<string | undefined> {
   try {
@@ -436,6 +466,8 @@ async function readFrontmatterDescription(filePath: string): Promise<string | un
  * Pass through raw tag strings. UI layer handles label resolution via TechTag.
  *
  * @private
+ * @param tags - Optional array of tag strings
+ * @returns Array of tag strings, or empty array if undefined
  */
 function resolveTagLabels(tags: readonly string[] | undefined): readonly string[] {
   if (!tags) {
@@ -444,6 +476,13 @@ function resolveTagLabels(tags: readonly string[] | undefined): readonly string[
   return [...tags]
 }
 
+/**
+ * Resolve a scope prefix string to a display value.
+ *
+ * @private
+ * @param scopePrefix - Scope prefix string
+ * @returns Scope string if non-empty, or undefined
+ */
 function resolveScope(scopePrefix: string): string | undefined {
   if (scopePrefix.length > 0) {
     return scopePrefix

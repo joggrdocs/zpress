@@ -83,9 +83,19 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
   }
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
 /**
  * Rewrite relative markdown links in source content when a source map is available.
  * No-op when the context has no source map (e.g. during resolve-only passes).
+ *
+ * @private
+ * @param raw - Raw markdown content
+ * @param page - Page data with source path information
+ * @param ctx - Sync context with optional source map
+ * @returns Content with rewritten links, or original content if no source map
  */
 function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): string {
   if (ctx.sourceMap === null || ctx.sourceMap === undefined) {
@@ -106,6 +116,11 @@ function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): stri
 /**
  * Merge frontmatter into markdown.
  * Config-level frontmatter acts as defaults; source file frontmatter wins.
+ *
+ * @private
+ * @param raw - Raw markdown content (may include existing frontmatter)
+ * @param fm - Frontmatter key-value pairs to inject as defaults
+ * @returns Markdown string with merged frontmatter
  */
 function injectFrontmatter(raw: string, fm: Frontmatter): string {
   if (Object.keys(fm).length === 0) {

@@ -1,15 +1,5 @@
-/**
- * Domain-specific error types for the sync engine.
- *
- * All sync operations return `Result<T, SyncError>` instead of throwing.
- * Config validation returns `Result<T, ConfigError>`.
- */
-
-// Re-export from @zpress/config to maintain backward compatibility
 export type { ConfigError, ConfigResult } from '@zpress/config'
 export { configError } from '@zpress/config'
-
-// ── Sync errors ─────────────────────────────────────────────
 
 /**
  * Error produced by the sync engine during entry resolution, page copy, or sidebar generation.
@@ -38,8 +28,6 @@ export type SyncOutcome<T> = readonly [SyncError, null] | readonly [null, T]
 export function syncError(type: SyncError['type'], message: string): SyncError {
   return Object.freeze({ _tag: 'SyncError' as const, type, message })
 }
-
-// ── Utilities ───────────────────────────────────────────────
 
 /**
  * Collect results from an array, short-circuiting on the first error.

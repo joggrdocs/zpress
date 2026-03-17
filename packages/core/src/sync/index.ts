@@ -22,6 +22,9 @@ import { buildMultiSidebar } from './sidebar/multi.ts'
 import type { PageData, ResolvedEntry, SyncContext } from './types.ts'
 import { enrichWorkspaceCards, synthesizeWorkspaceSections } from './workspace.ts'
 
+/**
+ * Aggregate result from a completed sync pass.
+ */
 export interface SyncResult {
   readonly pagesWritten: number
   readonly pagesSkipped: number
@@ -40,6 +43,16 @@ export interface SyncOptions {
   readonly quiet?: boolean
 }
 
+/**
+ * Run a full documentation sync from config to the output directory.
+ *
+ * Resolves sections, copies pages, generates sidebar/nav, syncs OpenAPI specs,
+ * and manages the incremental manifest for change tracking.
+ *
+ * @param config - Validated zpress config
+ * @param options - Sync options including resolved paths and quiet flag
+ * @returns Sync result with counts of pages written, skipped, and removed
+ */
 export async function sync(config: ZpressConfig, options: SyncOptions): Promise<SyncResult> {
   const start = performance.now()
   const quiet = resolveQuiet(options.quiet)
@@ -192,6 +205,17 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Recursively collect all page data from a resolved entry tree.
+ *
+ * @private
+ * @param entries - Resolved entry tree nodes
+ * @returns Flat array of page data from all entries and their children
+ */
 function collectPages(entries: readonly ResolvedEntry[]): PageData[] {
   return entries.reduce<PageData[]>((pages, entry) => {
     const withPage = concatPage(pages, entry.page)
@@ -204,6 +228,10 @@ function collectPages(entries: readonly ResolvedEntry[]): PageData[] {
 
 /**
  * Write a bare-bones README.md in the .zpress/ root explaining the directory.
+ *
+ * @private
+ * @param outputRoot - Absolute path to the .zpress/ directory
+ * @returns Promise that resolves when the file is written
  */
 async function writeZpressReadme(outputRoot: string): Promise<void> {
   const readmePath = path.resolve(outputRoot, 'README.md')
@@ -236,6 +264,10 @@ zpress build   # Build static site
 /**
  * Seed .zpress/public/ with default assets from the core package's public/ directory.
  * Only copies files that don't already exist — user customizations are preserved.
+ *
+ * @private
+ * @param publicDir - Absolute path to the .zpress/public/ directory
+ * @returns Promise that resolves when seeding is complete
  */
 async function seedDefaultAssets(publicDir: string): Promise<void> {
   // Resolve from the bundled dist/ directory up to the package root's public/ dir
@@ -254,6 +286,11 @@ async function seedDefaultAssets(publicDir: string): Promise<void> {
  * Overwrites a destination file only when it was auto-generated
  * (first line matches the zpress-generated marker). User-customized
  * files (no marker) are never touched.
+ *
+ * @private
+ * @param src - Source directory path
+ * @param dest - Destination directory path
+ * @returns Promise that resolves when all files are copied
  */
 async function copySeeded(src: string, dest: string): Promise<void> {
   await fs.mkdir(dest, { recursive: true })
@@ -276,12 +313,12 @@ async function copySeeded(src: string, dest: string): Promise<void> {
 /**
  * Check whether a destination file can be replaced by a seeded default.
  *
- * Returns `true` when:
- * - The file does not exist (first seed)
- * - The file exists and was auto-generated (has the zpress-generated marker)
+ * Returns `true` when the file does not exist or was auto-generated
+ * (has the zpress-generated marker). Returns `false` for user-customized files.
  *
- * Returns `false` when:
- * - The file exists without the marker (user-customized)
+ * @private
+ * @param filePath - Absolute path to the destination file
+ * @returns Whether the file can be safely replaced
  */
 async function isReplaceable(filePath: string): Promise<boolean> {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + directory entries
@@ -295,6 +332,11 @@ async function isReplaceable(filePath: string): Promise<boolean> {
 
 /**
  * Recursively copy all files from src to dest, overwriting existing files.
+ *
+ * @private
+ * @param src - Source directory path
+ * @param dest - Destination directory path
+ * @returns Promise that resolves when all files are copied
  */
 async function copyAll(src: string, dest: string): Promise<void> {
   const exists = await fs.stat(src).catch(() => null)
@@ -315,6 +357,13 @@ async function copyAll(src: string, dest: string): Promise<void> {
   }, Promise.resolve())
 }
 
+/**
+ * Resolve the quiet flag to a boolean, defaulting to false.
+ *
+ * @private
+ * @param quiet - Optional quiet flag from sync options
+ * @returns Resolved boolean value
+ */
 function resolveQuiet(quiet: boolean | undefined | null): boolean {
   if (quiet !== undefined && quiet !== null) {
     return quiet
@@ -322,6 +371,14 @@ function resolveQuiet(quiet: boolean | undefined | null): boolean {
   return false
 }
 
+/**
+ * Append a page to the pages array if it exists.
+ *
+ * @private
+ * @param pages - Existing pages array
+ * @param page - Optional page to append
+ * @returns New array with the page appended (if present)
+ */
 function concatPage(pages: readonly PageData[], page: PageData | undefined): PageData[] {
   if (page) {
     return [...pages, page]
@@ -332,6 +389,10 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
 /**
  * Extract an `AssetConfig` from the zpress config.
  * Returns `null` when no title is set (falls back to default ZPRESS assets).
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns Asset config or null when no title is configured
  */
 function buildAssetConfig(config: ZpressConfig): AssetConfig | null {
   if (!config.title) {

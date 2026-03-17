@@ -1,9 +1,7 @@
 import type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '@zpress/theme'
 
-// Re-export theme types
 export type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '@zpress/theme'
 
-// ── Icon types ───────────────────────────────────────────────
 
 /**
  * Iconify icon identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`).
@@ -32,7 +30,6 @@ export type IconId = string
  */
 export type IconConfig = IconId | { readonly id: IconId; readonly color: IconColor }
 
-// ── Branded string aliases ──────────────────────────────────
 
 /**
  * File-system path (absolute or relative).
@@ -44,7 +41,6 @@ type FilePath = string
  */
 type UrlPath = string
 
-// ── Result type ─────────────────────────────────────────────
 
 /**
  * Result type for error handling without exceptions.
@@ -60,7 +56,6 @@ type UrlPath = string
  */
 export type Result<T, E = Error> = readonly [E, null] | readonly [null, T]
 
-// ── Frontmatter ──────────────────────────────────────────────
 
 /**
  * Rspress frontmatter fields injectable at build time.
@@ -85,7 +80,6 @@ export interface Frontmatter {
   readonly [key: string]: unknown
 }
 
-// ── Nav ──────────────────────────────────────────────────────
 
 /**
  * Navigation item for the top nav bar.
@@ -100,7 +94,6 @@ export interface NavItem {
   readonly activeMatch?: string
 }
 
-// ── Title ────────────────────────────────────────────────────
 
 /**
  * Title configuration — static or derived from source files.
@@ -137,7 +130,6 @@ export type TitleConfig =
       readonly transform?: (text: string, slug: string) => string
     }
 
-// ── Card ─────────────────────────────────────────────────────
 
 /**
  * Controls how an entry appears as a card on its parent section's
@@ -166,7 +158,6 @@ export interface CardConfig {
   readonly badge?: { readonly src: string; readonly alt: string }
 }
 
-// ── Discovery ────────────────────────────────────────────────
 
 /**
  * Content discovery configuration for auto-generating pages from files.
@@ -204,7 +195,6 @@ export interface FlatDiscoveryConfig extends DiscoveryConfig {
  */
 export type Discovery = FlatDiscoveryConfig | RecursiveDiscoveryConfig
 
-// ── Hero action ──────────────────────────────────────────────
 
 /**
  * A single call-to-action button on the home page hero.
@@ -217,7 +207,6 @@ export interface HeroAction {
   readonly link: string
 }
 
-// ── Sidebar ──────────────────────────────────────────────────
 
 /**
  * A persistent link rendered above or below the sidebar nav tree.
@@ -253,7 +242,6 @@ export interface SidebarConfig {
   readonly below?: readonly SidebarLink[]
 }
 
-// ── SEO ──────────────────────────────────────────────────────
 
 /**
  * SEO meta tag configuration.
@@ -268,7 +256,6 @@ export interface SeoConfig {
   readonly twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
 }
 
-// ── Section ──────────────────────────────────────────────────
 
 /**
  * A single node in the information architecture (sidebar/nav tree).
@@ -325,7 +312,6 @@ export interface Section {
   readonly titleTransform?: (title: string, slug: string) => string
 }
 
-// ── Workspace ────────────────────────────────────────────────
 
 /**
  * Workspace item representing an app or package in the monorepo.
@@ -382,7 +368,6 @@ export interface WorkspaceCategory {
   readonly link?: string
 }
 
-// ── Resolved types (output of the sync engine) ──────────────
 
 /**
  * A fully resolved page after the sync engine processes the config.
@@ -404,7 +389,6 @@ export interface ResolvedSection {
   readonly items: readonly (ResolvedPage | ResolvedSection)[]
 }
 
-// ── OpenAPI ──────────────────────────────────────────────────
 
 /**
  * Configuration for OpenAPI spec integration.
@@ -434,7 +418,6 @@ export interface OpenAPIConfig {
   sidebarLayout?: 'method-path' | 'title'
 }
 
-// ── Feature ──────────────────────────────────────────────────
 
 /**
  * Explicit feature card for the home page.
@@ -458,7 +441,6 @@ export interface Feature {
   readonly icon?: string
 }
 
-// ── Top-level config ─────────────────────────────────────────
 
 /**
  * zpress configuration.

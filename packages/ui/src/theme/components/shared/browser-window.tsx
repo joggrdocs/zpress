@@ -3,18 +3,18 @@ import { match, P } from 'ts-pattern'
 
 import './browser-window.css'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface BrowserWindowProps {
   readonly url?: string
   readonly children: React.ReactNode
 }
 
-// ── Component ────────────────────────────────────────────────
 
 /**
  * Fake browser window chrome that wraps content in a title bar
  * with traffic-light dots and an optional URL pill.
+ *
+ * @param props - Props with an optional URL string and children to render inside the window
+ * @returns React element with browser window chrome
  */
 export function BrowserWindow({ url, children }: BrowserWindowProps): React.ReactElement {
   return (

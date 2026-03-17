@@ -28,7 +28,6 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-// ── Layout constants ────────────────────────────────────────
 
 const ART_TOP_PAD = 26
 const FIGLET_ROWS = 6
@@ -36,182 +35,6 @@ const TAGLINE_GAP = 24
 const SEPARATOR_GAP = 16
 const CLI_SECTION_HEIGHT = 240
 
-// ── SVG section builders ────────────────────────────────────
-
-function buildStyles(): string {
-  return [
-    '  <defs>',
-    '    <style>',
-    `      .text { font-family: ${FONT_STACK}; }`,
-    `      .code { font-family: ${FONT_STACK}; font-size: ${CODE_FONT_SIZE}px; }`,
-    `      .brand { fill: ${COLORS.brand}; }`,
-    `      .dim { fill: ${COLORS.overlay0}; }`,
-    `      .tx { fill: ${COLORS.text}; }`,
-    `      .st { fill: ${COLORS.green}; }`,
-    `      .prompt { fill: ${COLORS.blue}; }`,
-    `      .tab { font-family: ${FONT_STACK}; font-size: 11px; fill: ${COLORS.text}; }`,
-    '    </style>',
-    '  </defs>',
-  ].join('\n')
-}
-
-function buildBackground(params: { readonly width: number; readonly height: number }): string {
-  return [
-    '',
-    '  <!-- Background -->',
-    `  <rect width="${params.width}" height="${params.height}" rx="10" ry="10" fill="${COLORS.base}" />`,
-  ].join('\n')
-}
-
-function buildTitleBar(params: { readonly width: number; readonly name: string }): string {
-  const centerX = Math.round(params.width / 2)
-  const escaped = escapeXml(params.name)
-  return [
-    '',
-    '  <!-- Title bar -->',
-    `  <rect width="${params.width}" height="${TITLE_BAR_HEIGHT}" rx="10" ry="10" fill="${COLORS.mantle}" />`,
-    `  <rect y="26" width="${params.width}" height="10" fill="${COLORS.mantle}" />`,
-    '',
-    '  <!-- Traffic lights -->',
-    `  <circle cx="20" cy="18" r="6" fill="${COLORS.red}" />`,
-    `  <circle cx="40" cy="18" r="6" fill="${COLORS.yellow}" />`,
-    `  <circle cx="60" cy="18" r="6" fill="${COLORS.green}" />`,
-    '',
-    '  <!-- Title bar text -->',
-    `  <text class="text dim" font-size="12" x="${centerX}" y="22" text-anchor="middle">${escaped}</text>`,
-  ].join('\n')
-}
-
-function buildFigletArt(params: {
-  readonly lines: readonly string[]
-  readonly translateX: number
-  readonly startY: number
-}): string {
-  const textLines = params.lines
-    .map((line, i) => {
-      const y = params.startY + i * ART_LINE_HEIGHT
-      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
-    })
-    .join('\n')
-
-  return [
-    '',
-    '  <!-- ASCII art -->',
-    `  <g transform="translate(${params.translateX}, 0)">`,
-    textLines,
-    '  </g>',
-  ].join('\n')
-}
-
-function buildFallbackArt(params: {
-  readonly title: string
-  readonly centerX: number
-  readonly y: number
-}): string {
-  const escaped = escapeXml(params.title)
-  return [
-    '',
-    '  <!-- Title (fallback) -->',
-    `  <text class="text brand" font-size="${FALLBACK_FONT_SIZE}" x="${params.centerX}" y="${params.y}" text-anchor="middle">${escaped}</text>`,
-  ].join('\n')
-}
-
-function buildTagline(params: {
-  readonly text: string
-  readonly centerX: number
-  readonly y: number
-}): string {
-  const escaped = escapeXml(params.text)
-  return [
-    '',
-    '  <!-- Tagline -->',
-    `  <text class="text dim" font-size="12" x="${params.centerX}" y="${params.y}" text-anchor="middle">${escaped}</text>`,
-  ].join('\n')
-}
-
-function buildSeparator(params: { readonly width: number; readonly y: number }): string {
-  return [
-    '',
-    '  <!-- Separator -->',
-    `  <line x1="16" y1="${params.y}" x2="${params.width - 16}" y2="${params.y}" stroke="${COLORS.surface0}" stroke-width="1" />`,
-  ].join('\n')
-}
-
-function buildCliOutput(params: { readonly name: string; readonly separatorY: number }): string {
-  const baseY = params.separatorY
-  const x = 18
-
-  return [
-    '',
-    '  <!-- Terminal tab -->',
-    `  <rect x="4" y="${baseY + 4}" width="80" height="24" rx="4" ry="4" fill="${COLORS.mantle}" />`,
-    `  <text class="tab" x="${x}" y="${baseY + 20}">terminal</text>`,
-    '',
-    '  <!-- CLI output -->',
-    `  <text class="code" x="${x}" y="${baseY + 48}"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">${escapeXml(params.name)} dev</tspan></text>`,
-    '',
-    `  <text class="code" x="${x}" y="${baseY + 76}"><tspan class="dim">Starting </tspan><tspan class="brand">${escapeXml(params.name)}</tspan><tspan class="dim">...</tspan></text>`,
-    '',
-    `  <text class="code" x="${x}" y="${baseY + 100}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Loaded config</tspan></text>`,
-    `  <text class="code" x="${x}" y="${baseY + 116}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Built 24 pages</tspan></text>`,
-    `  <text class="code" x="${x}" y="${baseY + 132}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Generated sidebar</tspan></text>`,
-    `  <text class="code" x="${x}" y="${baseY + 148}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Ready — dev server on :5173</tspan></text>`,
-    '',
-    '  <!-- New prompt with cursor -->',
-    `  <text class="code" x="${x}" y="${baseY + 180}"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">&#x2588;</tspan></text>`,
-  ].join('\n')
-}
-
-// ── Layout computation ──────────────────────────────────────
-
-interface BannerLayout {
-  readonly width: number
-  readonly height: number
-  readonly artSection: string
-  readonly artEndY: number
-}
-
-function computeArtLayout(params: {
-  readonly title: string
-  readonly minWidth: number
-}): BannerLayout {
-  const useFiglet = params.title.length <= FIGLET_MAX_LENGTH
-
-  if (useFiglet) {
-    const figlet = renderFigletText(params.title)
-    const artPixelWidth = figlet.width * CHAR_WIDTH_PX
-    const contentWidth = Math.ceil(artPixelWidth + CONTENT_PADDING * 2)
-    const width = Math.max(params.minWidth, contentWidth)
-    const artStartY = TITLE_BAR_HEIGHT + ART_TOP_PAD
-    const translateX = Math.round((width - artPixelWidth) / 2)
-    const artEndY = artStartY + (FIGLET_ROWS - 1) * ART_LINE_HEIGHT
-
-    const artSection = buildFigletArt({
-      lines: figlet.lines,
-      translateX,
-      startY: artStartY,
-    })
-
-    return { width, height: 0, artSection, artEndY }
-  }
-
-  const textPixelWidth = params.title.length * FALLBACK_FONT_SIZE * 0.6
-  const contentWidth = Math.ceil(textPixelWidth + CONTENT_PADDING * 2)
-  const width = Math.max(params.minWidth, contentWidth)
-  const centerX = Math.round(width / 2)
-  const artCenterY = TITLE_BAR_HEIGHT + ART_TOP_PAD + 40
-  const artEndY = artCenterY + 12
-
-  const artSection = buildFallbackArt({
-    title: params.title,
-    centerX,
-    y: artCenterY,
-  })
-
-  return { width, height: 0, artSection, artEndY }
-}
-
-// ── Public API ──────────────────────────────────────────────
 
 /**
  * Compose a banner SVG string from the project title and optional tagline.
@@ -262,4 +85,268 @@ export function composeBanner(params: {
   ]
 
   return sections.filter((s) => s.length > 0).join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Computed layout dimensions and pre-rendered art SVG for the banner.
+ *
+ * @private
+ */
+interface BannerLayout {
+  readonly width: number
+  readonly height: number
+  readonly artSection: string
+  readonly artEndY: number
+}
+
+/**
+ * Build the inline CSS `<defs>` block for the banner SVG.
+ *
+ * @private
+ * @returns SVG `<defs>` string containing all style rules
+ */
+function buildStyles(): string {
+  return [
+    '  <defs>',
+    '    <style>',
+    `      .text { font-family: ${FONT_STACK}; }`,
+    `      .code { font-family: ${FONT_STACK}; font-size: ${CODE_FONT_SIZE}px; }`,
+    `      .brand { fill: ${COLORS.brand}; }`,
+    `      .dim { fill: ${COLORS.overlay0}; }`,
+    `      .tx { fill: ${COLORS.text}; }`,
+    `      .st { fill: ${COLORS.green}; }`,
+    `      .prompt { fill: ${COLORS.blue}; }`,
+    `      .tab { font-family: ${FONT_STACK}; font-size: 11px; fill: ${COLORS.text}; }`,
+    '    </style>',
+    '  </defs>',
+  ].join('\n')
+}
+
+/**
+ * Build the background rectangle for the banner SVG.
+ *
+ * @private
+ * @param params - Dimensions for the background
+ * @param params.width - Banner width in pixels
+ * @param params.height - Banner height in pixels
+ * @returns SVG rect element string
+ */
+function buildBackground(params: { readonly width: number; readonly height: number }): string {
+  return [
+    '',
+    '  <!-- Background -->',
+    `  <rect width="${params.width}" height="${params.height}" rx="10" ry="10" fill="${COLORS.base}" />`,
+  ].join('\n')
+}
+
+/**
+ * Build the macOS-style title bar with traffic-light buttons.
+ *
+ * @private
+ * @param params - Title bar configuration
+ * @param params.width - Banner width in pixels
+ * @param params.name - Display name shown in the title bar
+ * @returns SVG elements for the title bar, traffic lights, and title text
+ */
+function buildTitleBar(params: { readonly width: number; readonly name: string }): string {
+  const centerX = Math.round(params.width / 2)
+  const escaped = escapeXml(params.name)
+  return [
+    '',
+    '  <!-- Title bar -->',
+    `  <rect width="${params.width}" height="${TITLE_BAR_HEIGHT}" rx="10" ry="10" fill="${COLORS.mantle}" />`,
+    `  <rect y="26" width="${params.width}" height="10" fill="${COLORS.mantle}" />`,
+    '',
+    '  <!-- Traffic lights -->',
+    `  <circle cx="20" cy="18" r="6" fill="${COLORS.red}" />`,
+    `  <circle cx="40" cy="18" r="6" fill="${COLORS.yellow}" />`,
+    `  <circle cx="60" cy="18" r="6" fill="${COLORS.green}" />`,
+    '',
+    '  <!-- Title bar text -->',
+    `  <text class="text dim" font-size="12" x="${centerX}" y="22" text-anchor="middle">${escaped}</text>`,
+  ].join('\n')
+}
+
+/**
+ * Build FIGlet ASCII art as SVG text elements within a positioned group.
+ *
+ * @private
+ * @param params - FIGlet art configuration
+ * @param params.lines - Rendered FIGlet text rows
+ * @param params.translateX - Horizontal offset for centering
+ * @param params.startY - Vertical start position
+ * @returns SVG group element containing the ASCII art text lines
+ */
+function buildFigletArt(params: {
+  readonly lines: readonly string[]
+  readonly translateX: number
+  readonly startY: number
+}): string {
+  const textLines = params.lines
+    .map((line, i) => {
+      const y = params.startY + i * ART_LINE_HEIGHT
+      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
+    })
+    .join('\n')
+
+  return [
+    '',
+    '  <!-- ASCII art -->',
+    `  <g transform="translate(${params.translateX}, 0)">`,
+    textLines,
+    '  </g>',
+  ].join('\n')
+}
+
+/**
+ * Build a large monospace text fallback when FIGlet art is unavailable.
+ *
+ * @private
+ * @param params - Fallback art configuration
+ * @param params.title - Plain text title to render
+ * @param params.centerX - Horizontal center position
+ * @param params.y - Vertical position
+ * @returns SVG text element with centered fallback title
+ */
+function buildFallbackArt(params: {
+  readonly title: string
+  readonly centerX: number
+  readonly y: number
+}): string {
+  const escaped = escapeXml(params.title)
+  return [
+    '',
+    '  <!-- Title (fallback) -->',
+    `  <text class="text brand" font-size="${FALLBACK_FONT_SIZE}" x="${params.centerX}" y="${params.y}" text-anchor="middle">${escaped}</text>`,
+  ].join('\n')
+}
+
+/**
+ * Build the tagline text element centered below the art section.
+ *
+ * @private
+ * @param params - Tagline configuration
+ * @param params.text - Tagline string to display
+ * @param params.centerX - Horizontal center position
+ * @param params.y - Vertical position
+ * @returns SVG text element for the tagline
+ */
+function buildTagline(params: {
+  readonly text: string
+  readonly centerX: number
+  readonly y: number
+}): string {
+  const escaped = escapeXml(params.text)
+  return [
+    '',
+    '  <!-- Tagline -->',
+    `  <text class="text dim" font-size="12" x="${params.centerX}" y="${params.y}" text-anchor="middle">${escaped}</text>`,
+  ].join('\n')
+}
+
+/**
+ * Build a horizontal separator line across the banner width.
+ *
+ * @private
+ * @param params - Separator configuration
+ * @param params.width - Banner width in pixels
+ * @param params.y - Vertical position of the line
+ * @returns SVG line element string
+ */
+function buildSeparator(params: { readonly width: number; readonly y: number }): string {
+  return [
+    '',
+    '  <!-- Separator -->',
+    `  <line x1="16" y1="${params.y}" x2="${params.width - 16}" y2="${params.y}" stroke="${COLORS.surface0}" stroke-width="1" />`,
+  ].join('\n')
+}
+
+/**
+ * Build the fake CLI terminal output section of the banner.
+ *
+ * @private
+ * @param params - CLI output configuration
+ * @param params.name - Command name shown in terminal prompts
+ * @param params.separatorY - Y position of the separator above this section
+ * @returns SVG elements representing terminal tab, commands, and output
+ */
+function buildCliOutput(params: { readonly name: string; readonly separatorY: number }): string {
+  const baseY = params.separatorY
+  const x = 18
+
+  return [
+    '',
+    '  <!-- Terminal tab -->',
+    `  <rect x="4" y="${baseY + 4}" width="80" height="24" rx="4" ry="4" fill="${COLORS.mantle}" />`,
+    `  <text class="tab" x="${x}" y="${baseY + 20}">terminal</text>`,
+    '',
+    '  <!-- CLI output -->',
+    `  <text class="code" x="${x}" y="${baseY + 48}"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">${escapeXml(params.name)} dev</tspan></text>`,
+    '',
+    `  <text class="code" x="${x}" y="${baseY + 76}"><tspan class="dim">Starting </tspan><tspan class="brand">${escapeXml(params.name)}</tspan><tspan class="dim">...</tspan></text>`,
+    '',
+    `  <text class="code" x="${x}" y="${baseY + 100}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Loaded config</tspan></text>`,
+    `  <text class="code" x="${x}" y="${baseY + 116}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Built 24 pages</tspan></text>`,
+    `  <text class="code" x="${x}" y="${baseY + 132}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Generated sidebar</tspan></text>`,
+    `  <text class="code" x="${x}" y="${baseY + 148}" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Ready — dev server on :5173</tspan></text>`,
+    '',
+    '  <!-- New prompt with cursor -->',
+    `  <text class="code" x="${x}" y="${baseY + 180}"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">&#x2588;</tspan></text>`,
+  ].join('\n')
+}
+
+/**
+ * Compute the art layout dimensions and SVG content for the banner title.
+ *
+ * Chooses between FIGlet block art (for short titles) and a large monospace
+ * fallback, then calculates the width, art SVG content, and vertical end position.
+ *
+ * @private
+ * @param params - Layout computation parameters
+ * @param params.title - Project title to render
+ * @param params.minWidth - Minimum banner width in pixels
+ * @returns Layout dimensions and pre-rendered art SVG section
+ */
+function computeArtLayout(params: {
+  readonly title: string
+  readonly minWidth: number
+}): BannerLayout {
+  const useFiglet = params.title.length <= FIGLET_MAX_LENGTH
+
+  if (useFiglet) {
+    const figlet = renderFigletText(params.title)
+    const artPixelWidth = figlet.width * CHAR_WIDTH_PX
+    const contentWidth = Math.ceil(artPixelWidth + CONTENT_PADDING * 2)
+    const width = Math.max(params.minWidth, contentWidth)
+    const artStartY = TITLE_BAR_HEIGHT + ART_TOP_PAD
+    const translateX = Math.round((width - artPixelWidth) / 2)
+    const artEndY = artStartY + (FIGLET_ROWS - 1) * ART_LINE_HEIGHT
+
+    const artSection = buildFigletArt({
+      lines: figlet.lines,
+      translateX,
+      startY: artStartY,
+    })
+
+    return { width, height: 0, artSection, artEndY }
+  }
+
+  const textPixelWidth = params.title.length * FALLBACK_FONT_SIZE * 0.6
+  const contentWidth = Math.ceil(textPixelWidth + CONTENT_PADDING * 2)
+  const width = Math.max(params.minWidth, contentWidth)
+  const centerX = Math.round(width / 2)
+  const artCenterY = TITLE_BAR_HEIGHT + ART_TOP_PAD + 40
+  const artEndY = artCenterY + 12
+
+  const artSection = buildFallbackArt({
+    title: params.title,
+    centerX,
+    y: artCenterY,
+  })
+
+  return { width, height: 0, artSection, artEndY }
 }

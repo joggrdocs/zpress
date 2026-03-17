@@ -19,32 +19,11 @@ import {
   escapeXml,
 } from './svg-shared.ts'
 
-// ── Layout constants ────────────────────────────────────────
 
 const LOGO_TOP_PAD = 28
 const LOGO_BOTTOM_PAD = 28
 const FIGLET_ROWS = 6
 
-// ── Builders ────────────────────────────────────────────────
-
-function buildFigletArt(params: {
-  readonly lines: readonly string[]
-  readonly startY: number
-}): string {
-  return params.lines
-    .map((line, i) => {
-      const y = params.startY + i * ART_LINE_HEIGHT
-      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
-    })
-    .join('\n')
-}
-
-function buildFallbackText(params: { readonly title: string; readonly y: number }): string {
-  const escaped = escapeXml(params.title)
-  return `    <text class="text brand" font-size="${FALLBACK_FONT_SIZE}" y="${params.y}">${escaped}</text>`
-}
-
-// ── Public API ──────────────────────────────────────────────
 
 /**
  * Compose a logo SVG string from the project title.
@@ -103,4 +82,43 @@ export function composeLogo(params: { readonly title: string }): string {
     '  </g>',
     '</svg>',
   ].join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build FIGlet ASCII art as SVG text elements for the logo.
+ *
+ * @private
+ * @param params - FIGlet art configuration
+ * @param params.lines - Rendered FIGlet text rows
+ * @param params.startY - Vertical start position for the first line
+ * @returns SVG text elements joined as a single string
+ */
+function buildFigletArt(params: {
+  readonly lines: readonly string[]
+  readonly startY: number
+}): string {
+  return params.lines
+    .map((line, i) => {
+      const y = params.startY + i * ART_LINE_HEIGHT
+      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
+    })
+    .join('\n')
+}
+
+/**
+ * Build a large monospace text element as a fallback for long titles.
+ *
+ * @private
+ * @param params - Fallback text configuration
+ * @param params.title - Plain text title to render
+ * @param params.y - Vertical position of the text baseline
+ * @returns SVG text element string
+ */
+function buildFallbackText(params: { readonly title: string; readonly y: number }): string {
+  const escaped = escapeXml(params.title)
+  return `    <text class="text brand" font-size="${FALLBACK_FONT_SIZE}" y="${params.y}">${escaped}</text>`
 }

@@ -16,7 +16,19 @@ import type { OpenAPIConfig, Workspace, ZpressConfig } from '../types.ts'
 import type { PageData, SidebarItem, SyncContext } from './types.ts'
 import { slugify } from './workspace.ts'
 
-// ── Public types ─────────────────────────────────────────────
+/**
+ * HTTP methods recognized in OpenAPI path items.
+ */
+const HTTP_METHODS: readonly string[] = [
+  'get',
+  'post',
+  'put',
+  'patch',
+  'delete',
+  'head',
+  'options',
+  'trace',
+]
 
 /**
  * A sidebar entry keyed by its prefix path.
@@ -33,23 +45,6 @@ export interface SyncOpenAPIResult {
   readonly sidebar: readonly OpenAPISidebarEntry[]
   readonly pages: readonly PageData[]
 }
-
-// ── Internal types ───────────────────────────────────────────
-
-interface OperationInfo {
-  readonly method: string
-  readonly path: string
-  readonly operationId: string
-  readonly summary: string
-  readonly tags: readonly string[]
-}
-
-interface TagGroup {
-  readonly tag: string
-  readonly operations: readonly OperationInfo[]
-}
-
-// ── Main entry point ─────────────────────────────────────────
 
 /**
  * Sync all OpenAPI configs from both root config and workspace items.
@@ -80,16 +75,56 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
   }
 }
 
-// ── Per-spec sync ────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
+/**
+ * An operation extracted from an OpenAPI paths object.
+ *
+ * @private
+ */
+interface OperationInfo {
+  readonly method: string
+  readonly path: string
+  readonly operationId: string
+  readonly summary: string
+  readonly tags: readonly string[]
+}
+
+/**
+ * Operations grouped under a single tag.
+ *
+ * @private
+ */
+interface TagGroup {
+  readonly tag: string
+  readonly operations: readonly OperationInfo[]
+}
+
+/**
+ * Result from processing a single OpenAPI spec.
+ *
+ * @private
+ */
 interface SingleSyncResult {
   readonly sidebar: readonly SidebarItem[]
   readonly pages: readonly PageData[]
 }
 
 /**
+ * A config entry with its associated OpenAPI config.
+ *
+ * @private
+ */
+interface ConfigEntry {
+  readonly config: OpenAPIConfig
+}
+
+/**
  * Sync a single OpenAPI spec — parse, extract operations, generate pages + sidebar.
  *
+ * @private
  * @param config - OpenAPI config with spec path and prefix
  * @param ctx - Sync context
  * @returns Sidebar items and generated page data
@@ -150,14 +185,12 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   return { sidebar: sidebarItems, pages }
 }
 
-// ── Config collectors ────────────────────────────────────────
-
-interface ConfigEntry {
-  readonly config: OpenAPIConfig
-}
-
 /**
  * Collect root-level OpenAPI config (if present).
+ *
+ * @private
+ * @param config - Zpress config
+ * @returns Array of config entries (zero or one)
  */
 function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
   return match(config.openapi)
@@ -167,6 +200,10 @@ function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
 
 /**
  * Collect workspace-level OpenAPI configs from apps, packages, and workspace categories.
+ *
+ * @private
+ * @param config - Zpress config
+ * @returns Array of config entries from workspace items
  */
 function collectWorkspaceConfigs(config: ZpressConfig): readonly ConfigEntry[] {
   const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
@@ -184,21 +221,12 @@ function collectWorkspaceConfigs(config: ZpressConfig): readonly ConfigEntry[] {
     .map((ws) => ({ config: ws.openapi }))
 }
 
-// ── Operation extraction ─────────────────────────────────────
-
-const HTTP_METHODS: readonly string[] = [
-  'get',
-  'post',
-  'put',
-  'patch',
-  'delete',
-  'head',
-  'options',
-  'trace',
-]
-
 /**
  * Extract all operations from OpenAPI paths object.
+ *
+ * @private
+ * @param paths - OpenAPI paths object keyed by path string
+ * @returns Flat array of operation info for all HTTP methods
  */
 function extractOperations(
   paths: Record<string, Record<string, unknown>>
@@ -222,10 +250,13 @@ function extractOperations(
   )
 }
 
-// ── Tag grouping ─────────────────────────────────────────────
 
 /**
  * Group operations by their first tag.
+ *
+ * @private
+ * @param operations - Flat array of operation info
+ * @returns Operations grouped by tag name
  */
 function groupByTag(operations: readonly OperationInfo[]): readonly TagGroup[] {
   const grouped = Map.groupBy(operations, (op) =>
@@ -237,10 +268,14 @@ function groupByTag(operations: readonly OperationInfo[]): readonly TagGroup[] {
   return [...grouped.entries()].map(([tag, ops]) => ({ tag, operations: ops }))
 }
 
-// ── Page generation ──────────────────────────────────────────
 
 /**
  * Build an MDX page for a single OpenAPI operation.
+ *
+ * @private
+ * @param op - Operation info (method, path, operationId, summary)
+ * @param prefix - URL prefix for the OpenAPI section
+ * @returns Page data with MDX content importing the spec and rendering the operation
  */
 function buildOperationPage(op: OperationInfo, prefix: string): PageData {
   const slug = slugify(op.operationId)
@@ -273,6 +308,11 @@ function buildOperationPage(op: OperationInfo, prefix: string): PageData {
 
 /**
  * Build an index/overview MDX page for the OpenAPI spec.
+ *
+ * @private
+ * @param title - Display title for the overview page
+ * @param prefix - URL prefix for the OpenAPI section
+ * @returns Page data with MDX content rendering the overview component
  */
 function buildIndexPage(title: string, prefix: string): PageData {
   const outputPath = `${stripLeadingSlash(prefix)}/index.mdx`
@@ -296,10 +336,16 @@ function buildIndexPage(title: string, prefix: string): PageData {
   }
 }
 
-// ── Sidebar generation ───────────────────────────────────────
 
 /**
  * Build sidebar items grouped by tag.
+ *
+ * @private
+ * @param title - Root sidebar item title
+ * @param prefix - URL prefix for linking operations
+ * @param tagGroups - Operations grouped by tag
+ * @param sidebarLayout - Display style for sidebar entries
+ * @returns Sidebar item tree with tag groups as children
  */
 function buildSidebarItems(
   title: string,
@@ -325,7 +371,6 @@ function buildSidebarItems(
   ]
 }
 
-// ── Helpers ──────────────────────────────────────────────────
 
 /**
  * Format sidebar text for an operation based on the configured style.
@@ -334,6 +379,11 @@ function buildSidebarItems(
  *   (`.zp-oas-sidebar-badge--{method}`) and the API path in monospace
  *   (`.zp-oas-sidebar-path`). Rspress renders this via `dangerouslySetInnerHTML`.
  * - `'title'` renders the operation summary as plain text (e.g., "List Users")
+ *
+ * @private
+ * @param op - Operation info with method and summary
+ * @param style - Sidebar display style
+ * @returns Formatted sidebar text string (plain or HTML)
  */
 function formatSidebarText(op: OperationInfo, style: 'method-path' | 'title'): string {
   return match(style)
@@ -349,6 +399,10 @@ function formatSidebarText(op: OperationInfo, style: 'method-path' | 'title'): s
 
 /**
  * Resolve the sidebar title from config, defaulting to 'API Reference'.
+ *
+ * @private
+ * @param config - OpenAPI config with optional title
+ * @returns Resolved title string
  */
 function resolveTitle(config: OpenAPIConfig): string {
   return match(config.title)
@@ -358,6 +412,10 @@ function resolveTitle(config: OpenAPIConfig): string {
 
 /**
  * Strip the leading slash from a path for use as an output path.
+ *
+ * @private
+ * @param p - Path string that may start with '/'
+ * @returns Path without leading slash
  */
 function stripLeadingSlash(p: string): string {
   if (p.startsWith('/')) {

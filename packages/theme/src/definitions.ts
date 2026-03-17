@@ -6,8 +6,6 @@ import { match } from 'ts-pattern'
 
 import type { BuiltInIconColor, BuiltInThemeName, ColorMode } from './types.ts'
 
-// ── Built-in themes ─────────────────────────────────────────
-
 /**
  * All built-in theme names — used for validation and iteration.
  */
@@ -31,8 +29,6 @@ export const ICON_COLORS: readonly BuiltInIconColor[] = [
   'pink',
   'slate',
 ] as const
-
-// ── Theme resolution ────────────────────────────────────────
 
 /**
  * Resolve the default color mode for a given built-in theme.

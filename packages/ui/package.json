@@ -51,10 +51,10 @@
     "@iconify-json/catppuccin": "^1.2.17",
     "@iconify-json/devicon": "^1.2.60",
     "@iconify-json/logos": "^1.2.10",
-    "@iconify-json/material-icon-theme": "^1.2.55",
+    "@iconify-json/material-icon-theme": "^1.2.56",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/pixelarticons": "^1.2.4",
-    "@iconify-json/simple-icons": "^1.2.73",
+    "@iconify-json/simple-icons": "^1.2.74",
     "@iconify-json/skill-icons": "^1.2.4",
     "@iconify-json/vscode-icons": "^1.2.45",
     "@iconify/react": "^6.0.2",
@@ -74,7 +74,8 @@
     "geist": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@rspress/core": "catalog:",

@@ -16,6 +16,9 @@ import type { Template } from './types.ts'
  *
  * const registry = createRegistry().add(adr)
  * ```
+ *
+ * @param options - Template definition including type, label, hint, and body
+ * @returns A new template object
  */
 export function defineTemplate(options: Template): Template {
   return { ...options }

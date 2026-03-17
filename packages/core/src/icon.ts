@@ -1,6 +1,5 @@
 import type { IconConfig as ConfigIconConfig, IconColor as ConfigIconColor } from '@zpress/config'
 
-// Re-export from @zpress/config to maintain backward compatibility
 export type { IconConfig, IconColor } from '@zpress/config'
 
 /**
@@ -21,8 +20,6 @@ export const ICON_COLORS: readonly ConfigIconColor[] = [
   'slate',
 ]
 
-// ── Resolved icon ────────────────────────────────────────────
-
 /**
  * Normalized icon output — always has both `id` and `color`.
  */
@@ -30,8 +27,6 @@ export interface ResolvedIcon {
   readonly id: string
   readonly color: ConfigIconColor
 }
-
-// ── Public API ───────────────────────────────────────────────
 
 /**
  * Normalize an `IconConfig` value into a `ResolvedIcon`.

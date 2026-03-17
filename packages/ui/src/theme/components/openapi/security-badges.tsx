@@ -3,8 +3,6 @@ import { match, P } from 'ts-pattern'
 
 import { LockIcon } from './icons'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface SecurityBadgesProps {
   /**
    * Security requirement objects from the OpenAPI operation.
@@ -13,29 +11,15 @@ export interface SecurityBadgesProps {
   readonly securities: readonly Record<string, unknown>[]
 }
 
-// ── Helpers ──────────────────────────────────────────────────
-
-function formatSchemes(requirement: Record<string, unknown>): string {
-  return Object.entries(requirement)
-    .map(([name, scopes]) => {
-      const scopeSuffix = match(scopes)
-        .with(
-          P.when((s): s is readonly string[] => Array.isArray(s) && s.length > 0),
-          (s) => ` (${s.join(', ')})`
-        )
-        .otherwise(() => '')
-      return `${name}${scopeSuffix}`
-    })
-    .join(' + ')
-}
-
-// ── Component ────────────────────────────────────────────────
 
 /**
  * Renders badges for each security requirement of an operation.
  *
  * Each requirement is an alternative (OR). Schemes within a single
  * requirement are combined (AND). OAuth scopes are shown in parentheses.
+ *
+ * @param props - Security badges props
+ * @returns React element or null if no securities
  */
 export function SecurityBadges({ securities }: SecurityBadgesProps): React.ReactElement | null {
   return match(securities)
@@ -56,4 +40,29 @@ export function SecurityBadges({ securities }: SecurityBadgesProps): React.React
       )
     )
     .otherwise(() => null)
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Format security scheme names with optional OAuth scopes.
+ *
+ * @private
+ * @param requirement - Security requirement object
+ * @returns Formatted scheme string with AND-combined names
+ */
+function formatSchemes(requirement: Record<string, unknown>): string {
+  return Object.entries(requirement)
+    .map(([name, scopes]) => {
+      const scopeSuffix = match(scopes)
+        .with(
+          P.when((s): s is readonly string[] => Array.isArray(s) && s.length > 0),
+          (s) => ` (${s.join(', ')})`
+        )
+        .otherwise(() => '')
+      return `${name}${scopeSuffix}`
+    })
+    .join(' + ')
 }

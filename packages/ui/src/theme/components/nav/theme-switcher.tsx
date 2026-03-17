@@ -35,54 +35,10 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
 const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
 
 /**
- * Validate a stored theme name, rejecting unknown values.
- */
-function sanitizeThemeName(raw: string | null): string {
-  if (!raw) {
-    return 'base'
-  }
-  if (VALID_THEME_NAMES.has(raw)) {
-    return raw
-  }
-  return 'base'
-}
-
-/**
- * Build the className string for a theme option button.
- */
-function optionClassName(isActive: boolean): string {
-  if (isActive) {
-    return 'theme-switcher-option theme-switcher-option--active'
-  }
-  return 'theme-switcher-option'
-}
-
-/**
- * Apply a theme by updating the DOM and persisting to localStorage.
- */
-function applyTheme(theme: ThemeOption): void {
-  const html = document.documentElement
-  html.dataset.zpTheme = theme.name
-  localStorage.setItem('zpress-theme', theme.name)
-
-  html.dataset.zpModes = theme.modes.join(' ')
-
-  if (theme.defaultColorMode === 'dark') {
-    // 'rp-dark' is Rspress's dark mode class; 'dark' is added for Tailwind compatibility
-    html.classList.add('rp-dark', 'dark')
-    html.dataset.dark = 'true'
-    localStorage.setItem('rspress-theme-appearance', 'dark')
-  } else if (theme.defaultColorMode === 'light') {
-    // Remove both Rspress and Tailwind dark mode classes
-    html.classList.remove('rp-dark', 'dark')
-    html.dataset.dark = 'false'
-    localStorage.setItem('rspress-theme-appearance', 'light')
-  }
-}
-
-/**
  * ThemeSwitcher — dropdown button for switching between built-in themes.
  * Only renders when `__ZPRESS_THEME_SWITCHER__` build-time define is true.
+ *
+ * @returns React element or null when theme switching is disabled
  */
 export function ThemeSwitcher(): React.ReactElement | null {
   const [isOpen, setIsOpen] = useState(false)
@@ -164,4 +120,65 @@ export function ThemeSwitcher(): React.ReactElement | null {
       )}
     </div>
   )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Validate a stored theme name, rejecting unknown values.
+ *
+ * @private
+ * @param raw - Raw theme name from localStorage
+ * @returns Sanitized theme name, defaulting to 'base'
+ */
+function sanitizeThemeName(raw: string | null): string {
+  if (!raw) {
+    return 'base'
+  }
+  if (VALID_THEME_NAMES.has(raw)) {
+    return raw
+  }
+  return 'base'
+}
+
+/**
+ * Build the className string for a theme option button.
+ *
+ * @private
+ * @param isActive - Whether this option is the currently active theme
+ * @returns CSS class name string
+ */
+function optionClassName(isActive: boolean): string {
+  if (isActive) {
+    return 'theme-switcher-option theme-switcher-option--active'
+  }
+  return 'theme-switcher-option'
+}
+
+/**
+ * Apply a theme by updating the DOM and persisting to localStorage.
+ *
+ * @private
+ * @param theme - Theme option to apply
+ */
+function applyTheme(theme: ThemeOption): void {
+  const html = document.documentElement
+  html.dataset.zpTheme = theme.name
+  localStorage.setItem('zpress-theme', theme.name)
+
+  html.dataset.zpModes = theme.modes.join(' ')
+
+  if (theme.defaultColorMode === 'dark') {
+    // 'rp-dark' is Rspress's dark mode class; 'dark' is added for Tailwind compatibility
+    html.classList.add('rp-dark', 'dark')
+    html.dataset.dark = 'true'
+    localStorage.setItem('rspress-theme-appearance', 'dark')
+  } else if (theme.defaultColorMode === 'light') {
+    // Remove both Rspress and Tailwind dark mode classes
+    html.classList.remove('rp-dark', 'dark')
+    html.dataset.dark = 'false'
+    localStorage.setItem('rspress-theme-appearance', 'light')
+  }
 }

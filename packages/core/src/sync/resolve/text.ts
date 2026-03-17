@@ -67,9 +67,18 @@ export function kebabToTitle(slug: string): string {
   return words(slug).map(capitalize).join(' ')
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
 /**
  * Derive text from YAML frontmatter `title` field, falling back to first heading,
  * then to filename. Reads the file once and reuses the content for heading extraction.
+ *
+ * @private
+ * @param sourcePath - Absolute path to the markdown file
+ * @param fallbackSlug - Slug to use when no title or heading is found
+ * @returns Derived display text
  */
 async function deriveFromFrontmatter(sourcePath: string, fallbackSlug: string): Promise<string> {
   const content = await fs.readFile(sourcePath, 'utf8')
@@ -83,6 +92,11 @@ async function deriveFromFrontmatter(sourcePath: string, fallbackSlug: string): 
 /**
  * Derive text from the first `# heading` in the file.
  * Falls back to kebab-to-title of the slug when no heading is found.
+ *
+ * @private
+ * @param sourcePath - Absolute path to the markdown file
+ * @param fallbackSlug - Slug to use when no heading is found
+ * @returns Heading text or title-cased slug
  */
 async function deriveFromHeading(sourcePath: string, fallbackSlug: string): Promise<string> {
   const content = await fs.readFile(sourcePath, 'utf8')
@@ -94,6 +108,7 @@ async function deriveFromHeading(sourcePath: string, fallbackSlug: string): Prom
  * Extract the first `# heading` from markdown body content.
  * Falls back to kebab-to-title of the slug when no heading is found.
  *
+ * @private
  * @param body - Markdown content with frontmatter already stripped
  * @param fallbackSlug - Slug to use when no heading is found
  * @returns Heading text or title-cased slug

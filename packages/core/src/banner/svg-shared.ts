@@ -5,8 +5,10 @@
  * zpress banner aesthetic.
  */
 
-// ── Catppuccin Mocha palette ────────────────────────────────
 
+/**
+ * Catppuccin Mocha palette colors used across all generated SVGs.
+ */
 export const COLORS = Object.freeze({
   base: '#1e1e2e',
   mantle: '#181825',
@@ -20,11 +22,12 @@ export const COLORS = Object.freeze({
   brand: '#a78bfa',
 })
 
-// ── Typography ──────────────────────────────────────────────
 
+/**
+ * Monospace font stack used for all SVG text elements.
+ */
 export const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
 
-// ── Dimensions ──────────────────────────────────────────────
 
 /**
  * Approximate pixel width of a single monospace character at font-size 13px.
@@ -71,7 +74,6 @@ export const MIN_BANNER_WIDTH = 600
  */
 export const CONTENT_PADDING = 24
 
-// ── Marker ──────────────────────────────────────────────────
 
 /**
  * Comment placed as the first line of generated SVGs to distinguish
@@ -79,10 +81,12 @@ export const CONTENT_PADDING = 24
  */
 export const GENERATED_MARKER = '<!-- zpress-generated -->'
 
-// ── Helpers ─────────────────────────────────────────────────
 
 /**
  * Escape special XML characters in text content.
+ *
+ * @param text - Raw string to escape for use in SVG/XML text nodes and attributes
+ * @returns String with `&`, `<`, `>`, and `"` replaced by XML entities
  */
 export function escapeXml(text: string): string {
   return text

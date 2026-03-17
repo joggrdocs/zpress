@@ -10,6 +10,10 @@ import type { Template, TemplateVariables } from './types.ts'
  * ```ts
  * const output = render(template, { title: 'Authentication' })
  * ```
+ *
+ * @param template - The template whose body contains `{{key}}` placeholders
+ * @param variables - Key/value map used to replace each placeholder
+ * @returns The rendered string with all placeholders substituted
  */
 export function render(template: Template, variables: TemplateVariables): string {
   return Object.entries(variables).reduce(
@@ -25,6 +29,9 @@ export function render(template: Template, variables: TemplateVariables): string
  * ```ts
  * toSlug('Deploy to Vercel') // 'deploy-to-vercel'
  * ```
+ *
+ * @param title - The human-readable title to convert
+ * @returns A kebab-case slug suitable for use as a filename
  */
 export function toSlug(title: string): string {
   return kebabCase(title)

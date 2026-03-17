@@ -16,6 +16,9 @@ export interface SectionCardProps {
 /**
  * Section card — simple icon + title + description link card
  * used on auto-generated section landing pages.
+ *
+ * @param props - Props with href, title, optional description, icon, and iconColor
+ * @returns React element with a linked section card
  */
 export function SectionCard({
   href,

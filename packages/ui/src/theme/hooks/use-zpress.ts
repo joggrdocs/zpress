@@ -1,8 +1,6 @@
 import { useSite } from '@rspress/core/runtime'
 import type { IconColor } from '@zpress/config'
 
-// ── Sidebar types ───────────────────────────────────────────
-
 export interface ZpressSidebarItem {
   readonly text?: string
   readonly link?: string
@@ -15,8 +13,6 @@ export interface ZpressSidebarLink {
   readonly link: string
   readonly icon?: string | { readonly id: string; readonly color: string }
 }
-
-// ── Workspace types ─────────────────────────────────────────
 
 export interface WorkspaceCardData {
   readonly title: string
@@ -36,16 +32,12 @@ export interface WorkspaceGroupData {
   readonly cards: readonly WorkspaceCardData[]
 }
 
-// ── Theme config ────────────────────────────────────────────
-
 interface ZpressThemeConfig {
   readonly sidebar: Record<string, readonly ZpressSidebarItem[]>
   readonly sidebarAbove: readonly ZpressSidebarLink[] | undefined
   readonly sidebarBelow: readonly ZpressSidebarLink[] | undefined
   readonly workspaces: readonly WorkspaceGroupData[] | undefined
 }
-
-// ── Hook ────────────────────────────────────────────────────
 
 /**
  * Typed wrapper around Rspress `useSite()` that exposes

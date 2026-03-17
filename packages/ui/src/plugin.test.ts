@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { zpressPlugin } from '../src/plugin.ts'
+import { zpressPlugin } from './plugin.ts'
 
 describe('zpressPlugin()', () => {
   it('should return plugin with name zpress', () => {

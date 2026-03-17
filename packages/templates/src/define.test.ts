@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { defineTemplate } from '../src/define'
+import { defineTemplate } from './define'
 
 describe('defineTemplate()', () => {
   it('should return a template with all fields', () => {

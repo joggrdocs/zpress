@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { ICON_COLORS, resolveIcon, resolveOptionalIcon } from '../src/icon'
+import { ICON_COLORS, resolveIcon, resolveOptionalIcon } from './icon'
 
 describe('ICON_COLORS constant', () => {
   it('should have exactly 8 items', () => {

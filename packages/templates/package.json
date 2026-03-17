@@ -18,7 +18,8 @@
     "directory": "packages/templates"
   },
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "type": "module",
   "exports": {
@@ -42,7 +43,8 @@
   },
   "devDependencies": {
     "@rslib/core": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=24.0.0"

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { extractBaseDir, linkToOutputPath, sourceExt } from '../../src/sync/resolve/path'
+import { extractBaseDir, linkToOutputPath, sourceExt } from './resolve/path'
 
 describe('linkToOutputPath()', () => {
   it('should strip leading slash and append .md extension', () => {

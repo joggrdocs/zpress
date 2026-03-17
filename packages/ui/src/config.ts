@@ -17,97 +17,9 @@ interface CreateRspressConfigOptions {
   readonly logLevel?: 'info' | 'warn' | 'error' | 'silent'
 }
 
-/**
- * Load a generated JSON file from the sync engine output, falling back
- * to a default value if the file does not exist yet.
- */
-function loadGenerated<T>(contentDir: string, name: string, fallback: T): T {
-  const p = path.resolve(contentDir, '.generated', name)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
-  if (!existsSync(p)) {
-    process.stderr.write(`[zpress] Generated file not found: ${name} — run "zpress sync" first\n`)
-    return fallback
-  }
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
-  return JSON.parse(readFileSync(p, 'utf8')) as T
-}
-
-/**
- * Detect current git branch at build time — falls back to empty string.
- */
-function detectGitBranch(): string {
-  try {
-    return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8', stdio: 'pipe' }).trim()
-  } catch {
-    return ''
-  }
-}
-
-/**
- * Resolve the theme name from config, defaulting to 'base'.
- */
-function resolveThemeName(config: ZpressConfig): ThemeName {
-  if (config.theme && config.theme.name) {
-    return config.theme.name
-  }
-  return 'base'
-}
-
-/**
- * Resolve the color mode from config, defaulting to the theme's natural mode.
- * For custom themes, defaults to 'toggle'.
- */
-function resolveColorMode(config: ZpressConfig, themeName: ThemeName): string {
-  if (config.theme && config.theme.colorMode) {
-    return config.theme.colorMode
-  }
-  if (isBuiltInTheme(themeName)) {
-    return resolveDefaultColorMode(themeName as BuiltInThemeName)
-  }
-  return 'toggle'
-}
-
-/**
- * Resolve whether the theme switcher is enabled.
- */
-function resolveThemeSwitcher(config: ZpressConfig): boolean {
-  if (config.theme && config.theme.switcher) {
-    return config.theme.switcher
-  }
-  return false
-}
-
-/**
- * Resolve theme color overrides, defaulting to empty object.
- */
-function resolveThemeColors(config: ZpressConfig): ThemeColors {
-  if (config.theme && config.theme.colors) {
-    return config.theme.colors
-  }
-  return {}
-}
-
-/**
- * Resolve dark mode color overrides, defaulting to empty object.
- */
-function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
-  if (config.theme && config.theme.darkColors) {
-    return config.theme.darkColors
-  }
-  return {}
-}
-
-/**
- * Resolve sidebar link items for a given position, defaulting to empty array.
- */
-function resolveSidebarLinks(
-  config: ZpressConfig,
-  position: 'above' | 'below'
-): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
-  if (config.sidebar && config.sidebar[position]) {
-    return config.sidebar[position]
-  }
-  return []
+interface HeadScriptOptions {
+  readonly colorMode: string
+  readonly themeName: string
 }
 
 const COLOR_MODE_DARK_JS = readJs('js/color-mode-dark.js')
@@ -115,43 +27,12 @@ const COLOR_MODE_LIGHT_JS = readJs('js/color-mode-light.js')
 const VSCODE_DETECT_JS = readJs('js/vscode-detect.js')
 const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 
-interface HeadScriptOptions {
-  readonly colorMode: string
-  readonly themeName: string
-}
-
-/**
- * Generate the color mode fragment of the inline head script.
- * Reads from pre-minified JS asset files.
- */
-function buildColorModeJs(colorMode: string): string {
-  if (colorMode === 'dark') {
-    return COLOR_MODE_DARK_JS
-  }
-  if (colorMode === 'light') {
-    return COLOR_MODE_LIGHT_JS
-  }
-  // 'toggle' mode — no forced color mode; Rspress controls the toggle natively
-  return ''
-}
-
-/**
- * Build the raw JS body for the inline head script (no wrapping tags).
- *
- * Handles three concerns synchronously, before React hydration:
- * 1. Force color mode — sets localStorage and toggles rp-dark class
- * 2. Set data-zp-theme — enables theme-scoped CSS immediately
- * 3. Detect vscode env — sets data-zpress-env so static vscode.css applies
- */
-function buildHeadScriptBody(options: HeadScriptOptions): string {
-  const colorModeJs = buildColorModeJs(options.colorMode)
-  const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
-  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join('')
-}
-
 /**
  * Translate zpress config + sync engine output into a complete
  * Rspress configuration object.
+ *
+ * @param options - Config, paths, and optional log level
+ * @returns Complete Rspress UserConfig object
  */
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
   const { config, paths, logLevel } = options
@@ -251,4 +132,173 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       } as Record<string, unknown>),
     },
   }
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Load a generated JSON file from the sync engine output, falling back
+ * to a default value if the file does not exist yet.
+ *
+ * @private
+ * @param contentDir - Path to the content directory
+ * @param name - Name of the generated JSON file
+ * @param fallback - Default value if file is missing
+ * @returns Parsed JSON content or the fallback value
+ */
+function loadGenerated<T>(contentDir: string, name: string, fallback: T): T {
+  const p = path.resolve(contentDir, '.generated', name)
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
+  if (!existsSync(p)) {
+    process.stderr.write(`[zpress] Generated file not found: ${name} — run "zpress sync" first\n`)
+    return fallback
+  }
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
+  return JSON.parse(readFileSync(p, 'utf8')) as T
+}
+
+/**
+ * Detect current git branch at build time — falls back to empty string.
+ *
+ * @private
+ * @returns Current git branch name or empty string
+ */
+function detectGitBranch(): string {
+  try {
+    return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8', stdio: 'pipe' }).trim()
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Resolve the theme name from config, defaulting to 'base'.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns Resolved theme name
+ */
+function resolveThemeName(config: ZpressConfig): ThemeName {
+  if (config.theme && config.theme.name) {
+    return config.theme.name
+  }
+  return 'base'
+}
+
+/**
+ * Resolve the color mode from config, defaulting to the theme's natural mode.
+ * For custom themes, defaults to 'toggle'.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @param themeName - Resolved theme name
+ * @returns Color mode string ('dark', 'light', or 'toggle')
+ */
+function resolveColorMode(config: ZpressConfig, themeName: ThemeName): string {
+  if (config.theme && config.theme.colorMode) {
+    return config.theme.colorMode
+  }
+  if (isBuiltInTheme(themeName)) {
+    return resolveDefaultColorMode(themeName as BuiltInThemeName)
+  }
+  return 'toggle'
+}
+
+/**
+ * Resolve whether the theme switcher is enabled.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns True if the theme switcher is enabled
+ */
+function resolveThemeSwitcher(config: ZpressConfig): boolean {
+  if (config.theme && config.theme.switcher) {
+    return config.theme.switcher
+  }
+  return false
+}
+
+/**
+ * Resolve theme color overrides, defaulting to empty object.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns Theme color overrides
+ */
+function resolveThemeColors(config: ZpressConfig): ThemeColors {
+  if (config.theme && config.theme.colors) {
+    return config.theme.colors
+  }
+  return {}
+}
+
+/**
+ * Resolve dark mode color overrides, defaulting to empty object.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns Dark mode color overrides
+ */
+function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
+  if (config.theme && config.theme.darkColors) {
+    return config.theme.darkColors
+  }
+  return {}
+}
+
+/**
+ * Resolve sidebar link items for a given position, defaulting to empty array.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @param position - Sidebar position ('above' or 'below')
+ * @returns Array of sidebar link items
+ */
+function resolveSidebarLinks(
+  config: ZpressConfig,
+  position: 'above' | 'below'
+): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
+  if (config.sidebar && config.sidebar[position]) {
+    return config.sidebar[position]
+  }
+  return []
+}
+
+/**
+ * Generate the color mode fragment of the inline head script.
+ * Reads from pre-minified JS asset files.
+ *
+ * @private
+ * @param colorMode - Color mode string ('dark', 'light', or 'toggle')
+ * @returns Inline JS string for forcing color mode
+ */
+function buildColorModeJs(colorMode: string): string {
+  if (colorMode === 'dark') {
+    return COLOR_MODE_DARK_JS
+  }
+  if (colorMode === 'light') {
+    return COLOR_MODE_LIGHT_JS
+  }
+  // 'toggle' mode — no forced color mode; Rspress controls the toggle natively
+  return ''
+}
+
+/**
+ * Build the raw JS body for the inline head script (no wrapping tags).
+ *
+ * Handles three concerns synchronously, before React hydration:
+ * 1. Force color mode — sets localStorage and toggles rp-dark class
+ * 2. Set data-zp-theme — enables theme-scoped CSS immediately
+ * 3. Detect vscode env — sets data-zpress-env so static vscode.css applies
+ *
+ * @private
+ * @param options - Color mode and theme name
+ * @returns Concatenated inline JS string
+ */
+function buildHeadScriptBody(options: HeadScriptOptions): string {
+  const colorModeJs = buildColorModeJs(options.colorMode)
+  const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
+  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join('')
 }

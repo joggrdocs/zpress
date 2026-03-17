@@ -34,81 +34,9 @@ const COLOR_VAR_MAP: Record<string, readonly string[]> = {
 }
 
 /**
- * Build a flat list of [cssVar, value] pairs from a color overrides object.
- */
-function resolveColorPairs(colors: Record<string, string>): readonly (readonly [string, string])[] {
-  return Object.entries(colors).flatMap(([key, value]) => {
-    const vars = COLOR_VAR_MAP[key]
-    if (!vars) {
-      return []
-    }
-    return vars.map((cssVar) => [cssVar, value] as const)
-  })
-}
-
-/**
- * Apply a ThemeColors object as inline CSS custom properties on <html>.
- */
-function applyColorOverrides(html: HTMLElement, colors: Record<string, string>): void {
-  const pairs = resolveColorPairs(colors)
-  // oxlint-disable-next-line unicorn/no-array-for-each -- DOM side effect; for-loops also banned
-  pairs.forEach(([cssVar, value]) => {
-    html.style.setProperty(cssVar, value)
-  })
-}
-
-/**
  * Collect all CSS variable names from the color map.
  */
 const ALL_CSS_VARS: readonly string[] = Object.values(COLOR_VAR_MAP).flat()
-
-/**
- * Remove all color overrides previously set as inline styles.
- */
-function clearColorOverrides(html: HTMLElement): void {
-  // oxlint-disable-next-line unicorn/no-array-for-each -- DOM side effect; for-loops also banned
-  ALL_CSS_VARS.forEach((cssVar) => {
-    html.style.removeProperty(cssVar)
-  })
-}
-
-/**
- * Safe localStorage read — returns null if storage is unavailable.
- */
-function safeGetItem(key: string): string | null {
-  try {
-    return localStorage.getItem(key)
-  } catch {
-    return null
-  }
-}
-
-/**
- * Parse a JSON build-time define, returning an empty object on failure.
- */
-function parseColors(raw: string): Record<string, string> {
-  if (!raw || raw === '""' || raw === 'undefined') {
-    return {}
-  }
-  try {
-    return JSON.parse(raw) as Record<string, string>
-  } catch {
-    return {}
-  }
-}
-
-/**
- * useLayoutEffect on the client, useEffect on the server (avoids SSR warning).
- * Ensures DOM mutations happen synchronously before browser paint.
- */
-function getIsomorphicEffect(): typeof useLayoutEffect {
-  if (globalThis.window !== undefined) {
-    return useLayoutEffect
-  }
-  return useEffect
-}
-
-const useIsomorphicLayoutEffect = getIsomorphicEffect()
 
 /**
  * Minimum time (ms) the loading overlay stays visible before fading out.
@@ -121,40 +49,7 @@ const LOADER_MIN_DISPLAY_MS = 150
  */
 const LOADER_FADE_MS = 200
 
-/**
- * Dismiss the loading overlay with a two-phase approach:
- *   1. Add `zp-loader-fade` class → CSS transitions opacity to 0
- *   2. After transition completes → set `data-zp-ready` attribute → CSS hard removes (display: none)
- *
- * Also clears the JS-driven dots animation interval set by loader-dots.js.
- *
- * Returns a cleanup function that cancels pending timers.
- */
-function clearDotsInterval(): void {
-  const dotsInterval = (globalThis as Record<string, unknown>).__zpDotsInterval
-  if (typeof dotsInterval === 'number') {
-    clearInterval(dotsInterval)
-  }
-}
-
-function dismissLoader(html: HTMLElement): () => void {
-  const fadeTimer = setTimeout(() => {
-    html.classList.add('zp-loader-fade')
-  }, LOADER_MIN_DISPLAY_MS)
-
-  const removeTimer = setTimeout(() => {
-    html.dataset.zpReady = 'true'
-    html.classList.remove('zp-loader-fade')
-    clearDotsInterval()
-  }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
-
-  return () => {
-    clearTimeout(fadeTimer)
-    clearTimeout(removeTimer)
-    html.classList.remove('zp-loader-fade')
-    clearDotsInterval()
-  }
-}
+const useIsomorphicLayoutEffect = getIsomorphicEffect()
 
 /**
  * ThemeProvider — global UI component that configures the active theme.
@@ -163,6 +58,8 @@ function dismissLoader(html: HTMLElement): () => void {
  * inline CSS custom property overrides from build-time defines.
  * Sets `data-zp-ready` on <html> to dismiss the loading overlay
  * injected by critical CSS.
+ *
+ * @returns Null element (side-effect only component)
  */
 export function ThemeProvider(): React.ReactElement | null {
   useIsomorphicLayoutEffect(() => {
@@ -249,3 +146,143 @@ export function ThemeProvider(): React.ReactElement | null {
 }
 
 export { ThemeProvider as default }
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a flat list of [cssVar, value] pairs from a color overrides object.
+ *
+ * @private
+ * @param colors - Color key-value overrides
+ * @returns Array of CSS variable/value pairs
+ */
+function resolveColorPairs(colors: Record<string, string>): readonly (readonly [string, string])[] {
+  return Object.entries(colors).flatMap(([key, value]) => {
+    const vars = COLOR_VAR_MAP[key]
+    if (!vars) {
+      return []
+    }
+    return vars.map((cssVar) => [cssVar, value] as const)
+  })
+}
+
+/**
+ * Apply a ThemeColors object as inline CSS custom properties on <html>.
+ *
+ * @private
+ * @param html - HTML document element
+ * @param colors - Color key-value overrides to apply
+ */
+function applyColorOverrides(html: HTMLElement, colors: Record<string, string>): void {
+  const pairs = resolveColorPairs(colors)
+  // oxlint-disable-next-line unicorn/no-array-for-each -- DOM side effect; for-loops also banned
+  pairs.forEach(([cssVar, value]) => {
+    html.style.setProperty(cssVar, value)
+  })
+}
+
+/**
+ * Remove all color overrides previously set as inline styles.
+ *
+ * @private
+ * @param html - HTML document element
+ */
+function clearColorOverrides(html: HTMLElement): void {
+  // oxlint-disable-next-line unicorn/no-array-for-each -- DOM side effect; for-loops also banned
+  ALL_CSS_VARS.forEach((cssVar) => {
+    html.style.removeProperty(cssVar)
+  })
+}
+
+/**
+ * Safe localStorage read — returns null if storage is unavailable.
+ *
+ * @private
+ * @param key - localStorage key to read
+ * @returns Stored value or null
+ */
+function safeGetItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Parse a JSON build-time define, returning an empty object on failure.
+ *
+ * @private
+ * @param raw - Raw JSON string from build-time define
+ * @returns Parsed color overrides object
+ */
+function parseColors(raw: string): Record<string, string> {
+  if (!raw || raw === '""' || raw === 'undefined') {
+    return {}
+  }
+  try {
+    return JSON.parse(raw) as Record<string, string>
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * useLayoutEffect on the client, useEffect on the server (avoids SSR warning).
+ * Ensures DOM mutations happen synchronously before browser paint.
+ *
+ * @private
+ * @returns The appropriate effect hook for the current environment
+ */
+function getIsomorphicEffect(): typeof useLayoutEffect {
+  if (globalThis.window !== undefined) {
+    return useLayoutEffect
+  }
+  return useEffect
+}
+
+/**
+ * Clear the JS-driven dots animation interval set by loader-dots.js.
+ *
+ * @private
+ */
+function clearDotsInterval(): void {
+  const dotsInterval = (globalThis as Record<string, unknown>).__zpDotsInterval
+  if (typeof dotsInterval === 'number') {
+    clearInterval(dotsInterval)
+  }
+}
+
+/**
+ * Dismiss the loading overlay with a two-phase approach:
+ *   1. Add `zp-loader-fade` class — CSS transitions opacity to 0
+ *   2. After transition completes — set `data-zp-ready` attribute — CSS hard removes (display: none)
+ *
+ * Also clears the JS-driven dots animation interval set by loader-dots.js.
+ *
+ * Returns a cleanup function that cancels pending timers.
+ *
+ * @private
+ * @param html - HTML document element
+ * @returns Cleanup function that cancels pending timers
+ */
+function dismissLoader(html: HTMLElement): () => void {
+  const fadeTimer = setTimeout(() => {
+    html.classList.add('zp-loader-fade')
+  }, LOADER_MIN_DISPLAY_MS)
+
+  const removeTimer = setTimeout(() => {
+    html.dataset.zpReady = 'true'
+    html.classList.remove('zp-loader-fade')
+    clearDotsInterval()
+  }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
+
+  return () => {
+    clearTimeout(fadeTimer)
+    clearTimeout(removeTimer)
+    html.classList.remove('zp-loader-fade')
+    clearDotsInterval()
+  }
+}

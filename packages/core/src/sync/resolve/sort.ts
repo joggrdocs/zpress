@@ -4,25 +4,6 @@ import type { ResolvedPage } from '../../types.ts'
 import type { ResolvedEntry } from '../types.ts'
 
 /**
- * Sections (entries with items) sort before leaf pages.
- */
-function sectionFirst(a: ResolvedEntry, b: ResolvedEntry): number {
-  const aIsSection = (() => {
-    if (a.items !== null && a.items !== undefined && a.items.length > 0) {
-      return 0
-    }
-    return 1
-  })()
-  const bIsSection = (() => {
-    if (b.items !== null && b.items !== undefined && b.items.length > 0) {
-      return 0
-    }
-    return 1
-  })()
-  return aIsSection - bIsSection
-}
-
-/**
  * Sort resolved entries using the specified strategy.
  *
  * Sections (entries with children) always sort before leaf pages.
@@ -64,6 +45,41 @@ export function sortEntries(
     )
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Sections (entries with items) sort before leaf pages.
+ *
+ * @private
+ * @param a - First entry to compare
+ * @param b - Second entry to compare
+ * @returns Negative if a is a section, positive if b is, zero if equal
+ */
+function sectionFirst(a: ResolvedEntry, b: ResolvedEntry): number {
+  const aIsSection = (() => {
+    if (a.items !== null && a.items !== undefined && a.items.length > 0) {
+      return 0
+    }
+    return 1
+  })()
+  const bIsSection = (() => {
+    if (b.items !== null && b.items !== undefined && b.items.length > 0) {
+      return 0
+    }
+    return 1
+  })()
+  return aIsSection - bIsSection
+}
+
+/**
+ * Convert a ResolvedEntry to a ResolvedPage for custom sort comparators.
+ *
+ * @private
+ * @param entry - Resolved entry to convert
+ * @returns Resolved page shape with title, link, source, and frontmatter
+ */
 function toResolvedPage(entry: ResolvedEntry): ResolvedPage {
   const source = (() => {
     if (entry.page) {

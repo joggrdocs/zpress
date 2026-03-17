@@ -12,8 +12,6 @@ import { ResponseList } from './response-list'
 import { SecurityBadges } from './security-badges'
 import { resolveBaseUrl, resolveOperation, resolveSecurities } from './spec-utils'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface OpenAPIOperationProps {
   /**
    * Parsed OpenAPI spec object.
@@ -33,70 +31,15 @@ export interface OpenAPIOperationProps {
   readonly operationId: string
 }
 
-// ── Sub-components ───────────────────────────────────────────
-
-function OperationHeader({
-  method,
-  path,
-  operationId,
-  summary,
-  deprecated,
-}: {
-  readonly method: string
-  readonly path: string
-  readonly operationId: string
-  readonly summary: string | undefined
-  readonly deprecated: boolean
-}): React.ReactElement {
-  const summaryEl = match(summary)
-    .with(P.nonNullable, (s) => <div className="zp-oas-operation-summary">{s}</div>)
-    .otherwise(() => null)
-
-  const deprecatedEl = match(deprecated)
-    .with(true, () => <span className="zp-oas-operation-deprecated">Deprecated</span>)
-    .otherwise(() => null)
-
-  return (
-    <div>
-      <div className="zp-oas-operation-header">
-        <MethodBadge method={method} />
-        <span className="zp-oas-operation-header__path">{path}</span>
-        {deprecatedEl}
-      </div>
-      <div className="zp-oas-operation-header__id">{operationId}</div>
-      {summaryEl}
-    </div>
-  )
-}
-
-function NotFound({
-  method,
-  path,
-}: {
-  readonly method: string
-  readonly path: string
-}): React.ReactElement {
-  return (
-    <div className="zp-oas-operation">
-      <div className="zp-oas-operation-spec">
-        <div className="zp-oas-operation-header">
-          <MethodBadge method={method} />
-          <span className="zp-oas-operation-header__path">{path}</span>
-        </div>
-        <div className="zp-oas-operation-summary">Operation not found in the provided spec.</div>
-      </div>
-    </div>
-  )
-}
-
-// ── Component ────────────────────────────────────────────────
-
 /**
  * Main OpenAPI operation page component.
  *
  * Two-column layout: left column shows spec details (header,
  * parameters, request body, responses, security), right column
  * shows auto-generated code examples.
+ *
+ * @param props - Operation props with spec, method, path, and operationId
+ * @returns React element with operation details and code examples
  */
 export function OpenAPIOperation({
   spec,
@@ -185,4 +128,76 @@ export function OpenAPIOperation({
       )
     })
     .otherwise(() => <NotFound method={method} path={path} />)
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Render the operation header with method badge, path, and optional deprecation tag.
+ *
+ * @private
+ * @param props - Header props including method, path, operationId, summary, and deprecated flag
+ * @returns Header element
+ */
+function OperationHeader({
+  method,
+  path,
+  operationId,
+  summary,
+  deprecated,
+}: {
+  readonly method: string
+  readonly path: string
+  readonly operationId: string
+  readonly summary: string | undefined
+  readonly deprecated: boolean
+}): React.ReactElement {
+  const summaryEl = match(summary)
+    .with(P.nonNullable, (s) => <div className="zp-oas-operation-summary">{s}</div>)
+    .otherwise(() => null)
+
+  const deprecatedEl = match(deprecated)
+    .with(true, () => <span className="zp-oas-operation-deprecated">Deprecated</span>)
+    .otherwise(() => null)
+
+  return (
+    <div>
+      <div className="zp-oas-operation-header">
+        <MethodBadge method={method} />
+        <span className="zp-oas-operation-header__path">{path}</span>
+        {deprecatedEl}
+      </div>
+      <div className="zp-oas-operation-header__id">{operationId}</div>
+      {summaryEl}
+    </div>
+  )
+}
+
+/**
+ * Render a fallback when the operation is not found in the spec.
+ *
+ * @private
+ * @param props - Props with method and path
+ * @returns Not-found element
+ */
+function NotFound({
+  method,
+  path,
+}: {
+  readonly method: string
+  readonly path: string
+}): React.ReactElement {
+  return (
+    <div className="zp-oas-operation">
+      <div className="zp-oas-operation-spec">
+        <div className="zp-oas-operation-header">
+          <MethodBadge method={method} />
+          <span className="zp-oas-operation-header__path">{path}</span>
+        </div>
+        <div className="zp-oas-operation-summary">Operation not found in the provided spec.</div>
+      </div>
+    </div>
+  )
 }

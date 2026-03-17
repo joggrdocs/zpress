@@ -6,34 +6,11 @@ import { Icon } from '../shared/icon'
 import { FeatureCard, FeatureGrid } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
-// ── Helpers ──────────────────────────────────────────────────
-
-/**
- * Render a single feature as a FeatureCard element.
- * Accepts the array index from `.map()` to guarantee unique keys.
- */
-function renderFeature(feature: FeatureItem, index: number): React.ReactElement {
-  const iconEl = match(feature.icon)
-    .with(P.nonNullable, (iconId) => <Icon icon={iconId} />)
-    .otherwise(() => null)
-
-  return (
-    <FeatureCard
-      key={`${feature.title}-${index}`}
-      title={feature.title}
-      description={feature.details}
-      href={feature.link}
-      icon={iconEl}
-      iconColor={feature.iconColor}
-    />
-  )
-}
-
-// ── Component ────────────────────────────────────────────────
-
 /**
  * Custom HomeFeature override for zpress.
  * Uses useFrontmatter() hook to read features and renders with FeatureCard/FeatureGrid styling.
+ *
+ * @returns React element with feature grid or null
  */
 export function HomeFeature(): React.ReactElement | null {
   const { frontmatter } = useFrontmatter()
@@ -50,4 +27,34 @@ export function HomeFeature(): React.ReactElement | null {
       (items) => <FeatureGrid>{items.map(renderFeature)}</FeatureGrid>
     )
     .otherwise(() => null)
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Render a single feature as a FeatureCard element.
+ * Accepts the array index from `.map()` to guarantee unique keys.
+ *
+ * @private
+ * @param feature - Feature item data
+ * @param index - Array index for key generation
+ * @returns Feature card element
+ */
+function renderFeature(feature: FeatureItem, index: number): React.ReactElement {
+  const iconEl = match(feature.icon)
+    .with(P.nonNullable, (iconId) => <Icon icon={iconId} />)
+    .otherwise(() => null)
+
+  return (
+    <FeatureCard
+      key={`${feature.title}-${index}`}
+      title={feature.title}
+      description={feature.details}
+      href={feature.link}
+      icon={iconEl}
+      iconColor={feature.iconColor}
+    />
+  )
 }

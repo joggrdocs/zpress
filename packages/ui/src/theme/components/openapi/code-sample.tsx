@@ -5,8 +5,6 @@ import { match, P } from 'ts-pattern'
 
 import { extractBodyExample, isBodyMethod } from './spec-utils'
 
-// ── Types ────────────────────────────────────────────────────
-
 export interface CodeSampleProps {
   /**
    * HTTP method (get, post, etc.).
@@ -30,14 +28,90 @@ export interface CodeSampleProps {
   readonly requestBody?: Record<string, unknown>
 }
 
-// ── Helpers ──────────────────────────────────────────────────
+interface TabConfig {
+  readonly label: string
+  readonly lang: string
+  readonly generator: (props: CodeSampleProps) => string
+}
 
+const TABS: readonly TabConfig[] = [
+  { label: 'cURL', lang: 'bash', generator: generateCurl },
+  { label: 'JavaScript', lang: 'javascript', generator: generateJavascript },
+  { label: 'Python', lang: 'python', generator: generatePython },
+  { label: 'Go', lang: 'go', generator: generateGo },
+  { label: 'Ruby', lang: 'ruby', generator: generateRuby },
+  { label: 'Java', lang: 'java', generator: generateJava },
+]
+
+/**
+ * Auto-generated code examples for an API operation.
+ *
+ * Renders cURL, JavaScript, Python, Go, Ruby, and Java code
+ * using Rspress's CodeBlockRuntime for full syntax highlighting.
+ *
+ * @param props - Code sample props including method, path, baseUrl, and optional body
+ * @returns React element with tabbed code examples
+ */
+export function CodeSample(props: CodeSampleProps): React.ReactElement {
+  const [activeTab, setActiveTab] = useState<string>('cURL')
+
+  const activeConfig = TABS.find((tab) => tab.label === activeTab)
+  const resolved = match(activeConfig)
+    .with(P.nonNullable, (config) => ({
+      code: config.generator(props),
+      lang: config.lang,
+    }))
+    .otherwise(() => ({ code: generateCurl(props), lang: 'bash' }))
+
+  return (
+    <div className="zp-oas-code-sample">
+      <div className="zp-oas-code-sample__title">Code Examples</div>
+      <div className="zp-oas-code-sample__tabs">
+        {TABS.map((tab) => (
+          <button
+            key={tab.label}
+            type="button"
+            className={match(activeTab === tab.label)
+              .with(true, () => 'zp-oas-code-sample__tab zp-oas-code-sample__tab--active')
+              .otherwise(() => 'zp-oas-code-sample__tab')}
+            onClick={() => {
+              setActiveTab(tab.label)
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div className="zp-oas-code-sample__block">
+        <CodeBlockRuntime lang={resolved.lang} code={resolved.code} />
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a full URL from base URL and path.
+ *
+ * @private
+ * @param baseUrl - API base URL
+ * @param urlPath - URL path template
+ * @returns Full URL string
+ */
 function buildUrl(baseUrl: string, urlPath: string): string {
   return `${baseUrl}${urlPath}`
 }
 
-// ── Language generators ──────────────────────────────────────
-
+/**
+ * Generate a cURL code example for the operation.
+ *
+ * @private
+ * @param props - Code sample props
+ * @returns cURL command string
+ */
 function generateCurl(props: CodeSampleProps): string {
   const url = buildUrl(props.baseUrl, props.path)
   const method = props.method.toUpperCase()
@@ -50,6 +124,13 @@ function generateCurl(props: CodeSampleProps): string {
   return `curl -X ${method} '${url}'${headers}${body}`
 }
 
+/**
+ * Generate a Python requests code example for the operation.
+ *
+ * @private
+ * @param props - Code sample props
+ * @returns Python code string
+ */
 function generatePython(props: CodeSampleProps): string {
   const url = buildUrl(props.baseUrl, props.path)
   const method = props.method.toLowerCase()
@@ -76,6 +157,13 @@ function generatePython(props: CodeSampleProps): string {
   ].join('\n')
 }
 
+/**
+ * Generate a JavaScript fetch code example for the operation.
+ *
+ * @private
+ * @param props - Code sample props
+ * @returns JavaScript code string
+ */
 function generateJavascript(props: CodeSampleProps): string {
   const url = buildUrl(props.baseUrl, props.path)
   const method = props.method.toUpperCase()
@@ -100,6 +188,13 @@ function generateJavascript(props: CodeSampleProps): string {
   ].join('\n')
 }
 
+/**
+ * Generate a Go net/http code example for the operation.
+ *
+ * @private
+ * @param props - Code sample props
+ * @returns Go code string
+ */
 function generateGo(props: CodeSampleProps): string {
   const url = buildUrl(props.baseUrl, props.path)
   const method = props.method.toUpperCase()
@@ -157,6 +252,13 @@ function generateGo(props: CodeSampleProps): string {
   ].join('\n')
 }
 
+/**
+ * Generate a Ruby net/http code example for the operation.
+ *
+ * @private
+ * @param props - Code sample props
+ * @returns Ruby code string
+ */
 function generateRuby(props: CodeSampleProps): string {
   const url = buildUrl(props.baseUrl, props.path)
   const method = props.method.toLowerCase()
@@ -195,6 +297,13 @@ function generateRuby(props: CodeSampleProps): string {
   ].join('\n')
 }
 
+/**
+ * Generate a Java HttpClient code example for the operation.
+ *
+ * @private
+ * @param props - Code sample props
+ * @returns Java code string
+ */
 function generateJava(props: CodeSampleProps): string {
   const url = buildUrl(props.baseUrl, props.path)
   const method = props.method.toUpperCase()
@@ -230,66 +339,4 @@ function generateJava(props: CodeSampleProps): string {
     '',
     'System.out.println(response.body());',
   ].join('\n')
-}
-
-// ── Tab config ───────────────────────────────────────────────
-
-interface TabConfig {
-  readonly label: string
-  readonly lang: string
-  readonly generator: (props: CodeSampleProps) => string
-}
-
-const TABS: readonly TabConfig[] = [
-  { label: 'cURL', lang: 'bash', generator: generateCurl },
-  { label: 'JavaScript', lang: 'javascript', generator: generateJavascript },
-  { label: 'Python', lang: 'python', generator: generatePython },
-  { label: 'Go', lang: 'go', generator: generateGo },
-  { label: 'Ruby', lang: 'ruby', generator: generateRuby },
-  { label: 'Java', lang: 'java', generator: generateJava },
-]
-
-// ── Component ────────────────────────────────────────────────
-
-/**
- * Auto-generated code examples for an API operation.
- *
- * Renders cURL, JavaScript, Python, Go, Ruby, and Java code
- * using Rspress's CodeBlockRuntime for full syntax highlighting.
- */
-export function CodeSample(props: CodeSampleProps): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<string>('cURL')
-
-  const activeConfig = TABS.find((tab) => tab.label === activeTab)
-  const resolved = match(activeConfig)
-    .with(P.nonNullable, (config) => ({
-      code: config.generator(props),
-      lang: config.lang,
-    }))
-    .otherwise(() => ({ code: generateCurl(props), lang: 'bash' }))
-
-  return (
-    <div className="zp-oas-code-sample">
-      <div className="zp-oas-code-sample__title">Code Examples</div>
-      <div className="zp-oas-code-sample__tabs">
-        {TABS.map((tab) => (
-          <button
-            key={tab.label}
-            type="button"
-            className={match(activeTab === tab.label)
-              .with(true, () => 'zp-oas-code-sample__tab zp-oas-code-sample__tab--active')
-              .otherwise(() => 'zp-oas-code-sample__tab')}
-            onClick={() => {
-              setActiveTab(tab.label)
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      <div className="zp-oas-code-sample__block">
-        <CodeBlockRuntime lang={resolved.lang} code={resolved.code} />
-      </div>
-    </div>
-  )
 }

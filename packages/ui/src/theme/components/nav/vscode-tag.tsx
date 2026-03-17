@@ -7,6 +7,8 @@ import { Icon } from '../shared/icon.tsx'
  * VS Code mode indicator — pill-shaped badge rendered next to the
  * BranchTag when the page is loaded inside the VS Code webview
  * (detected via `?env=vscode` query parameter).
+ *
+ * @returns React element with the VS Code badge
  */
 export function VscodeTag(): React.ReactElement {
   return (

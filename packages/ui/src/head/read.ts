@@ -11,6 +11,42 @@ interface AssetError {
 type AssetResult = readonly [AssetError, null] | readonly [null, string]
 
 /**
+ * Read a CSS file from the head asset directory.
+ * Files are pre-minified at build time by scripts/minify-head.mjs.
+ *
+ * @param relativePath - Path relative to the head asset directory
+ * @returns CSS content string, or empty string on error
+ */
+export function readCss(relativePath: string): string {
+  const [error, content] = readAsset(relativePath)
+  if (error) {
+    process.stderr.write(`[zpress] ${error.message}\n`)
+    return ''
+  }
+  return content
+}
+
+/**
+ * Read a JS file from the head asset directory.
+ * Files are pre-minified at build time by scripts/minify-head.mjs.
+ *
+ * @param relativePath - Path relative to the head asset directory
+ * @returns JS content string, or empty string on error
+ */
+export function readJs(relativePath: string): string {
+  const [error, content] = readAsset(relativePath)
+  if (error) {
+    process.stderr.write(`[zpress] ${error.message}\n`)
+    return ''
+  }
+  return content
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
  * Resolve path relative to dist/head/.
  *
  * After Rslib bundles this into dist/index.mjs, import.meta.dirname
@@ -20,6 +56,10 @@ type AssetResult = readonly [AssetError, null] | readonly [null, string]
  * Assumption: this module must be loaded from a filesystem-backed ESM
  * context. If re-bundled by a downstream tool, import.meta.dirname may
  * be rewritten to a virtual path and resolution will fail.
+ *
+ * @private
+ * @param relativePath - Path relative to the head asset directory
+ * @returns Absolute resolved path
  */
 function resolveAsset(relativePath: string): string {
   return path.resolve(import.meta.dirname, 'head', relativePath)
@@ -30,6 +70,10 @@ function resolveAsset(relativePath: string): string {
  *
  * Returns a Result tuple: [null, content] on success, [AssetError, null]
  * if the asset is missing (e.g. postbuild has not run).
+ *
+ * @private
+ * @param relativePath - Path relative to the head asset directory
+ * @returns Result tuple with content string or AssetError
  */
 function readAsset(relativePath: string): AssetResult {
   const fullPath = resolveAsset(relativePath)
@@ -46,30 +90,4 @@ function readAsset(relativePath: string): AssetResult {
     }
     return [error, null]
   }
-}
-
-/**
- * Read a CSS file from the head asset directory.
- * Files are pre-minified at build time by scripts/minify-head.mjs.
- */
-export function readCss(relativePath: string): string {
-  const [error, content] = readAsset(relativePath)
-  if (error) {
-    process.stderr.write(`[zpress] ${error.message}\n`)
-    return ''
-  }
-  return content
-}
-
-/**
- * Read a JS file from the head asset directory.
- * Files are pre-minified at build time by scripts/minify-head.mjs.
- */
-export function readJs(relativePath: string): string {
-  const [error, content] = readAsset(relativePath)
-  if (error) {
-    process.stderr.write(`[zpress] ${error.message}\n`)
-    return ''
-  }
-  return content
 }

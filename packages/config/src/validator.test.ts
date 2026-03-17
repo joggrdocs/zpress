@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { defineConfig } from '../src/define-config.ts'
-import { validateConfig } from '../src/validator.ts'
+import { defineConfig } from './define-config.ts'
+import { validateConfig } from './validator.ts'
 
 const validConfig = {
   sections: [{ title: 'Test', link: '/test', from: 'test.md' }],

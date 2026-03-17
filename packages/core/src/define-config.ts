@@ -95,8 +95,16 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
   return [null, config]
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
 /**
  * Validate workspaces (apps and packages).
+ *
+ * @private
+ * @param items - Workspace items to validate
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
   const prefixError = items.reduce<{ error: ConfigError | null; seen: ReadonlySet<string> }>(
@@ -169,6 +177,10 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
 
 /**
  * Validate workspace categories have required fields and non-empty items.
+ *
+ * @private
+ * @param categories - Workspace categories to validate
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): ConfigResult<true> {
   const categoryError = categories.reduce<ConfigError | null>((acc, category) => {
@@ -220,6 +232,10 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
 
 /**
  * Validate a single section node (recursive).
+ *
+ * @private
+ * @param section - Section config node to validate
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateSection(section: Section): ConfigResult<true> {
   // Get the title string for error messages
@@ -328,6 +344,10 @@ function validateSection(section: Section): ConfigResult<true> {
 /**
  * Validate explicit features when provided.
  * Each feature must have `title` and `description`.
+ *
+ * @private
+ * @param features - Optional features array from config
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateFeatures(features: ZpressConfig['features']): ConfigResult<true> {
   if (features === undefined) {
@@ -349,6 +369,10 @@ function validateFeatures(features: ZpressConfig['features']): ConfigResult<true
 
 /**
  * Validate a single feature has required fields and valid icon format.
+ *
+ * @private
+ * @param feature - Feature object to validate
+ * @returns `ConfigError` on failure or `null` on success
  */
 function validateFeature(feature: Feature): ConfigError | null {
   // title is inherited from Entry base
@@ -386,6 +410,11 @@ function validateFeature(feature: Feature): ConfigError | null {
 /**
  * Validate an IconConfig value (string or object form).
  * String form must contain `:`. Object form must have `id` with `:`.
+ *
+ * @private
+ * @param icon - Icon config value to validate
+ * @param context - Label for error messages
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateIconConfig(icon: IconConfig | undefined, context: string): ConfigResult<true> {
   if (icon === undefined) {
@@ -422,9 +451,10 @@ function validateIconConfig(icon: IconConfig | undefined, context: string): Conf
 /**
  * Validate a single OpenAPI config.
  *
+ * @private
  * @param openapi - OpenAPI config to validate
  * @param context - Label for error messages
- * @returns A `ConfigResult` tuple
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<true> {
   if (!openapi.spec || openapi.spec.length === 0) {
@@ -454,9 +484,10 @@ function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<
  * Validate all OpenAPI configs from root and workspace items.
  * Ensures no duplicate prefixes and workspace-level prefixes are scoped correctly.
  *
+ * @private
  * @param rootOpenapi - Root-level OpenAPI config (if any)
  * @param workspaces - All workspace items
- * @returns A `ConfigResult` tuple
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateAllOpenAPI(
   rootOpenapi: OpenAPIConfig | undefined,
@@ -549,6 +580,11 @@ function validateAllOpenAPI(
 
 /**
  * Validate a single ThemeColors object.
+ *
+ * @private
+ * @param colors - Theme colors object to validate
+ * @param label - Label for error messages (e.g. 'colors' or 'darkColors')
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<true> {
   const colorPattern = /^(?:#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgba?\([^)]*\))$/
@@ -591,6 +627,10 @@ function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<t
 
 /**
  * Validate theme configuration when provided.
+ *
+ * @private
+ * @param theme - Optional theme config to validate
+ * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateTheme(theme: ThemeConfig | undefined): ConfigResult<true> {
   if (theme === undefined) {

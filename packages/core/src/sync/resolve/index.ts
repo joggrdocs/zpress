@@ -48,8 +48,19 @@ export async function resolveEntries(
   return [null, [...collected]]
 }
 
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
 /**
  * Resolve a single section node — dispatches to leaf, virtual, or nested section handler.
+ *
+ * @private
+ * @param section - Section config node to resolve
+ * @param ctx - Sync context
+ * @param inheritedFrontmatter - Frontmatter inherited from parent
+ * @param depth - Current nesting depth
+ * @returns Sync outcome tuple with resolved entry or error
  */
 function resolveSection(
   section: Section,
@@ -75,6 +86,12 @@ function resolveSection(
 
 /**
  * Resolve a leaf page backed by a single source file.
+ *
+ * @private
+ * @param section - Section config with `from` pointing to a file
+ * @param ctx - Sync context
+ * @param frontmatter - Merged frontmatter for the page
+ * @returns Sync outcome with resolved entry or error
  */
 function resolveFilePage(
   section: Section,
@@ -117,6 +134,11 @@ function resolveFilePage(
 
 /**
  * Resolve a virtual page with inline or generated content.
+ *
+ * @private
+ * @param section - Section config with `content` field
+ * @param frontmatter - Merged frontmatter for the page
+ * @returns Sync outcome with resolved entry or error
  */
 function resolveVirtualPage(
   section: Section,
@@ -145,6 +167,13 @@ function resolveVirtualPage(
 /**
  * Resolve a nested section — may include glob-discovered children,
  * explicit children, or both. Deduplicates and sorts the result.
+ *
+ * @private
+ * @param section - Section config node with potential children
+ * @param ctx - Sync context
+ * @param mergedFm - Merged frontmatter
+ * @param depth - Current nesting depth
+ * @returns Sync outcome with resolved entry containing children
  */
 async function resolveNestedSection(
   section: Section,
@@ -216,6 +245,12 @@ async function resolveNestedSection(
 
 /**
  * Resolve the section header page (if the section has a `link` and a non-glob `from`).
+ *
+ * @private
+ * @param section - Section config
+ * @param ctx - Sync context
+ * @param mergedFm - Merged frontmatter
+ * @returns Page data for the section header, or undefined
  */
 function resolveSectionPage(
   section: Section,
@@ -256,6 +291,12 @@ function resolveSectionPage(
 
 /**
  * Resolve a non-recursive glob pattern into leaf page entries.
+ *
+ * @private
+ * @param section - Section config with glob `from` pattern
+ * @param ctx - Sync context
+ * @param frontmatter - Frontmatter to apply to discovered pages
+ * @returns Array of resolved entries for each matching file
  */
 async function resolveGlob(
   section: Section,
@@ -336,6 +377,10 @@ async function resolveGlob(
  * Given children with links like `/a/b/c`, `/a/b/d`, `/a/b/e`,
  * returns `/a/b`. Returns `undefined` when no common prefix exists
  * or there are no children with links.
+ *
+ * @private
+ * @param children - Child entries to derive common prefix from
+ * @returns Common link prefix, or undefined
  */
 function deriveCommonPrefix(children: readonly ResolvedEntry[]): string | undefined {
   const links = children.filter((c) => c.link).map((c) => c.link as string)
@@ -372,6 +417,10 @@ function deriveCommonPrefix(children: readonly ResolvedEntry[]): string | undefi
  *
  * Uses `link` as the dedup key when present. Entries without a link are never
  * considered duplicates — they always pass through (sections with only `text`).
+ *
+ * @private
+ * @param entries - Entries to deduplicate
+ * @returns Deduplicated entries with later entries winning over earlier ones
  */
 function deduplicateByLink(entries: readonly ResolvedEntry[]): ResolvedEntry[] {
   const { result } = entries.reduce<{ seen: Map<string, number>; result: ResolvedEntry[] }>(

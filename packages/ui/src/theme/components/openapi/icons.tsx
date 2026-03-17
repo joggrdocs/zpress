@@ -2,6 +2,8 @@ import type React from 'react'
 
 /**
  * SVG lock icon for authentication badges.
+ *
+ * @returns React element with lock SVG
  */
 export function LockIcon(): React.ReactElement {
   return (
@@ -22,6 +24,9 @@ export function LockIcon(): React.ReactElement {
 
 /**
  * SVG chevron icon for expandable sections.
+ *
+ * @param props - Props with an optional className to apply to the SVG
+ * @returns React element with chevron SVG
  */
 export function ChevronIcon({ className }: { readonly className?: string }): React.ReactElement {
   return (

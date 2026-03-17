@@ -9,6 +9,8 @@ import { WorkspaceGrid } from '../workspaces/grid'
 /**
  * Smart orchestrator that reads workspace data from themeConfig
  * and renders workspace groups with the correct card component per type.
+ *
+ * @returns React element with workspace groups or null
  */
 export function HomeWorkspaces(): React.ReactElement | null {
   const { workspaces } = useZpress()
@@ -26,11 +28,16 @@ export function HomeWorkspaces(): React.ReactElement | null {
     .otherwise(() => null)
 }
 
-// ── Helpers ──────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
 
 /**
- * Render a single workspace group.
+ * Render a single workspace group with its cards.
+ *
  * @private
+ * @param group - Workspace group data with heading, description, and cards
+ * @returns Workspace grid element
  */
 function renderGroup(group: WorkspaceGroupData): React.ReactElement {
   return (

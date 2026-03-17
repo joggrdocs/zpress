@@ -10,10 +10,6 @@ import vscodeIcons from '@iconify-json/vscode-icons/icons.json' with { type: 'js
 import { addCollection, Icon } from '@iconify/react'
 
 // Register all icon collections for offline Iconify resolution
-function cast(v: unknown): Parameters<typeof addCollection>[0] {
-  return v as Parameters<typeof addCollection>[0]
-}
-
 export const pixelarticonsLoaded = addCollection(cast(pixelarticons))
 export const deviconLoaded = addCollection(cast(devicon))
 export const mdiLoaded = addCollection(cast(mdi))
@@ -25,3 +21,18 @@ export const vscodeIconsLoaded = addCollection(cast(vscodeIcons))
 export const materialIconThemeLoaded = addCollection(cast(materialIconTheme))
 
 export { Icon }
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Cast an icon JSON import to the type expected by `addCollection`.
+ *
+ * @private
+ * @param v - Raw icon JSON import
+ * @returns Value cast to the addCollection parameter type
+ */
+function cast(v: unknown): Parameters<typeof addCollection>[0] {
+  return v as Parameters<typeof addCollection>[0]
+}

@@ -18,17 +18,6 @@ import { z } from 'zod/v3'
 
 import type { CardConfig, Frontmatter, NavItem, ResolvedPage, Section } from './types.ts'
 
-// ── Helpers ──────────────────────────────────────────────────
-
-/**
- * Runtime check for function values. Used by z.custom<T> to validate
- * function-typed config fields while preserving their exact TypeScript signature.
- */
-function isFunction(val: unknown): boolean {
-  return typeof val === 'function'
-}
-
-// ── Typed function schemas ───────────────────────────────────
 // z.function() infers to (...args: unknown[]) => unknown, which loses
 // parameter and return types. z.custom<T> preserves exact signatures
 // while still validating typeof === 'function' at runtime.
@@ -37,7 +26,6 @@ const titleTransformSchema = z.custom<(text: string, slug: string) => string>(is
 const sortFnSchema = z.custom<(a: ResolvedPage, b: ResolvedPage) => number>(isFunction)
 const contentFnSchema = z.custom<() => string | Promise<string>>(isFunction)
 
-// ── Frontmatter schema ───────────────────────────────────────
 
 const frontmatterSchema = z
   .object({
@@ -59,7 +47,6 @@ const frontmatterSchema = z
   })
   .passthrough() // Allow additional unknown fields
 
-// ── Nav schema ───────────────────────────────────────────────
 
 const navItemSchema: z.ZodType<NavItem> = z.lazy(() =>
   z
@@ -72,7 +59,6 @@ const navItemSchema: z.ZodType<NavItem> = z.lazy(() =>
     .strict()
 )
 
-// ── Title schema ─────────────────────────────────────────────
 
 const titleConfigSchema = z.union([
   z.string(),
@@ -84,7 +70,6 @@ const titleConfigSchema = z.union([
     .strict(),
 ])
 
-// ── Discovery schema ─────────────────────────────────────────
 
 const discoverySchema = z
   .object({
@@ -98,7 +83,6 @@ const discoverySchema = z
   })
   .strict()
 
-// ── Card schema ──────────────────────────────────────────────
 
 const cardConfigSchema = z
   .object({
@@ -111,7 +95,6 @@ const cardConfigSchema = z
   })
   .strict()
 
-// ── Entry schema ─────────────────────────────────────────────
 
 const entrySchema: z.ZodType<Section> = z.lazy(() =>
   z
@@ -141,7 +124,6 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
     .strict()
 )
 
-// ── OpenAPI schema ───────────────────────────────────────────
 
 const openapiConfigSchema = z
   .object({
@@ -152,7 +134,6 @@ const openapiConfigSchema = z
   })
   .strict()
 
-// ── Workspace schemas ────────────────────────────────────────
 
 const workspaceItemSchema = z
   .object({
@@ -179,7 +160,6 @@ const workspaceGroupSchema = z
   })
   .strict()
 
-// ── Feature schema ───────────────────────────────────────────
 
 const featureSchema = z
   .object({
@@ -190,7 +170,6 @@ const featureSchema = z
   })
   .strict()
 
-// ── Theme schema ─────────────────────────────────────────────
 
 const themeColorsSchema = z
   .object({
@@ -221,7 +200,6 @@ const themeConfigSchema = z
   })
   .strict()
 
-// ── Sidebar schema ──────────────────────────────────────────
 
 const sidebarLinkSchema = z
   .object({
@@ -240,7 +218,6 @@ const sidebarConfigSchema = z
   })
   .strict()
 
-// ── Hero action schema ──────────────────────────────────────
 
 const heroActionSchema = z
   .object({
@@ -250,7 +227,6 @@ const heroActionSchema = z
   })
   .strict()
 
-// ── Main config schema ───────────────────────────────────────
 
 export const zpressConfigSchema = z
   .object({
@@ -271,7 +247,6 @@ export const zpressConfigSchema = z
   })
   .strict()
 
-// ── Paths schema ─────────────────────────────────────────────
 
 export const pathsSchema = z
   .object({
@@ -284,7 +259,6 @@ export const pathsSchema = z
   })
   .strict()
 
-// ── Schema–type consistency guards ──────────────────────────
 // These compile-time assertions ensure non-recursive schemas stay
 // in sync with their TypeScript types. If a schema field is added,
 // removed, or renamed without updating the type, TypeScript errors.
@@ -295,3 +269,19 @@ export const pathsSchema = z
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Runtime check for function values. Used by z.custom<T> to validate
+ * function-typed config fields while preserving their exact TypeScript signature.
+ *
+ * @private
+ * @param val - Value to check
+ * @returns True if the value is a function
+ */
+function isFunction(val: unknown): boolean {
+  return typeof val === 'function'
+}

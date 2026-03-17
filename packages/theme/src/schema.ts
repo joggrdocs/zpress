@@ -4,12 +4,19 @@
 
 import { z } from 'zod'
 
-// ── Color mode schema ───────────────────────────────────────
-
+/**
+ * Zod schema for the color mode setting.
+ *
+ * Accepts `'dark'`, `'light'`, or `'toggle'`.
+ */
 export const colorModeSchema = z.enum(['dark', 'light', 'toggle'])
 
-// ── Theme colors schema ─────────────────────────────────────
-
+/**
+ * Zod schema for partial theme color overrides.
+ *
+ * Each field maps to one or more `--zp-c-*` / `--rp-c-*` CSS custom properties.
+ * All fields are optional; omitted fields fall back to the active theme's defaults.
+ */
 export const themeColorsSchema = z
   .object({
     brand: z.string().optional(),
@@ -29,8 +36,11 @@ export const themeColorsSchema = z
   })
   .strict()
 
-// ── Theme config schema ─────────────────────────────────────
-
+/**
+ * Zod schema for the top-level theme configuration block in `zpress.config.ts`.
+ *
+ * Validates and coerces the `theme` key, applying defaults where fields are omitted.
+ */
 export const themeConfigSchema = z
   .object({
     name: z.string().default('base'),

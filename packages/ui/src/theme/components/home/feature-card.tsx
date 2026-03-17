@@ -31,6 +31,9 @@ export interface FeatureItem {
 /**
  * Feature card for landing pages — matches the workspace/section card design.
  * Renders as `<a>` when `href` is provided, `<div>` otherwise.
+ *
+ * @param props - Feature card props including title, description, href, icon, iconColor, and span
+ * @returns React element with feature card layout
  */
 export function FeatureCard({
   title,
@@ -67,6 +70,9 @@ interface FeatureGridProps {
 
 /**
  * Flex-wrap layout container for feature cards.
+ *
+ * @param props - Props with children to render inside the grid
+ * @returns React element wrapping children in a feature grid
  */
 export function FeatureGrid({ children }: FeatureGridProps): React.ReactElement {
   return <div className="feature-grid">{children}</div>

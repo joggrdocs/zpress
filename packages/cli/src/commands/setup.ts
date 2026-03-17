@@ -9,71 +9,6 @@ import { createPaths, generateAssets } from '@zpress/core'
 const CONFIG_FILENAME = 'zpress.config.ts'
 
 /**
- * Extract the repository name from the git remote origin URL.
- * Returns `null` if not in a git repo or no origin is configured.
- */
-function extractGitRepoName(cwd: string): string | null {
-  const url = execSilent('git', ['remote', 'get-url', 'origin'], cwd)
-  if (!url) {
-    return null
-  }
-
-  // Handle SSH (git@github.com:org/repo.git) and HTTPS (https://github.com/org/repo.git)
-  const match = url.match(/[/:]([^/:]+?)(?:\.git)?$/)
-  if (!match) {
-    return null
-  }
-
-  return match[1]
-}
-
-/**
- * Run a command silently with an explicit argument array, returning
- * trimmed stdout or `null` on failure.
- *
- * Uses `execFileSync` (not `execSync`) to avoid shell interpolation
- * and defend against command injection.
- */
-function execSilent(file: string, args: readonly string[], cwd: string): string | null {
-  try {
-    return execFileSync(file, [...args], { cwd, stdio: 'pipe', encoding: 'utf8' }).trim()
-  } catch {
-    return null
-  }
-}
-
-/**
- * Derive a project title from git origin repo name or the current directory name.
- */
-function deriveTitle(cwd: string): string {
-  const repoName = extractGitRepoName(cwd)
-  if (repoName) {
-    return repoName
-  }
-  return path.basename(cwd)
-}
-
-/**
- * Build a config template string with the given title.
- */
-function buildConfigTemplate(title: string): string {
-  const escaped = title.replaceAll("'", String.raw`\'`)
-  return `import { defineConfig } from '@zpress/kit'
-
-export default defineConfig({
-  title: '${escaped}',
-  sections: [
-    {
-      text: 'Getting Started',
-      prefix: '/getting-started',
-      from: 'docs/*.md',
-    },
-  ],
-})
-`
-}
-
-/**
  * Initialize a zpress config file in the project root.
  *
  * Derives the project title from the git remote origin (falling back
@@ -119,3 +54,90 @@ export const setupCommand = command({
     ctx.logger.outro('Done')
   },
 })
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract the repository name from the git remote origin URL.
+ * Returns `null` if not in a git repo or no origin is configured.
+ *
+ * @private
+ * @param cwd - Working directory to run git commands in
+ * @returns Repository name or null
+ */
+function extractGitRepoName(cwd: string): string | null {
+  const url = execSilent('git', ['remote', 'get-url', 'origin'], cwd)
+  if (!url) {
+    return null
+  }
+
+  // Handle SSH (git@github.com:org/repo.git) and HTTPS (https://github.com/org/repo.git)
+  const match = url.match(/[/:]([^/:]+?)(?:\.git)?$/)
+  if (!match) {
+    return null
+  }
+
+  return match[1]
+}
+
+/**
+ * Run a command silently with an explicit argument array, returning
+ * trimmed stdout or `null` on failure.
+ *
+ * Uses `execFileSync` (not `execSync`) to avoid shell interpolation
+ * and defend against command injection.
+ *
+ * @private
+ * @param file - Executable to run
+ * @param args - Arguments to pass to the executable
+ * @param cwd - Working directory for the command
+ * @returns Trimmed stdout string or null on failure
+ */
+function execSilent(file: string, args: readonly string[], cwd: string): string | null {
+  try {
+    return execFileSync(file, [...args], { cwd, stdio: 'pipe', encoding: 'utf8' }).trim()
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Derive a project title from git origin repo name or the current directory name.
+ *
+ * @private
+ * @param cwd - Working directory to derive the title from
+ * @returns Project title string
+ */
+function deriveTitle(cwd: string): string {
+  const repoName = extractGitRepoName(cwd)
+  if (repoName) {
+    return repoName
+  }
+  return path.basename(cwd)
+}
+
+/**
+ * Build a config template string with the given title.
+ *
+ * @private
+ * @param title - Project title to embed in the template
+ * @returns Config file content string
+ */
+function buildConfigTemplate(title: string): string {
+  const escaped = title.replaceAll("'", String.raw`\'`)
+  return `import { defineConfig } from '@zpress/kit'
+
+export default defineConfig({
+  title: '${escaped}',
+  sections: [
+    {
+      text: 'Getting Started',
+      prefix: '/getting-started',
+      from: 'docs/*.md',
+    },
+  ],
+})
+`
+}

@@ -25,6 +25,9 @@ const LOADER_CSS = BACKDROP_CSS + DOTS_LOADER_CSS
  * Always includes the loading overlay CSS. For built-in themes, also includes
  * the theme-specific color variables for correct first paint. Custom themes
  * should provide their own :root fallback in their external CSS.
+ *
+ * @param themeName - Name of the active theme
+ * @returns Inline CSS string to inject in the document head
  */
 export function getThemeCss(themeName: string): string {
   if (!Object.hasOwn(THEME_CSS_MAP, themeName)) {
