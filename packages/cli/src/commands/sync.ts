@@ -7,7 +7,7 @@ import { z } from 'zod'
  */
 export const syncCommand = command({
   description: 'Sync documentation sources into .zpress/',
-  args: z.object({
+  options: z.object({
     quiet: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {

@@ -8,8 +8,7 @@ vi.mock(import('node:fs/promises'), () => ({
   },
 }))
 
-const { buildWorkspaceCardJsx, generateLandingContent } =
-  await import('../../src/sync/sidebar/landing')
+const { buildWorkspaceCardJsx, generateLandingContent } = await import('./landing')
 
 function mockEntry(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
   return {

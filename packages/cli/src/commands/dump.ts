@@ -51,7 +51,7 @@ export const dumpCommand = command({
       process.exit(1)
     }
     const tree = toTree(resolved)
-    ctx.output.raw(`${JSON.stringify(tree, null, 2)}\n`)
+    process.stdout.write(`${JSON.stringify(tree, null, 2)}\n`)
   },
 })
 
