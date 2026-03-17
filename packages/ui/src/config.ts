@@ -158,7 +158,12 @@ function loadGenerated<T>(params: {
     return params.fallback
   }
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
-  return JSON.parse(readFileSync(p, 'utf8')) as T
+  try {
+    return JSON.parse(readFileSync(p, 'utf8')) as T
+  } catch {
+    process.stderr.write(`[zpress] Failed to parse ${params.name} — returning fallback\n`)
+    return params.fallback
+  }
 }
 
 /**

@@ -73,7 +73,7 @@ function buildSidebarEntry(entry: ResolvedEntry): SidebarItem | undefined {
     }
   }
 
-  if (entry.link === null || entry.link === undefined) {
+  if (!entry.link || entry.link.trim().length === 0) {
     log.error(`[zpress] Leaf entry "${entry.title}" has no link — skipping`)
     return undefined
   }

@@ -97,8 +97,7 @@ export function CodeSample(props: CodeSampleProps): React.ReactElement {
  * Build a full URL from base URL and path.
  *
  * @private
- * @param baseUrl - API base URL
- * @param urlPath - URL path template
+ * @param input - Object with baseUrl and path
  * @returns Full URL string
  */
 function buildUrl(input: {

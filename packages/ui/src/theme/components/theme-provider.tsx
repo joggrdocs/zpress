@@ -258,8 +258,8 @@ function getIsomorphicEffect(): typeof useLayoutEffect {
  */
 function clearDotsInterval(): void {
   const dotsInterval = (globalThis as Record<string, unknown>).__zpDotsInterval
-  if (typeof dotsInterval === 'number') {
-    clearInterval(dotsInterval)
+  if (dotsInterval !== undefined && dotsInterval !== null) {
+    clearInterval(dotsInterval as number)
   }
 }
 
