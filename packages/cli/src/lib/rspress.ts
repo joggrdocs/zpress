@@ -6,6 +6,8 @@ import type { Paths, ZpressConfig } from '@zpress/core'
 import { createRspressConfig } from '@zpress/ui'
 import { match } from 'ts-pattern'
 
+import { toError } from './error'
+
 /**
  * Default port used by the development and preview servers.
  */
@@ -61,7 +63,7 @@ export async function startDevServer(
       })
       return true
     } catch (error) {
-      process.stderr.write(`Dev server error: ${extractErrorMessage(error)}\n`)
+      process.stderr.write(`Dev server error: ${toError(error).message}\n`)
       return false
     }
   }
@@ -81,7 +83,7 @@ export async function startDevServer(
       try {
         await serverInstance.close()
       } catch (error) {
-        process.stderr.write(`Error closing server: ${extractErrorMessage(error)}\n`)
+        process.stderr.write(`Error closing server: ${toError(error).message}\n`)
       }
       serverInstance = null
     }
@@ -158,22 +160,4 @@ export function openBrowser(url: string): void {
     .with('win32', () => ({ cmd: 'cmd', args: ['/c', 'start', url] }))
     .otherwise(() => ({ cmd: 'xdg-open', args: [url] }))
   spawn(cmd, args, { stdio: 'ignore', detached: true }).unref()
-}
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
-/**
- * Extract a readable message from an unknown error value.
- *
- * @private
- * @param error - Unknown error value to extract message from
- * @returns Error message string
- */
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return String(error)
 }

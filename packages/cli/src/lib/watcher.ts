@@ -6,6 +6,8 @@ import type { ZpressConfig, Paths } from '@zpress/core'
 import { loadConfig, sync } from '@zpress/core'
 import { debounce } from 'es-toolkit'
 
+import { toError } from './error'
+
 const CONFIG_EXTENSIONS = ['.ts', '.mts', '.cts', '.js', '.mjs', '.cjs', '.json'] as const
 
 const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
@@ -89,7 +91,7 @@ export function createWatcher(
       }
     } catch (error) {
       consecutiveFailures = consecutiveFailures + 1
-      cliLogger.error(`Sync error: ${extractErrorMessage(error)}`)
+      cliLogger.error(`Sync error: ${toError(error).message}`)
     } finally {
       syncing = false
       if (pendingReloadConfig !== null) {
@@ -185,18 +187,4 @@ function isMarkdownFile(filePath: string): boolean {
  */
 function isIgnored(filePath: string): boolean {
   return filePath.split(path.sep).some((segment) => IGNORED_DIRS.has(segment))
-}
-
-/**
- * Extract a readable message from an unknown error value.
- *
- * @private
- * @param error - Unknown error value to extract message from
- * @returns Error message string
- */
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return String(error)
 }
