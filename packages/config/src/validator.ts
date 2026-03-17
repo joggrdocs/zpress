@@ -17,7 +17,7 @@ export function validateConfig(config: unknown): ConfigResult<ZpressConfig> {
   const result = zpressConfigSchema.safeParse(config)
 
   if (result.success) {
-    return [null, result.data as ZpressConfig]
+    return [null, result.data]
   }
 
   return [configErrorFromZod(result.error), null]

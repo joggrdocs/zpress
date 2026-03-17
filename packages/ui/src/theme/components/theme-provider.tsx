@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect } from 'react'
 import type React from 'react'
+import { match, P } from 'ts-pattern'
 
 declare const __ZPRESS_THEME_NAME__: string
 declare const __ZPRESS_COLOR_MODE__: string
@@ -177,10 +178,8 @@ function resolveColorPairs(colors: Record<string, string>): readonly (readonly [
  */
 function applyColorOverrides(html: HTMLElement, colors: Record<string, string>): void {
   const pairs = resolveColorPairs(colors)
-  // oxlint-disable-next-line unicorn/no-array-for-each -- DOM side effect; for-loops also banned
-  pairs.forEach(([cssVar, value]) => {
-    html.style.setProperty(cssVar, value)
-  })
+  // oxlint-disable-next-line no-unused-expressions -- DOM side effect; for-loops and forEach also banned
+  pairs.map(([cssVar, value]) => html.style.setProperty(cssVar, value))
 }
 
 /**
@@ -190,10 +189,8 @@ function applyColorOverrides(html: HTMLElement, colors: Record<string, string>):
  * @param html - HTML document element
  */
 function clearColorOverrides(html: HTMLElement): void {
-  // oxlint-disable-next-line unicorn/no-array-for-each -- DOM side effect; for-loops also banned
-  ALL_CSS_VARS.forEach((cssVar) => {
-    html.style.removeProperty(cssVar)
-  })
+  // oxlint-disable-next-line no-unused-expressions -- DOM side effect; for-loops and forEach also banned
+  ALL_CSS_VARS.map((cssVar) => html.style.removeProperty(cssVar))
 }
 
 /**
@@ -245,10 +242,9 @@ function parseColors(raw: string): Record<string, string> {
  * @returns The appropriate effect hook for the current environment
  */
 function getIsomorphicEffect(): typeof useLayoutEffect {
-  if (globalThis.window !== undefined) {
-    return useLayoutEffect
-  }
-  return useEffect
+  return match(globalThis.window)
+    .with(P.nonNullable, () => useLayoutEffect)
+    .otherwise(() => useEffect)
 }
 
 /**

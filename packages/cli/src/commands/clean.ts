@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 
 import { command } from '@kidd-cli/core'
+import { compact } from 'es-toolkit'
 import { createPaths } from '@zpress/core'
 import type { Paths } from '@zpress/core'
 
@@ -27,7 +28,7 @@ export async function clean(paths: Paths): Promise<readonly string[]> {
     })
   )
 
-  return results.filter((label) => label !== null)
+  return compact(results)
 }
 
 /**

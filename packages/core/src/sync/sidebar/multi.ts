@@ -258,10 +258,11 @@ function mergeOpenapiIntoIsolated(
         return acc
       }
       const baseKey = matchingKey.slice(0, -1)
-      return Object.assign(acc, {
+      return {
+        ...acc,
         [matchingKey]: [...(acc[matchingKey] ?? []), ...entry.sidebar],
         [baseKey]: [...(acc[baseKey] ?? []), ...entry.sidebar],
-      })
+      }
     },
     { ...isolatedSidebar }
   )

@@ -88,7 +88,7 @@ export function createWatcher(
         await onConfigReload(config)
       }
     } catch (error) {
-      consecutiveFailures += 1
+      consecutiveFailures = consecutiveFailures + 1
       const errorMessage = (() => {
         if (error instanceof Error) {
           return error.message
