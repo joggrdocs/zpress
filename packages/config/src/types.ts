@@ -159,7 +159,7 @@ export interface CardConfig {
 export interface DiscoveryConfig {
   readonly from?: string
   readonly title?: TitleConfig
-  readonly sort?: 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly exclude?: readonly string[]
   readonly frontmatter?: Frontmatter
   readonly recursive?: boolean
@@ -283,7 +283,7 @@ export interface Section {
   readonly exclude?: readonly string[]
   readonly hidden?: boolean
   readonly frontmatter?: Frontmatter
-  readonly sort?: 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly recursive?: boolean
   readonly indexFile?: string
   readonly icon?: string
