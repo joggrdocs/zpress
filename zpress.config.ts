@@ -9,8 +9,46 @@ export default defineConfig({
     below: [{ text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' }],
   },
   actions: [
-    { theme: 'brand', text: 'Introduction', link: '/getting-started/introduction' },
-    { theme: 'alt', text: 'Quick Start', link: '/getting-started/quick-start' },
+    { theme: 'brand', text: 'Get Started', link: '/getting-started/quick-start' },
+    { theme: 'alt', text: 'Learn More', link: '/getting-started/introduction' },
+  ],
+  features: [
+    {
+      title: 'Zero Config',
+      description: 'Point it at your repo and get a working site. Real defaults, no boilerplate.',
+      link: '/getting-started/quick-start',
+      icon: 'pixelarticons:speed-fast',
+    },
+    {
+      title: 'Your Structure',
+      description: 'Config maps to how you already organize markdown. The tool fits your docs.',
+      link: '/concepts/sections-and-pages',
+      icon: 'pixelarticons:layout',
+    },
+    {
+      title: 'Built for AI',
+      description: 'Tell your AI to write markdown, run one command, ship a docs site.',
+      link: '/concepts/auto-discovery',
+      icon: 'pixelarticons:zap',
+    },
+    {
+      title: 'Monorepo Native',
+      description: 'First-class workspace support with isolated sidebars and landing pages.',
+      link: '/concepts/workspaces',
+      icon: 'pixelarticons:git-merge',
+    },
+    {
+      title: 'Themes & Dark Mode',
+      description: 'Three built-in themes with dark mode, color overrides, and a runtime switcher.',
+      link: '/concepts/themes',
+      icon: 'pixelarticons:paint-bucket',
+    },
+    {
+      title: 'Auto Navigation',
+      description: 'Sidebar and nav bar generated from your config. Glob discovery, sorting, nesting.',
+      link: '/concepts/navigation',
+      icon: 'pixelarticons:list-box',
+    },
   ],
   sections: [
     {

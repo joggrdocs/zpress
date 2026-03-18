@@ -9,26 +9,30 @@ import { FeatureCard, FeatureGrid, Icon } from '@zpress/ui/theme'
 
 ## What is zpress
 
-zpress is an information-architecture-driven documentation framework for monorepos. Your config file _is_ the architecture — it defines what content exists, where it comes from, and how it's organized in a single tree. Source markdown files are never edited by the tool. zpress syncs them into a build directory, injects frontmatter, generates sidebars and nav, and produces a static site.
+zpress is a documentation framework for monorepos. Your config file _is_ the information architecture — it defines what content exists, where it comes from, and how it's organized. Source files are never modified. zpress syncs them into a build directory, injects frontmatter, generates sidebars and navigation, and outputs a static site.
+
+```bash
+npx @zpress/kit dev
+```
+
+That's it. One command, working docs site.
 
 ## Why zpress
 
-There are excellent documentation tools out there — [VitePress](https://vitepress.dev), [Rspress](https://rspress.dev), [Docusaurus](https://docusaurus.io), and others. They were direct inspirations for this project. So why build another one?
+There are great documentation tools — [VitePress](https://vitepress.dev), [Rspress](https://rspress.dev), [Docusaurus](https://docusaurus.io). They inspired this project. So why build another one?
 
-**Zero config, real defaults.** Most documentation tools need significant setup before they produce anything useful. zpress ships with opinionated defaults that work immediately. Point it at a repo with a `docs/` directory and you get a working site — sidebar, navigation, and all.
+**Zero config, real defaults.** Most doc tools need significant setup before they produce anything useful. zpress ships with opinionated defaults that work immediately. Point it at a repo with markdown files and you get a working site — sidebar, navigation, and all.
 
-**Your structure, not ours.** When you _do_ configure zpress, the config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
+**Your structure, not ours.** The config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
 
-**Built for the vibe.** AI coding tools are everywhere now. When you're vibing on a project — spinning up features with Claude, Copilot, Cursor, or whatever you reach for — documentation shouldn't be the part that slows you down. Tell your AI to create a `docs/` directory, write some markdown, and run `zpress dev`. It just works. No plugin config, no theme wiring, no boilerplate. The whole point is that a docs site is one command away from existing.
+**Built for the vibe.** AI coding tools are everywhere. When you're vibing on a project — spinning up features with Claude, Copilot, Cursor — documentation shouldn't slow you down. Tell your AI to write markdown, run `zpress dev`, done. No plugin config, no theme wiring, no boilerplate.
 
 ## Features
-
-Dive deeper into what zpress offers.
 
 <FeatureGrid>
   <FeatureCard
     title="Zero Config"
-    description="Real defaults, no setup required."
+    description="Point it at your repo and get a working site. Real defaults, no boilerplate."
     href="/getting-started/quick-start"
     icon={<Icon icon="pixelarticons:speed-fast" />}
     iconColor="purple"
@@ -36,7 +40,7 @@ Dive deeper into what zpress offers.
   />
   <FeatureCard
     title="Your Structure"
-    description="Config fits your docs, not the other way around."
+    description="Config maps to how you already organize markdown. The tool fits your docs."
     href="/concepts/sections-and-pages"
     icon={<Icon icon="pixelarticons:layout" />}
     iconColor="blue"
@@ -44,7 +48,7 @@ Dive deeper into what zpress offers.
   />
   <FeatureCard
     title="Built for AI"
-    description="One command from markdown to site."
+    description="Tell your AI to write markdown, run one command, ship a docs site."
     href="/concepts/auto-discovery"
     icon={<Icon icon="pixelarticons:zap" />}
     iconColor="green"
@@ -52,15 +56,15 @@ Dive deeper into what zpress offers.
   />
   <FeatureCard
     title="Monorepo Native"
-    description="First-class workspace and multi-package support."
+    description="First-class workspace support with isolated sidebars and landing pages."
     href="/concepts/workspaces"
     icon={<Icon icon="pixelarticons:git-merge" />}
-    iconColor="orange"
+    iconColor="amber"
     span={4}
   />
   <FeatureCard
-    title="Themes"
-    description="Built-in themes with dark mode."
+    title="Themes & Dark Mode"
+    description="Three built-in themes with dark mode, color overrides, and a runtime switcher."
     href="/concepts/themes"
     icon={<Icon icon="pixelarticons:paint-bucket" />}
     iconColor="pink"
@@ -68,10 +72,10 @@ Dive deeper into what zpress offers.
   />
   <FeatureCard
     title="Auto Navigation"
-    description="Sidebar and nav generated from config."
+    description="Sidebar and nav bar generated from your config. Glob discovery, sorting, nesting."
     href="/concepts/navigation"
     icon={<Icon icon="pixelarticons:list-box" />}
-    iconColor="teal"
+    iconColor="cyan"
     span={4}
   />
 </FeatureGrid>
