@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { attemptAsync } from 'es-toolkit'
+import { attemptAsync, difference, uniq } from 'es-toolkit'
 
 import type { Manifest } from './types.ts'
 
@@ -51,19 +51,22 @@ export async function cleanStaleFiles(
   oldManifest: Manifest,
   newManifest: Manifest
 ): Promise<number> {
-  const oldPaths = new Set(Object.keys(oldManifest.files))
-  const newPaths = new Set(Object.keys(newManifest.files))
-  const stalePaths = [...oldPaths].filter((p) => !newPaths.has(p))
+  const stalePaths = difference(Object.keys(oldManifest.files), Object.keys(newManifest.files))
 
+  const resolved = stalePaths.map((oldPath) => path.resolve(outDir, oldPath))
+
+  // Remove files in parallel (independent I/O, safe to parallelize)
   await Promise.all(
-    stalePaths.map((oldPath) =>
+    resolved.map((abs) =>
       attemptAsync(async () => {
-        const abs = path.resolve(outDir, oldPath)
         await fs.rm(abs, { force: true })
-        await pruneEmptyDirs(path.dirname(abs), outDir)
       })
     )
   )
+
+  // Deduplicate parents so shared ancestors aren't raced N times
+  const uniqueParents = uniq(resolved.map((abs) => path.dirname(abs)))
+  await Promise.all(uniqueParents.map((dir) => pruneEmptyDirs(dir, outDir)))
 
   return stalePaths.length
 }

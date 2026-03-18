@@ -13,6 +13,7 @@ import type { CliLogger } from '@kidd-cli/core/logger'
 import { configError } from '@zpress/core'
 import type { ConfigError, Paths, ZpressConfig } from '@zpress/core'
 
+import { toError } from './error.ts'
 import { buildSiteForCheck } from './rspress.ts'
 
 // oxlint-disable-next-line prefer-regex-literals, no-control-regex -- regex literal is clearer for a well-known ANSI escape pattern
@@ -179,20 +180,6 @@ function chunkToString(chunk: Uint8Array | string): string {
     return chunk
   }
   return Buffer.from(chunk).toString('utf8')
-}
-
-/**
- * Coerce an unknown caught value to an `Error`.
- *
- * @private
- * @param value - Unknown value caught in a try/catch
- * @returns Error instance
- */
-function toError(value: unknown): Error {
-  if (value instanceof Error) {
-    return value
-  }
-  return new Error(String(value))
 }
 
 /**

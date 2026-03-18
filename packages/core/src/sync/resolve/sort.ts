@@ -20,25 +20,19 @@ const PINNED_STEMS = ['introduction', 'intro', 'overview', 'readme'] as const
  */
 export function sortEntries(
   entries: readonly ResolvedEntry[],
-  sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  sort:
+    | 'default'
+    | 'alpha'
+    | 'filename'
+    | ((a: ResolvedPage, b: ResolvedPage) => number) = 'default'
 ): ResolvedEntry[] {
-  if (!sort) {
-    return [...entries].toSorted(
-      (a, b) => sectionFirst(a, b) || pinnedFirst(a, b) || a.title.localeCompare(b.title)
-    )
-  }
-
   return match(sort)
-    .with('default', () =>
-      [...entries].toSorted(
-        (a, b) => sectionFirst(a, b) || pinnedFirst(a, b) || a.title.localeCompare(b.title)
-      )
-    )
+    .with('default', () => entries.toSorted(defaultCompare))
     .with('alpha', () =>
-      [...entries].toSorted((a, b) => sectionFirst(a, b) || a.title.localeCompare(b.title))
+      entries.toSorted((a, b) => sectionFirst(a, b) || a.title.localeCompare(b.title))
     )
     .with('filename', () =>
-      [...entries].toSorted((a, b) => {
+      entries.toSorted((a, b) => {
         const rank = sectionFirst(a, b)
         if (rank !== 0) {
           return rank
@@ -53,13 +47,39 @@ export function sortEntries(
       })
     )
     .otherwise((comparator) =>
-      [...entries].toSorted((a, b) => comparator(toResolvedPage(a), toResolvedPage(b)))
+      entries.toSorted((a, b) => comparator(toResolvedPage(a), toResolvedPage(b)))
     )
 }
 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Default comparator: sections first, then pinned intro files, then alpha by title.
+ *
+ * @private
+ * @param a - First entry to compare
+ * @param b - Second entry to compare
+ * @returns Standard comparator result
+ */
+function defaultCompare(a: ResolvedEntry, b: ResolvedEntry): number {
+  return sectionFirst(a, b) || pinnedFirst(a, b) || a.title.localeCompare(b.title)
+}
+
+/**
+ * Return 0 for sections (entries with children), 1 for leaf pages.
+ *
+ * @private
+ * @param entry - Entry to rank
+ * @returns 0 if section, 1 if leaf
+ */
+function sectionRank(entry: ResolvedEntry): number {
+  if (entry.items !== undefined && entry.items.length > 0) {
+    return 0
+  }
+  return 1
+}
 
 /**
  * Sections (entries with items) sort before leaf pages.
@@ -70,19 +90,7 @@ export function sortEntries(
  * @returns Negative if a is a section, positive if b is, zero if equal
  */
 function sectionFirst(a: ResolvedEntry, b: ResolvedEntry): number {
-  const aIsSection = (() => {
-    if (a.items !== null && a.items !== undefined && a.items.length > 0) {
-      return 0
-    }
-    return 1
-  })()
-  const bIsSection = (() => {
-    if (b.items !== null && b.items !== undefined && b.items.length > 0) {
-      return 0
-    }
-    return 1
-  })()
-  return aIsSection - bIsSection
+  return sectionRank(a) - sectionRank(b)
 }
 
 /**
@@ -96,7 +104,7 @@ function pinnedRank(entry: ResolvedEntry): number {
   if (!entry.page) {
     return -1
   }
-  const source = entry.page.source
+  const { source } = entry.page
   if (!source) {
     return -1
   }
@@ -135,23 +143,15 @@ function pinnedFirst(a: ResolvedEntry, b: ResolvedEntry): number {
  * @returns Resolved page shape with title, link, source, and frontmatter
  */
 function toResolvedPage(entry: ResolvedEntry): ResolvedPage {
-  const source = (() => {
-    if (entry.page) {
-      return entry.page.source
-    }
-  })()
-  const frontmatter = (() => {
-    if (entry.page) {
-      return entry.page.frontmatter
-    }
-    return {}
-  })()
+  const page = match(entry.page)
+    .with(P.nonNullable, (p) => ({ source: p.source, frontmatter: p.frontmatter }))
+    .otherwise(() => ({ source: undefined, frontmatter: {} }))
   return {
     title: entry.title,
     link: match(entry.link)
       .with(P.nonNullable, (l) => l)
       .otherwise(() => ''),
-    source,
-    frontmatter,
+    source: page.source,
+    frontmatter: page.frontmatter,
   }
 }
