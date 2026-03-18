@@ -27,13 +27,13 @@ sections: [
     title: 'Guides',
     prefix: '/guides',
     from: 'docs/guides/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
   },
   {
     title: 'Reference',
     prefix: '/reference',
     from: 'docs/reference/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
   },
 ]
 ```
@@ -78,14 +78,14 @@ sections: [
     title: 'Guides',
     prefix: '/guides',
     from: 'docs/guides/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
     sort: 'alpha',
   },
   {
     title: 'Concepts',
     prefix: '/concepts',
     from: 'docs/concepts/**/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
     recursive: true,
     sort: 'alpha',
   },
@@ -93,7 +93,7 @@ sections: [
     title: 'Reference',
     prefix: '/reference',
     from: 'docs/reference/**/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
     recursive: true,
     sort: 'alpha',
   },
@@ -101,7 +101,7 @@ sections: [
     title: 'Standards',
     prefix: '/standards',
     from: 'docs/standards/**/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
     recursive: true,
     sort: 'alpha',
   },
@@ -109,7 +109,7 @@ sections: [
     title: 'Troubleshooting',
     prefix: '/troubleshooting',
     from: 'docs/troubleshooting/*.md',
-    titleFrom: 'heading',
+    title: { from: 'heading' },
     sort: 'alpha',
   },
 ]
@@ -162,7 +162,7 @@ sections: [
         prefix: '/apps/api',
         from: 'apps/api/docs/**/*.md',
         recursive: true,
-        titleFrom: 'heading',
+        title: { from: 'heading' },
         sort: 'alpha',
       },
       {
@@ -171,7 +171,7 @@ sections: [
         prefix: '/apps/web',
         from: 'apps/web/docs/**/*.md',
         recursive: true,
-        titleFrom: 'heading',
+        title: { from: 'heading' },
         sort: 'alpha',
       },
     ],
@@ -187,7 +187,7 @@ sections: [
         prefix: '/packages/auth',
         from: 'packages/auth/docs/**/*.md',
         recursive: true,
-        titleFrom: 'heading',
+        title: { from: 'heading' },
         sort: 'alpha',
       },
       {
@@ -196,7 +196,7 @@ sections: [
         prefix: '/packages/database',
         from: 'packages/database/docs/**/*.md',
         recursive: true,
-        titleFrom: 'heading',
+        title: { from: 'heading' },
         sort: 'alpha',
       },
     ],
@@ -219,7 +219,7 @@ As you add more docs, maintaining explicit `items` arrays becomes tedious. Lean 
 ```ts
 // Instead of listing every guide manually:
 from: 'docs/guides/*.md',
-titleFrom: 'heading',
+title: { from: 'heading' },
 sort: 'alpha',
 ```
 

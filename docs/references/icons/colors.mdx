@@ -254,22 +254,22 @@ Or on a card config within a section entry:
 }
 ```
 
-## Feature card colors
+## Feature card icons
 
-Feature cards on the home page use the same color values via the `color` field on a `Feature` icon:
+Feature cards on the home page accept a plain icon string identifier — they do not support `{ id, color }` objects. Feature icons inherit their native or `currentColor` styling.
 
 ```ts
 features: [
   {
     title: 'Getting Started',
-    icon: { id: 'pixelarticons:speed-fast', color: 'purple' },
+    icon: 'pixelarticons:speed-fast',
     description: 'Set up and start building.',
     link: '/getting-started',
   },
 ]
 ```
 
-The CSS class for feature cards follows the pattern `.home-card-icon--{color}`.
+Color-tinted icons (`{ id, color }` objects) are supported on workspace cards and `CardConfig` entries, not on feature cards.
 
 ## Default behavior
 

@@ -21,7 +21,7 @@ Glob patterns let you add pages without updating the config every time a new fil
 
 ## Title derivation
 
-Control how page titles are derived from discovered files with `titleFrom`:
+Control how page titles are derived from discovered files using `title` with a configuration object:
 
 | Strategy        | Source                             | Example                                         |
 | --------------- | ---------------------------------- | ----------------------------------------------- |
@@ -34,16 +34,15 @@ Default is `'auto'`, which tries frontmatter first, falls back to heading, then 
 
 ```ts
 {
-  title: 'Guides',
+  title: { from: 'frontmatter' },  // Only use frontmatter, no fallback
   prefix: '/guides',
   from: 'docs/guides/*.md',
-  titleFrom: 'frontmatter',  // Only use frontmatter, no fallback
 }
 ```
 
-### Advanced: TitleConfig
+### Custom transforms
 
-You can also use the `title` field with a configuration object for more control:
+Add a `transform` function for more control over derived titles. The transform receives the derived title and the filename slug, returning the final display title.
 
 ```ts
 {
@@ -55,8 +54,6 @@ You can also use the `title` field with a configuration object for more control:
   from: 'docs/adrs/*.md',
 }
 ```
-
-This applies a custom transform to derived titles. The transform function receives the derived title and the filename slug, returning the final display title.
 
 Transforms only apply to auto-discovered children. Sections with explicit `title` strings are not transformed.
 

@@ -26,6 +26,29 @@ A landing page is created when a section has:
 
 Navigating to `/guides` shows a landing page with cards for each discovered guide.
 
+## Landing page modes
+
+The `landing` field controls how the page is generated:
+
+| Mode         | Behavior                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------- |
+| `'auto'`     | Default. Generates card-style landing if the section has children, overview-style if it has an index file |
+| `'cards'`    | Always generates a card grid linking to child entries                                              |
+| `'overview'` | Always uses the promoted index file content as the landing page                                    |
+| `false`      | Disables landing page generation entirely                                                         |
+
+When `landing` is omitted, zpress uses `'auto'` — it checks for an index file first, falls back to card layout.
+
+```ts
+{
+  title: 'Guides',
+  link: '/guides',
+  prefix: '/guides',
+  from: 'docs/guides/*.md',
+  landing: 'cards',  // Always show card grid, even if overview.md exists
+}
+```
+
 ## Overview file promotion
 
 When using `recursive: true`, the `indexFile` field controls which filename is promoted to the section header (default: `"overview"`). That file's content becomes the section's landing page instead of auto-generated cards.
