@@ -205,7 +205,7 @@ export interface HeroAction {
 export interface SidebarLink {
   readonly text: string
   readonly link: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: IconConfig
 }
 
 /**

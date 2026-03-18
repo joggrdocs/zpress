@@ -196,9 +196,7 @@ const sidebarLinkSchema = z
   .object({
     text: z.string(),
     link: z.string(),
-    icon: z
-      .union([z.string(), z.object({ id: z.string(), color: z.string() }).strict()])
-      .optional(),
+    icon: iconConfigSchema.optional(),
   })
   .strict()
 

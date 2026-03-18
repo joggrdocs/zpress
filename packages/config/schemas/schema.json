@@ -528,24 +528,7 @@
                     "type": "string"
                   },
                   "icon": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "color": {
-                            "type": "string"
-                          }
-                        },
-                        "required": ["id", "color"],
-                        "additionalProperties": false
-                      }
-                    ]
+                    "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/icon"
                   }
                 },
                 "required": ["text", "link"],
