@@ -89,10 +89,11 @@ Before proposing an implementation plan:
 
 Every breaking change **must** include a codemod so users can migrate automatically. When introducing a breaking change:
 
-1. Add a changeset with a `BREAKING CHANGE:` footer describing what changed and why
-2. Create a codemod definition in `packages/cli/src/codemods/definitions/` that transforms the old config to the new format
-3. Register the codemod in `packages/cli/src/codemods/definitions/index.ts`
-4. Set `breaking: true` on the codemod and include a `changelog` URL pointing to the release
+1. Add a major changeset (`pnpm changeset`) with a summary of the breaking change
+2. Use `!` after the scope in the commit message and include a `BREAKING CHANGE:` footer in the commit body
+3. Create a codemod definition in `packages/cli/src/codemods/definitions/` that transforms the old config to the new format
+4. Register the codemod in `packages/cli/src/codemods/definitions/index.ts`
+5. Set `breaking: true` on the codemod and include a `changelog` URL pointing to the release
 
 Users run `zpress migrate` to apply all pending codemods for a version upgrade. See `packages/cli/src/codemods/definitions/title-from-to-title-config.ts` for a reference implementation.
 
