@@ -80,6 +80,8 @@ Follow the prompts to select the package, semver bump type (patch, minor, major)
 
 - New features, bug fixes, or breaking changes to `@zpress/core` or `@zpress/*` packages
 
+**Breaking changes must also include a codemod** so users can migrate automatically via `zpress migrate`. Create a codemod definition in `packages/cli/src/codemods/definitions/` and register it in the definitions index. See `title-from-to-title-config.ts` for a reference implementation.
+
 **When to skip:**
 
 - Docs-only changes, CI updates, internal tooling, contributing docs

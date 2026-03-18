@@ -71,6 +71,8 @@ git commit -m "chore(repo): update turbo.json pipeline"
 
 Breaking changes must include `!` after the scope and a `BREAKING CHANGE:` footer. Mark as breaking when removing or renaming public APIs, changing config schema, or modifying CLI flags.
 
+Every breaking change must also include a codemod in `packages/cli/src/codemods/definitions/` so users can migrate automatically via `zpress migrate`.
+
 #### Correct
 
 ```bash
