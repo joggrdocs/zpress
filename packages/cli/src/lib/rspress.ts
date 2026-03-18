@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process'
+import { once } from 'node:events'
+import { Server } from 'node:http'
 import { platform } from 'node:os'
 
 import { dev, build, serve } from '@rspress/core'
@@ -19,7 +21,11 @@ interface ServerOptions {
 }
 
 /**
- * Server instance returned by Rspress dev() - allows closing the server.
+ * Server instance returned by Rspress dev().
+ *
+ * Rspress only declares `close()` in its public types, but the
+ * underlying Rsbuild server exposes `httpServer` at runtime.
+ * We access it via {@link getHttpServer} to avoid a type mismatch.
  */
 interface ServerInstance {
   readonly close: () => Promise<void>
@@ -58,6 +64,7 @@ export async function startDevServer(
         extraBuilderConfig: {
           server: {
             port: DEFAULT_PORT,
+            strictPort: true,
           },
         },
       })
@@ -78,12 +85,26 @@ export async function startDevServer(
   return async (newConfig: ZpressConfig) => {
     process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
 
-    // Close existing server
+    // Close existing server and wait for port release
     if (serverInstance) {
+      const httpServer = getHttpServer(serverInstance)
+      // Register the close listener before close() so we don't miss the
+      // event (once() only observes future emissions)
+      const closeEvent = createCloseEvent(httpServer)
       try {
         await serverInstance.close()
       } catch (error) {
         process.stderr.write(`Error closing server: ${toError(error).message}\n`)
+      }
+      // Rsbuild's close() destroys tracked sockets and calls httpServer.close(),
+      // but the 'close' event fires only once the port is actually freed.
+      if (closeEvent) {
+        const PORT_RELEASE_TIMEOUT = 5_000
+        await Promise.race([
+          closeEvent,
+          // oxlint-disable-next-line no-promise-executor-return -- timeout resolve is intentional
+          new Promise((resolve) => setTimeout(resolve, PORT_RELEASE_TIMEOUT)),
+        ])
       }
       serverInstance = null
     }
@@ -160,4 +181,46 @@ export function openBrowser(url: string): void {
     .with('win32', () => ({ cmd: 'cmd', args: ['/c', 'start', url] }))
     .otherwise(() => ({ cmd: 'xdg-open', args: [url] }))
   spawn(cmd, args, { stdio: 'ignore', detached: true }).unref()
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Create a close event promise if the server is actively listening.
+ *
+ * Must be called before `close()` so the listener is registered
+ * before the event fires — `once()` only observes future emissions.
+ *
+ * @private
+ * @param httpServer - The HTTP server to listen on, or null
+ * @returns A promise that resolves when 'close' fires, or null if not listening
+ */
+function createCloseEvent(httpServer: Server | null): Promise<unknown[]> | null {
+  if (httpServer === null) {
+    return null
+  }
+  if (!httpServer.listening) {
+    return null
+  }
+  return once(httpServer, 'close')
+}
+
+/**
+ * Extract the underlying HTTP server from a Rspress/Rsbuild server instance.
+ *
+ * Rspress's public `ServerInstance` type only declares `close()`, but the
+ * runtime object is a Rsbuild dev server which exposes `httpServer`.
+ * This helper performs a runtime property check to safely extract it.
+ *
+ * @private
+ * @param instance - The server instance returned by Rspress dev()
+ * @returns The HTTP server if present, otherwise null
+ */
+function getHttpServer(instance: ServerInstance): Server | null {
+  const record = instance as unknown as Record<string, unknown>
+  const value = record['httpServer']
+  if (value instanceof Server) {
+    return value
+  }
+  return null
 }
