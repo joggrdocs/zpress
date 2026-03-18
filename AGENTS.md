@@ -85,6 +85,17 @@ Before proposing an implementation plan:
 5. Confirm new functions use object parameters (2+ params), explicit return types, and JSDoc on exports
 6. Plan test files alongside source files with coverage targets in mind
 
+## Breaking Changes
+
+Every breaking change **must** include a codemod so users can migrate automatically. When introducing a breaking change:
+
+1. Add a changeset with a `BREAKING CHANGE:` footer describing what changed and why
+2. Create a codemod definition in `packages/cli/src/codemods/definitions/` that transforms the old config to the new format
+3. Register the codemod in `packages/cli/src/codemods/definitions/index.ts`
+4. Set `breaking: true` on the codemod and include a `changelog` URL pointing to the release
+
+Users run `zpress migrate` to apply all pending codemods for a version upgrade. See `packages/cli/src/codemods/definitions/title-from-to-title-config.ts` for a reference implementation.
+
 ## Git
 
 ### Commit Messages

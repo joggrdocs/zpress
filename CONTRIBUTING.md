@@ -73,6 +73,17 @@ packages/
 └── zpress/           # @zpress/kit — public wrapper package (CLI + config re-exports)
 ```
 
+## Breaking Changes
+
+Every breaking change **must** include a codemod so users can migrate automatically:
+
+1. Add a changeset with a `BREAKING CHANGE:` footer describing what changed and why
+2. Create a codemod in `packages/cli/src/codemods/definitions/` that transforms the old config to the new format
+3. Register it in `packages/cli/src/codemods/definitions/index.ts`
+4. Set `breaking: true` and include a `changelog` URL
+
+Users run `zpress migrate` after upgrading to apply all pending codemods. See `packages/cli/src/codemods/definitions/title-from-to-title-config.ts` for a reference implementation.
+
 ## Code Style
 
 - TypeScript, strict mode
