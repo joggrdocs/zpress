@@ -18,6 +18,7 @@ import { devCommand } from './commands/dev.ts'
 import { draftCommand } from './commands/draft.ts'
 import { dumpCommand } from './commands/dump.ts'
 import { generateCommand } from './commands/generate.ts'
+import { migrateCommand } from './commands/migrate.ts'
 import { serveCommand } from './commands/serve.ts'
 import { setupCommand } from './commands/setup.ts'
 import { syncCommand } from './commands/sync.ts'
@@ -39,5 +40,6 @@ await cli({
     dump: dumpCommand,
     setup: setupCommand,
     generate: generateCommand,
+    migrate: migrateCommand,
   },
 })

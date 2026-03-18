@@ -153,6 +153,9 @@ importers:
       es-toolkit:
         specifier: 'catalog:'
         version: 1.45.1
+      semver:
+        specifier: ^7.7.2
+        version: 7.7.4
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -163,6 +166,9 @@ importers:
       '@rslib/core':
         specifier: 'catalog:'
         version: 0.20.0(@microsoft/api-extractor@7.57.7(@types/node@25.5.0))(core-js@3.47.0)(typescript@5.9.3)
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.1
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2565,6 +2571,9 @@ packages:
 
   '@types/sarif@2.1.7':
     resolution: {integrity: sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -7947,6 +7956,8 @@ snapshots:
       csstype: 3.2.3
 
   '@types/sarif@2.1.7': {}
+
+  '@types/semver@7.7.1': {}
 
   '@types/unist@2.0.11': {}
 

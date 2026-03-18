@@ -46,11 +46,13 @@
     "@zpress/templates": "workspace:*",
     "@zpress/ui": "workspace:*",
     "es-toolkit": "catalog:",
+    "semver": "^7.7.2",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",
+    "@types/semver": "^7.7.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

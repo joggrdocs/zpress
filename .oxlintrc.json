@@ -104,6 +104,12 @@
       }
     },
     {
+      "files": ["packages/cli/src/codemods/**"],
+      "rules": {
+        "security/detect-non-literal-regexp": "off"
+      }
+    },
+    {
       "files": ["scripts/**"],
       "rules": {
         "security/detect-non-literal-fs-filename": "off"
