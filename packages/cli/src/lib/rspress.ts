@@ -99,7 +99,7 @@ export async function startDevServer(
       // Rsbuild's close() destroys tracked sockets and calls httpServer.close(),
       // but the 'close' event fires only once the port is actually freed.
       if (closeEvent) {
-        const PORT_RELEASE_TIMEOUT = 5000
+        const PORT_RELEASE_TIMEOUT = 5_000
         await Promise.race([
           closeEvent,
           // oxlint-disable-next-line no-promise-executor-return -- timeout resolve is intentional
