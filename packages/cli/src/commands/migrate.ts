@@ -39,21 +39,13 @@ export const migrateCommand = command({
       return
     }
 
-    // Resolve config file path
-    const resolvedConfig = await resolveConfigPath(paths.repoRoot)
-    if (resolvedConfig[0]) {
-      ctx.logger.error(resolvedConfig[0])
+    // Resolve and read config file in one pass
+    const configResult = await loadConfigSource(paths.repoRoot)
+    if (configResult[0]) {
+      ctx.logger.error(configResult[0])
       process.exit(1)
     }
-    const configPath = resolvedConfig[1] as string
-
-    // Read current config source
-    const readResult = await readSource(configPath)
-    if (readResult[0]) {
-      ctx.logger.error(readResult[0])
-      process.exit(1)
-    }
-    const source = readResult[1] as string
+    const { configPath, source } = configResult[1] as NonNullable<(typeof configResult)[1]>
 
     // Determine from-version
     const fromVersion = ctx.args.from ?? extractFromVersion(source) ?? '0.0.0'
@@ -170,22 +162,25 @@ function listAllCodemods(logger: { readonly info: (msg: string) => void }): void
 }
 
 /**
- * Resolve the absolute path to the zpress config file.
+ * Resolve and read the zpress config file in a single pass.
+ *
+ * Attempts to read each candidate file directly, avoiding a separate
+ * existence check (TOCTOU). Returns the first successfully read file.
  *
  * @private
  * @param repoRoot - Repository root directory
- * @returns Absolute config path or error message
+ * @returns Config path and source text, or error message
  */
-async function resolveConfigPath(
+async function loadConfigSource(
   repoRoot: string
-): Promise<readonly [string, null] | readonly [null, string]> {
+): Promise<readonly [string, null] | readonly [null, { readonly configPath: string; readonly source: string }]> {
   const candidates = CONFIG_EXTENSIONS.map((ext) => path.join(repoRoot, `${CONFIG_BASENAME}${ext}`))
 
   const results = await Promise.all(
     candidates.map(async (candidate) => {
       try {
-        await fs.access(candidate)
-        return candidate
+        const content = await fs.readFile(candidate, 'utf8')
+        return { configPath: candidate, source: content }
       } catch {
         return null
       }
@@ -201,28 +196,13 @@ async function resolveConfigPath(
 }
 
 /**
- * Read the source text of a file.
- *
- * @private
- * @param filePath - Absolute path to the file
- * @returns File content or error message
- */
-async function readSource(
-  filePath: string
-): Promise<readonly [string, null] | readonly [null, string]> {
-  try {
-    const content = await fs.readFile(filePath, 'utf8')
-    return [null, content]
-  } catch {
-    return [`Failed to read config file: ${filePath}`, null]
-  }
-}
-
-/**
  * Attempt to extract a version comment from the config source.
  *
  * Looks for patterns like `// @zpress-version 0.3.0` or
  * `@zpress/kit` import to infer the approximate version.
+ *
+ * TODO: Implement version extraction — currently returns null,
+ * causing the caller to fall back to '0.0.0' (re-evaluates all codemods).
  *
  * @private
  * @param _source - Config file source text

@@ -24,8 +24,9 @@ import type { Codemod, CodemodRunSummary, MigrateOptions, MigrateResult } from '
  */
 export async function migrate(options: MigrateOptions): Promise<CodemodResult<MigrateResult>> {
   const { configPath, source, fromVersion, toVersion, dryRun } = options
+  const repoRoot = path.dirname(configPath)
 
-  const [manifestErr, manifest] = await loadCodemodManifest(path.dirname(configPath))
+  const [manifestErr, manifest] = await loadCodemodManifest(repoRoot)
   if (manifestErr) {
     return [manifestErr, null]
   }
@@ -56,7 +57,6 @@ export async function migrate(options: MigrateOptions): Promise<CodemodResult<Mi
       return [writeErr, null]
     }
 
-    const repoRoot = path.dirname(configPath)
     const updatedManifest = appendApplied({
       current: manifest,
       version: toVersion,

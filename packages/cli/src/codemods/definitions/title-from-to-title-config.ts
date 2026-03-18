@@ -24,6 +24,14 @@ const TITLE_FROM_PATTERN = /\s*titleFrom:\s*['"](\w+)['"]/g
 const TITLE_TRANSFORM_PATTERN = /\s*titleTransform:\s*(.+)/g
 
 /**
+ * Maximum character distance between `titleFrom` and `titleTransform` to
+ * consider them part of the same section object. Keeps the proximity
+ * heuristic from silently mis-pairing properties separated by large
+ * comment blocks.
+ */
+const MAX_PROPERTY_DISTANCE = 500
+
+/**
  * Transform config source to replace `titleFrom` / `titleTransform`
  * with `title: { from, transform }`.
  *
@@ -32,7 +40,6 @@ const TITLE_TRANSFORM_PATTERN = /\s*titleTransform:\s*(.+)/g
  */
 function transform(params: TransformParams): TransformOutput {
   const { source } = params
-  const changes: { readonly description: string; readonly line?: number }[] = []
 
   const titleFromMatches = [...source.matchAll(TITLE_FROM_PATTERN)]
   const titleTransformMatches = [...source.matchAll(TITLE_TRANSFORM_PATTERN)]
@@ -56,32 +63,39 @@ function transform(params: TransformParams): TransformOutput {
 
   // Remove titleTransform lines first (process in reverse to preserve indices)
   const sortedTransforms = titleTransformValues.toSorted((a, b) => b.index - a.index)
-  const afterTransformRemoval = sortedTransforms.reduce((text, entry) => {
-    const lineWithComma = new RegExp(`\\n?${escapeRegExp(entry.full.trimStart())}[,]?[ ]*`, 'g')
-    changes.push({
-      description: 'Removed deprecated `titleTransform` property',
-    })
-    return text.replaceAll(lineWithComma, '')
-  }, source)
+  const removalResult = sortedTransforms.reduce<TransformOutput>(
+    (acc, entry) => {
+      const lineWithComma = new RegExp(`\\n?${escapeRegExp(entry.full.trimStart())}[,]?[ ]*`, 'g')
+      return {
+        source: acc.source.replaceAll(lineWithComma, ''),
+        changes: [...acc.changes, { description: 'Removed deprecated `titleTransform` property' }],
+      }
+    },
+    { source, changes: [] }
+  )
 
   // Replace titleFrom with title: { from: ... } or title: { from: ..., transform: ... }
   const sortedFroms = titleFromValues.toSorted((a, b) => b.index - a.index)
-  const finalSource = sortedFroms.reduce((text, entry) => {
-    const matchingTransform = titleTransformValues.find((t) => {
-      const distance = Math.abs(t.index - entry.index)
-      return distance < 500
-    })
+  return sortedFroms.reduce<TransformOutput>(
+    (acc, entry) => {
+      const matchingTransform = titleTransformValues.find((t) => {
+        const distance = Math.abs(t.index - entry.index)
+        return distance < MAX_PROPERTY_DISTANCE
+      })
 
-    const titleObject = buildTitleObject(entry.value, matchingTransform)
+      const titleObject = buildTitleObject(entry.value, matchingTransform)
+      const linePattern = new RegExp(`${escapeRegExp(entry.full.trimStart())}[,]?[ ]*`)
 
-    const linePattern = new RegExp(`${escapeRegExp(entry.full.trimStart())}[,]?[ ]*`)
-    changes.push({
-      description: `Replaced \`titleFrom: '${entry.value}'\` with \`${titleObject}\``,
-    })
-    return text.replace(linePattern, titleObject)
-  }, afterTransformRemoval)
-
-  return { source: finalSource, changes }
+      return {
+        source: acc.source.replace(linePattern, titleObject),
+        changes: [
+          ...acc.changes,
+          { description: `Replaced \`titleFrom: '${entry.value}'\` with \`${titleObject}\`` },
+        ],
+      }
+    },
+    removalResult
+  )
 }
 
 /**
