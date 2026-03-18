@@ -88,9 +88,10 @@ export async function startDevServer(
     // Close existing server and wait for port release
     if (serverInstance) {
       const httpServer = serverInstance.httpServer
-      // Snapshot listening state before close() flips it to false
-      const listeningServer =
-        httpServer !== null && httpServer.listening ? httpServer : null
+      // Snapshot listening state and register listener before close() so
+      // we don't miss the 'close' event (once() only observes future emissions)
+      const closeEvent =
+        httpServer !== null && httpServer.listening ? once(httpServer, 'close') : null
       try {
         await serverInstance.close()
       } catch (error) {
@@ -98,10 +99,10 @@ export async function startDevServer(
       }
       // Rsbuild's close() destroys tracked sockets and calls httpServer.close(),
       // but the 'close' event fires only once the port is actually freed.
-      if (listeningServer) {
+      if (closeEvent) {
         const PORT_RELEASE_TIMEOUT = 5_000
         await Promise.race([
-          once(listeningServer, 'close'),
+          closeEvent,
           new Promise((resolve) => setTimeout(resolve, PORT_RELEASE_TIMEOUT)),
         ])
       }
