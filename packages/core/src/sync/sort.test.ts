@@ -29,10 +29,10 @@ describe('sortEntries()', () => {
     items: [leafA],
   }
 
-  it('should return a shallow copy in same order when no sort is provided', () => {
+  it('should apply default sort (pinned first, then alpha) when no sort is provided', () => {
     const entries: readonly ResolvedEntry[] = [leafA, leafB, leafC]
     const result = sortEntries(entries)
-    expect(result).toEqual([leafA, leafB, leafC])
+    expect(result.map((e) => e.title)).toEqual(['Apple', 'Mango', 'Zebra'])
     expect(result).not.toBe(entries)
   })
 
