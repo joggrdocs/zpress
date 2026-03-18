@@ -16,12 +16,28 @@
  * ```
  */
 
-import { escapeRegExp } from 'es-toolkit'
+import type { Codemod, TransformChange, TransformOutput, TransformParams } from '../types.ts'
 
-import type { Codemod, TransformOutput, TransformParams } from '../types.ts'
+/**
+ * Matches `titleFrom: 'value'` with surrounding whitespace/comma.
+ * Captures: [1] = value (e.g. 'heading')
+ */
+const TITLE_FROM_PATTERN = /[ \t]*titleFrom:\s*['"](\w+)['"][, \t]*/g
 
-const TITLE_FROM_PATTERN = /\s*titleFrom:\s*['"](\w+)['"]/g
-const TITLE_TRANSFORM_PATTERN = /\s*titleTransform:\s*(.+)/g
+/**
+ * Matches `titleTransform: <expression>` where the expression may span
+ * multiple lines (arrow functions, function references, etc.).
+ * Captures up to the next property-like line or closing brace.
+ * Captures: [1] = expression value
+ */
+const TITLE_TRANSFORM_PATTERN = /[ \t]*titleTransform:\s*([\s\S]+?)(?=\n\s*\w+:|[}\]])/g
+
+/**
+ * Matches a `title: 'string'` or `title: "string"` property (the old
+ * string form that is replaced by the object form).
+ * Captures: [1] = the quoted string value
+ */
+const TITLE_STRING_PATTERN = /[ \t]*title:\s*(['"][^'"]*['"])[, \t]*/g
 
 /**
  * Maximum character distance between `titleFrom` and `titleTransform` to
@@ -32,8 +48,21 @@ const TITLE_TRANSFORM_PATTERN = /\s*titleTransform:\s*(.+)/g
 const MAX_PROPERTY_DISTANCE = 500
 
 /**
+ * A region of text to be removed or replaced, identified by exact indices.
+ */
+interface EditRegion {
+  readonly start: number
+  readonly end: number
+  readonly replacement: string
+  readonly change: TransformChange
+}
+
+/**
  * Transform config source to replace `titleFrom` / `titleTransform`
  * with `title: { from, transform }`.
+ *
+ * Uses index-based splicing to guarantee edits land at the exact match
+ * position, avoiding issues when identical patterns appear multiple times.
  *
  * @param params - The config file path and source text
  * @returns Transform output with updated source and change descriptions
@@ -48,54 +77,40 @@ function transform(params: TransformParams): TransformOutput {
     return { source, changes: [] }
   }
 
-  // Collect match metadata
-  const titleFromValues = titleFromMatches.map((m) => ({
-    full: m[0],
-    value: m[1],
-    index: m.index ?? 0,
-  }))
+  const titleStringMatches = [...source.matchAll(TITLE_STRING_PATTERN)]
 
-  const titleTransformValues = titleTransformMatches.map((m) => ({
-    full: m[0],
-    value: m[1].replace(/,\s*$/, ''),
-    index: m.index ?? 0,
-  }))
+  // Track which titleTransform and title-string entries have been consumed
+  const consumedTransforms = new Set<number>()
+  const consumedTitleStrings = new Set<number>()
 
-  // Remove titleTransform lines first (process in reverse to preserve indices)
-  const sortedTransforms = titleTransformValues.toSorted((a, b) => b.index - a.index)
-  const removalResult = sortedTransforms.reduce<TransformOutput>(
-    (acc, entry) => {
-      const lineWithComma = new RegExp(`\\n?${escapeRegExp(entry.full.trimStart())}[,]?[ ]*`, 'g')
-      return {
-        source: acc.source.replaceAll(lineWithComma, ''),
-        changes: [...acc.changes, { description: 'Removed deprecated `titleTransform` property' }],
-      }
-    },
-    { source, changes: [] }
+  // Build edit regions for each titleFrom match
+  const edits = titleFromMatches.flatMap((m) =>
+    buildEditsForTitleFrom({
+      match: m,
+      titleTransformMatches,
+      titleStringMatches,
+      consumedTransforms,
+      consumedTitleStrings,
+    })
   )
 
-  // Replace titleFrom with title: { from: ... } or title: { from: ..., transform: ... }
-  const sortedFroms = titleFromValues.toSorted((a, b) => b.index - a.index)
-  return sortedFroms.reduce<TransformOutput>(
-    (acc, entry) => {
-      const matchingTransform = titleTransformValues.find((t) => {
-        const distance = Math.abs(t.index - entry.index)
-        return distance < MAX_PROPERTY_DISTANCE
-      })
+  // Also remove any orphaned titleTransform entries not paired with a titleFrom
+  const orphanedTransforms = titleTransformMatches
+    .filter((m) => !consumedTransforms.has(m.index ?? 0))
+    .map((m) => ({
+      start: m.index ?? 0,
+      end: (m.index ?? 0) + m[0].length,
+      replacement: '',
+      change: { description: 'Removed orphaned `titleTransform` property' } as TransformChange,
+    }))
 
-      const titleObject = buildTitleObject(entry.value, matchingTransform)
-      const linePattern = new RegExp(`${escapeRegExp(entry.full.trimStart())}[,]?[ ]*`)
+  const allEdits = [...edits, ...orphanedTransforms]
 
-      return {
-        source: acc.source.replace(linePattern, titleObject),
-        changes: [
-          ...acc.changes,
-          { description: `Replaced \`titleFrom: '${entry.value}'\` with \`${titleObject}\`` },
-        ],
-      }
-    },
-    removalResult
-  )
+  if (allEdits.length === 0) {
+    return { source, changes: [] }
+  }
+
+  return applyEdits(source, allEdits)
 }
 
 /**
@@ -116,19 +131,163 @@ export const titleFromToTitleConfig: Codemod = {
 // ---------------------------------------------------------------------------
 
 /**
+ * Build edit regions for a single `titleFrom` match, pairing it with
+ * nearby `titleTransform` and `title:` string entries.
+ *
+ * @private
+ * @param params - The match and available pairing candidates
+ * @returns Edit regions for this titleFrom occurrence
+ */
+function buildEditsForTitleFrom(params: {
+  readonly match: RegExpExecArray
+  readonly titleTransformMatches: readonly RegExpExecArray[]
+  readonly titleStringMatches: readonly RegExpExecArray[]
+  readonly consumedTransforms: Set<number>
+  readonly consumedTitleStrings: Set<number>
+}): readonly EditRegion[] {
+  const { match, titleTransformMatches, titleStringMatches, consumedTransforms, consumedTitleStrings } =
+    params
+  const fromIndex = match.index ?? 0
+  const fromEnd = fromIndex + match[0].length
+  const [, fromValue] = match
+
+  // Find nearest unconsumed titleTransform within range
+  const pairedTransform = findNearest(titleTransformMatches, fromIndex, consumedTransforms)
+  if (pairedTransform) {
+    consumedTransforms.add(pairedTransform.index ?? 0)
+  }
+
+  // Find nearest unconsumed title-string within range (to remove the old title key)
+  const pairedTitle = findNearest(titleStringMatches, fromIndex, consumedTitleStrings)
+  if (pairedTitle) {
+    consumedTitleStrings.add(pairedTitle.index ?? 0)
+  }
+
+  const titleObject = buildTitleObject(fromValue, pairedTransform)
+
+  const transformEdits = buildTransformRemovalEdit(pairedTransform)
+  const titleStringEdits = buildTitleStringRemovalEdit(pairedTitle)
+
+  // Replace titleFrom with the new title object
+  const fromEdit: EditRegion = {
+    start: fromIndex,
+    end: fromEnd,
+    replacement: titleObject,
+    change: { description: `Replaced \`titleFrom: '${fromValue}'\` with \`${titleObject}\`` },
+  }
+
+  return [...transformEdits, ...titleStringEdits, fromEdit]
+}
+
+/**
+ * Build an edit region to remove a paired titleTransform match.
+ *
+ * @private
+ * @param pairedTransform - The matched titleTransform, or undefined
+ * @returns Array with one edit if paired, empty otherwise
+ */
+function buildTransformRemovalEdit(
+  pairedTransform: RegExpExecArray | undefined
+): readonly EditRegion[] {
+  if (!pairedTransform) {
+    return []
+  }
+  return [
+    {
+      start: pairedTransform.index ?? 0,
+      end: (pairedTransform.index ?? 0) + pairedTransform[0].length,
+      replacement: '',
+      change: { description: 'Removed deprecated `titleTransform` property' },
+    },
+  ]
+}
+
+/**
+ * Build an edit region to remove a paired title-string match.
+ *
+ * @private
+ * @param pairedTitle - The matched title string, or undefined
+ * @returns Array with one edit if paired, empty otherwise
+ */
+function buildTitleStringRemovalEdit(
+  pairedTitle: RegExpExecArray | undefined
+): readonly EditRegion[] {
+  if (!pairedTitle) {
+    return []
+  }
+  return [
+    {
+      start: pairedTitle.index ?? 0,
+      end: (pairedTitle.index ?? 0) + pairedTitle[0].length,
+      replacement: '',
+      change: { description: `Removed old \`title: ${pairedTitle[1]}\` string property` },
+    },
+  ]
+}
+
+/**
+ * Find the nearest unconsumed match within MAX_PROPERTY_DISTANCE.
+ *
+ * @private
+ * @param matches - All regex matches to search
+ * @param anchorIndex - The character index to measure distance from
+ * @param consumed - Set of already-consumed match indices
+ * @returns The nearest match, or undefined
+ */
+function findNearest(
+  matches: readonly RegExpExecArray[],
+  anchorIndex: number,
+  consumed: Set<number>
+): RegExpExecArray | undefined {
+  return matches
+    .filter((m) => {
+      const idx = m.index ?? 0
+      return !consumed.has(idx) && Math.abs(idx - anchorIndex) < MAX_PROPERTY_DISTANCE
+    })
+    .toSorted(
+      (a, b) => Math.abs((a.index ?? 0) - anchorIndex) - Math.abs((b.index ?? 0) - anchorIndex)
+    )
+    .at(0)
+}
+
+/**
+ * Apply a set of non-overlapping edit regions to a source string.
+ *
+ * Sorts edits in descending order by start index so earlier indices
+ * remain valid as later portions of the string are modified.
+ *
+ * @private
+ * @param source - Original source text
+ * @param edits - Edit regions to apply
+ * @returns Transform output with the modified source and change log
+ */
+function applyEdits(source: string, edits: readonly EditRegion[]): TransformOutput {
+  const sorted = edits.toSorted((a, b) => b.start - a.start)
+
+  return sorted.reduce<TransformOutput>(
+    (acc, edit) => ({
+      source: acc.source.slice(0, edit.start) + edit.replacement + acc.source.slice(edit.end),
+      changes: [...acc.changes, edit.change],
+    }),
+    { source, changes: [] }
+  )
+}
+
+/**
  * Build a title object string from a `from` value and optional transform.
  *
  * @private
  * @param fromValue - The title derivation strategy value
- * @param matchingTransform - Optional matching titleTransform entry
+ * @param matchingTransform - Optional matched titleTransform regex result
  * @returns The formatted title object expression
  */
 function buildTitleObject(
   fromValue: string,
-  matchingTransform: { readonly value: string } | undefined
+  matchingTransform: RegExpExecArray | undefined
 ): string {
   if (matchingTransform) {
-    return `title: { from: '${fromValue}', transform: ${matchingTransform.value} }`
+    const value = matchingTransform[1].replace(/,\s*$/, '').trim()
+    return `title: { from: '${fromValue}', transform: ${value} },`
   }
-  return `title: { from: '${fromValue}' }`
+  return `title: { from: '${fromValue}' },`
 }

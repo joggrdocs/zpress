@@ -180,19 +180,27 @@ async function loadConfigSource(
     candidates.map(async (candidate) => {
       try {
         const content = await fs.readFile(candidate, 'utf8')
-        return { configPath: candidate, source: content }
-      } catch {
-        return null
+        return { configPath: candidate, source: content, error: null }
+      } catch (error) {
+        if (isNodeError(error) && error.code === 'ENOENT') {
+          return { configPath: null, source: null, error: null }
+        }
+        return { configPath: null, source: null, error: `Failed to read ${candidate}: ${String(error)}` }
       }
     })
   )
 
-  const found = results.find((r) => r !== null)
+  const readError = results.find((r) => r.error !== null)
+  if (readError) {
+    return [readError.error as string, null]
+  }
+
+  const found = results.find((r) => r.configPath !== null)
   if (!found) {
     return [`No config file found (tried ${CONFIG_EXTENSIONS.join(', ')})`, null]
   }
 
-  return [null, found]
+  return [null, { configPath: found.configPath as string, source: found.source as string }]
 }
 
 /**
@@ -210,4 +218,15 @@ async function loadConfigSource(
  */
 function extractFromVersion(_source: string): string | null {
   return null
+}
+
+/**
+ * Type guard for Node.js system errors with a `code` property.
+ *
+ * @private
+ * @param error - The unknown error value
+ * @returns Whether the error has a string `code` property
+ */
+function isNodeError(error: unknown): error is { readonly code: string } {
+  return typeof error === 'object' && error !== null && 'code' in error
 }
