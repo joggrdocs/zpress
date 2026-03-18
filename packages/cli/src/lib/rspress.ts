@@ -197,7 +197,7 @@ export function openBrowser(url: string): void {
  * @returns The HTTP server if present, otherwise null
  */
 function getHttpServer(instance: ServerInstance): Server | null {
-  const record = instance as Record<string, unknown>
+  const record = instance as unknown as Record<string, unknown>
   const value = record['httpServer']
   if (value instanceof Server) {
     return value
