@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process'
+import { once } from 'node:events'
+import type { Server } from 'node:http'
 import { platform } from 'node:os'
 
 import { dev, build, serve } from '@rspress/core'
@@ -19,10 +21,14 @@ interface ServerOptions {
 }
 
 /**
- * Server instance returned by Rspress dev() - allows closing the server.
+ * Server instance returned by Rspress dev() — the RsbuildDevServer.
+ *
+ * The `httpServer` property is the underlying Node.js HTTP server,
+ * needed to confirm the port is fully released after close().
  */
 interface ServerInstance {
   readonly close: () => Promise<void>
+  readonly httpServer: Server | null
 }
 
 /**
@@ -58,6 +64,7 @@ export async function startDevServer(
         extraBuilderConfig: {
           server: {
             port: DEFAULT_PORT,
+            strictPort: true,
           },
         },
       })
@@ -78,12 +85,25 @@ export async function startDevServer(
   return async (newConfig: ZpressConfig) => {
     process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
 
-    // Close existing server
+    // Close existing server and wait for port release
     if (serverInstance) {
+      const httpServer = serverInstance.httpServer
+      const wasListening = httpServer !== null && httpServer.listening
       try {
         await serverInstance.close()
       } catch (error) {
         process.stderr.write(`Error closing server: ${toError(error).message}\n`)
+      }
+      // Rsbuild's close() destroys tracked sockets and calls httpServer.close(),
+      // but the 'close' event fires only once the port is actually freed.
+      // Snapshot `wasListening` before close() to avoid the race where
+      // `listening` flips false before we attach the listener.
+      if (wasListening) {
+        const PORT_RELEASE_TIMEOUT = 5_000
+        await Promise.race([
+          once(httpServer, 'close'),
+          new Promise((resolve) => setTimeout(resolve, PORT_RELEASE_TIMEOUT)),
+        ])
       }
       serverInstance = null
     }
