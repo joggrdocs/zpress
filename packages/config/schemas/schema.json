@@ -23,11 +23,7 @@
             },
             "colorMode": {
               "type": "string",
-              "enum": [
-                "dark",
-                "light",
-                "toggle"
-              ]
+              "enum": ["dark", "light", "toggle"]
             },
             "switcher": {
               "type": "boolean"
@@ -107,18 +103,11 @@
                     "properties": {
                       "from": {
                         "type": "string",
-                        "enum": [
-                          "auto",
-                          "filename",
-                          "heading",
-                          "frontmatter"
-                        ]
+                        "enum": ["auto", "filename", "heading", "frontmatter"]
                       },
                       "transform": {}
                     },
-                    "required": [
-                      "from"
-                    ],
+                    "required": ["from"],
                     "additionalProperties": false
                   }
                 ]
@@ -148,10 +137,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "src",
-                  "alt"
-                ],
+                "required": ["src", "alt"],
                 "additionalProperties": false
               },
               "prefix": {
@@ -170,11 +156,7 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": [
-                          "default",
-                          "alpha",
-                          "filename"
-                        ]
+                        "enum": ["default", "alpha", "filename"]
                       },
                       {}
                     ]
@@ -192,10 +174,7 @@
                         "type": "string"
                       },
                       "titleTemplate": {
-                        "type": [
-                          "string",
-                          "boolean"
-                        ]
+                        "type": ["string", "boolean"]
                       },
                       "description": {
                         "type": "string"
@@ -326,11 +305,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "auto",
-                            "cards",
-                            "overview"
-                          ]
+                          "enum": ["auto", "cards", "overview"]
                         },
                         {
                           "type": "boolean",
@@ -357,11 +332,7 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": [
-                            "default",
-                            "alpha",
-                            "filename"
-                          ]
+                          "enum": ["default", "alpha", "filename"]
                         },
                         {
                           "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/discovery/properties/sort/anyOf/1"
@@ -411,10 +382,7 @@
                               "type": "string"
                             }
                           },
-                          "required": [
-                            "src",
-                            "alt"
-                          ],
+                          "required": ["src", "alt"],
                           "additionalProperties": false
                         }
                       },
@@ -425,20 +393,13 @@
                     },
                     "titleFrom": {
                       "type": "string",
-                      "enum": [
-                        "filename",
-                        "heading",
-                        "frontmatter",
-                        "auto"
-                      ]
+                      "enum": ["filename", "heading", "frontmatter", "auto"]
                     },
                     "titleTransform": {
                       "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title/anyOf/1/properties/transform"
                     }
                   },
-                  "required": [
-                    "title"
-                  ],
+                  "required": ["title"],
                   "additionalProperties": false
                 }
               },
@@ -456,24 +417,14 @@
                   },
                   "sidebarLayout": {
                     "type": "string",
-                    "enum": [
-                      "method-path",
-                      "title"
-                    ]
+                    "enum": ["method-path", "title"]
                   }
                 },
-                "required": [
-                  "spec",
-                  "prefix"
-                ],
+                "required": ["spec", "prefix"],
                 "additionalProperties": false
               }
             },
-            "required": [
-              "title",
-              "description",
-              "prefix"
-            ],
+            "required": ["title", "description", "prefix"],
             "additionalProperties": false
           }
         },
@@ -508,12 +459,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "title",
-              "description",
-              "icon",
-              "items"
-            ],
+            "required": ["title", "description", "icon", "items"],
             "additionalProperties": false
           }
         },
@@ -535,10 +481,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "title",
-              "description"
-            ],
+            "required": ["title", "description"],
             "additionalProperties": false
           }
         },
@@ -549,10 +492,7 @@
             "properties": {
               "theme": {
                 "type": "string",
-                "enum": [
-                  "brand",
-                  "alt"
-                ]
+                "enum": ["brand", "alt"]
               },
               "text": {
                 "type": "string"
@@ -561,11 +501,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "theme",
-              "text",
-              "link"
-            ],
+            "required": ["theme", "text", "link"],
             "additionalProperties": false
           }
         },
@@ -598,19 +534,13 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "id",
-                          "color"
-                        ],
+                        "required": ["id", "color"],
                         "additionalProperties": false
                       }
                     ]
                   }
                 },
-                "required": [
-                  "text",
-                  "link"
-                ],
+                "required": ["text", "link"],
                 "additionalProperties": false
               }
             },
@@ -657,9 +587,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "title"
-                ],
+                "required": ["title"],
                 "additionalProperties": false
               }
             }
@@ -672,9 +600,7 @@
           }
         }
       },
-      "required": [
-        "sections"
-      ],
+      "required": ["sections"],
       "additionalProperties": false
     }
   }
