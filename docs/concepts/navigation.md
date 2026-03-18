@@ -85,4 +85,4 @@ The `activeMatch` value is a regex pattern tested against the current URL path.
 
 ## References
 
-- [Configuration reference — NavItem](/reference/configuration#navitem)
+- [Configuration reference — NavItem](/references/configuration#navitem)

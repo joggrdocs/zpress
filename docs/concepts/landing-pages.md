@@ -28,9 +28,9 @@ Navigating to `/guides` shows a landing page with cards for each discovered guid
 
 ## Overview file promotion
 
-If a section's children include a file named `overview.md`, `index.md`, or `readme.md`, that file is promoted to the section header. Its content becomes the section's landing page instead of the auto-generated cards.
+When using `recursive: true`, the `indexFile` field controls which filename is promoted to the section header (default: `"overview"`). That file's content becomes the section's landing page instead of auto-generated cards.
 
-With `recursive: true`, the `indexFile` field controls which filename is used (default: `"overview"`):
+To promote a different file, set `indexFile` to the filename without extension (e.g. `indexFile: 'index'` or `indexFile: 'readme'`):
 
 ```ts
 {
@@ -52,7 +52,7 @@ Sections without workspace metadata display simple cards. Each card shows:
 
 ## Workspace cards
 
-When workspace metadata (from `apps`, `packages`, or `workspaces`) matches a section by `path`, the landing page uses workspace-style cards. These show:
+When workspace metadata (from `apps`, `packages`, or `workspaces`) matches a section by `prefix`, the landing page uses workspace-style cards. These show:
 
 - Icon with color styling
 - Scope label (e.g. `apps/`)
@@ -84,5 +84,5 @@ Card descriptions are resolved in this order (highest priority first):
 
 ## References
 
-- [Configuration reference — CardConfig](/reference/configuration#cardconfig)
+- [Configuration reference — CardConfig](/references/configuration#cardconfig)
 - [Workspaces guide](/concepts/workspaces)

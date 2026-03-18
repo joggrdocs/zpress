@@ -58,12 +58,16 @@ Build the static site for production.
 zpress build [--quiet] [--clean]
 ```
 
-| Flag      | Type      | Default | Description                            |
-| --------- | --------- | ------- | -------------------------------------- |
-| `--quiet` | `boolean` | `false` | Suppress non-error output              |
-| `--clean` | `boolean` | `false` | Remove build artifacts before building |
+| Flag         | Type      | Default | Description                                           |
+| ------------ | --------- | ------- | ----------------------------------------------------- |
+| `--quiet`    | `boolean` | `false` | Suppress non-error output                             |
+| `--clean`    | `boolean` | `false` | Remove build artifacts before building                |
+| `--check`    | `boolean` | `true`  | Validate config and check for broken links during build |
+| `--no-check` | —         | —       | Skip config validation and deadlink checks            |
 
 Runs `sync` first, then builds the Rspress site. Output is written to `.zpress/dist/`.
+
+When `--check` is enabled (the default), config validation and deadlink detection run as part of the build. Use `--no-check` to skip checks and build with standard Rspress output.
 
 ## serve
 
@@ -108,6 +112,32 @@ zpress dump
 Loads the config, resolves all entries (including glob patterns and recursive discovery), and outputs the resolved navigation tree to stdout. Useful for debugging the information architecture.
 
 Output includes `text`, `link`, `collapsible`, `hidden`, `isolated`, and nested `items` for each entry.
+
+## check
+
+Validate config and check for broken links.
+
+```bash
+zpress check
+```
+
+Validates the config file, syncs content, then runs a build to detect deadlinks. Reports results for both config validation and link checking. Exits with code `1` if any check fails. Useful for CI pipelines.
+
+## draft
+
+Scaffold a new documentation file from a template.
+
+```bash
+zpress draft [--type <type>] [--title <title>] [--out <dir>]
+```
+
+| Flag      | Type     | Default | Description                          |
+| --------- | -------- | ------- | ------------------------------------ |
+| `--type`  | `string` | —       | Template type (prompts if omitted)   |
+| `--title` | `string` | —       | Document title (prompts if omitted)  |
+| `--out`   | `string` | `"."`   | Output directory for the new file    |
+
+When `--type` or `--title` are omitted, an interactive prompt lets you select from the available templates and enter a title. The output filename is derived from the title slug (e.g. `"Authentication"` → `authentication.md`).
 
 ## generate
 

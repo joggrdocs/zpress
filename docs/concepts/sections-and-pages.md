@@ -152,6 +152,19 @@ By default all sections share one sidebar. Set `isolated: true` to give a sectio
 
 When navigating to `/api/`, only that section's sidebar appears.
 
+## Additional section fields
+
+Sections also accept these optional fields:
+
+| Field     | Type                                       | Description                                          |
+| --------- | ------------------------------------------ | ---------------------------------------------------- |
+| `landing` | `'auto' \| 'cards' \| 'overview' \| false` | Controls landing page generation mode                |
+| `icon`    | `IconConfig`                               | Icon for cards and landing pages                     |
+| `card`    | `CardConfig`                               | Metadata for how this section appears on parent cards |
+
+See the [Landing Pages guide](/concepts/landing-pages) for how landing pages are generated.
+
 ## References
 
+- [Configuration reference — Section fields](/references/configuration#section-fields) — complete field reference
 - [Navigation guide](/concepts/navigation) — configuring the top navigation bar

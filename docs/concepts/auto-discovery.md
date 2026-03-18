@@ -47,15 +47,12 @@ You can also use the `title` field with a configuration object for more control:
 
 ```ts
 {
-  title: 'ADRs',
+  title: {
+    from: 'auto',
+    transform: (title, slug) => slug.replace(/^(\d+)-/, '$1. '),
+  },
   prefix: '/adrs',
   from: 'docs/adrs/*.md',
-  discovery: {
-    title: {
-      from: 'auto',
-      transform: (title, slug) => slug.replace(/^(\d+)-/, '$1. '),
-    },
-  },
 }
 ```
 
@@ -65,13 +62,14 @@ Transforms only apply to auto-discovered children. Sections with explicit `title
 
 ## Sorting
 
-| Strategy      | Behavior                            |
-| ------------- | ----------------------------------- |
-| `'alpha'`     | Alphabetical by derived text        |
-| `'filename'`  | Alphabetical by filename            |
-| `(a, b) => n` | Custom comparator on `ResolvedPage` |
+| Strategy      | Behavior                                                              |
+| ------------- | --------------------------------------------------------------------- |
+| `'default'`   | Pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then alpha |
+| `'alpha'`     | Alphabetical by derived text                                          |
+| `'filename'`  | Alphabetical by filename                                              |
+| `(a, b) => n` | Custom comparator on `ResolvedPage`                                   |
 
-When `sort` is omitted, entries appear in glob discovery order.
+When `sort` is omitted, the `'default'` strategy is used — intro files are pinned to the top, remaining entries are sorted alphabetically.
 
 ```ts
 {
@@ -103,5 +101,5 @@ When combining `items` with `from`, explicit entries win. If an explicit entry h
 
 ## References
 
-- [Configuration — Entry fields](/reference/configuration#entry-fields)
+- [Configuration — Section fields](/references/configuration#section-fields)
 - [Sections and pages](/concepts/sections-and-pages)
