@@ -27,11 +27,17 @@ const TITLE_FROM_PATTERN = /[ \t]*titleFrom:\s*['"](\w+)['"][, \t]*/g
 /**
  * Matches `titleTransform: <expression>` where the expression may span
  * multiple lines (arrow functions, block-bodied arrows, etc.).
- * Terminates at a comma followed by a newline + property key, preserving
- * block bodies like `(v) => { return v.trim() }`.
+ *
+ * Terminates at the first of:
+ * - Optional comma + newline + next property key (`\w+:`)
+ * - Optional comma + newline + closing brace/bracket (end of object/array)
+ *
+ * The newline requirement prevents inline `}` in block bodies like
+ * `(v) => { return v.trim() }` from prematurely ending the capture.
+ *
  * Captures: [1] = expression value
  */
-const TITLE_TRANSFORM_PATTERN = /[ \t]*titleTransform:\s*([\s\S]+?)(?=,\s*\n\s*\w+:|\n\s*\w+:)/g
+const TITLE_TRANSFORM_PATTERN = /[ \t]*titleTransform:\s*([\s\S]+?)(?=,?\s*\n\s*(?:\w+:|[}\]]))/g
 
 /**
  * Matches a `title: 'string'` or `title: "string"` property (the old
