@@ -2,8 +2,8 @@ import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'zpress',
-  description: 'Beautiful Docs, Zero Config',
-  tagline: 'An opinionated documentation framework for monorepos. Just point it at your code.',
+  description: 'Docs That Just Work',
+  tagline: 'An opinionated documentation framework for monorepos. No restructuring, no plugins, no theme wiring — just point it at your markdown.',
   theme: { switcher: true },
   sidebar: {
     below: [{ text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' }],
@@ -14,8 +14,8 @@ export default defineConfig({
   ],
   features: [
     {
-      title: 'Zero Config',
-      description: 'Point it at your repo and get a working site. Real defaults, no boilerplate.',
+      title: 'Zero Effort',
+      description: 'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
       link: '/getting-started/quick-start',
       icon: 'pixelarticons:speed-fast',
     },
