@@ -88,10 +88,9 @@ export async function startDevServer(
     // Close existing server and wait for port release
     if (serverInstance) {
       const httpServer = getHttpServer(serverInstance)
-      // Snapshot listening state and register listener before close() so
-      // we don't miss the 'close' event (once() only observes future emissions)
-      const closeEvent =
-        httpServer !== null && httpServer.listening ? once(httpServer, 'close') : null
+      // Register the close listener before close() so we don't miss the
+      // event (once() only observes future emissions)
+      const closeEvent = createCloseEvent(httpServer)
       try {
         await serverInstance.close()
       } catch (error) {
@@ -100,9 +99,10 @@ export async function startDevServer(
       // Rsbuild's close() destroys tracked sockets and calls httpServer.close(),
       // but the 'close' event fires only once the port is actually freed.
       if (closeEvent) {
-        const PORT_RELEASE_TIMEOUT = 5_000
+        const PORT_RELEASE_TIMEOUT = 5000
         await Promise.race([
           closeEvent,
+          // oxlint-disable-next-line no-promise-executor-return -- timeout resolve is intentional
           new Promise((resolve) => setTimeout(resolve, PORT_RELEASE_TIMEOUT)),
         ])
       }
@@ -184,6 +184,26 @@ export function openBrowser(url: string): void {
 }
 
 // ---------------------------------------------------------------------------
+
+/**
+ * Create a close event promise if the server is actively listening.
+ *
+ * Must be called before `close()` so the listener is registered
+ * before the event fires — `once()` only observes future emissions.
+ *
+ * @private
+ * @param httpServer - The HTTP server to listen on, or null
+ * @returns A promise that resolves when 'close' fires, or null if not listening
+ */
+function createCloseEvent(httpServer: Server | null): Promise<unknown[]> | null {
+  if (httpServer === null) {
+    return null
+  }
+  if (!httpServer.listening) {
+    return null
+  }
+  return once(httpServer, 'close')
+}
 
 /**
  * Extract the underlying HTTP server from a Rspress/Rsbuild server instance.
