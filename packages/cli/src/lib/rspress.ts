@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { once } from 'node:events'
-import type { Server } from 'node:http'
+import { Server } from 'node:http'
 import { platform } from 'node:os'
 
 import { dev, build, serve } from '@rspress/core'
@@ -21,14 +21,14 @@ interface ServerOptions {
 }
 
 /**
- * Server instance returned by Rspress dev() — the RsbuildDevServer.
+ * Server instance returned by Rspress dev().
  *
- * The `httpServer` property is the underlying Node.js HTTP server,
- * needed to confirm the port is fully released after close().
+ * Rspress only declares `close()` in its public types, but the
+ * underlying Rsbuild server exposes `httpServer` at runtime.
+ * We access it via {@link getHttpServer} to avoid a type mismatch.
  */
 interface ServerInstance {
   readonly close: () => Promise<void>
-  readonly httpServer: Server | null
 }
 
 /**
@@ -87,7 +87,7 @@ export async function startDevServer(
 
     // Close existing server and wait for port release
     if (serverInstance) {
-      const httpServer = serverInstance.httpServer
+      const httpServer = getHttpServer(serverInstance)
       // Snapshot listening state and register listener before close() so
       // we don't miss the 'close' event (once() only observes future emissions)
       const closeEvent =
@@ -181,4 +181,26 @@ export function openBrowser(url: string): void {
     .with('win32', () => ({ cmd: 'cmd', args: ['/c', 'start', url] }))
     .otherwise(() => ({ cmd: 'xdg-open', args: [url] }))
   spawn(cmd, args, { stdio: 'ignore', detached: true }).unref()
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract the underlying HTTP server from a Rspress/Rsbuild server instance.
+ *
+ * Rspress's public `ServerInstance` type only declares `close()`, but the
+ * runtime object is a Rsbuild dev server which exposes `httpServer`.
+ * This helper performs a runtime property check to safely extract it.
+ *
+ * @private
+ * @param instance - The server instance returned by Rspress dev()
+ * @returns The HTTP server if present, otherwise null
+ */
+function getHttpServer(instance: ServerInstance): Server | null {
+  const record = instance as Record<string, unknown>
+  const value = record['httpServer']
+  if (value instanceof Server) {
+    return value
+  }
+  return null
 }
