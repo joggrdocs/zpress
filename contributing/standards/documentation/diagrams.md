@@ -26,7 +26,7 @@ Mermaid and tree blocks also render natively on GitHub — GitHub supports ` ```
 | System architecture, data pipelines, routing | Flowchart         | Webhook routing, dependency chains      |
 | Request/response flows, multi-step protocols | Sequence diagram  | OAuth handshakes, API request lifecycle |
 | Database models, entity relationships        | ER diagram        | Data model, authorization schema        |
-| Directory layouts                            | File tree (ASCII) | Repository structure                    |
+| Directory layouts                            | File tree (Tree block) | Repository structure                    |
 
 Rule of thumb:
 
