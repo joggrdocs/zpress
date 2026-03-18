@@ -26,11 +26,12 @@ const TITLE_FROM_PATTERN = /[ \t]*titleFrom:\s*['"](\w+)['"][, \t]*/g
 
 /**
  * Matches `titleTransform: <expression>` where the expression may span
- * multiple lines (arrow functions, function references, etc.).
- * Captures up to the next property-like line or closing brace.
+ * multiple lines (arrow functions, block-bodied arrows, etc.).
+ * Terminates at a comma followed by a newline + property key, preserving
+ * block bodies like `(v) => { return v.trim() }`.
  * Captures: [1] = expression value
  */
-const TITLE_TRANSFORM_PATTERN = /[ \t]*titleTransform:\s*([\s\S]+?)(?=\n\s*\w+:|[}\]])/g
+const TITLE_TRANSFORM_PATTERN = /[ \t]*titleTransform:\s*([\s\S]+?)(?=,\s*\n\s*\w+:|\n\s*\w+:)/g
 
 /**
  * Matches a `title: 'string'` or `title: "string"` property (the old
@@ -110,7 +111,7 @@ function transform(params: TransformParams): TransformOutput {
     return { source, changes: [] }
   }
 
-  return applyEdits(source, allEdits)
+  return applyEdits({ source, edits: allEdits })
 }
 
 /**
@@ -152,18 +153,26 @@ function buildEditsForTitleFrom(params: {
   const [, fromValue] = match
 
   // Find nearest unconsumed titleTransform within range
-  const pairedTransform = findNearest(titleTransformMatches, fromIndex, consumedTransforms)
+  const pairedTransform = findNearest({
+    matches: titleTransformMatches,
+    anchorIndex: fromIndex,
+    consumed: consumedTransforms,
+  })
   if (pairedTransform) {
     consumedTransforms.add(pairedTransform.index ?? 0)
   }
 
   // Find nearest unconsumed title-string within range (to remove the old title key)
-  const pairedTitle = findNearest(titleStringMatches, fromIndex, consumedTitleStrings)
+  const pairedTitle = findNearest({
+    matches: titleStringMatches,
+    anchorIndex: fromIndex,
+    consumed: consumedTitleStrings,
+  })
   if (pairedTitle) {
     consumedTitleStrings.add(pairedTitle.index ?? 0)
   }
 
-  const titleObject = buildTitleObject(fromValue, pairedTransform)
+  const titleObject = buildTitleObject({ fromValue, matchingTransform: pairedTransform })
 
   const transformEdits = buildTransformRemovalEdit(pairedTransform)
   const titleStringEdits = buildTitleStringRemovalEdit(pairedTitle)
@@ -229,16 +238,18 @@ function buildTitleStringRemovalEdit(
  * Find the nearest unconsumed match within MAX_PROPERTY_DISTANCE.
  *
  * @private
- * @param matches - All regex matches to search
- * @param anchorIndex - The character index to measure distance from
- * @param consumed - Set of already-consumed match indices
+ * @param params - Search parameters
+ * @param params.matches - All regex matches to search
+ * @param params.anchorIndex - The character index to measure distance from
+ * @param params.consumed - Set of already-consumed match indices
  * @returns The nearest match, or undefined
  */
-function findNearest(
-  matches: readonly RegExpExecArray[],
-  anchorIndex: number,
-  consumed: Set<number>
-): RegExpExecArray | undefined {
+function findNearest(params: {
+  readonly matches: readonly RegExpExecArray[]
+  readonly anchorIndex: number
+  readonly consumed: Set<number>
+}): RegExpExecArray | undefined {
+  const { matches, anchorIndex, consumed } = params
   return matches
     .filter((m) => {
       const idx = m.index ?? 0
@@ -257,19 +268,23 @@ function findNearest(
  * remain valid as later portions of the string are modified.
  *
  * @private
- * @param source - Original source text
- * @param edits - Edit regions to apply
+ * @param params - Source text and edit regions
+ * @param params.source - Original source text
+ * @param params.edits - Edit regions to apply
  * @returns Transform output with the modified source and change log
  */
-function applyEdits(source: string, edits: readonly EditRegion[]): TransformOutput {
-  const sorted = edits.toSorted((a, b) => b.start - a.start)
+function applyEdits(params: {
+  readonly source: string
+  readonly edits: readonly EditRegion[]
+}): TransformOutput {
+  const sorted = params.edits.toSorted((a, b) => b.start - a.start)
 
   return sorted.reduce<TransformOutput>(
     (acc, edit) => ({
       source: acc.source.slice(0, edit.start) + edit.replacement + acc.source.slice(edit.end),
       changes: [...acc.changes, edit.change],
     }),
-    { source, changes: [] }
+    { source: params.source, changes: [] }
   )
 }
 
@@ -277,14 +292,16 @@ function applyEdits(source: string, edits: readonly EditRegion[]): TransformOutp
  * Build a title object string from a `from` value and optional transform.
  *
  * @private
- * @param fromValue - The title derivation strategy value
- * @param matchingTransform - Optional matched titleTransform regex result
+ * @param params - Title object components
+ * @param params.fromValue - The title derivation strategy value
+ * @param params.matchingTransform - Optional matched titleTransform regex result
  * @returns The formatted title object expression
  */
-function buildTitleObject(
-  fromValue: string,
-  matchingTransform: RegExpExecArray | undefined
-): string {
+function buildTitleObject(params: {
+  readonly fromValue: string
+  readonly matchingTransform: RegExpExecArray | undefined
+}): string {
+  const { fromValue, matchingTransform } = params
   if (matchingTransform) {
     const value = matchingTransform[1].replace(/,\s*$/, '').trim()
     return `title: { from: '${fromValue}', transform: ${value} },`

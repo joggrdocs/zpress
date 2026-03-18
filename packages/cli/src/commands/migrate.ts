@@ -176,31 +176,31 @@ async function loadConfigSource(
 ): Promise<readonly [string, null] | readonly [null, { readonly configPath: string; readonly source: string }]> {
   const candidates = CONFIG_EXTENSIONS.map((ext) => path.join(repoRoot, `${CONFIG_BASENAME}${ext}`))
 
-  const results = await Promise.all(
-    candidates.map(async (candidate) => {
-      try {
-        const content = await fs.readFile(candidate, 'utf8')
-        return { configPath: candidate, source: content, error: null }
-      } catch (error) {
-        if (isNodeError(error) && error.code === 'ENOENT') {
-          return { configPath: null, source: null, error: null }
-        }
-        return { configPath: null, source: null, error: `Failed to read ${candidate}: ${String(error)}` }
+  // Sequential short-circuit: stop on first successful read, surface non-ENOENT errors immediately
+  const result = await candidates.reduce<
+    Promise<readonly [string, null] | readonly [null, { readonly configPath: string; readonly source: string }] | null>
+  >(async (accPromise, candidate) => {
+    const acc = await accPromise
+    // Already found a result or hit an error — skip remaining candidates
+    if (acc !== null) {
+      return acc
+    }
+    try {
+      const content = await fs.readFile(candidate, 'utf8')
+      return [null, { configPath: candidate, source: content }]
+    } catch (error) {
+      if (isNodeError(error) && error.code === 'ENOENT') {
+        return null
       }
-    })
-  )
+      return [`Failed to read ${candidate}: ${String(error)}`, null]
+    }
+  }, Promise.resolve(null))
 
-  const readError = results.find((r) => r.error !== null)
-  if (readError) {
-    return [readError.error as string, null]
+  if (result) {
+    return result
   }
 
-  const found = results.find((r) => r.configPath !== null)
-  if (!found) {
-    return [`No config file found (tried ${CONFIG_EXTENSIONS.join(', ')})`, null]
-  }
-
-  return [null, { configPath: found.configPath as string, source: found.source as string }]
+  return [`No config file found (tried ${CONFIG_EXTENSIONS.join(', ')})`, null]
 }
 
 /**
