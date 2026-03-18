@@ -143,8 +143,7 @@ export type TitleConfig =
  * ```
  */
 export interface CardConfig {
-  readonly icon?: string
-  readonly iconColor?: string
+  readonly icon?: IconConfig
   readonly scope?: string
   readonly description?: string
   readonly tags?: readonly string[]
@@ -206,7 +205,7 @@ export interface HeroAction {
 export interface SidebarLink {
   readonly text: string
   readonly link: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: IconConfig
 }
 
 /**
@@ -286,8 +285,7 @@ export interface Section {
   readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly recursive?: boolean
   readonly indexFile?: string
-  readonly icon?: string
-  readonly iconColor?: string
+  readonly icon?: IconConfig
   readonly card?: CardConfig
   readonly isolated?: boolean
   /**
@@ -319,8 +317,7 @@ export interface Section {
  */
 export interface Workspace {
   readonly title: TitleConfig
-  readonly icon?: string
-  readonly iconColor?: string
+  readonly icon?: IconConfig
   readonly description: string
   readonly tags?: readonly string[]
   readonly badge?: { readonly src: string; readonly alt: string }
