@@ -79,10 +79,14 @@ const discoverySchema = z
   })
   .strict()
 
+const iconConfigSchema = z.union([
+  z.string(),
+  z.object({ id: z.string(), color: z.string() }).strict(),
+])
+
 const cardConfigSchema = z
   .object({
-    icon: z.string().optional(),
-    iconColor: z.string().optional(),
+    icon: iconConfigSchema.optional(),
     scope: z.string().optional(),
     description: z.string().optional(),
     tags: z.array(z.string()).optional(),
@@ -107,8 +111,7 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
       sort: z.union([z.enum(['default', 'alpha', 'filename']), sortFnSchema]).optional(),
       recursive: z.boolean().optional(),
       indexFile: z.string().optional(),
-      icon: z.string().optional(),
-      iconColor: z.string().optional(),
+      icon: iconConfigSchema.optional(),
       card: cardConfigSchema.optional(),
       isolated: z.boolean().optional(),
       // Deprecated fields for backward compatibility
@@ -130,8 +133,7 @@ const openapiConfigSchema = z
 const workspaceItemSchema = z
   .object({
     title: titleConfigSchema,
-    icon: z.string().optional(),
-    iconColor: z.string().optional(),
+    icon: iconConfigSchema.optional(),
     description: z.string(),
     tags: z.array(z.string()).optional(),
     badge: z.object({ src: z.string(), alt: z.string() }).strict().optional(),
@@ -194,9 +196,7 @@ const sidebarLinkSchema = z
   .object({
     text: z.string(),
     link: z.string(),
-    icon: z
-      .union([z.string(), z.object({ id: z.string(), color: z.string() }).strict()])
-      .optional(),
+    icon: iconConfigSchema.optional(),
   })
   .strict()
 
