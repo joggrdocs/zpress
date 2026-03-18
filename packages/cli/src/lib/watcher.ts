@@ -90,7 +90,7 @@ export function createWatcher(
         await onConfigReload(config)
       }
     } catch (error) {
-      consecutiveFailures = consecutiveFailures + 1
+      consecutiveFailures += 1
       cliLogger.error(`Sync error: ${toError(error).message}`)
     } finally {
       syncing = false
