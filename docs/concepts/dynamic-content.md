@@ -80,5 +80,5 @@ Hidden pages are still accessible by URL and can be linked to from other pages. 
 
 ## References
 
-- [Configuration reference — Section fields](/references/configuration#section-fields)
+- [Configuration reference — Section fields](/reference/configuration#section-fields)
 - [Sections and Pages guide](/concepts/sections-and-pages)

@@ -84,5 +84,5 @@ Card descriptions are resolved in this order (highest priority first):
 
 ## References
 
-- [Configuration reference — CardConfig](/references/configuration#cardconfig)
+- [Configuration reference — CardConfig](/reference/configuration#cardconfig)
 - [Workspaces guide](/concepts/workspaces)

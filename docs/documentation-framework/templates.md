@@ -253,4 +253,4 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 
 - [Types](/documentation-framework/types) — rules for each doc type
 - [Recommended](/documentation-framework/recommended) — where templates fit in the layout
-- [CLI Commands](/references/cli) — full CLI reference
+- [CLI Commands](/reference/cli) — full CLI reference

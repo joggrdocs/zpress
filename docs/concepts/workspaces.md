@@ -61,7 +61,7 @@ export default defineConfig({
 | Field         | Type                           | Required | Description                                                                                                                                                              |
 | ------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `title`       | `TitleConfig`                  | yes      | Display name or derived title config                                                                                                                                     |
-| `icon`        | `IconConfig`                   | no       | Icon ID string (from bundled collections) or `{ id: IconId, color: IconColor }` object. See [icon reference](/references/icons/overview) for supported icons.            |
+| `icon`        | `IconConfig`                   | no       | Icon ID string (from bundled collections) or `{ id: IconId, color: IconColor }` object. See [icon reference](/references/icons) for supported icons.            |
 | `description` | `string`                       | yes      | Short description for cards                                                                                                                                              |
 | `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                                                                                                                                             |
 | `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                                                                                                                                       |
@@ -94,4 +94,4 @@ See the [Landing Pages guide](/concepts/landing-pages) for details on auto-gener
 
 The `workspaces` config field accepts `WorkspaceCategory[]` for defining custom named groups beyond the built-in `apps` and `packages` arrays. Each category has a `title`, `description`, `icon`, and `items` array of `Workspace` entries. Custom categories receive the same card and landing page treatment as the built-in groups, letting you organize workspace metadata into any number of categories.
 
-See the [Configuration reference — WorkspaceCategory](/references/configuration#workspacecategory) for the full field reference.
+See the [Configuration reference — WorkspaceCategory](/reference/configuration#workspacecategory) for the full field reference.

@@ -166,5 +166,5 @@ See the [Landing Pages guide](/concepts/landing-pages) for how landing pages are
 
 ## References
 
-- [Configuration reference — Section fields](/references/configuration#section-fields) — complete field reference
+- [Configuration reference — Section fields](/reference/configuration#section-fields) — complete field reference
 - [Navigation guide](/concepts/navigation) — configuring the top navigation bar

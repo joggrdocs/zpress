@@ -90,4 +90,4 @@ Add `.zpress/` to your `.gitignore`.
 ## Next steps
 
 - [Sections and Pages](/concepts/sections-and-pages) — understand the building blocks of your information architecture
-- [Configuration reference](/references/configuration) — complete field reference for `zpress.config.ts`
+- [Configuration reference](/reference/configuration) — complete field reference for `zpress.config.ts`

@@ -54,4 +54,4 @@ A page's own frontmatter always takes precedence over inherited values.
 
 ## References
 
-- [Frontmatter Fields reference](/references/frontmatter) — complete field reference with types, defaults, and format details
+- [Frontmatter Fields reference](/reference/frontmatter) — complete field reference with types, defaults, and format details
