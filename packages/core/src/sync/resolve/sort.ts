@@ -11,8 +11,7 @@ const PINNED_STEMS = ['introduction', 'intro', 'overview', 'readme'] as const
  * Sort resolved entries using the specified strategy.
  *
  * Sections (entries with children) always sort before leaf pages.
- * When no sort strategy is provided, entries are sorted with pinned intro-style
- * files first (introduction, intro, overview, readme), then alpha by title.
+ * When no sort strategy is provided, entries are returned in discovery order.
  *
  * @param entries - Entries to sort
  * @param sort - Sort strategy: `"default"` (pinned + alpha), `"alpha"` by text, `"filename"` by output path, or custom comparator
@@ -20,13 +19,10 @@ const PINNED_STEMS = ['introduction', 'intro', 'overview', 'readme'] as const
  */
 export function sortEntries(
   entries: readonly ResolvedEntry[],
-  sort:
-    | 'default'
-    | 'alpha'
-    | 'filename'
-    | ((a: ResolvedPage, b: ResolvedPage) => number) = 'default'
+  sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
 ): ResolvedEntry[] {
   return match(sort)
+    .with(undefined, () => [...entries])
     .with('default', () => entries.toSorted(defaultCompare))
     .with('alpha', () =>
       entries.toSorted((a, b) => sectionFirst(a, b) || a.title.localeCompare(b.title))
