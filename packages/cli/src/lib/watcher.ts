@@ -6,6 +6,8 @@ import type { ZpressConfig, Paths } from '@zpress/core'
 import { loadConfig, sync } from '@zpress/core'
 import { debounce } from 'es-toolkit'
 
+import { toError } from './error'
+
 const CONFIG_EXTENSIONS = ['.ts', '.mts', '.cts', '.js', '.mjs', '.cjs', '.json'] as const
 
 const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
@@ -89,13 +91,7 @@ export function createWatcher(
       }
     } catch (error) {
       consecutiveFailures += 1
-      const errorMessage = (() => {
-        if (error instanceof Error) {
-          return error.message
-        }
-        return String(error)
-      })()
-      cliLogger.error(`Sync error: ${errorMessage}`)
+      cliLogger.error(`Sync error: ${toError(error).message}`)
     } finally {
       syncing = false
       if (pendingReloadConfig !== null) {

@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { groupBy } from 'es-toolkit'
+import { groupBy, range } from 'es-toolkit'
 import fg from 'fast-glob'
 
 import { linkToOutputPath } from './resolve/path.ts'
@@ -193,7 +193,7 @@ function naturalCompare(a: string, b: string): number {
   const bParts = b.split(/(\d+)/)
   const len = Math.min(aParts.length, bParts.length)
 
-  const indices = Array.from({ length: len }, (_, idx) => idx)
+  const indices = range(len)
 
   const result = indices.reduce<number | null>((acc, idx) => {
     if (acc !== null) {

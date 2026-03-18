@@ -159,7 +159,7 @@ export interface CardConfig {
 export interface DiscoveryConfig {
   readonly from?: string
   readonly title?: TitleConfig
-  readonly sort?: 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly exclude?: readonly string[]
   readonly frontmatter?: Frontmatter
   readonly recursive?: boolean
@@ -283,7 +283,7 @@ export interface Section {
   readonly exclude?: readonly string[]
   readonly hidden?: boolean
   readonly frontmatter?: Frontmatter
-  readonly sort?: 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly recursive?: boolean
   readonly indexFile?: string
   readonly icon?: string
@@ -382,16 +382,16 @@ export interface OpenAPIConfig {
   /**
    * Path to openapi.json relative to repo root.
    */
-  spec: FilePath
+  readonly spec: FilePath
   /**
    * URL prefix for API operation pages (e.g., '/api').
    */
-  prefix: UrlPath
+  readonly prefix: UrlPath
   /**
    * Sidebar group title.
    * @default 'API Reference'
    */
-  title?: string
+  readonly title?: string
   /**
    * How operations appear in the sidebar.
    *
@@ -400,7 +400,7 @@ export interface OpenAPIConfig {
    *
    * @default 'method-path'
    */
-  sidebarLayout?: 'method-path' | 'title'
+  readonly sidebarLayout?: 'method-path' | 'title'
 }
 
 /**

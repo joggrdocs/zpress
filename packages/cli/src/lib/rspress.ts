@@ -6,6 +6,11 @@ import type { Paths, ZpressConfig } from '@zpress/core'
 import { createRspressConfig } from '@zpress/ui'
 import { match } from 'ts-pattern'
 
+import { toError } from './error'
+
+/**
+ * Default port used by the development and preview servers.
+ */
 export const DEFAULT_PORT = 6174
 
 interface ServerOptions {
@@ -58,13 +63,7 @@ export async function startDevServer(
       })
       return true
     } catch (error) {
-      const errorMessage = (() => {
-        if (error instanceof Error) {
-          return error.message
-        }
-        return String(error)
-      })()
-      process.stderr.write(`Dev server error: ${errorMessage}\n`)
+      process.stderr.write(`Dev server error: ${toError(error).message}\n`)
       return false
     }
   }
@@ -84,13 +83,7 @@ export async function startDevServer(
       try {
         await serverInstance.close()
       } catch (error) {
-        const errorMessage = (() => {
-          if (error instanceof Error) {
-            return error.message
-          }
-          return String(error)
-        })()
-        process.stderr.write(`Error closing server: ${errorMessage}\n`)
+        process.stderr.write(`Error closing server: ${toError(error).message}\n`)
       }
       serverInstance = null
     }

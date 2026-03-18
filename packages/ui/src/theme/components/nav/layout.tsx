@@ -20,17 +20,14 @@ import { VscodeTag } from './vscode-tag'
 export function Layout(): React.ReactElement {
   const vscode = useVscodeMode()
   const { sidebarAbove, sidebarBelow } = useZpress()
-  const navSlot = (() => {
-    if (vscode) {
-      return (
-        <>
-          <BranchTag />
-          <VscodeTag />
-        </>
-      )
-    }
-    return <BranchTag />
-  })()
+  const navSlot = match(vscode)
+    .with(true, () => (
+      <>
+        <BranchTag />
+        <VscodeTag />
+      </>
+    ))
+    .otherwise(() => <BranchTag />)
 
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []

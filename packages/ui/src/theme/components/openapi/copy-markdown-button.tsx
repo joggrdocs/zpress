@@ -22,7 +22,7 @@ export function CopyMarkdownButton({ markdown }: CopyMarkdownButtonProps): React
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
-      void navigator.clipboard.writeText(markdown)
+      return navigator.clipboard.writeText(markdown).catch(() => null)
     },
     [markdown]
   )

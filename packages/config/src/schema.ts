@@ -71,7 +71,7 @@ const discoverySchema = z
   .object({
     from: z.string().optional(),
     title: titleConfigSchema.optional(),
-    sort: z.union([z.enum(['alpha', 'filename']), sortFnSchema]).optional(),
+    sort: z.union([z.enum(['default', 'alpha', 'filename']), sortFnSchema]).optional(),
     exclude: z.array(z.string()).optional(),
     frontmatter: frontmatterSchema.optional(),
     recursive: z.boolean().optional(),
@@ -104,7 +104,7 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
       exclude: z.array(z.string()).optional(),
       hidden: z.boolean().optional(),
       frontmatter: frontmatterSchema.optional(),
-      sort: z.union([z.enum(['alpha', 'filename']), sortFnSchema]).optional(),
+      sort: z.union([z.enum(['default', 'alpha', 'filename']), sortFnSchema]).optional(),
       recursive: z.boolean().optional(),
       indexFile: z.string().optional(),
       icon: z.string().optional(),

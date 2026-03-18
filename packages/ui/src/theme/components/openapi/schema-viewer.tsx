@@ -44,23 +44,9 @@ export function SchemaViewer({
   const schemaType = String(schema['type'] ?? '')
   const description = schema['description'] as string | undefined
   const enumValues = schema['enum'] as readonly unknown[] | undefined
-
-  // Max depth guard
-  const depthExceeded = depth >= MAX_DEPTH
-  if (depthExceeded) {
-    return (
-      <div className="zp-oas-schema__row">
-        {match(name)
-          .with(P.nonNullable, (n) => <span className="zp-oas-schema__name">{n}</span>)
-          .otherwise(() => null)}
-        <span className="zp-oas-schema__type">{'...'}</span>
-      </div>
-    )
-  }
-
-  // oneOf / anyOf
   const oneOf = schema['oneOf'] as readonly Record<string, unknown>[] | undefined
   const anyOf = schema['anyOf'] as readonly Record<string, unknown>[] | undefined
+  const depthExceeded = depth >= MAX_DEPTH
 
   const nameEl = match(name)
     .with(P.nonNullable, (n) => <span className="zp-oas-schema__name">{n}</span>)
@@ -73,7 +59,13 @@ export function SchemaViewer({
     )
     .otherwise(() => null)
 
-  return match({ schemaType, oneOf, anyOf })
+  return match({ schemaType, oneOf, anyOf, depthExceeded })
+    .with({ depthExceeded: true }, () => (
+      <div className="zp-oas-schema__row">
+        {nameEl}
+        <span className="zp-oas-schema__type">{'...'}</span>
+      </div>
+    ))
     .with({ oneOf: P.nonNullable }, ({ oneOf: variants }) => (
       <>
         <div className="zp-oas-schema__row">
@@ -194,7 +186,7 @@ function ObjectProperties({
   const requiredList = (schema['required'] ?? []) as readonly string[]
   const propEntries = Object.entries(properties)
 
-  function toggle(): void {
+  function handleToggle() {
     setExpanded((prev) => !prev)
   }
 
@@ -205,7 +197,7 @@ function ObjectProperties({
         .with(true, () => '' as string | null)
         .otherwise(() => null)}
     >
-      <button type="button" className="zp-oas-schema__trigger" onClick={toggle}>
+      <button type="button" className="zp-oas-schema__trigger" onClick={handleToggle}>
         <ChevronIcon className="zp-oas-schema__trigger-chevron" />
         <span className="zp-oas-schema__type">{'object'}</span>
         <span className="zp-oas-schema__description">

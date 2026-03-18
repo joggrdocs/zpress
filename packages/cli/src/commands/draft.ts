@@ -55,7 +55,7 @@ export const draftCommand = command({
         ctx.prompts.text({
           message: 'Document title',
           placeholder: 'e.g. Authentication',
-          validate: (value) => {
+          validate: (value): string | undefined => {
             if (!value || value.trim().length === 0) {
               return 'Title is required'
             }
