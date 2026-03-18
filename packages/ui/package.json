@@ -63,6 +63,10 @@
     "@zpress/theme": "workspace:*",
     "openapi-sampler": "^1.7.2",
     "react-aria-components": "^1.16.0",
+    "rspress-plugin-file-tree": "^1.0.4",
+    "rspress-plugin-katex": "^1.0.0",
+    "rspress-plugin-mermaid": "^1.0.1",
+    "rspress-plugin-supersub": "^1.0.0",
     "ts-pattern": "catalog:"
   },
   "devDependencies": {

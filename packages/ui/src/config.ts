@@ -6,6 +6,10 @@ import type { UserConfig } from '@rspress/core'
 import type { BuiltInThemeName, ThemeColors, ThemeName, ZpressConfig } from '@zpress/config'
 import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
+import fileTree from 'rspress-plugin-file-tree'
+import katex from 'rspress-plugin-katex'
+import mermaid from 'rspress-plugin-mermaid'
+import supersub from 'rspress-plugin-supersub'
 
 import { getThemeCss } from './css.ts'
 import { readJs } from './head/read.ts'
@@ -76,7 +80,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     themeDir: path.resolve(import.meta.dirname, 'theme'),
 
-    plugins: [zpressPlugin()],
+    plugins: [zpressPlugin(), mermaid(), fileTree({ initialExpandDepth: 1 }), supersub(), katex()],
 
     builderConfig: {
       ...(() => {
