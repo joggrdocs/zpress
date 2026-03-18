@@ -76,6 +76,8 @@ pnpm changeset
 
 Follow the prompts to select the package, semver bump type (patch, minor, major), and write a summary. Commit the generated `.changeset/*.md` file with your other changes.
 
+**One changeset per package** — each changeset should target a single package. Only combine multiple packages in one changeset when the changes are directly related (e.g. a core API change that requires a matching CLI update).
+
 **When to add a changeset:**
 
 - New features, bug fixes, or breaking changes to `@zpress/core` or `@zpress/*` packages
