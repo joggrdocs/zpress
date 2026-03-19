@@ -4,6 +4,10 @@ export default defineConfig({
   title: 'Acme Platform',
   description: 'The Acme Monorepo Documentation',
   tagline: 'Everything you need to build, ship, and scale.',
+  home: {
+    features: { truncate: { description: 2 } },
+    workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
+  },
   apps: [
     {
       title: 'Web',
@@ -19,7 +23,7 @@ export default defineConfig({
     },
     {
       title: 'API',
-      icon: 'devicon:hono',
+      icon: 'logos:hono',
       description: 'Hono REST API with typed routes',
       tags: ['hono', 'typescript'],
       prefix: '/apps/api',
@@ -73,11 +77,11 @@ export default defineConfig({
     {
       title: 'Integrations',
       description: 'Third-party service connectors',
-      icon: 'pixelarticons:integration',
+      icon: 'mdi:puzzle',
       items: [
         {
           title: 'Stripe',
-          icon: 'devicon:stripe',
+          icon: 'logos:stripe',
           description: 'Payment processing and subscription management',
           tags: ['stripe', 'payments'],
           prefix: '/integrations/stripe',
@@ -131,8 +135,28 @@ export default defineConfig({
     },
   ],
   sidebar: {
-    above: [{ text: 'Home', link: '/', icon: 'pixelarticons:home' }],
-    below: [{ text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link' }],
+    above: [
+      { text: 'Home', link: '/', icon: 'pixelarticons:home' },
+      { text: 'Brand Square', link: '/', icon: 'pixelarticons:speed-fast', style: 'brand' },
+      { text: 'Brand Rounded', link: '/', icon: 'pixelarticons:speed-fast', style: 'brand', shape: 'rounded' },
+      { text: 'Alt Square', link: '/', icon: 'pixelarticons:book-open', style: 'alt' },
+      { text: 'Alt Rounded', link: '/', icon: 'pixelarticons:book-open', style: 'alt', shape: 'rounded' },
+    ],
+    below: [
+      { text: 'Ghost (default)', link: '/', icon: 'pixelarticons:home' },
+      { text: 'Ghost Rounded', link: '/', icon: 'pixelarticons:home', shape: 'rounded' },
+      { text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link', style: 'alt' },
+    ],
   },
   nav: 'auto',
+  socialLinks: [
+    { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
+    { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
+    { icon: 'x', mode: 'link', content: 'https://x.com/acme' },
+  ],
+  footer: {
+    message: 'Built with zpress',
+    copyright: 'Copyright © 2025 Acme Inc.',
+    socials: true,
+  },
 })

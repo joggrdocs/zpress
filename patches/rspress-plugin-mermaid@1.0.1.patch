@@ -1,0 +1,11 @@
+diff --git a/dist/index.js b/dist/index.js
+index 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b..b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,4 +1,6 @@
+ import path from 'node:path';
++import { fileURLToPath } from 'node:url';
+ import { RemarkCodeBlockToGlobalComponentPluginFactory, } from 'rspress-plugin-devkit';
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
+ export default function rspressPluginMermaid(options = {}) {
+     const { mermaidConfig = {} } = options;

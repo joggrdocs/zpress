@@ -1,4 +1,5 @@
 import type React from 'react'
+import { Link } from '@rspress/core/runtime'
 import { match, P } from 'ts-pattern'
 
 export interface CardProps {
@@ -9,7 +10,7 @@ export interface CardProps {
 
 /**
  * Shared base card handling link-vs-div rendering.
- * Renders `<a>` with `home-card--clickable` when `href` is provided,
+ * Renders `<a>` with `zp-card--clickable` when `href` is provided,
  * plain `<div>` otherwise.
  *
  * @param props - Props with optional href, optional className, and children
@@ -18,9 +19,9 @@ export interface CardProps {
 export function Card({ href, className, children }: CardProps): React.ReactElement {
   return match(href)
     .with(P.nonNullable, (h) => (
-      <a className={`home-card home-card--clickable ${className ?? ''}`} href={h}>
+      <Link className={`zp-card zp-card--clickable ${className ?? ''}`} to={h}>
         {children}
-      </a>
+      </Link>
     ))
-    .otherwise(() => <div className={`home-card ${className ?? ''}`}>{children}</div>)
+    .otherwise(() => <div className={`zp-card ${className ?? ''}`}>{children}</div>)
 }

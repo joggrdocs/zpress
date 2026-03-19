@@ -2,7 +2,20 @@
 
 ## Overview
 
-All diagrams use **Mermaid** with the **Catppuccin Mocha** color theme. This creates a cohesive dark-mode aesthetic that renders well on GitHub and in documentation. File tree structures are the only exception and may use ASCII art (see [Use ASCII for File Trees](#use-ascii-for-file-trees)).
+All diagrams use **Mermaid** with the **Catppuccin Mocha** color theme. This creates a cohesive dark-mode aesthetic that renders well on GitHub and in the zpress site. File tree structures use ` ```tree ` code blocks that render as interactive, collapsible trees on the site (see [Use Tree Blocks for File Trees](#use-tree-blocks-for-file-trees)).
+
+### Rendering Plugins
+
+Both Mermaid diagrams and file trees are rendered by Rspress plugins registered in `packages/ui/src/config.ts`:
+
+| Plugin                       | Syntax | Purpose                              |
+| ---------------------------- | ------ | ------------------------------------ |
+| `rspress-plugin-mermaid`     | ` ```mermaid ` | Renders Mermaid diagrams (flowcharts, sequence, ER) |
+| `rspress-plugin-file-tree`   | ` ```tree `    | Renders interactive collapsible file trees           |
+| `rspress-plugin-supersub`    | `^superscript^` / `~subscript~` | Superscript and subscript text      |
+| `rspress-plugin-katex`       | `$inline$` / `$$block$$`        | Renders math formulas with KaTeX    |
+
+Mermaid and tree blocks also render natively on GitHub — GitHub supports ` ```mermaid ` blocks, and ` ```tree ` blocks display as readable plain text.
 
 ## Rules
 
@@ -13,7 +26,7 @@ All diagrams use **Mermaid** with the **Catppuccin Mocha** color theme. This cre
 | System architecture, data pipelines, routing | Flowchart         | Webhook routing, dependency chains      |
 | Request/response flows, multi-step protocols | Sequence diagram  | OAuth handshakes, API request lifecycle |
 | Database models, entity relationships        | ER diagram        | Data model, authorization schema        |
-| Directory layouts                            | File tree (ASCII) | Repository structure                    |
+| Directory layouts                            | File tree (Tree block) | Repository structure                    |
 
 Rule of thumb:
 
@@ -312,13 +325,13 @@ Script ||--o{ Execution : produces
 - All ER diagrams require the theme init block (7 variables)
 - Use PascalCase for entity names
 
-### Use ASCII for File Trees
+### Use Tree Blocks for File Trees
 
-File tree structures are the only exception to the Mermaid-only rule. ASCII art renders more clearly for directory hierarchies.
+File tree structures use ` ```tree ` fenced code blocks. On the zpress site these render as interactive, collapsible tree components. On GitHub they display as readable plain text.
 
 Use box-drawing characters for tree branches:
 
-```
+```tree
 docs/
 ├── guides/
 │   ├── setup-local-env.md
@@ -344,6 +357,7 @@ Guidelines:
 
 - Use consistent indentation (4 spaces per level)
 - Keep trees focused -- show only relevant files
+- Always use ` ```tree ` -- not ` ``` ` -- so the file tree plugin renders them
 - Add comments sparingly if needed: `config.ts  # main config`
 
 ### Follow General Rules
@@ -368,6 +382,11 @@ These apply to all diagram types:
 
 - [Mermaid Documentation](https://mermaid.js.org/)
 - [Catppuccin Color Palette](https://catppuccin.com/palette)
+- [rspress-plugin-mermaid](https://github.com/rspack-contrib/rspress-plugins/tree/main/packages/rspress-plugin-mermaid)
+- [rspress-plugin-file-tree](https://github.com/rspack-contrib/rspress-plugins/tree/main/packages/rspress-plugin-file-tree)
+- [rspress-plugin-supersub](https://github.com/rspack-contrib/rspress-plugins/tree/main/packages/rspress-plugin-supersub)
+- [rspress-plugin-katex](https://github.com/rspack-contrib/rspress-plugins/tree/main/packages/rspress-plugin-katex)
+- [KaTeX Documentation](https://katex.org/docs/supported.html)
 
 ## References
 

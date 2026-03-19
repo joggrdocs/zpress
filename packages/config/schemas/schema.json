@@ -115,13 +115,13 @@
               "icon": {
                 "anyOf": [
                   {
-                    "type": "string"
+                    "$ref": "#/definitions/ZpressConfig/properties/icon"
                   },
                   {
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "$ref": "#/definitions/ZpressConfig/properties/icon"
                       },
                       "color": {
                         "type": "string"
@@ -454,7 +454,7 @@
                 "type": "string"
               },
               "icon": {
-                "type": "string"
+                "$ref": "#/definitions/ZpressConfig/properties/icon"
               },
               "items": {
                 "type": "array",
@@ -486,7 +486,7 @@
                 "type": "string"
               },
               "icon": {
-                "type": "string"
+                "$ref": "#/definitions/ZpressConfig/properties/icon"
               }
             },
             "required": ["title", "description"],
@@ -529,6 +529,14 @@
                   },
                   "icon": {
                     "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/icon"
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": ["brand", "alt", "ghost"]
+                  },
+                  "shape": {
+                    "type": "string",
+                    "enum": ["square", "rounded", "circle"]
                   }
                 },
                 "required": ["text", "link"],
@@ -589,6 +597,109 @@
           "items": {
             "type": "string"
           }
+        },
+        "home": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "object",
+              "properties": {
+                "columns": {
+                  "type": "number",
+                  "enum": [1, 2, 3, 4]
+                },
+                "truncate": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "description": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "workspaces": {
+              "$ref": "#/definitions/ZpressConfig/properties/home/properties/features"
+            }
+          },
+          "additionalProperties": false
+        },
+        "socialLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "icon": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "lark",
+                      "discord",
+                      "facebook",
+                      "github",
+                      "instagram",
+                      "linkedin",
+                      "slack",
+                      "x",
+                      "youtube",
+                      "wechat",
+                      "qq",
+                      "juejin",
+                      "zhihu",
+                      "bilibili",
+                      "weibo",
+                      "gitlab",
+                      "X",
+                      "bluesky",
+                      "npm"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "svg": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["svg"],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["link", "text", "img", "dom"]
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": ["icon", "mode", "content"],
+            "additionalProperties": false
+          }
+        },
+        "footer": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            },
+            "copyright": {
+              "type": "string"
+            },
+            "socials": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": ["sections"],

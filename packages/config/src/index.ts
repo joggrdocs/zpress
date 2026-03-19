@@ -2,6 +2,7 @@ export type {
   ZpressConfig,
   ThemeName,
   IconColor,
+  IconPrefix,
   IconId,
   IconConfig,
   ColorMode,
@@ -25,6 +26,12 @@ export type {
   ResolvedSection,
   Feature,
   OpenAPIConfig,
+  HomeConfig,
+  SocialLinkIcon,
+  SocialLink,
+  FooterConfig,
+  HomeGridConfig,
+  TruncateConfig,
   Result,
 } from './types.ts'
 

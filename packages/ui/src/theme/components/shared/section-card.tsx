@@ -28,16 +28,16 @@ export function SectionCard({
   iconColor = 'purple',
 }: SectionCardProps): React.ReactElement {
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <span className="section-desc">{d}</span>)
+    .with(P.nonNullable, (d) => <span className="zp-section-card__desc">{d}</span>)
     .otherwise(() => null)
 
   return (
-    <Card href={href} className="section-card">
-      <div className="section-header">
-        <span className={`section-icon section-icon--${iconColor}`}>
+    <Card href={href} className="zp-section-card">
+      <div className="zp-section-card__header">
+        <span className={`zp-section-card__icon zp-section-card__icon--${iconColor}`}>
           <Icon icon={icon} />
         </span>
-        <span className="section-title">{title}</span>
+        <span className="zp-section-card__title">{title}</span>
       </div>
       {descEl}
     </Card>
