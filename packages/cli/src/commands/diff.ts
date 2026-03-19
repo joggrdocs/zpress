@@ -219,7 +219,7 @@ function execSilent(params: {
       cwd: params.cwd,
       stdio: 'pipe',
       encoding: 'utf8',
-    }).trim()
+    }).trimEnd()
     return [null, output]
   } catch (error) {
     if (error instanceof Error) {
