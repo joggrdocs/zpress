@@ -149,7 +149,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
         sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
         home: resolveHomeConfig(config),
-        footer: config.footer,
+        zpressFooter: config.footer,
       } as Record<string, unknown>),
     },
   }

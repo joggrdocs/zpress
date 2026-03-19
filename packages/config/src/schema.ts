@@ -283,6 +283,7 @@ const footerConfigSchema = z
   .object({
     message: z.string().optional(),
     copyright: z.string().optional(),
+    socials: z.boolean().optional(),
   })
   .strict()
 

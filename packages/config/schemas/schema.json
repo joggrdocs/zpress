@@ -713,6 +713,87 @@
             }
           },
           "additionalProperties": false
+        },
+        "socialLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "icon": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "lark",
+                      "discord",
+                      "facebook",
+                      "github",
+                      "instagram",
+                      "linkedin",
+                      "slack",
+                      "x",
+                      "youtube",
+                      "wechat",
+                      "qq",
+                      "juejin",
+                      "zhihu",
+                      "bilibili",
+                      "weibo",
+                      "gitlab",
+                      "X",
+                      "bluesky",
+                      "npm"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "svg": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "svg"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "link",
+                  "text",
+                  "img",
+                  "dom"
+                ]
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "icon",
+              "mode",
+              "content"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "footer": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            },
+            "copyright": {
+              "type": "string"
+            },
+            "socials": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": [

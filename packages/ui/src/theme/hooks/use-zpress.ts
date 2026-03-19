@@ -40,7 +40,7 @@ interface ZpressThemeConfig {
   readonly sidebarBelow: readonly ZpressSidebarLink[] | undefined
   readonly workspaces: readonly WorkspaceGroupData[] | undefined
   readonly home: HomeConfig | undefined
-  readonly footer: FooterConfig | undefined
+  readonly zpressFooter: FooterConfig | undefined
 }
 
 /**

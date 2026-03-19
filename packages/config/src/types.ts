@@ -540,6 +540,7 @@ export interface SocialLink {
 export interface FooterConfig {
   readonly message?: string
   readonly copyright?: string
+  readonly socials?: boolean
 }
 
 /**

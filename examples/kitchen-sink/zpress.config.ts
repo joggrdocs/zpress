@@ -157,5 +157,6 @@ export default defineConfig({
   footer: {
     message: 'Built with zpress',
     copyright: 'Copyright © 2025 Acme Inc.',
+    socials: true,
   },
 })

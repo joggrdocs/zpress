@@ -2,12 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   padding: 24px 32px;
   border-top: 1px solid var(--rp-c-divider);
   text-align: center;
   font-size: 13px;
   color: var(--rp-c-text-3);
+}
+
+.zp-site-footer__socials {
+  margin-bottom: 4px;
 }
 
 .zp-site-footer__message {
