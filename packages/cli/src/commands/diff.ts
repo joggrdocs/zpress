@@ -4,25 +4,35 @@ import { command } from '@kidd-cli/core'
 import type { Section, ZpressConfig, Result } from '@zpress/core'
 import { createPaths, hasGlobChars, loadConfig } from '@zpress/core'
 import { uniq } from 'es-toolkit'
+import { z } from 'zod'
 
 /**
  * Registers the `diff` CLI command to show changed files in watched directories.
+ *
+ * By default outputs a space-separated file list to stdout (suitable for
+ * lefthook, scripts, and piping). Use `--pretty` for human-readable output.
  */
 export const diffCommand = command({
   description: 'Show changed files in configured source directories',
+  options: z.object({
+    pretty: z.boolean().optional().default(false),
+  }),
   handler: async (ctx) => {
+    const { pretty } = ctx.args
     const paths = createPaths(process.cwd())
-    ctx.logger.intro('zpress diff')
 
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
-      ctx.logger.error(configErr.message)
-      if (configErr.errors && configErr.errors.length > 0) {
-        // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
-        configErr.errors.forEach((err) => {
-          const p = err.path.join('.')
-          ctx.logger.error(`  ${p}: ${err.message}`)
-        })
+      if (pretty) {
+        ctx.logger.intro('zpress diff')
+        ctx.logger.error(configErr.message)
+        if (configErr.errors && configErr.errors.length > 0) {
+          // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
+          configErr.errors.forEach((err) => {
+            const p = err.path.join('.')
+            ctx.logger.error(`  ${p}: ${err.message}`)
+          })
+        }
       }
       process.exit(1)
     }
@@ -30,31 +40,45 @@ export const diffCommand = command({
     const dirs = collectWatchDirs(config)
 
     if (dirs.length === 0) {
-      ctx.logger.warn('No source directories found in config')
-      ctx.logger.outro('Done')
+      if (pretty) {
+        ctx.logger.intro('zpress diff')
+        ctx.logger.warn('No source directories found in config')
+        ctx.logger.outro('Done')
+      }
       return
     }
-
-    ctx.logger.step(`Watching: ${dirs.join(', ')}`)
 
     const [gitErr, changed] = gitChangedFiles({ repoRoot: paths.repoRoot, dirs })
 
     if (gitErr) {
-      ctx.logger.error(`Git failed: ${gitErr.message}`)
-      ctx.logger.outro('Done')
+      if (pretty) {
+        ctx.logger.intro('zpress diff')
+        ctx.logger.error(`Git failed: ${gitErr.message}`)
+        ctx.logger.outro('Done')
+      }
       process.exit(1)
     }
 
     if (changed.length === 0) {
-      ctx.logger.success('No changes detected')
+      if (pretty) {
+        ctx.logger.intro('zpress diff')
+        ctx.logger.success('No changes detected')
+        ctx.logger.outro('Done')
+      }
+      return
+    }
+
+    if (pretty) {
+      ctx.logger.intro('zpress diff')
+      ctx.logger.step(`Watching: ${dirs.join(', ')}`)
+      ctx.logger.warn(`${changed.length} changed file(s):`)
+      // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each changed file
+      changed.forEach((file) => ctx.logger.info(`  ${file}`))
       ctx.logger.outro('Done')
       return
     }
 
-    ctx.logger.warn(`${changed.length} changed file(s):`)
-    // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each changed file
-    changed.forEach((file) => ctx.logger.info(`  ${file}`))
-    ctx.logger.outro('Done')
+    process.stdout.write(changed.join(' '))
   },
 })
 
