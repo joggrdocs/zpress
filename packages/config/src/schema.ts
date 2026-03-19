@@ -87,7 +87,9 @@ const discoverySchema = z
   })
   .strict()
 
-const iconIdSchema = z.custom<IconId>((v) => typeof v === 'string' && v.includes(':'))
+const iconIdSchema: z.ZodType<IconId> = z
+  .string()
+  .refine((v) => v.includes(':')) as z.ZodType<IconId>
 
 const iconConfigSchema = z.union([
   iconIdSchema,

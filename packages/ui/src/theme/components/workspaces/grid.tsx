@@ -59,7 +59,7 @@ export function WorkspaceGrid({
  * @returns Style object with CSS variable or undefined
  */
 function columnsStyle(columns: number | undefined): React.CSSProperties | undefined {
-  if (columns) {
+  if (columns !== undefined) {
     return { '--zp-workspace-cols': String(columns) } as React.CSSProperties
   }
   return undefined

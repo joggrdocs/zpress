@@ -63,14 +63,18 @@ html[data-zp-theme='arcade'] .zp-section-card::before {
 }
 
 html[data-zp-theme='arcade'] .zp-card:hover::before,
-html[data-zp-theme='arcade'] .zp-section-card:hover::before {
+html[data-zp-theme='arcade'] .zp-card:focus-visible::before,
+html[data-zp-theme='arcade'] .zp-section-card:hover::before,
+html[data-zp-theme='arcade'] .zp-section-card:focus-visible::before {
   opacity: 1;
   animation: arcade-border-spin 2.5s linear infinite;
 }
 
 /* Glow shadow behind the card on hover */
 html[data-zp-theme='arcade'] .zp-card:hover,
-html[data-zp-theme='arcade'] .zp-section-card:hover {
+html[data-zp-theme='arcade'] .zp-card:focus-visible,
+html[data-zp-theme='arcade'] .zp-section-card:hover,
+html[data-zp-theme='arcade'] .zp-section-card:focus-visible {
   box-shadow:
     0 0 12px rgba(0, 255, 136, 0.15),
     0 0 24px rgba(0, 255, 136, 0.06);
@@ -346,7 +350,9 @@ html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__mark {
  */
 @media (prefers-reduced-motion: reduce) {
   html[data-zp-theme='arcade'] .zp-card:hover::before,
+  html[data-zp-theme='arcade'] .zp-card:focus-visible::before,
   html[data-zp-theme='arcade'] .zp-section-card:hover::before,
+  html[data-zp-theme='arcade'] .zp-section-card:focus-visible::before,
   html[data-zp-theme='arcade'] .rp-codeblock__content::after,
   html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
     animation: none;

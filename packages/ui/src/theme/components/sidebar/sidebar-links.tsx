@@ -1,5 +1,5 @@
-import type React from 'react'
 import { Link } from '@rspress/core/runtime'
+import type React from 'react'
 import { match, P } from 'ts-pattern'
 
 import { Icon } from '../shared/icon'
@@ -80,16 +80,24 @@ function isExternal(link: string): boolean {
  * @returns Sidebar link element
  */
 function SidebarLinkEntry({ item }: { readonly item: SidebarLinkItem }): React.ReactElement {
+  const isCircle = item.shape === 'circle'
   const content = (
     <>
       {renderIcon(item.icon)}
-      <span className="zp-sidebar-link-text">{item.text}</span>
+      {match(isCircle)
+        .with(true, () => null)
+        .otherwise(() => (
+          <span className="zp-sidebar-link-text">{item.text}</span>
+        ))}
     </>
   )
 
   const variant = item.style ?? 'ghost'
   const shape = item.shape ?? 'square'
   const cls = `zp-sidebar-link zp-sidebar-link--${variant} zp-sidebar-link--${shape}`
+  const ariaLabel = match(isCircle)
+    .with(true, () => item.text)
+    .otherwise(() => undefined)
 
   return match(isExternal(item.link))
     .with(true, () => (
@@ -98,12 +106,13 @@ function SidebarLinkEntry({ item }: { readonly item: SidebarLinkItem }): React.R
         className={cls}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={ariaLabel}
       >
         {content}
       </a>
     ))
     .otherwise(() => (
-      <Link to={item.link} className={cls}>
+      <Link to={item.link} className={cls} aria-label={ariaLabel}>
         {content}
       </Link>
     ))

@@ -19,6 +19,10 @@ export function SiteFooter(): React.ReactElement | null {
 
   return match(zpressFooter)
     .with(undefined, () => null)
+    .when(
+      (f) => f.message === undefined && f.copyright === undefined && f.socials !== true,
+      () => null
+    )
     .otherwise((f) => (
       <footer className="zp-site-footer">
         {match(f.socials)

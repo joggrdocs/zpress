@@ -96,7 +96,6 @@ html .rp-home-hero__actions {
     font-size: 1rem !important;
     line-height: 1.5 !important;
   }
-
 }
 
 /* ── Feature section ───────────────────────────────────────── */
@@ -116,6 +115,7 @@ html .rp-home-hero__actions {
 /* ── Feature grid ───────────────────────────────────────────────── */
 .zp-feature-grid {
   --feature-grid-gap: 12px;
+
   display: flex;
   flex-wrap: wrap;
   gap: var(--feature-grid-gap);
@@ -136,14 +136,14 @@ html .rp-home-hero__actions {
   .zp-feature-grid__item--span-2,
   .zp-feature-grid__item--span-4,
   .zp-feature-grid__item--span-6 {
-    width: calc(50% - var(--feature-grid-gap));
+    width: calc((100% - var(--feature-grid-gap)) / 2);
   }
 }
 
 @media (min-width: 768px) {
   .zp-feature-grid__item--span-2,
   .zp-feature-grid__item--span-4 {
-    width: calc(50% - var(--feature-grid-gap));
+    width: calc((100% - var(--feature-grid-gap)) / 2);
   }
 
   .zp-feature-grid__item--span-3,
@@ -162,7 +162,7 @@ html .rp-home-hero__actions {
   }
 
   .zp-feature-grid__item--span-6 {
-    width: calc(50% - var(--feature-grid-gap));
+    width: calc((100% - var(--feature-grid-gap)) / 2);
   }
 }
 
