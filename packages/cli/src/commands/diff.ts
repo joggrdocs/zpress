@@ -1,5 +1,4 @@
 import { execFileSync } from 'node:child_process'
-import path from 'node:path'
 
 import { command } from '@kidd-cli/core'
 import type { Section, ZpressConfig, Result } from '@zpress/core'
@@ -115,9 +114,10 @@ function flattenSection(section: Section): readonly string[] {
  */
 function toDirectory(from: string): string {
   if (hasGlobChars(from)) {
-    const segments = from.split(path.sep)
+    const normalized = from.replaceAll('\\', '/')
+    const segments = normalized.split('/')
     const dirSegments = segments.filter((s) => !hasGlobChars(s))
-    return dirSegments.join(path.sep) || '.'
+    return dirSegments.join('/') || '.'
   }
   return from
 }
@@ -175,9 +175,27 @@ function parseStatusLine(line: string): string {
   const filePart = line.slice(3)
   const renameIdx = filePart.indexOf(RENAME_SEPARATOR)
   if (renameIdx !== -1) {
-    return filePart.slice(renameIdx + RENAME_SEPARATOR.length)
+    return stripQuotes(filePart.slice(renameIdx + RENAME_SEPARATOR.length))
   }
-  return filePart
+  return stripQuotes(filePart)
+}
+
+/**
+ * Remove surrounding double quotes from a git path if present.
+ *
+ * Git quotes paths containing spaces or non-ASCII characters
+ * (e.g. `"docs/my file.md"`). This strips those quotes.
+ *
+ * @private
+ * @param value - A file path that may be surrounded by double quotes
+ * @returns The unquoted, trimmed path
+ */
+function stripQuotes(value: string): string {
+  const trimmed = value.trim()
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    return trimmed.slice(1, -1)
+  }
+  return trimmed
 }
 
 /**
