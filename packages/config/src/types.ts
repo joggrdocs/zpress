@@ -3,10 +3,28 @@ import type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '
 export type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '@zpress/theme'
 
 /**
- * Iconify icon identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`).
- * Find icons at https://icon-sets.iconify.design/
+ * Installed Iconify icon-set prefixes.
+ *
+ * Must stay in sync with `@iconify-json/*` packages in root `package.json`.
  */
-export type IconId = string
+export type IconPrefix =
+  | 'catppuccin'
+  | 'devicon'
+  | 'logos'
+  | 'material-icon-theme'
+  | 'mdi'
+  | 'pixelarticons'
+  | 'simple-icons'
+  | 'skill-icons'
+  | 'vscode-icons'
+
+/**
+ * Iconify icon identifier — `"prefix:name"` where prefix matches an installed set.
+ *
+ * @example `"devicon:hono"`, `"pixelarticons:device-mobile"`
+ * @see https://icon-sets.iconify.design/
+ */
+export type IconId = `${IconPrefix}:${string}`
 
 /**
  * Unified icon configuration.
@@ -206,6 +224,8 @@ export interface SidebarLink {
   readonly text: string
   readonly link: string
   readonly icon?: IconConfig
+  readonly style?: 'brand' | 'alt' | 'ghost'
+  readonly shape?: 'square' | 'rounded' | 'circle'
 }
 
 /**
@@ -337,7 +357,7 @@ export interface Workspace {
  * {
  *   title: 'Integrations',
  *   description: 'Third-party service connectors',
- *   icon: 'pixelarticons:integration',
+ *   icon: 'mdi:puzzle',
  *   items: [
  *     { title: 'Stripe', description: 'Payment processing', prefix: '/integrations/stripe' },
  *   ],
@@ -347,7 +367,7 @@ export interface Workspace {
 export interface WorkspaceCategory {
   readonly title: TitleConfig
   readonly description: string
-  readonly icon: string
+  readonly icon: IconId
   readonly items: readonly Workspace[]
   readonly link?: string
 }
@@ -419,7 +439,7 @@ export interface Feature {
   readonly title: TitleConfig
   readonly description: string
   readonly link?: string
-  readonly icon?: string
+  readonly icon?: IconId
 }
 
 /**
@@ -470,7 +490,7 @@ export interface ZpressConfig {
   readonly title?: string
   readonly description?: string
   readonly theme?: ThemeConfig
-  readonly icon?: string
+  readonly icon?: IconId
   readonly tagline?: string
   readonly actions?: readonly HeroAction[]
   readonly seo?: SeoConfig

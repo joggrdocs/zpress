@@ -9,6 +9,8 @@
 |
 */
 
+import './shims/require.ts'
+
 import { cli } from '@kidd-cli/core'
 
 import { buildCommand } from './commands/build.ts'

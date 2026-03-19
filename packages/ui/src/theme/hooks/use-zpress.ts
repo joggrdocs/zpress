@@ -12,6 +12,8 @@ export interface ZpressSidebarLink {
   readonly text: string
   readonly link: string
   readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly style?: 'brand' | 'alt' | 'ghost'
+  readonly shape?: 'square' | 'rounded' | 'circle'
 }
 
 export interface WorkspaceCardData {

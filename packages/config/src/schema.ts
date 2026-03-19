@@ -20,6 +20,7 @@ import type {
   CardConfig,
   Frontmatter,
   HomeConfig,
+  IconId,
   NavItem,
   ResolvedPage,
   Section,
@@ -86,9 +87,11 @@ const discoverySchema = z
   })
   .strict()
 
+const iconIdSchema = z.custom<IconId>((v) => typeof v === 'string' && v.includes(':'))
+
 const iconConfigSchema = z.union([
-  z.string(),
-  z.object({ id: z.string(), color: z.string() }).strict(),
+  iconIdSchema,
+  z.object({ id: iconIdSchema, color: z.string() }).strict(),
 ])
 
 const cardConfigSchema = z
@@ -155,7 +158,7 @@ const workspaceGroupSchema = z
   .object({
     title: titleConfigSchema,
     description: z.string(),
-    icon: z.string(),
+    icon: iconIdSchema,
     items: z.array(workspaceItemSchema).min(1),
     link: z.string().optional(),
   })
@@ -166,7 +169,7 @@ const featureSchema = z
     title: titleConfigSchema,
     description: z.string(),
     link: z.string().optional(),
-    icon: z.string().optional(),
+    icon: iconIdSchema.optional(),
   })
   .strict()
 
@@ -204,6 +207,8 @@ const sidebarLinkSchema = z
     text: z.string(),
     link: z.string(),
     icon: iconConfigSchema.optional(),
+    style: z.enum(['brand', 'alt', 'ghost']).optional(),
+    shape: z.enum(['square', 'rounded', 'circle']).optional(),
   })
   .strict()
 
@@ -248,7 +253,7 @@ export const zpressConfigSchema = z
     title: z.string().optional(),
     description: z.string().optional(),
     theme: themeConfigSchema.optional(),
-    icon: z.string().optional(),
+    icon: iconIdSchema.optional(),
     tagline: z.string().optional(),
     apps: z.array(workspaceItemSchema).optional(),
     packages: z.array(workspaceItemSchema).optional(),

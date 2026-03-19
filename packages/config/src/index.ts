@@ -2,6 +2,7 @@ export type {
   ZpressConfig,
   ThemeName,
   IconColor,
+  IconPrefix,
   IconId,
   IconConfig,
   ColorMode,

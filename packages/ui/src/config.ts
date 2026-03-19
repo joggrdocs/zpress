@@ -288,7 +288,13 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
 function resolveSidebarLinks(params: {
   readonly config: ZpressConfig
   readonly position: 'above' | 'below'
-}): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
+}): readonly {
+  text: string
+  link: string
+  icon?: string | { id: string; color: string }
+  style?: 'brand' | 'alt' | 'ghost'
+  shape?: 'square' | 'rounded' | 'circle'
+}[] {
   const items = params.config.sidebar && params.config.sidebar[params.position]
   if (items) {
     return items

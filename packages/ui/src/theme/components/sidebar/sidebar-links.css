@@ -1,8 +1,8 @@
 .zp-sidebar-links {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px 12px;
+  gap: 6px;
+  padding: 8px 0;
 }
 
 .zp-sidebar-links--above {
@@ -17,25 +17,82 @@
   margin-top: 4px;
 }
 
+/* ── Base ───────────────────────────────────────────────── */
+
 .zp-sidebar-link {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border-radius: 6px;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
   color: var(--rp-c-text-2);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 24px;
   text-decoration: none;
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+    color 0.15s,
+    background-color 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
 }
 
-.zp-sidebar-link:hover {
+/* ── Ghost (default) — no background, subtle hover ───── */
+
+.zp-sidebar-link--ghost {
+  background-color: transparent;
+}
+
+.zp-sidebar-link--ghost:hover {
   color: var(--rp-c-text-1);
-  background-color: var(--rp-c-bg-soft);
+  background-color: var(--rp-c-bg-mute);
+}
+
+/* ── Brand — solid brand background ──────────────────── */
+
+.zp-sidebar-link--brand {
+  color: #fff;
+  background: var(--rp-c-brand-darker);
+}
+
+.zp-sidebar-link--brand:hover {
+  background: var(--rp-c-brand-dark);
+}
+
+/* ── Alt — outlined with border ──────────────────────── */
+
+.zp-sidebar-link--alt {
+  border: 1px solid var(--rp-c-gray-light-3);
+  color: var(--rp-c-text-1);
+  background-color: var(--rp-c-bg);
+}
+
+html.dark .zp-sidebar-link--alt {
+  background-color: var(--rp-c-bg-mute);
+  border-color: #484848;
+}
+
+.zp-sidebar-link--alt:hover {
+  opacity: 0.8;
+  background-color: var(--rp-c-bg-mute);
+}
+
+/* ── Shapes ──────────────────────────────────────────── */
+
+.zp-sidebar-link--square {
+  border-radius: 8px;
+}
+
+.zp-sidebar-link--rounded {
+  border-radius: 9999px;
+}
+
+.zp-sidebar-link--circle {
+  border-radius: 50%;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
 }
 
 .zp-sidebar-link-icon {

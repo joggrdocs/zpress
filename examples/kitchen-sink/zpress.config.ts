@@ -23,7 +23,7 @@ export default defineConfig({
     },
     {
       title: 'API',
-      icon: 'devicon:hono',
+      icon: 'logos:hono',
       description: 'Hono REST API with typed routes',
       tags: ['hono', 'typescript'],
       prefix: '/apps/api',
@@ -77,11 +77,11 @@ export default defineConfig({
     {
       title: 'Integrations',
       description: 'Third-party service connectors',
-      icon: 'pixelarticons:integration',
+      icon: 'mdi:puzzle',
       items: [
         {
           title: 'Stripe',
-          icon: 'devicon:stripe',
+          icon: 'logos:stripe',
           description: 'Payment processing and subscription management',
           tags: ['stripe', 'payments'],
           prefix: '/integrations/stripe',
@@ -135,8 +135,18 @@ export default defineConfig({
     },
   ],
   sidebar: {
-    above: [{ text: 'Home', link: '/', icon: 'pixelarticons:home' }],
-    below: [{ text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link' }],
+    above: [
+      { text: 'Home', link: '/', icon: 'pixelarticons:home' },
+      { text: 'Brand Square', link: '/', icon: 'pixelarticons:speed-fast', style: 'brand' },
+      { text: 'Brand Rounded', link: '/', icon: 'pixelarticons:speed-fast', style: 'brand', shape: 'rounded' },
+      { text: 'Alt Square', link: '/', icon: 'pixelarticons:book-open', style: 'alt' },
+      { text: 'Alt Rounded', link: '/', icon: 'pixelarticons:book-open', style: 'alt', shape: 'rounded' },
+    ],
+    below: [
+      { text: 'Ghost (default)', link: '/', icon: 'pixelarticons:home' },
+      { text: 'Ghost Rounded', link: '/', icon: 'pixelarticons:home', shape: 'rounded' },
+      { text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link', style: 'alt' },
+    ],
   },
   nav: 'auto',
 })

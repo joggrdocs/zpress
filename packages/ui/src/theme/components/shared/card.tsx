@@ -1,4 +1,5 @@
 import type React from 'react'
+import { Link } from '@rspress/core/runtime'
 import { match, P } from 'ts-pattern'
 
 export interface CardProps {
@@ -18,9 +19,9 @@ export interface CardProps {
 export function Card({ href, className, children }: CardProps): React.ReactElement {
   return match(href)
     .with(P.nonNullable, (h) => (
-      <a className={`zp-card zp-card--clickable ${className ?? ''}`} href={h}>
+      <Link className={`zp-card zp-card--clickable ${className ?? ''}`} to={h}>
         {children}
-      </a>
+      </Link>
     ))
     .otherwise(() => <div className={`zp-card ${className ?? ''}`}>{children}</div>)
 }

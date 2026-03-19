@@ -1,0 +1,11 @@
+diff --git a/dist/index.js b/dist/index.js
+index 5d1cfc5b8e35fa0aadf68db8c554e1cde956b7ce..a9f72b56c5c5d8c6e9a4c3a6f0d1e2b3c4d5e6f7 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,4 +1,6 @@
+ import node_path from "node:path";
++import { fileURLToPath } from "node:url";
+ import { RemarkCodeBlockToGlobalComponentPluginFactory } from "rspress-plugin-devkit";
++const __dirname = node_path.dirname(fileURLToPath(import.meta.url));
+ function parseTreeContent(content) {
+     let lines = content.split('\n').filter((line)=>line.trim());
