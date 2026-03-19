@@ -1,3 +1,4 @@
+import type { HomeGridConfig } from '@zpress/config'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
@@ -13,15 +14,16 @@ import { WorkspaceGrid } from '../workspaces/grid'
  * @returns React element with workspace groups or null
  */
 export function HomeWorkspaces(): React.ReactElement | null {
-  const { workspaces } = useZpress()
+  const { workspaces, home } = useZpress()
+  const gridConfig = home && home.workspaces
 
   return match(workspaces)
     .with(
       P.when((w): w is readonly WorkspaceGroupData[] => Array.isArray(w) && w.length > 0),
       (groups) => (
-        <div className="workspace-section">
-          <hr className="home-card-divider" />
-          {groups.map(renderGroup)}
+        <div className="zp-workspace-section">
+          <hr className="zp-divider" />
+          {groups.map((group) => renderGroup(group, gridConfig))}
         </div>
       )
     )
@@ -37,11 +39,23 @@ export function HomeWorkspaces(): React.ReactElement | null {
  *
  * @private
  * @param group - Workspace group data with heading, description, and cards
+ * @param gridConfig - Optional grid layout config for columns and truncation
  * @returns Workspace grid element
  */
-function renderGroup(group: WorkspaceGroupData): React.ReactElement {
+function renderGroup(
+  group: WorkspaceGroupData,
+  gridConfig: HomeGridConfig | undefined
+): React.ReactElement {
+  const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
+  const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description
+
   return (
-    <WorkspaceGrid key={group.heading} heading={group.heading} description={group.description}>
+    <WorkspaceGrid
+      key={group.heading}
+      heading={group.heading}
+      description={group.description}
+      columns={gridConfig && gridConfig.columns ? gridConfig.columns : undefined}
+    >
       {group.cards.map((card, i) => (
         <WorkspaceCard
           key={`${card.title}-${i}`}
@@ -53,6 +67,8 @@ function renderGroup(group: WorkspaceGroupData): React.ReactElement {
           description={card.description}
           tags={card.tags}
           badge={card.badge}
+          titleLines={titleLines}
+          descriptionLines={descLines}
         />
       ))}
     </WorkspaceGrid>

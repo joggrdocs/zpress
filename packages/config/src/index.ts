@@ -25,6 +25,9 @@ export type {
   ResolvedSection,
   Feature,
   OpenAPIConfig,
+  HomeConfig,
+  HomeGridConfig,
+  TruncateConfig,
   Result,
 } from './types.ts'
 

@@ -5,6 +5,9 @@ export default defineConfig({
   description: 'Beautiful Docs, Zero Config',
   tagline: 'An opinionated documentation framework for monorepos. Just point it at your code.',
   theme: { switcher: true },
+  home: {
+    features: { truncate: { description: 2 } },
+  },
   sidebar: {
     below: [{ text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' }],
   },

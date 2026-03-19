@@ -4,7 +4,7 @@
  */
 
 /* ── Base card container ─────────────────────────────────────── */
-.home-card {
+.zp-card {
   padding: 16px 18px;
   border-radius: var(--rp-radius);
   border: 1px solid var(--zp-c-border);
@@ -16,19 +16,19 @@
     box-shadow 0.2s;
 }
 
-.home-card:hover {
+.zp-card:hover {
   border-color: var(--zp-c-brand-1);
   background: var(--zp-c-bg-elv);
   box-shadow: 0 2px 12px rgba(167, 139, 250, 0.08);
   text-decoration: none !important;
 }
 
-.home-card--clickable {
+.zp-card--clickable {
   cursor: pointer;
 }
 
 /* ── Shared icon box (36×36, 4px radius, 18px SVG) ───────────── */
-.home-card-icon {
+.zp-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,89 +38,96 @@
   flex-shrink: 0;
 }
 
-.home-card-icon svg {
+.zp-card__icon svg {
   width: 18px;
   height: 18px;
 }
 
 /* ── Icon color variants ─────────────────────────────────────── */
-.home-card-icon--purple {
+.zp-card__icon--purple {
   background: rgba(167, 139, 250, 0.12);
   color: #a78bfa;
 }
 
-.home-card-icon--purple svg {
+.zp-card__icon--purple svg {
   color: #a78bfa;
 }
 
-.home-card-icon--blue {
+.zp-card__icon--blue {
   background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
 }
 
-.home-card-icon--blue svg {
+.zp-card__icon--blue svg {
   color: #60a5fa;
 }
 
-.home-card-icon--green {
+.zp-card__icon--green {
   background: rgba(52, 211, 153, 0.12);
   color: #34d399;
 }
 
-.home-card-icon--green svg {
+.zp-card__icon--green svg {
   color: #34d399;
 }
 
-.home-card-icon--amber {
+.zp-card__icon--amber {
   background: rgba(251, 191, 36, 0.12);
   color: #fbbf24;
 }
 
-.home-card-icon--amber svg {
+.zp-card__icon--amber svg {
   color: #fbbf24;
 }
 
-.home-card-icon--red {
+.zp-card__icon--red {
   background: rgba(248, 113, 113, 0.12);
   color: #f87171;
 }
 
-.home-card-icon--red svg {
+.zp-card__icon--red svg {
   color: #f87171;
 }
 
-.home-card-icon--slate {
+.zp-card__icon--slate {
   background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
 }
 
-.home-card-icon--slate svg {
+.zp-card__icon--slate svg {
   color: #94a3b8;
 }
 
-.home-card-icon--cyan {
+.zp-card__icon--cyan {
   background: rgba(14, 165, 233, 0.12);
   color: #0ea5e9;
 }
 
-.home-card-icon--cyan svg {
+.zp-card__icon--cyan svg {
   color: #0ea5e9;
 }
 
-.home-card-icon--pink {
+.zp-card__icon--pink {
   background: rgba(244, 114, 182, 0.12);
   color: #f472b6;
 }
 
-.home-card-icon--pink svg {
+.zp-card__icon--pink svg {
   color: #f472b6;
 }
 
 /* ── Divider between features and workspaces ─────────────────── */
-.home-card-divider {
+.zp-divider {
   max-width: 1152px;
   margin: 0 auto 48px;
-  padding: 0 16px;
+  padding: 0;
   border: none;
   border-top: 1px solid var(--zp-c-divider);
+}
+
+@media (max-width: 1184px) {
+  .zp-divider {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }

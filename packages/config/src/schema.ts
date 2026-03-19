@@ -16,7 +16,14 @@
 
 import { z } from 'zod/v3'
 
-import type { CardConfig, Frontmatter, NavItem, ResolvedPage, Section } from './types.ts'
+import type {
+  CardConfig,
+  Frontmatter,
+  HomeConfig,
+  NavItem,
+  ResolvedPage,
+  Section,
+} from './types.ts'
 
 // z.function() infers to (...args: unknown[]) => unknown, which loses
 // parameter and return types. z.custom<T> preserves exact signatures
@@ -207,6 +214,27 @@ const sidebarConfigSchema = z
   })
   .strict()
 
+const truncateConfigSchema = z
+  .object({
+    title: z.number().int().min(1).optional(),
+    description: z.number().int().min(1).optional(),
+  })
+  .strict()
+
+const homeGridConfigSchema = z
+  .object({
+    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    truncate: truncateConfigSchema.optional(),
+  })
+  .strict()
+
+const homeConfigSchema = z
+  .object({
+    features: homeGridConfigSchema.optional(),
+    workspaces: homeGridConfigSchema.optional(),
+  })
+  .strict()
+
 const heroActionSchema = z
   .object({
     theme: z.enum(['brand', 'alt']),
@@ -231,6 +259,7 @@ export const zpressConfigSchema = z
     sections: z.array(entrySchema).min(1, 'config.sections must have at least one entry'),
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
     exclude: z.array(z.string()).optional(),
+    home: homeConfigSchema.optional(),
   })
   .strict()
 
@@ -255,6 +284,8 @@ export const pathsSchema = z
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeConfig: z.ZodType<HomeConfig> = homeConfigSchema
 
 // ---------------------------------------------------------------------------
 // Private

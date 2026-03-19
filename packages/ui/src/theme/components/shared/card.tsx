@@ -9,7 +9,7 @@ export interface CardProps {
 
 /**
  * Shared base card handling link-vs-div rendering.
- * Renders `<a>` with `home-card--clickable` when `href` is provided,
+ * Renders `<a>` with `zp-card--clickable` when `href` is provided,
  * plain `<div>` otherwise.
  *
  * @param props - Props with optional href, optional className, and children
@@ -18,9 +18,9 @@ export interface CardProps {
 export function Card({ href, className, children }: CardProps): React.ReactElement {
   return match(href)
     .with(P.nonNullable, (h) => (
-      <a className={`home-card home-card--clickable ${className ?? ''}`} href={h}>
+      <a className={`zp-card zp-card--clickable ${className ?? ''}`} href={h}>
         {children}
       </a>
     ))
-    .otherwise(() => <div className={`home-card ${className ?? ''}`}>{children}</div>)
+    .otherwise(() => <div className={`zp-card ${className ?? ''}`}>{children}</div>)
 }

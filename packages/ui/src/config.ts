@@ -3,7 +3,13 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import type { UserConfig } from '@rspress/core'
-import type { BuiltInThemeName, ThemeColors, ThemeName, ZpressConfig } from '@zpress/config'
+import type {
+  BuiltInThemeName,
+  HomeConfig,
+  ThemeColors,
+  ThemeName,
+  ZpressConfig,
+} from '@zpress/config'
 import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 import fileTree from 'rspress-plugin-file-tree'
@@ -141,6 +147,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       ...({
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
         sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
+        home: resolveHomeConfig(config),
       } as Record<string, unknown>),
     },
   }
@@ -287,6 +294,27 @@ function resolveSidebarLinks(params: {
     return items
   }
   return []
+}
+
+/**
+ * Resolve home page layout config with defaults.
+ * Workspaces default to 2 columns.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns Resolved home config
+ */
+function resolveHomeConfig(config: ZpressConfig): HomeConfig {
+  if (config.home) {
+    return {
+      features: config.home.features,
+      workspaces: {
+        columns: 2,
+        ...config.home.workspaces,
+      },
+    }
+  }
+  return { workspaces: { columns: 2 } }
 }
 
 /**

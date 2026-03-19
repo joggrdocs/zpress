@@ -1,7 +1,9 @@
 import { useFrontmatter } from '@rspress/core/runtime'
+import type { HomeGridConfig } from '@zpress/config'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
+import { useZpress } from '../../hooks/use-zpress'
 import { Icon } from '../shared/icon'
 import { FeatureCard, FeatureGrid } from './feature-card'
 import type { FeatureItem } from './feature-card'
@@ -14,6 +16,9 @@ import type { FeatureItem } from './feature-card'
  */
 export function HomeFeature(): React.ReactElement | null {
   const { frontmatter } = useFrontmatter()
+  const { home } = useZpress()
+  const gridConfig = home && home.features
+
   // Rspress types frontmatter as its own FrontMatterMeta shape which does not
   // include zpress-specific `features`. The double cast is necessary because
   // no shared Zod schema exists for frontmatter validation at runtime.
@@ -24,7 +29,7 @@ export function HomeFeature(): React.ReactElement | null {
   return match(features)
     .with(
       P.when((f): f is readonly FeatureItem[] => Array.isArray(f) && f.length > 0),
-      (items) => <FeatureGrid>{items.map(renderFeature)}</FeatureGrid>
+      (items) => <FeatureGrid>{items.map((f, i) => renderFeature(f, i, gridConfig))}</FeatureGrid>
     )
     .otherwise(() => null)
 }
@@ -40,12 +45,20 @@ export function HomeFeature(): React.ReactElement | null {
  * @private
  * @param feature - Feature item data
  * @param index - Array index for key generation
+ * @param gridConfig - Optional grid config for truncation
  * @returns Feature card element
  */
-function renderFeature(feature: FeatureItem, index: number): React.ReactElement {
+function renderFeature(
+  feature: FeatureItem,
+  index: number,
+  gridConfig: HomeGridConfig | undefined
+): React.ReactElement {
   const iconEl = match(feature.icon)
     .with(P.nonNullable, (iconId) => <Icon icon={iconId} />)
     .otherwise(() => null)
+
+  const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
+  const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description
 
   return (
     <FeatureCard
@@ -55,6 +68,8 @@ function renderFeature(feature: FeatureItem, index: number): React.ReactElement 
       href={feature.link}
       icon={iconEl}
       iconColor={feature.iconColor}
+      titleLines={titleLines}
+      descriptionLines={descLines}
     />
   )
 }

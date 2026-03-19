@@ -3,14 +3,14 @@
  */
 
 /* ── Section grid ────────────────────────────────────────── */
-.section-grid {
+.zp-section-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin-top: 24px;
 }
 
-.section-card {
+.zp-section-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -25,19 +25,19 @@
     box-shadow 0.2s;
 }
 
-.section-header {
+.zp-section-card__header {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.section-card:hover {
+.zp-section-card:hover {
   border-color: var(--zp-c-brand-1);
   background: var(--zp-c-bg-elv);
   box-shadow: 0 2px 12px rgba(167, 139, 250, 0.08);
 }
 
-.section-icon {
+.zp-section-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,60 +47,60 @@
   flex-shrink: 0;
 }
 
-.section-icon svg {
+.zp-section-card__icon svg {
   width: 16px;
   height: 16px;
 }
 
 /* ── Section icon colors ─────────────────────────────────── */
-.section-icon--blue {
+.zp-section-card__icon--blue {
   background: rgba(96, 165, 250, 0.12);
   color: #60a5fa;
 }
 
-.section-icon--purple {
+.zp-section-card__icon--purple {
   background: rgba(167, 139, 250, 0.12);
   color: #a78bfa;
 }
 
-.section-icon--green {
+.zp-section-card__icon--green {
   background: rgba(52, 211, 153, 0.12);
   color: #34d399;
 }
 
-.section-icon--amber {
+.zp-section-card__icon--amber {
   background: rgba(251, 191, 36, 0.12);
   color: #fbbf24;
 }
 
-.section-icon--red {
+.zp-section-card__icon--red {
   background: rgba(248, 113, 113, 0.12);
   color: #f87171;
 }
 
-.section-icon--slate {
+.zp-section-card__icon--slate {
   background: rgba(148, 163, 184, 0.12);
   color: #94a3b8;
 }
 
-.section-icon--cyan {
+.zp-section-card__icon--cyan {
   background: rgba(14, 165, 233, 0.12);
   color: #0ea5e9;
 }
 
-.section-icon--pink {
+.zp-section-card__icon--pink {
   background: rgba(244, 114, 182, 0.12);
   color: #f472b6;
 }
 
-.section-title {
+.zp-section-card__title {
   font-size: 14px;
   font-weight: 600;
   color: var(--zp-c-text-1);
   line-height: 1;
 }
 
-.section-desc {
+.zp-section-card__desc {
   font-size: 12.5px;
   color: var(--zp-c-text-2);
   line-height: 1.45;
@@ -108,7 +108,7 @@
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .section-grid {
+  .zp-section-grid {
     grid-template-columns: 1fr;
   }
 }

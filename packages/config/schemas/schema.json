@@ -589,6 +589,44 @@
           "items": {
             "type": "string"
           }
+        },
+        "home": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "object",
+              "properties": {
+                "columns": {
+                  "type": "number",
+                  "enum": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                "truncate": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "description": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "workspaces": {
+              "$ref": "#/definitions/ZpressConfig/properties/home/properties/features"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": ["sections"],

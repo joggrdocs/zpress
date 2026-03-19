@@ -423,6 +423,43 @@ export interface Feature {
 }
 
 /**
+ * Text truncation configuration for card content.
+ *
+ * Values represent the maximum number of visible lines before
+ * overflow is clipped with an ellipsis via CSS `line-clamp`.
+ */
+export interface TruncateConfig {
+  readonly title?: number
+  readonly description?: number
+}
+
+/**
+ * Layout and styling options for a card grid section on the home page.
+ */
+export interface HomeGridConfig {
+  readonly columns?: 1 | 2 | 3 | 4
+  readonly truncate?: TruncateConfig
+}
+
+/**
+ * Home page layout customization.
+ *
+ * Schema: `homeConfigSchema` in schema.ts validates this shape.
+ *
+ * @example
+ * ```ts
+ * home: {
+ *   features: { columns: 3, truncate: { description: 2 } },
+ *   workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
+ * }
+ * ```
+ */
+export interface HomeConfig {
+  readonly features?: HomeGridConfig
+  readonly workspaces?: HomeGridConfig
+}
+
+/**
  * zpress configuration.
  *
  * Schema: `zpressConfigSchema` in schema.ts validates this shape.
@@ -446,4 +483,5 @@ export interface ZpressConfig {
   readonly nav?: 'auto' | readonly NavItem[]
   readonly exclude?: readonly string[]
   readonly openapi?: OpenAPIConfig
+  readonly home?: HomeConfig
 }

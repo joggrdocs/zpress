@@ -1,5 +1,5 @@
 import { useSite } from '@rspress/core/runtime'
-import type { IconColor } from '@zpress/config'
+import type { HomeConfig, IconColor } from '@zpress/config'
 
 export interface ZpressSidebarItem {
   readonly text?: string
@@ -37,6 +37,7 @@ interface ZpressThemeConfig {
   readonly sidebarAbove: readonly ZpressSidebarLink[] | undefined
   readonly sidebarBelow: readonly ZpressSidebarLink[] | undefined
   readonly workspaces: readonly WorkspaceGroupData[] | undefined
+  readonly home: HomeConfig | undefined
 }
 
 /**

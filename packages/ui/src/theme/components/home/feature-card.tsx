@@ -14,6 +14,8 @@ export interface FeatureCardProps {
   readonly icon?: React.ReactNode
   readonly iconColor?: IconColor
   readonly span?: 2 | 3 | 4 | 6
+  readonly titleLines?: number
+  readonly descriptionLines?: number
 }
 
 /**
@@ -32,7 +34,7 @@ export interface FeatureItem {
  * Feature card for landing pages — matches the workspace/section card design.
  * Renders as `<a>` when `href` is provided, `<div>` otherwise.
  *
- * @param props - Feature card props including title, description, href, icon, iconColor, and span
+ * @param props - Feature card props including title, description, href, icon, iconColor, span, titleLines, descriptionLines
  * @returns React element with feature card layout
  */
 export function FeatureCard({
@@ -42,22 +44,34 @@ export function FeatureCard({
   icon,
   iconColor = 'purple',
   span = 4,
+  titleLines,
+  descriptionLines,
 }: FeatureCardProps): React.ReactElement {
   const iconEl = match(icon)
     .with(P.nonNullable, (ic) => (
-      <span className={`home-card-icon home-card-icon--${iconColor}`}>{ic}</span>
+      <span className={`zp-card__icon zp-card__icon--${iconColor}`}>{ic}</span>
     ))
     .otherwise(() => null)
 
   return (
-    <div className={`feature-card__item feature-card__item--span-${span}`}>
-      <div className="feature-card__item-wrapper">
-        <Card href={href} className="feature-card">
-          <div className="feature-header">
+    <div className={`zp-feature-grid__item zp-feature-grid__item--span-${span}`}>
+      <div className="zp-feature-grid__item-wrap">
+        <Card href={href} className="zp-feature-card">
+          <div className="zp-feature-card__header">
             {iconEl}
-            <span className="feature-title">{title}</span>
+            <span
+              className={clampClass('zp-feature-card__title', titleLines)}
+              style={clampStyle(titleLines)}
+            >
+              {title}
+            </span>
           </div>
-          <span className="feature-desc">{description}</span>
+          <span
+            className={clampClass('zp-feature-card__desc', descriptionLines)}
+            style={clampStyle(descriptionLines)}
+          >
+            {description}
+          </span>
         </Card>
       </div>
     </div>
@@ -75,5 +89,42 @@ interface FeatureGridProps {
  * @returns React element wrapping children in a feature grid
  */
 export function FeatureGrid({ children }: FeatureGridProps): React.ReactElement {
-  return <div className="feature-grid">{children}</div>
+  return (
+    <div className="zp-feature-section">
+      <div className="zp-feature-grid">{children}</div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a className string with optional `zp-clamp` suffix.
+ *
+ * @private
+ * @param base - Base CSS class name
+ * @param lines - Optional line clamp value
+ * @returns Class string with or without zp-clamp
+ */
+function clampClass(base: string, lines: number | undefined): string {
+  if (lines) {
+    return `${base} zp-clamp`
+  }
+  return base
+}
+
+/**
+ * Build an inline style object for line clamping.
+ *
+ * @private
+ * @param lines - Optional line clamp value
+ * @returns Style object with WebkitLineClamp or undefined
+ */
+function clampStyle(lines: number | undefined): React.CSSProperties | undefined {
+  if (lines) {
+    return { WebkitLineClamp: lines }
+  }
+  return undefined
 }
