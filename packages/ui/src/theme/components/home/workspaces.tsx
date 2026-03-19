@@ -54,7 +54,7 @@ function renderGroup(
       key={group.heading}
       heading={group.heading}
       description={group.description}
-      columns={gridConfig && gridConfig.columns ? gridConfig.columns : undefined}
+      columns={gridConfig && gridConfig.columns}
     >
       {group.cards.map((card, i) => (
         <WorkspaceCard

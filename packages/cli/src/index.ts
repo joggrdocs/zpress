@@ -9,8 +9,8 @@
 |
 */
 
+// oxlint-disable-next-line import/no-unassigned-import -- side-effect: installs globalThis.require for ESM compat
 import './shims/require.ts'
-
 import { cli } from '@kidd-cli/core'
 
 import { buildCommand } from './commands/build.ts'
