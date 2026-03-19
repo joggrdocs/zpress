@@ -5,6 +5,9 @@ export default defineConfig({
   description: 'Beautiful Docs, Zero Config',
   tagline: 'An opinionated documentation framework for monorepos. Just point it at your code.',
   theme: { switcher: true },
+  home: {
+    features: { truncate: { description: 2 } },
+  },
   sidebar: {
     below: [{ text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' }],
   },
@@ -229,4 +232,13 @@ export default defineConfig({
     { title: 'Documentation Framework', link: '/documentation-framework/overview' },
     { title: 'Reference', link: '/reference/configuration' },
   ],
+  socialLinks: [
+    { icon: 'github', mode: 'link', content: 'https://github.com/joggrdocs/zpress' },
+    { icon: 'npm', mode: 'link', content: 'https://www.npmjs.com/package/@zpress/kit' },
+  ],
+  footer: {
+    message: 'Built with zpress',
+    copyright: 'Copyright © 2025 Joggr',
+    socials: true,
+  },
 })

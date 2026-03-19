@@ -12,6 +12,10 @@ export interface WorkspaceGridProps {
    */
   readonly description: string
   /**
+   * Number of grid columns.
+   */
+  readonly columns?: number
+  /**
    * WorkspaceCard elements.
    */
   readonly children: React.ReactNode
@@ -21,19 +25,42 @@ export interface WorkspaceGridProps {
  * Grid container for workspace cards — renders a heading, description,
  * and a CSS grid wrapping its children.
  *
- * @param props - Props with heading, description, and children workspace cards
+ * @param props - Props with heading, description, columns, and children workspace cards
  * @returns React element with heading, description, and grid layout
  */
 export function WorkspaceGrid({
   heading,
   description,
+  columns,
   children,
 }: WorkspaceGridProps): React.ReactElement {
+  const style = columnsStyle(columns)
+
   return (
     <>
       <h2>{heading}</h2>
-      <p className="workspace-group-desc">{description}</p>
-      <div className="workspace-grid">{children}</div>
+      <p className="zp-workspace-section__desc">{description}</p>
+      <div className="zp-workspace-grid" style={style}>
+        {children}
+      </div>
     </>
   )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Build an inline style object for the workspace grid column count.
+ *
+ * @private
+ * @param columns - Optional column count
+ * @returns Style object with CSS variable or undefined
+ */
+function columnsStyle(columns: number | undefined): React.CSSProperties | undefined {
+  if (columns !== undefined) {
+    return { '--zp-workspace-cols': String(columns) } as React.CSSProperties
+  }
+  return undefined
 }

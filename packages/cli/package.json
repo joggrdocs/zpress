@@ -40,7 +40,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kidd-cli/core": "^0.7.0",
+    "@kidd-cli/core": "^0.10.0",
     "@rspress/core": "catalog:",
     "@zpress/core": "workspace:*",
     "@zpress/templates": "workspace:*",

@@ -3,7 +3,13 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 import type { UserConfig } from '@rspress/core'
-import type { BuiltInThemeName, ThemeColors, ThemeName, ZpressConfig } from '@zpress/config'
+import type {
+  BuiltInThemeName,
+  HomeConfig,
+  ThemeColors,
+  ThemeName,
+  ZpressConfig,
+} from '@zpress/config'
 import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 import fileTree from 'rspress-plugin-file-tree'
@@ -139,8 +145,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces } as Record<string, unknown>),
       ...({
+        socialLinks: config.socialLinks,
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
         sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
+        home: resolveHomeConfig(config),
+        zpressFooter: config.footer,
       } as Record<string, unknown>),
     },
   }
@@ -281,12 +290,39 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
 function resolveSidebarLinks(params: {
   readonly config: ZpressConfig
   readonly position: 'above' | 'below'
-}): readonly { text: string; link: string; icon?: string | { id: string; color: string } }[] {
+}): readonly {
+  text: string
+  link: string
+  icon?: string | { id: string; color: string }
+  style?: 'brand' | 'alt' | 'ghost'
+  shape?: 'square' | 'rounded' | 'circle'
+}[] {
   const items = params.config.sidebar && params.config.sidebar[params.position]
   if (items) {
     return items
   }
   return []
+}
+
+/**
+ * Resolve home page layout config with defaults.
+ * Workspaces default to 2 columns.
+ *
+ * @private
+ * @param config - Zpress config object
+ * @returns Resolved home config
+ */
+function resolveHomeConfig(config: ZpressConfig): HomeConfig {
+  if (config.home) {
+    return {
+      features: config.home.features,
+      workspaces: {
+        columns: 2,
+        ...config.home.workspaces,
+      },
+    }
+  }
+  return { workspaces: { columns: 2 } }
 }
 
 /**

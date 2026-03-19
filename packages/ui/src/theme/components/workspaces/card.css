@@ -4,13 +4,13 @@
  */
 
 /* ── Workspace section ───────────────────────────────────── */
-.workspace-section {
+.zp-workspace-section {
   max-width: 1152px;
   margin: 0 auto;
-  padding: 0 16px 64px;
+  padding-bottom: 64px;
 }
 
-.workspace-section h2 {
+.zp-workspace-section h2 {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -19,67 +19,76 @@
   color: var(--zp-c-text-2);
 }
 
-.workspace-group-desc {
+.zp-workspace-section__desc {
   margin: 0 0 16px;
   font-size: 14px;
   color: var(--zp-c-text-3);
   line-height: 1.5;
 }
 
-.workspace-grid {
+.zp-workspace-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(var(--zp-workspace-cols, 2), 1fr);
   gap: 12px;
   margin-bottom: 40px;
 }
 
 /* ── Workspace card layout ───────────────────────────────── */
-.workspace-card {
+.zp-workspace-card {
   display: flex;
   flex-direction: column;
 }
 
-.workspace-header {
+.zp-workspace-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-.workspace-identity {
+.zp-workspace-card__identity {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.workspace-title {
+.zp-workspace-card__title {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
 }
 
-.workspace-scope {
+.zp-workspace-card__scope {
   font-family: var(--zp-font-family-mono);
   font-size: 11px;
   color: var(--zp-c-text-3);
 }
 
-.workspace-name {
+.zp-workspace-card__name {
   font-family: var(--zp-font-family-mono);
   font-size: 15px;
   font-weight: 700;
   color: var(--zp-c-text-1);
 }
 
-.workspace-desc {
+.zp-workspace-card__desc {
   font-size: 13px;
   color: var(--zp-c-text-2);
   line-height: 1.5;
   flex: 1;
 }
 
+/* ── Truncation ─────────────────────────────────────────── */
+.zp-workspace-card__name.zp-clamp,
+.zp-workspace-card__desc.zp-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ── Deploy badge ────────────────────────────────────────── */
-.deploy-badge {
+.zp-workspace-card__badge {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,26 +98,26 @@
   border: 1px solid var(--zp-c-divider);
 }
 
-.deploy-logo {
+.zp-workspace-card__badge-logo {
   height: 16px;
   width: auto;
   opacity: 0.75;
   transition: opacity 0.2s;
 }
 
-.home-card:hover .deploy-logo {
+.zp-card:hover .zp-workspace-card__badge-logo {
   opacity: 1;
 }
 
 /* ── Tech tags ───────────────────────────────────────────── */
-.workspace-tags {
+.zp-workspace-card__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
 }
 
-.workspace-tag {
+.zp-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -121,21 +130,22 @@
   border: 1px solid var(--zp-c-divider);
 }
 
-.workspace-tag svg {
+.zp-tag svg {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .workspace-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 1184px) {
+  .zp-workspace-section {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .workspace-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 768px) {
+  .zp-workspace-grid {
+    grid-template-columns: 1fr;
   }
 }

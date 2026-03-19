@@ -1,3 +1,4 @@
+import { Link } from '@rspress/core/runtime'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
@@ -9,6 +10,8 @@ interface SidebarLinkItem {
   readonly text: string
   readonly link: string
   readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly style?: 'brand' | 'alt' | 'ghost'
+  readonly shape?: 'square' | 'rounded' | 'circle'
 }
 
 interface SidebarLinksProps {
@@ -58,30 +61,59 @@ function renderIcon(icon: SidebarLinkItem['icon']): React.ReactElement | null {
 }
 
 /**
- * Determine target/rel props for external links.
+ * Check whether a URL points to an external origin.
  *
  * @private
  * @param link - Link URL to check
- * @returns Object with target and rel for external links, empty object otherwise
+ * @returns True when the link is absolute http(s)
  */
-function externalProps(link: string): { target?: string; rel?: string } {
-  return match(link.startsWith('http://') || link.startsWith('https://'))
-    .with(true, () => ({ target: '_blank' as const, rel: 'noopener noreferrer' }))
-    .otherwise(() => ({}))
+function isExternal(link: string): boolean {
+  return link.startsWith('http://') || link.startsWith('https://')
 }
 
 /**
  * Render a single sidebar link entry with optional icon.
+ * Uses client-side `Link` for internal routes, `<a>` for external URLs.
  *
  * @private
  * @param props - Props with sidebar link item
  * @returns Sidebar link element
  */
 function SidebarLinkEntry({ item }: { readonly item: SidebarLinkItem }): React.ReactElement {
-  return (
-    <a href={item.link} className="zp-sidebar-link" {...externalProps(item.link)}>
+  const isCircle = item.shape === 'circle'
+  const content = (
+    <>
       {renderIcon(item.icon)}
-      <span className="zp-sidebar-link-text">{item.text}</span>
-    </a>
+      {match(isCircle)
+        .with(true, () => null)
+        .otherwise(() => (
+          <span className="zp-sidebar-link-text">{item.text}</span>
+        ))}
+    </>
   )
+
+  const variant = item.style ?? 'ghost'
+  const shape = item.shape ?? 'square'
+  const cls = `zp-sidebar-link zp-sidebar-link--${variant} zp-sidebar-link--${shape}`
+  const ariaLabel = match(isCircle)
+    .with(true, () => item.text)
+    .otherwise(() => undefined)
+
+  return match(isExternal(item.link))
+    .with(true, () => (
+      <a
+        href={item.link}
+        className={cls}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={ariaLabel}
+      >
+        {content}
+      </a>
+    ))
+    .otherwise(() => (
+      <Link to={item.link} className={cls} aria-label={ariaLabel}>
+        {content}
+      </Link>
+    ))
 }

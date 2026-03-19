@@ -103,7 +103,7 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
   return [
     frontmatter,
     '',
-    '<div class="workspace-section">',
+    '<div class="zp-workspace-section">',
     '',
     appsSection,
     '',

@@ -16,7 +16,15 @@
 
 import { z } from 'zod/v3'
 
-import type { CardConfig, Frontmatter, NavItem, ResolvedPage, Section } from './types.ts'
+import type {
+  CardConfig,
+  Frontmatter,
+  HomeConfig,
+  IconId,
+  NavItem,
+  ResolvedPage,
+  Section,
+} from './types.ts'
 
 // z.function() infers to (...args: unknown[]) => unknown, which loses
 // parameter and return types. z.custom<T> preserves exact signatures
@@ -79,9 +87,13 @@ const discoverySchema = z
   })
   .strict()
 
+const iconIdSchema: z.ZodType<IconId> = z
+  .string()
+  .refine((v) => v.includes(':')) as z.ZodType<IconId>
+
 const iconConfigSchema = z.union([
-  z.string(),
-  z.object({ id: z.string(), color: z.string() }).strict(),
+  iconIdSchema,
+  z.object({ id: iconIdSchema, color: z.string() }).strict(),
 ])
 
 const cardConfigSchema = z
@@ -148,7 +160,7 @@ const workspaceGroupSchema = z
   .object({
     title: titleConfigSchema,
     description: z.string(),
-    icon: z.string(),
+    icon: iconIdSchema,
     items: z.array(workspaceItemSchema).min(1),
     link: z.string().optional(),
   })
@@ -159,7 +171,7 @@ const featureSchema = z
     title: titleConfigSchema,
     description: z.string(),
     link: z.string().optional(),
-    icon: z.string().optional(),
+    icon: iconIdSchema.optional(),
   })
   .strict()
 
@@ -197,6 +209,8 @@ const sidebarLinkSchema = z
     text: z.string(),
     link: z.string(),
     icon: iconConfigSchema.optional(),
+    style: z.enum(['brand', 'alt', 'ghost']).optional(),
+    shape: z.enum(['square', 'rounded', 'circle']).optional(),
   })
   .strict()
 
@@ -204,6 +218,27 @@ const sidebarConfigSchema = z
   .object({
     above: z.array(sidebarLinkSchema).optional(),
     below: z.array(sidebarLinkSchema).optional(),
+  })
+  .strict()
+
+const truncateConfigSchema = z
+  .object({
+    title: z.number().int().min(1).optional(),
+    description: z.number().int().min(1).optional(),
+  })
+  .strict()
+
+const homeGridConfigSchema = z
+  .object({
+    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    truncate: truncateConfigSchema.optional(),
+  })
+  .strict()
+
+const homeConfigSchema = z
+  .object({
+    features: homeGridConfigSchema.optional(),
+    workspaces: homeGridConfigSchema.optional(),
   })
   .strict()
 
@@ -215,12 +250,51 @@ const heroActionSchema = z
   })
   .strict()
 
+const socialLinkSchema = z
+  .object({
+    icon: z.union([
+      z.enum([
+        'lark',
+        'discord',
+        'facebook',
+        'github',
+        'instagram',
+        'linkedin',
+        'slack',
+        'x',
+        'youtube',
+        'wechat',
+        'qq',
+        'juejin',
+        'zhihu',
+        'bilibili',
+        'weibo',
+        'gitlab',
+        'X',
+        'bluesky',
+        'npm',
+      ]),
+      z.object({ svg: z.string() }).strict(),
+    ]),
+    mode: z.enum(['link', 'text', 'img', 'dom']),
+    content: z.string(),
+  })
+  .strict()
+
+const footerConfigSchema = z
+  .object({
+    message: z.string().optional(),
+    copyright: z.string().optional(),
+    socials: z.boolean().optional(),
+  })
+  .strict()
+
 export const zpressConfigSchema = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),
     theme: themeConfigSchema.optional(),
-    icon: z.string().optional(),
+    icon: iconIdSchema.optional(),
     tagline: z.string().optional(),
     apps: z.array(workspaceItemSchema).optional(),
     packages: z.array(workspaceItemSchema).optional(),
@@ -231,6 +305,9 @@ export const zpressConfigSchema = z
     sections: z.array(entrySchema).min(1, 'config.sections must have at least one entry'),
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
     exclude: z.array(z.string()).optional(),
+    home: homeConfigSchema.optional(),
+    socialLinks: z.array(socialLinkSchema).optional(),
+    footer: footerConfigSchema.optional(),
   })
   .strict()
 
@@ -255,6 +332,8 @@ export const pathsSchema = z
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeConfig: z.ZodType<HomeConfig> = homeConfigSchema
 
 // ---------------------------------------------------------------------------
 // Private

@@ -3,10 +3,28 @@ import type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '
 export type { ThemeConfig, ThemeName, ColorMode, ThemeColors, IconColor } from '@zpress/theme'
 
 /**
- * Iconify icon identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`).
- * Find icons at https://icon-sets.iconify.design/
+ * Installed Iconify icon-set prefixes.
+ *
+ * Must stay in sync with `@iconify-json/*` packages in root `package.json`.
  */
-export type IconId = string
+export type IconPrefix =
+  | 'catppuccin'
+  | 'devicon'
+  | 'logos'
+  | 'material-icon-theme'
+  | 'mdi'
+  | 'pixelarticons'
+  | 'simple-icons'
+  | 'skill-icons'
+  | 'vscode-icons'
+
+/**
+ * Iconify icon identifier — `"prefix:name"` where prefix matches an installed set.
+ *
+ * @example `"devicon:hono"`, `"pixelarticons:device-mobile"`
+ * @see https://icon-sets.iconify.design/
+ */
+export type IconId = `${IconPrefix}:${string}`
 
 /**
  * Unified icon configuration.
@@ -206,6 +224,8 @@ export interface SidebarLink {
   readonly text: string
   readonly link: string
   readonly icon?: IconConfig
+  readonly style?: 'brand' | 'alt' | 'ghost'
+  readonly shape?: 'square' | 'rounded' | 'circle'
 }
 
 /**
@@ -337,7 +357,7 @@ export interface Workspace {
  * {
  *   title: 'Integrations',
  *   description: 'Third-party service connectors',
- *   icon: 'pixelarticons:integration',
+ *   icon: 'mdi:puzzle',
  *   items: [
  *     { title: 'Stripe', description: 'Payment processing', prefix: '/integrations/stripe' },
  *   ],
@@ -347,7 +367,7 @@ export interface Workspace {
 export interface WorkspaceCategory {
   readonly title: TitleConfig
   readonly description: string
-  readonly icon: string
+  readonly icon: IconId
   readonly items: readonly Workspace[]
   readonly link?: string
 }
@@ -419,7 +439,108 @@ export interface Feature {
   readonly title: TitleConfig
   readonly description: string
   readonly link?: string
-  readonly icon?: string
+  readonly icon?: IconId
+}
+
+/**
+ * Text truncation configuration for card content.
+ *
+ * Values represent the maximum number of visible lines before
+ * overflow is clipped with an ellipsis via CSS `line-clamp`.
+ */
+export interface TruncateConfig {
+  readonly title?: number
+  readonly description?: number
+}
+
+/**
+ * Layout and styling options for a card grid section on the home page.
+ */
+export interface HomeGridConfig {
+  readonly columns?: 1 | 2 | 3 | 4
+  readonly truncate?: TruncateConfig
+}
+
+/**
+ * Home page layout customization.
+ *
+ * Schema: `homeConfigSchema` in schema.ts validates this shape.
+ *
+ * @example
+ * ```ts
+ * home: {
+ *   features: { columns: 3, truncate: { description: 2 } },
+ *   workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
+ * }
+ * ```
+ */
+export interface HomeConfig {
+  readonly features?: HomeGridConfig
+  readonly workspaces?: HomeGridConfig
+}
+
+/**
+ * Built-in social link icon identifier.
+ *
+ * Rspress supports these icons out of the box via `virtual-social-links`.
+ */
+export type SocialLinkIcon =
+  | 'lark'
+  | 'discord'
+  | 'facebook'
+  | 'github'
+  | 'instagram'
+  | 'linkedin'
+  | 'slack'
+  | 'x'
+  | 'youtube'
+  | 'wechat'
+  | 'qq'
+  | 'juejin'
+  | 'zhihu'
+  | 'bilibili'
+  | 'weibo'
+  | 'gitlab'
+  | 'X'
+  | 'bluesky'
+  | 'npm'
+
+/**
+ * A social link shown in the navigation bar.
+ *
+ * Schema: `socialLinkSchema` in schema.ts validates this shape.
+ *
+ * @example
+ * ```ts
+ * socialLinks: [
+ *   { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
+ *   { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
+ * ]
+ * ```
+ */
+export interface SocialLink {
+  readonly icon: SocialLinkIcon | { readonly svg: string }
+  readonly mode: 'link' | 'text' | 'img' | 'dom'
+  readonly content: string
+}
+
+/**
+ * Site footer shown below all page content.
+ *
+ * Schema: `footerConfigSchema` in schema.ts validates this shape.
+ *
+ * @example
+ * ```ts
+ * footer: {
+ *   message: 'Built with zpress',
+ *   copyright: 'Copyright © 2025 Acme Inc.',
+ * }
+ * ```
+ */
+export interface FooterConfig {
+  readonly message?: string
+  readonly copyright?: string
+  readonly socials?: boolean
 }
 
 /**
@@ -433,7 +554,7 @@ export interface ZpressConfig {
   readonly title?: string
   readonly description?: string
   readonly theme?: ThemeConfig
-  readonly icon?: string
+  readonly icon?: IconId
   readonly tagline?: string
   readonly actions?: readonly HeroAction[]
   readonly seo?: SeoConfig
@@ -446,4 +567,7 @@ export interface ZpressConfig {
   readonly nav?: 'auto' | readonly NavItem[]
   readonly exclude?: readonly string[]
   readonly openapi?: OpenAPIConfig
+  readonly home?: HomeConfig
+  readonly socialLinks?: readonly SocialLink[]
+  readonly footer?: FooterConfig
 }
