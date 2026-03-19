@@ -145,9 +145,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces } as Record<string, unknown>),
       ...({
+        socialLinks: config.socialLinks,
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
         sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
         home: resolveHomeConfig(config),
+        footer: config.footer,
       } as Record<string, unknown>),
     },
   }

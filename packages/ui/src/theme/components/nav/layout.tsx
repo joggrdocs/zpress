@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { match } from 'ts-pattern'
 
 import { useZpress } from '../../hooks/use-zpress'
+import { SiteFooter } from '../footer/site-footer'
 import { SidebarLinks } from '../sidebar/sidebar-links'
 import { BranchTag } from './branch-tag'
 import { ThemeSwitcher } from './theme-switcher'
@@ -45,6 +46,7 @@ export function Layout(): React.ReactElement {
       afterNavMenu={<ThemeSwitcher />}
       beforeSidebar={beforeSidebar}
       afterSidebar={afterSidebar}
+      bottom={<SiteFooter />}
     />
   )
 }

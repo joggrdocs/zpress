@@ -248,6 +248,44 @@ const heroActionSchema = z
   })
   .strict()
 
+const socialLinkSchema = z
+  .object({
+    icon: z.union([
+      z.enum([
+        'lark',
+        'discord',
+        'facebook',
+        'github',
+        'instagram',
+        'linkedin',
+        'slack',
+        'x',
+        'youtube',
+        'wechat',
+        'qq',
+        'juejin',
+        'zhihu',
+        'bilibili',
+        'weibo',
+        'gitlab',
+        'X',
+        'bluesky',
+        'npm',
+      ]),
+      z.object({ svg: z.string() }).strict(),
+    ]),
+    mode: z.enum(['link', 'text', 'img', 'dom']),
+    content: z.string(),
+  })
+  .strict()
+
+const footerConfigSchema = z
+  .object({
+    message: z.string().optional(),
+    copyright: z.string().optional(),
+  })
+  .strict()
+
 export const zpressConfigSchema = z
   .object({
     title: z.string().optional(),
@@ -265,6 +303,8 @@ export const zpressConfigSchema = z
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
     exclude: z.array(z.string()).optional(),
     home: homeConfigSchema.optional(),
+    socialLinks: z.array(socialLinkSchema).optional(),
+    footer: footerConfigSchema.optional(),
   })
   .strict()
 

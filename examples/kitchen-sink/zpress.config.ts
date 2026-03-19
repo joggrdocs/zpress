@@ -149,4 +149,13 @@ export default defineConfig({
     ],
   },
   nav: 'auto',
+  socialLinks: [
+    { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
+    { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
+    { icon: 'x', mode: 'link', content: 'https://x.com/acme' },
+  ],
+  footer: {
+    message: 'Built with zpress',
+    copyright: 'Copyright © 2025 Acme Inc.',
+  },
 })

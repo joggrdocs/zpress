@@ -480,6 +480,69 @@ export interface HomeConfig {
 }
 
 /**
+ * Built-in social link icon identifier.
+ *
+ * Rspress supports these icons out of the box via `virtual-social-links`.
+ */
+export type SocialLinkIcon =
+  | 'lark'
+  | 'discord'
+  | 'facebook'
+  | 'github'
+  | 'instagram'
+  | 'linkedin'
+  | 'slack'
+  | 'x'
+  | 'youtube'
+  | 'wechat'
+  | 'qq'
+  | 'juejin'
+  | 'zhihu'
+  | 'bilibili'
+  | 'weibo'
+  | 'gitlab'
+  | 'X'
+  | 'bluesky'
+  | 'npm'
+
+/**
+ * A social link shown in the navigation bar.
+ *
+ * Schema: `socialLinkSchema` in schema.ts validates this shape.
+ *
+ * @example
+ * ```ts
+ * socialLinks: [
+ *   { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
+ *   { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
+ * ]
+ * ```
+ */
+export interface SocialLink {
+  readonly icon: SocialLinkIcon | { readonly svg: string }
+  readonly mode: 'link' | 'text' | 'img' | 'dom'
+  readonly content: string
+}
+
+/**
+ * Site footer shown below all page content.
+ *
+ * Schema: `footerConfigSchema` in schema.ts validates this shape.
+ *
+ * @example
+ * ```ts
+ * footer: {
+ *   message: 'Built with zpress',
+ *   copyright: 'Copyright © 2025 Acme Inc.',
+ * }
+ * ```
+ */
+export interface FooterConfig {
+  readonly message?: string
+  readonly copyright?: string
+}
+
+/**
  * zpress configuration.
  *
  * Schema: `zpressConfigSchema` in schema.ts validates this shape.
@@ -504,4 +567,6 @@ export interface ZpressConfig {
   readonly exclude?: readonly string[]
   readonly openapi?: OpenAPIConfig
   readonly home?: HomeConfig
+  readonly socialLinks?: readonly SocialLink[]
+  readonly footer?: FooterConfig
 }
