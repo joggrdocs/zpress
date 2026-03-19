@@ -80,10 +80,8 @@ export const diffCommand = command({
 
     if (pretty) {
       ctx.logger.intro('zpress diff')
-      ctx.logger.step(`Watching: ${dirs.join(', ')}`)
-      ctx.logger.warn(`${changed.length} changed file(s):`)
-      // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each changed file
-      changed.forEach((file) => ctx.logger.info(`  ${file}`))
+      ctx.logger.step(`Watching ${dirs.length} path(s)`)
+      ctx.logger.note(changed.join('\n'), `${changed.length} changed file(s)`)
       ctx.logger.outro('Done')
       return
     }
