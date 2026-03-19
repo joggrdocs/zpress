@@ -6,6 +6,16 @@ import { createPaths, hasGlobChars, loadConfig } from '@zpress/core'
 import { uniq } from 'es-toolkit'
 import { z } from 'zod'
 
+const CONFIG_GLOBS = [
+  'zpress.config.ts',
+  'zpress.config.mts',
+  'zpress.config.cts',
+  'zpress.config.js',
+  'zpress.config.mjs',
+  'zpress.config.cjs',
+  'zpress.config.json',
+] as const
+
 /**
  * Registers the `diff` CLI command to show changed files in watched directories.
  *
@@ -37,7 +47,7 @@ export const diffCommand = command({
       process.exit(1)
     }
 
-    const dirs = collectWatchDirs(config)
+    const dirs = collectWatchPaths(config)
 
     if (dirs.length === 0) {
       if (pretty) {
@@ -78,7 +88,7 @@ export const diffCommand = command({
       return
     }
 
-    process.stdout.write(changed.join(' '))
+    process.stdout.write(`${changed.join(' ')}\n`)
   },
 })
 
@@ -93,9 +103,9 @@ export const diffCommand = command({
  * @param config - Resolved zpress config
  * @returns Deduplicated array of directory paths to watch
  */
-function collectWatchDirs(config: ZpressConfig): readonly string[] {
+function collectWatchPaths(config: ZpressConfig): readonly string[] {
   const dirs = flattenFromPaths(config.sections)
-  return uniq(dirs.map(toDirectory))
+  return uniq([...dirs.map(toDirectory), ...CONFIG_GLOBS])
 }
 
 /**
