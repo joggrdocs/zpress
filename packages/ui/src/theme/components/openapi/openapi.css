@@ -497,6 +497,7 @@
   gap: 0;
   border-bottom: 1px solid var(--zp-c-divider);
   margin-bottom: 0;
+  overflow-x: auto;
 }
 
 .zp-oas-code-sample__tab {
@@ -508,6 +509,8 @@
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
   transition:
     color 0.2s,
     border-color 0.2s;
@@ -524,12 +527,17 @@
 
 .zp-oas-code-sample__block {
   margin: 0;
+  overflow: hidden;
 }
 
 .zp-oas-code-sample__block .rp-codeblock {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   margin: 0;
+}
+
+.zp-oas-code-sample__block .rp-codeblock pre {
+  overflow-x: auto;
 }
 
 /* ── Overview page ─────────────────────────────────────────── */

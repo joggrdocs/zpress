@@ -12,7 +12,6 @@ import type {
   ThemeIcon,
   TreeDataProvider,
   TreeItem,
-  TreeItemLabel,
 } from 'vscode'
 
 interface SidebarJsonItem {
@@ -48,6 +47,7 @@ interface SidebarDeps {
   readonly createWatcher: (pattern: GlobPattern) => FileSystemWatcher
   readonly EventEmitter: new <T>() => EventEmitter<T>
   readonly ThemeIcon: new (id: string, color?: ThemeColor) => ThemeIcon
+  readonly ThemeColor: new (id: string) => ThemeColor
   readonly RelativePattern: new (base: string, pattern: string) => RelativePattern
 }
 
@@ -85,6 +85,35 @@ const ITEM_ICONS: Readonly<Record<string, string>> = {
   architecture: 'symbol-structure',
 }
 
+const HTTP_METHODS: ReadonlySet<string> = new Set([
+  'GET',
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+  'HEAD',
+  'OPTIONS',
+  'TRACE',
+])
+
+/**
+ * VS Code theme color IDs mapped to HTTP methods.
+ *
+ * Uses `charts.*` colors which are available across all VS Code themes
+ * and closely match the zpress OpenAPI palette:
+ *   GET → green, POST → blue, PUT/PATCH → yellow, DELETE → red
+ */
+const METHOD_COLORS: Readonly<Record<string, string>> = {
+  get: 'charts.green',
+  post: 'charts.blue',
+  put: 'charts.yellow',
+  patch: 'charts.yellow',
+  delete: 'charts.red',
+  head: 'descriptionForeground',
+  options: 'descriptionForeground',
+  trace: 'descriptionForeground',
+}
+
 /**
  * Detect whether a sidebar label contains HTML (from OpenAPI sidebar entries).
  *
@@ -97,7 +126,7 @@ function containsHtml(label: string): boolean {
 
 /**
  * Strip HTML tags from a sidebar label, returning plain text.
- * Inserts a space between the method badge and path for readability.
+ * Inserts a space between adjacent closing/opening tags for readability.
  *
  * @param html - HTML sidebar label (e.g. `<span class="...">GET</span><code class="...">/pets</code>`)
  * @returns Plain text label (e.g. `GET /pets`)
@@ -123,44 +152,13 @@ function parseOpenApiLabel(html: string): { readonly method: string; readonly pa
   }
   const method = text.slice(0, spaceIndex)
   const apiPath = text.slice(spaceIndex + 1)
-  const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'TRACE']
-  if (!METHODS.includes(method)) {
+  if (!HTTP_METHODS.has(method)) {
     return null
   }
   return { method, path: apiPath }
 }
 
-/**
- * Resolve a sidebar label for display in a VS Code TreeItem.
- *
- * Plain text labels pass through unchanged. HTML labels (from OpenAPI
- * method-path sidebar entries) are stripped to plain text with the
- * method portion highlighted.
- *
- * @param raw - Raw sidebar label (plain text or HTML)
- * @returns Plain string or TreeItemLabel with highlights
- */
-function resolveTreeItemLabel(raw: string): string | TreeItemLabel {
-  if (!containsHtml(raw)) {
-    return raw
-  }
-
-  const parsed = parseOpenApiLabel(raw)
-  if (parsed) {
-    const text = `${parsed.method} ${parsed.path}`
-    return {
-      label: text,
-      highlights: [[0, parsed.method.length]],
-    }
-  }
-
-  return stripHtmlLabel(raw)
-}
-
 function getIconId(node: SidebarNode): string {
-  if (containsHtml(node.label)) {
-    return 'symbol-method'
-  }
   const key = node.label.toLowerCase()
   const mapped = ITEM_ICONS[key]
   if (mapped) {
@@ -321,12 +319,30 @@ function createSidebar(deps: SidebarDeps): Sidebar {
           return 2 /* TreeItemCollapsibleState.Expanded */
         })()
 
-        const label: string | TreeItemLabel = resolveTreeItemLabel(node.label)
+        /*
+         * OpenAPI items arrive as HTML (e.g. `<span>GET</span><code>/pets</code>`).
+         * Strip the HTML and show: colored dot icon, path as label, method as description.
+         */
+        const openApiParsed = containsHtml(node.label) ? parseOpenApiLabel(node.label) : null
+
+        const label = openApiParsed ? openApiParsed.path : node.label
+
+        const iconPath = (() => {
+          if (openApiParsed) {
+            const colorId = METHOD_COLORS[openApiParsed.method.toLowerCase()]
+            if (colorId) {
+              return new deps.ThemeIcon('circle-filled', new deps.ThemeColor(colorId))
+            }
+            return new deps.ThemeIcon('circle-filled')
+          }
+          return new deps.ThemeIcon(getIconId(node))
+        })()
 
         const item: TreeItem = {
           label,
+          description: openApiParsed ? openApiParsed.method : undefined,
           collapsibleState,
-          iconPath: new deps.ThemeIcon(getIconId(node)),
+          iconPath,
         }
 
         /*

@@ -1,7 +1,12 @@
+// NOTE: This file is copied raw to dist/ and compiled by Rspress's internal
+// webpack — NOT by Rslib. Only import packages resolvable in Rspress's webpack
+// context (react, mermaid, CSS). Do NOT import ts-pattern, es-toolkit, or other
+// workspace dependencies here — they will cause "factory is undefined" runtime
+// errors. See packages/ui/AGENTS.md for details.
+
 import mermaid from 'mermaid'
 import type { MermaidConfig } from 'mermaid'
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { match } from 'ts-pattern'
 
 import './mermaid.css'
 
@@ -217,9 +222,7 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     const mermaidConfig: MermaidConfig = {
       securityLevel: 'loose',
       startOnLoad: false,
-      theme: match(hasDarkClass)
-        .with(true, () => 'dark' as const)
-        .otherwise(() => 'default' as const),
+      theme: hasDarkClass ? 'dark' : 'default',
       ...config,
     }
 
@@ -261,9 +264,7 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
 
     function handleWheel(e: WheelEvent) {
       e.preventDefault()
-      const direction = match(e.deltaY < 0)
-        .with(true, () => 1)
-        .otherwise(() => -1)
+      const direction = e.deltaY < 0 ? 1 : -1
       setTransform((prev) => {
         const nextScale = Math.min(
           MAX_SCALE,
@@ -378,48 +379,37 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
 
   const containerClasses = [
     'zpress-mermaid',
-    match(fullscreen)
-      .with(true, () => 'zpress-mermaid-fullscreen')
-      .otherwise(() => ''),
-    match(isPreview)
-      .with(true, () => '')
-      .otherwise(() => 'zpress-mermaid-no-pan'),
+    fullscreen ? 'zpress-mermaid-fullscreen' : '',
+    isPreview ? '' : 'zpress-mermaid-no-pan',
   ]
     .filter(Boolean)
     .join(' ')
 
-  const fullscreenTitle = match(fullscreen)
-    .with(true, () => 'Exit fullscreen')
-    .otherwise(() => 'Fullscreen')
+  const fullscreenTitle = fullscreen ? 'Exit fullscreen' : 'Fullscreen'
+  const fullscreenIcon = fullscreen ? '✕' : '⛶'
 
-  const fullscreenIcon = match(fullscreen)
-    .with(true, () => '✕')
-    .otherwise(() => '⛶')
+  const previewTabClass = isPreview
+    ? 'zpress-mermaid-tab zpress-mermaid-tab-active'
+    : 'zpress-mermaid-tab'
 
-  const previewTabClass = match(isPreview)
-    .with(true, () => 'zpress-mermaid-tab zpress-mermaid-tab-active')
-    .otherwise(() => 'zpress-mermaid-tab')
+  const codeTabClass = isPreview
+    ? 'zpress-mermaid-tab'
+    : 'zpress-mermaid-tab zpress-mermaid-tab-active'
 
-  const codeTabClass = match(isPreview)
-    .with(true, () => 'zpress-mermaid-tab')
-    .otherwise(() => 'zpress-mermaid-tab zpress-mermaid-tab-active')
-
-  const body = match(isPreview)
-    .with(true, () => (
-      <div
-        ref={innerRef}
-        className="zpress-mermaid-inner"
-        style={{ transform: transformStyle }}
-        dangerouslySetInnerHTML={{ __html: svg }}
-      />
-    ))
-    .otherwise(() => (
-      <div className="zpress-mermaid-code">
-        <pre>
-          <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
-        </pre>
-      </div>
-    ))
+  const body = isPreview ? (
+    <div
+      ref={innerRef}
+      className="zpress-mermaid-inner"
+      style={{ transform: transformStyle }}
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  ) : (
+    <div className="zpress-mermaid-code">
+      <pre>
+        <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+      </pre>
+    </div>
+  )
 
   return (
     <div

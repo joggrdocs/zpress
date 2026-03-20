@@ -12,6 +12,8 @@ export const serveCommand = command({
   options: z.object({
     open: z.boolean().optional().default(true),
     port: z.number().optional(),
+    theme: z.string().optional(),
+    colorMode: z.string().optional(),
     vscode: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {
@@ -29,7 +31,7 @@ export const serveCommand = command({
       process.exit(1)
     }
 
-    const port = await serveSite({ config, paths, port: ctx.args.port, vscode: ctx.args.vscode })
+    const port = await serveSite({ config, paths, port: ctx.args.port, theme: ctx.args.theme, colorMode: ctx.args.colorMode, vscode: ctx.args.vscode })
 
     if (ctx.args.open) {
       openBrowser(`http://localhost:${port}`)

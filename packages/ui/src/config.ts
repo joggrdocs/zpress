@@ -11,7 +11,7 @@ import type {
   ZpressConfig,
 } from '@zpress/config'
 import type { Paths } from '@zpress/core'
-import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
+import { isBuiltInTheme, resolveDefaultColorMode, resolveThemeModes } from '@zpress/theme'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
 import supersub from 'rspress-plugin-supersub'
@@ -27,6 +27,8 @@ interface CreateRspressConfigOptions {
   readonly paths: Paths
   readonly logLevel?: 'info' | 'warn' | 'error' | 'silent'
   readonly vscode?: boolean
+  readonly themeOverride?: ThemeName
+  readonly colorModeOverride?: string
 }
 
 interface HeadScriptOptions {
@@ -38,6 +40,7 @@ interface HeadScriptOptions {
 const COLOR_MODE_DARK_JS = readJs('js/color-mode-dark.js')
 const COLOR_MODE_LIGHT_JS = readJs('js/color-mode-light.js')
 const VSCODE_SET_JS = `document.documentElement.dataset.zpressEnv='vscode'`
+const VSCODE_NAV_JS = readJs('js/vscode-nav.js')
 const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 
 /**
@@ -63,8 +66,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   })
   const gitBranch = detectGitBranch()
 
-  const themeName = resolveThemeName(config)
-  const colorMode = resolveColorMode({ config, themeName })
+  const themeName = resolveThemeName(config, options.themeOverride)
+  const colorMode = resolveColorMode({ config, themeName, override: options.colorModeOverride })
   const themeSwitcher = resolveThemeSwitcher(config)
   const themeColors = resolveThemeColors(config)
   const themeDarkColors = resolveThemeDarkColors(config)
@@ -225,7 +228,10 @@ function detectGitBranch(): string {
  * @param config - Zpress config object
  * @returns Resolved theme name
  */
-function resolveThemeName(config: ZpressConfig): ThemeName {
+function resolveThemeName(config: ZpressConfig, override?: ThemeName): ThemeName {
+  if (override) {
+    return override
+  }
   if (config.theme && config.theme.name) {
     return config.theme.name
   }
@@ -243,14 +249,43 @@ function resolveThemeName(config: ZpressConfig): ThemeName {
 function resolveColorMode(params: {
   readonly config: ZpressConfig
   readonly themeName: ThemeName
+  readonly override?: string
 }): string {
-  if (params.config.theme && params.config.theme.colorMode) {
-    return params.config.theme.colorMode
-  }
+  const requested = params.override
+    ?? (params.config.theme && params.config.theme.colorMode)
+    ?? null
+
   if (isBuiltInTheme(params.themeName)) {
+    const supported = resolveThemeModes(params.themeName as BuiltInThemeName)
+    if (requested && isColorModeSupported(requested, supported)) {
+      return requested
+    }
     return resolveDefaultColorMode(params.themeName as BuiltInThemeName)
   }
+
+  if (requested) {
+    return requested
+  }
   return 'toggle'
+}
+
+/**
+ * Check if a requested color mode is compatible with the theme's supported modes.
+ * `toggle` is only valid when both `dark` and `light` are supported.
+ *
+ * @private
+ * @param mode - Requested color mode
+ * @param supported - Modes the theme supports
+ * @returns True if the mode is valid for the theme
+ */
+function isColorModeSupported(
+  mode: string,
+  supported: readonly ('dark' | 'light')[]
+): boolean {
+  if (mode === 'toggle') {
+    return supported.includes('dark') && supported.includes('light')
+  }
+  return supported.includes(mode as 'dark' | 'light')
 }
 
 /**
@@ -374,6 +409,6 @@ function buildColorModeJs(colorMode: string): string {
 function buildHeadScriptBody(options: HeadScriptOptions): string {
   const colorModeJs = buildColorModeJs(options.colorMode)
   const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
-  const vscodeJs = options.vscode ? VSCODE_SET_JS : ''
+  const vscodeJs = options.vscode ? [VSCODE_SET_JS, VSCODE_NAV_JS].join(';') : ''
   return [colorModeJs, themeAttrJs, vscodeJs, LOADER_DOTS_JS].filter(Boolean).join(';')
 }

@@ -233,13 +233,6 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
       )
     }
 
-    if (!category.description) {
-      return configError(
-        'missing_field',
-        `WorkspaceCategory "${category.title}": "description" is required`
-      )
-    }
-
     if (!category.icon) {
       return configError(
         'missing_field',

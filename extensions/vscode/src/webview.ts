@@ -1,12 +1,21 @@
 import crypto from 'node:crypto'
 
-import type { Disposable, Uri, WebviewPanel, WebviewPanelOptions, WebviewOptions } from 'vscode'
+import type {
+  Disposable,
+  Event,
+  EventEmitter,
+  Uri,
+  WebviewPanel,
+  WebviewPanelOptions,
+  WebviewOptions,
+} from 'vscode'
 
 type ServerStatus = 'stopped' | 'starting' | 'running' | 'stopping'
 
 interface PreviewPanel extends Disposable {
   readonly open: (url: string) => void
   readonly updateStatus: (status: ServerStatus) => void
+  readonly onNavigate: Event<string>
 }
 
 interface PreviewPanelDeps {
@@ -18,7 +27,10 @@ interface PreviewPanelDeps {
   ) => WebviewPanel
   readonly asExternalUri: (uri: Uri) => Thenable<Uri>
   readonly parseUri: (value: string) => Uri
+  readonly iconPath: Uri
+  readonly EventEmitter: new <T>() => EventEmitter<T>
   readonly onError: (message: string) => void
+  readonly onStart: () => void
 }
 
 function escapeHtml(str: string): string {
@@ -38,20 +50,29 @@ function getStoppedHtml(_cspSource: string): string {
   <meta charset="UTF-8">
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; style-src 'nonce-${nonce}';"
+    content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';"
   >
   <style nonce="${nonce}">
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--vscode-editor-background); color: var(--vscode-foreground); font-family: var(--vscode-font-family); display: flex; align-items: center; justify-content: center; }
     .zp-message { text-align: center; max-width: 400px; }
-    .zp-message h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
-    .zp-message p { font-size: 13px; color: var(--vscode-descriptionForeground); margin: 0; }
+    .zp-message h1 { font-size: 18px; font-weight: 700; margin: 0 0 6px 0; }
+    .zp-message p { font-size: 13px; color: var(--vscode-descriptionForeground); margin: 0 0 16px 0; line-height: 1.5; }
+    .zp-message .zp-btn { display: inline-block; padding: 6px 14px; font-size: 13px; font-family: var(--vscode-font-family); color: var(--vscode-button-foreground); background: var(--vscode-button-background); border: none; border-radius: 2px; cursor: pointer; text-decoration: none; }
+    .zp-message .zp-btn:hover { background: var(--vscode-button-hoverBackground); }
   </style>
 </head>
 <body>
   <div class="zp-message">
-    <h2>zpress dev server is not running</h2>
-    <p>Click the start button in the sidebar to begin.</p>
+    <h1>zpress</h1>
+    <p>Preview and navigate your docs without leaving the editor.</p>
+    <button class="zp-btn" id="start-btn">Start Server</button>
   </div>
+  <script nonce="${nonce}">
+    var vscode = acquireVsCodeApi();
+    document.getElementById('start-btn').addEventListener('click', function() {
+      vscode.postMessage({ command: 'start' });
+    });
+  </script>
 </body>
 </html>`
 }
@@ -70,7 +91,7 @@ function getStartingHtml(_cspSource: string): string {
   <style nonce="${nonce}">
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--vscode-editor-background); color: var(--vscode-foreground); font-family: var(--vscode-font-family); display: flex; align-items: center; justify-content: center; }
     .zp-message { text-align: center; max-width: 400px; }
-    .zp-message h2 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
+    .zp-message h1 { font-size: 18px; font-weight: 700; margin: 0 0 6px 0; }
     .zp-message p { font-size: 13px; color: var(--vscode-descriptionForeground); margin: 0; }
     .zp-spinner { margin: 0 auto 16px; width: 32px; height: 32px; border: 3px solid var(--vscode-progressBar-background); border-top-color: var(--vscode-button-background); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -79,8 +100,8 @@ function getStartingHtml(_cspSource: string): string {
 <body>
   <div class="zp-message">
     <div class="zp-spinner"></div>
-    <h2>Starting dev server...</h2>
-    <p>This may take a moment.</p>
+    <h1>Starting server...</h1>
+    <p>Building your docs site.</p>
   </div>
 </body>
 </html>`
@@ -99,7 +120,7 @@ function getRunningHtml(serverUri: string, cspSource: string): string {
   <meta charset="UTF-8">
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; frame-src ${safeOrigin} ${safeCspSource}; style-src 'nonce-${nonce}';"
+    content="default-src 'none'; frame-src ${safeOrigin} ${safeCspSource}; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';"
   >
   <style nonce="${nonce}">
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
@@ -114,6 +135,14 @@ function getRunningHtml(serverUri: string, cspSource: string): string {
     fetch requests to function correctly.
   -->
   <iframe sandbox="allow-scripts allow-same-origin" src="${safeUrl}"></iframe>
+  <script nonce="${nonce}">
+    var vscode = acquireVsCodeApi();
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'zpress:navigate') {
+        vscode.postMessage({ command: 'navigate', path: e.data.path });
+      }
+    });
+  </script>
 </body>
 </html>`
 }
@@ -126,6 +155,8 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
    * VS Code extension state: mutable panel reference is unavoidable
    * when reusing a single webview panel across multiple opens.
    */
+  const navigateEmitter = new deps.EventEmitter<string>()
+
   const state = {
     panel: null as WebviewPanel | null,
     currentUrl: null as string | null,
@@ -163,6 +194,14 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [],
+      })
+
+      state.panel.iconPath = deps.iconPath
+
+      state.panel.webview.onDidReceiveMessage((message: { readonly command: string }) => {
+        if (message.command === 'start') {
+          deps.onStart()
+        }
       })
 
       updatePanel()

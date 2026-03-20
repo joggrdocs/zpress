@@ -27,6 +27,24 @@ Run the [zpress](https://zpress.dev) dev server and preview documentation withou
 
 > `zpress: Open Page` is an internal command used by the sidebar tree view and is not intended to be invoked directly.
 
+## Configuration
+
+| Setting                   | Type      | Default | Description                                                                                                     |
+| ------------------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| `zpress.server.autoOpen`  | `boolean` | `true`  | Automatically open the docs site in the browser when the server starts.                                         |
+| `zpress.server.autoStart` | `boolean` | `true`  | Automatically start the dev server when the zpress sidebar is opened.                                           |
+| `zpress.server.port`      | `number`  | `6174`  | Port for the dev server.                                                                                        |
+| `zpress.theme`            | `string`  | —       | Override the theme for the docs preview (`base`, `midnight`, or `arcade`). Does not modify your `zpress.config`. |
+| `zpress.theme.mode`       | `string`  | —       | Override the color mode (`dark`, `light`, or `toggle`). Does not modify your `zpress.config`.                    |
+
 ## Requirements
 
 - [zpress](https://zpress.dev) installed in your project (`npx zpress` or `pnpm add @zpress/kit`)
+
+## Known Issues
+
+None at this time. If you encounter a bug, please [open an issue](https://github.com/joggrdocs/zpress/issues).
+
+## Release Notes
+
+See [CHANGELOG](CHANGELOG.md) for a full list of changes.

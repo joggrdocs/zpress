@@ -3,6 +3,7 @@ import type { ChildProcess } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { workspace } from 'vscode'
 import type { Disposable, OutputChannel } from 'vscode'
 
 import type { ServerStatus, StatusBar } from './status-bar'
@@ -33,7 +34,21 @@ function findBinary(
   const localBin = path.join(workspaceRoot, 'node_modules', '.bin', 'zpress')
   // oxlint-disable-next-line security/detect-non-literal-fs-filename
   if (fs.existsSync(localBin)) {
-    return { cmd: localBin, args: ['dev', '--vscode'] }
+    const config = workspace.getConfiguration('zpress')
+    const baseArgs: string[] = ['dev', '--vscode']
+    const port = config.get<number>('server.port')
+    if (port) {
+      baseArgs.push('--port', String(port))
+    }
+    const theme = config.get<string>('theme')
+    if (theme) {
+      baseArgs.push('--theme', theme)
+    }
+    const colorMode = config.get<string>('theme.mode')
+    if (colorMode) {
+      baseArgs.push('--color-mode', colorMode)
+    }
+    return { cmd: localBin, args: baseArgs }
   }
   return null
 }

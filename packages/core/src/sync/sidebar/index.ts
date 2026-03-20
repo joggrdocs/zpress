@@ -67,9 +67,10 @@ export function generateNav(
  */
 function buildSidebarEntry(entry: ResolvedEntry): SidebarItem | undefined {
   if (entry.items && entry.items.length > 0) {
+    const dedupedItems = filterDuplicateChildLink(entry.items, entry.link)
     return {
       text: entry.title,
-      items: generateSidebar(entry.items),
+      items: generateSidebar(dedupedItems),
       ...maybeCollapsed(entry.collapsible),
       ...maybeLink(entry.link),
     }
@@ -260,4 +261,26 @@ function mapNavItem(item: NavItem): RspressNavItem {
     ...maybeActiveMatch(item),
     ...maybeItems(item),
   }
+}
+
+/**
+ * Remove any direct child whose link duplicates the parent section link.
+ *
+ * When a child (e.g. "Overview") has the same link as its parent group,
+ * it is redundant in the sidebar — the group header already navigates there.
+ * Keeping both causes double-highlighting of the active state.
+ *
+ * @private
+ * @param items - Direct child entries
+ * @param parentLink - Parent section link to check against
+ * @returns Filtered child entries with duplicates removed
+ */
+function filterDuplicateChildLink(
+  items: readonly ResolvedEntry[],
+  parentLink: string | undefined
+): readonly ResolvedEntry[] {
+  if (!parentLink) {
+    return items
+  }
+  return items.filter((item) => item.link !== parentLink)
 }

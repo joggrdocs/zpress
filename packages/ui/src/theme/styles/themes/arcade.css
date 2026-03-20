@@ -2,10 +2,10 @@
  * Arcade theme — retro neon gaming palette.
  *
  * Vibrant neon green/cyan brand with deep indigo backgrounds.
- * High-saturation, high-energy visual style.
+ * Dark-only theme — no light mode variant.
  */
 
-/* ── Light mode (deep indigo) ────────────────────────────── */
+/* ── Base ──────────────────────────────────────────────────── */
 html[data-zp-theme='arcade'] {
   --zp-c-brand-1: #00ff88;
   --zp-c-brand-2: #00cc6a;
@@ -64,49 +64,54 @@ html[data-zp-theme='arcade'] {
   --rp-home-background-bg: #0d0d1a;
 }
 
-/* ── Dark mode (deeper indigo) ───────────────────────────── */
+/* ── Dark mode (duplicate for backwards compat) ────────────── */
 html[data-zp-theme='arcade'].rp-dark {
-  --zp-c-bg: #080812;
-  --zp-c-bg-alt: #0a0a1a;
-  --zp-c-bg-elv: #0d0d22;
-  --zp-c-bg-soft: #10102a;
-  --zp-c-bg-icon: #222250;
+  --zp-c-brand-1: #00ff88;
+  --zp-c-brand-2: #00cc6a;
+  --zp-c-brand-3: #00aa55;
+  --zp-c-brand-soft: rgba(0, 255, 136, 0.14);
 
-  --zp-c-text-1: #f0fff0;
-  --zp-c-text-2: rgba(240, 255, 240, 0.72);
-  --zp-c-text-3: rgba(240, 255, 240, 0.48);
+  --zp-c-bg: #0d0d1a;
+  --zp-c-bg-alt: #10102a;
+  --zp-c-bg-elv: #141433;
+  --zp-c-bg-soft: #18183d;
+  --zp-c-bg-icon: #2a2a55;
 
-  --zp-c-divider: #141430;
-  --zp-c-border: #1e1e50;
-  --zp-c-gutter: #0a0a1a;
+  --zp-c-text-1: #e0ffe0;
+  --zp-c-text-2: rgba(224, 255, 224, 0.72);
+  --zp-c-text-3: rgba(224, 255, 224, 0.48);
 
-  --zp-code-block-bg: #0a0a1a;
+  --zp-c-divider: #1a1a40;
+  --zp-c-border: #252560;
+  --zp-c-gutter: #10102a;
+
+  --zp-code-block-bg: #10102a;
 
   --zp-button-brand-bg: #00aa55;
   --zp-button-brand-hover-bg: #00cc6a;
   --zp-button-brand-active-bg: #008844;
-  --zp-button-brand-text: #080812;
+  --zp-button-brand-text: #0d0d1a;
 
-  --rp-c-bg: #080812;
-  --rp-c-bg-soft: #10102a;
-  --rp-c-bg-mute: #0d0d22;
+  --rp-c-bg: #0d0d1a;
+  --rp-c-bg-soft: #18183d;
+  --rp-c-bg-mute: #141433;
 
-  --rp-c-text-1: #f0fff0;
-  --rp-c-text-2: rgba(240, 255, 240, 0.72);
-  --rp-c-text-3: rgba(240, 255, 240, 0.48);
+  --rp-c-text-1: #e0ffe0;
+  --rp-c-text-2: rgba(224, 255, 224, 0.72);
+  --rp-c-text-3: rgba(224, 255, 224, 0.48);
 
-  --rp-c-divider: #141430;
+  --rp-c-divider: #1a1a40;
   --rp-c-link: var(--rp-c-brand-light);
 
-  --rp-code-block-bg: #0a0a1a;
+  --rp-code-block-bg: #10102a;
 
-  --zp-oas-get: #33ff99;
-  --zp-oas-post: #33ddff;
-  --zp-oas-put: #ffbb33;
-  --zp-oas-patch: #ffbb33;
-  --zp-oas-delete: #ff6688;
+  --zp-oas-get: #00ff88;
+  --zp-oas-post: #00ccff;
+  --zp-oas-put: #ffaa00;
+  --zp-oas-patch: #ffaa00;
+  --zp-oas-delete: #ff4466;
   --zp-oas-deprecated: var(--zp-c-text-3);
-  --zp-oas-required: #ff6688;
+  --zp-oas-required: #ff4466;
 
-  --rp-home-background-bg: #080812;
+  --rp-home-background-bg: #0d0d1a;
 }

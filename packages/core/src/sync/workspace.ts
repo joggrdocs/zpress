@@ -2,9 +2,17 @@ import { isNil, isString, isUndefined, kebabCase, omitBy } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
 import { resolveOptionalIcon } from '../icon.ts'
-import type { Section, ZpressConfig, Workspace } from '../types.ts'
+import type { Section, TitleConfig, ZpressConfig, Workspace } from '../types.ts'
 import { buildWorkspaceCardJsx } from './sidebar/landing.ts'
 import type { ResolvedEntry } from './types.ts'
+
+/**
+ * Default descriptions for well-known workspace category titles.
+ */
+const DEFAULT_CATEGORY_DESCRIPTIONS: Readonly<Record<string, string>> = {
+  packages: 'Internal packages and shared libraries',
+  apps: 'Deployable applications and services',
+}
 
 /**
  * Enrich resolved entries with card metadata derived from workspace items.
@@ -143,12 +151,13 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
     if (existingLinks.has(link)) {
       return null
     }
+    const description = category.description ?? resolveDefaultCategoryDescription(category.title)
     return {
       title: category.title,
       path: link,
       standalone: true,
       frontmatter: {
-        description: category.description,
+        description,
       },
       items: category.items
         .filter((item) => !existingLinks.has(item.path))
@@ -460,4 +469,16 @@ function normalizeAndResolveInclude(
     return `${basePath}/${include}`
   }
   return include.map((pattern) => `${basePath}/${pattern}`)
+}
+
+/**
+ * Resolve a default description for well-known workspace category titles.
+ *
+ * @private
+ * @param title - Category title config
+ * @returns Default description string, or empty string for unknown titles
+ */
+function resolveDefaultCategoryDescription(title: TitleConfig): string {
+  const key = String(title).toLowerCase()
+  return DEFAULT_CATEGORY_DESCRIPTIONS[key] ?? ''
 }

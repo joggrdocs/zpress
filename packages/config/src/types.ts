@@ -315,7 +315,7 @@ export interface Workspace {
  */
 export interface WorkspaceCategory {
   readonly title: TitleConfig
-  readonly description: string
+  readonly description?: string
   readonly icon: IconId
   readonly items: readonly Workspace[]
   readonly link?: string

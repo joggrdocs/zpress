@@ -151,7 +151,7 @@ const workspaceItemSchema = z
 const workspaceGroupSchema = z
   .object({
     title: titleConfigSchema,
-    description: z.string(),
+    description: z.string().optional(),
     icon: iconIdSchema,
     items: z.array(workspaceItemSchema).min(1),
     link: z.string().optional(),

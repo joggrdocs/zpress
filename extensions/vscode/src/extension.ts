@@ -8,6 +8,7 @@ import {
   languages,
   Range,
   RelativePattern,
+  ThemeColor,
   ThemeIcon,
   Uri,
   window,
@@ -91,8 +92,12 @@ export function activate(context: ExtensionContext): void {
       window.createWebviewPanel(viewType, title, showOptions, options),
     asExternalUri: (uri) => env.asExternalUri(uri),
     parseUri: (value) => Uri.parse(value),
+    iconPath: Uri.joinPath(context.extensionUri, 'resources', 'icon.svg'),
     onError: (message) => {
       outputChannel.appendLine(`[zpress] ${message}`)
+    },
+    onStart: () => {
+      commands.executeCommand('zpress.start')
     },
   })
 
@@ -101,6 +106,7 @@ export function activate(context: ExtensionContext): void {
     createWatcher: (pattern) => workspace.createFileSystemWatcher(pattern),
     EventEmitter,
     ThemeIcon,
+    ThemeColor,
     RelativePattern,
   })
 
@@ -154,6 +160,10 @@ export function activate(context: ExtensionContext): void {
       manifestReader.reload(baseUrl)
       sidebar.setBaseUrl(baseUrl)
       refreshSectionViews()
+      const autoOpen = workspace.getConfiguration('zpress.server').get<boolean>('autoOpen', true)
+      if (autoOpen) {
+        previewPanel.open(baseUrl)
+      }
     },
     onStopped: () => {
       manifestReader.reload(null)
@@ -216,6 +226,12 @@ export function activate(context: ExtensionContext): void {
     sidebar,
     codeLensProvider,
     loadingView,
+    loadingView.onDidChangeVisibility((e) => {
+      const autoStart = workspace.getConfiguration('zpress.server').get<boolean>('autoStart', true)
+      if (e.visible && autoStart && !server.isRunning()) {
+        server.start()
+      }
+    }),
     ...sectionTreeViews,
     commands.registerCommand('zpress.start', () => {
       server.start()
@@ -265,7 +281,16 @@ export function activate(context: ExtensionContext): void {
       previewPanel.open(targetUrl)
     }),
     languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, codeLensProvider),
-    window.onDidChangeActiveTextEditor(updateTrackedContext)
+    window.onDidChangeActiveTextEditor(updateTrackedContext),
+    workspace.onDidChangeConfiguration((e) => {
+      const affected =
+        e.affectsConfiguration('zpress.theme') ||
+        e.affectsConfiguration('zpress.theme.mode') ||
+        e.affectsConfiguration('zpress.server.port')
+      if (affected && server.isRunning()) {
+        server.restart()
+      }
+    })
   )
 
   updateTrackedContext(window.activeTextEditor)

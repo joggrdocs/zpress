@@ -4,6 +4,7 @@ import fsPromises from 'node:fs/promises'
 import path from 'node:path'
 
 import { command } from '@kidd-cli/core'
+import type { Paths } from '@zpress/core'
 import { createPaths, generateAssets } from '@zpress/core'
 
 const CONFIG_FILENAME = 'zpress.config.ts'
@@ -34,6 +35,9 @@ export const setupCommand = command({
 
     fs.writeFileSync(configPath, buildConfigTemplate(title), 'utf8')
     ctx.logger.success(`Created ${CONFIG_FILENAME} (title: "${title}")`)
+
+    // Ensure .zpress/ is gitignored
+    await ensureGitignore(paths, ctx.logger)
 
     // Generate initial banner, logo, and icon assets
     await fsPromises.mkdir(paths.publicDir, { recursive: true })
@@ -140,4 +144,50 @@ export default defineConfig({
   ],
 })
 `
+}
+
+const ZPRESS_GITIGNORE_ENTRY = '.zpress/'
+
+const NESTED_GITIGNORE_CONTENT = `# managed by zpress — ignore everything by default
+*
+
+# to track custom assets (e.g. banners, logos), uncomment the following lines:
+# !public/
+# !public/**
+`
+
+/**
+ * Ensure .zpress/ is gitignored. Tries to append to the root .gitignore first;
+ * if no root .gitignore exists, writes a nested .gitignore inside .zpress/ instead.
+ *
+ * @private
+ * @param paths - Project paths
+ * @param logger - Logger for status messages
+ */
+async function ensureGitignore(
+  paths: Paths,
+  logger: { success: (msg: string) => void },
+): Promise<void> {
+  const rootGitignore = path.join(paths.repoRoot, '.gitignore')
+
+  if (fs.existsSync(rootGitignore)) {
+    const content = fs.readFileSync(rootGitignore, 'utf8')
+    const lines = content.split('\n')
+    const alreadyIgnored = lines.some(
+      (line) => line.trim() === ZPRESS_GITIGNORE_ENTRY || line.trim() === '.zpress',
+    )
+
+    if (alreadyIgnored) {
+      return
+    }
+
+    const suffix = content.endsWith('\n') ? '' : '\n'
+    fs.writeFileSync(rootGitignore, `${content}${suffix}\n# zpress\n${ZPRESS_GITIGNORE_ENTRY}\n`, 'utf8')
+    logger.success('Added .zpress/ to .gitignore')
+    return
+  }
+
+  await fsPromises.mkdir(paths.outputRoot, { recursive: true })
+  await fsPromises.writeFile(path.join(paths.outputRoot, '.gitignore'), NESTED_GITIGNORE_CONTENT, 'utf8')
+  logger.success('Created .zpress/.gitignore')
 }

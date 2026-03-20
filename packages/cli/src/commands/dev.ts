@@ -14,6 +14,8 @@ export const devCommand = command({
     quiet: z.boolean().optional().default(false),
     clean: z.boolean().optional().default(false),
     port: z.number().optional(),
+    theme: z.string().optional(),
+    colorMode: z.string().optional(),
     vscode: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {
@@ -45,7 +47,7 @@ export const devCommand = command({
     await sync(config, { paths, quiet })
 
     // Start Rspress dev server and get config reload callback
-    const onConfigReload = await startDevServer({ config, paths, port: ctx.args.port, vscode: ctx.args.vscode })
+    const onConfigReload = await startDevServer({ config, paths, port: ctx.args.port, theme: ctx.args.theme, colorMode: ctx.args.colorMode, vscode: ctx.args.vscode })
 
     // Start watcher with config reload callback
     const { createWatcher } = await import('../lib/watcher.ts')

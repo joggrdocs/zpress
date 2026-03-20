@@ -8,10 +8,18 @@
     "Other"
   ],
   "license": "MIT",
+  "homepage": "https://zpress.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/joggrdocs/zpress.git",
     "directory": "extensions/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/joggrdocs/zpress/issues"
+  },
+  "galleryBanner": {
+    "color": "#0a0a0a",
+    "theme": "dark"
   },
   "publisher": "joggr",
   "main": "./dist/extension.js",
@@ -34,17 +42,17 @@
     "commands": [
       {
         "command": "zpress.start",
-        "title": "zpress: Start Dev Server",
+        "title": "zpress: Start Server",
         "icon": "$(debug-start)"
       },
       {
         "command": "zpress.stop",
-        "title": "zpress: Stop Dev Server",
+        "title": "zpress: Stop Server",
         "icon": "$(debug-stop)"
       },
       {
         "command": "zpress.toggle",
-        "title": "zpress: Toggle Dev Server"
+        "title": "zpress: Toggle Server"
       },
       {
         "command": "zpress.preview",
@@ -57,7 +65,7 @@
       },
       {
         "command": "zpress.restart",
-        "title": "zpress: Restart Dev Server"
+        "title": "zpress: Restart Server"
       },
       {
         "command": "zpress.openInBrowser",
@@ -103,15 +111,47 @@
     "viewsWelcome": [
       {
         "view": "zpress.loading",
-        "contents": "$(sync~spin) Starting zpress dev server...",
+        "contents": "$(sync~spin) Building docs site...",
         "when": "zpress:serverStarting"
       },
       {
         "view": "zpress.loading",
-        "contents": "zpress dev server is stopped.\n[Start Server](command:zpress.start)",
+        "contents": "$(book) Preview your docs site right here.\n[Start Server](command:zpress.start)",
         "when": "zpress:serverStopped"
       }
     ],
+    "configuration": {
+      "title": "zpress",
+      "properties": {
+        "zpress.server.autoOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open the docs site in the browser when the dev server starts."
+        },
+        "zpress.server.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the dev server when the zpress sidebar is opened."
+        },
+        "zpress.server.port": {
+          "type": "number",
+          "default": 6174,
+          "description": "Port for the dev server."
+        },
+        "zpress.theme": {
+          "type": "string",
+          "enum": ["base", "midnight", "arcade"],
+          "default": null,
+          "markdownDescription": "Override the theme used for the docs preview. When set, this overrides the `theme.name` in your `zpress.config` without modifying the config file."
+        },
+        "zpress.theme.mode": {
+          "type": "string",
+          "enum": ["dark", "light", "toggle"],
+          "default": null,
+          "markdownDescription": "Override the color mode for the docs preview. When set, this overrides the `theme.colorMode` in your `zpress.config` without modifying the config file."
+        }
+      }
+    },
     "views": {
       "zpress": [
         {
