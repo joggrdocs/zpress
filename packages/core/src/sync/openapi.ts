@@ -13,22 +13,10 @@ import { capitalize } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
 import type { OpenAPIConfig, Workspace, ZpressConfig } from '../types.ts'
+import { renderOperationMarkdown, renderOverviewMarkdown } from './openapi-markdown.ts'
+import { HTTP_METHODS } from './openapi-spec.ts'
 import type { PageData, SidebarItem, SyncContext } from './types.ts'
 import { slugify } from './workspace.ts'
-
-/**
- * HTTP methods recognized in OpenAPI path items.
- */
-const HTTP_METHODS: readonly string[] = [
-  'get',
-  'post',
-  'put',
-  'patch',
-  'delete',
-  'head',
-  'options',
-  'trace',
-]
 
 /**
  * A sidebar entry keyed by its prefix path.
@@ -68,7 +56,7 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
 
   return {
     sidebar: configResults.map((result, index) => ({
-      prefix: allConfigs[index].config.prefix,
+      prefix: allConfigs[index].config.path,
       sidebar: result.sidebar,
     })),
     pages: configResults.flatMap((result) => result.pages),
@@ -149,7 +137,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   const operations = extractOperations(paths)
   const tagGroups = groupByTag(operations)
   const title = resolveTitle(config)
-  const { prefix } = config
+  const prefix = config.path
 
   // Write the fully dereferenced spec JSON into the content directory
   // so generated MDX pages can import it with a relative path.
@@ -160,8 +148,9 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     frontmatter: {},
   }
 
+  const spec = api as Record<string, unknown>
   const operationPages = tagGroups.flatMap((group) =>
-    group.operations.map((op) => buildOperationPage(op, prefix))
+    group.operations.map((op) => buildOperationPage(op, prefix, spec))
   )
 
   // Validate slug uniqueness — duplicate slugs would overwrite pages
@@ -174,7 +163,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     )
   }
 
-  const indexPage = buildIndexPage(title, prefix)
+  const indexPage = buildIndexPage(title, prefix, spec)
   const pages = [specPage, indexPage, ...operationPages]
 
   const sidebarLayout = match(config.sidebarLayout)
@@ -206,12 +195,7 @@ function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
  * @returns Array of config entries from workspace items
  */
 function collectWorkspaceConfigs(config: ZpressConfig): readonly ConfigEntry[] {
-  const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const allWorkspaces: readonly Workspace[] = [
-    ...(config.apps ?? []),
-    ...(config.packages ?? []),
-    ...workspaceCategoryItems,
-  ]
+  const allWorkspaces: readonly Workspace[] = (config.workspaces ?? []).flatMap((g) => g.items)
 
   return allWorkspaces
     .filter(
@@ -275,10 +259,20 @@ function groupByTag(operations: readonly OperationInfo[]): readonly TagGroup[] {
  * @param prefix - URL prefix for the OpenAPI section
  * @returns Page data with MDX content importing the spec and rendering the operation
  */
-function buildOperationPage(op: OperationInfo, prefix: string): PageData {
+function buildOperationPage(
+  op: OperationInfo,
+  prefix: string,
+  spec: Record<string, unknown>
+): PageData {
   const slug = slugify(op.operationId)
   const outputPath = `${stripLeadingSlash(prefix)}/${slug}.mdx`
   const title = op.summary
+  const markdown = renderOperationMarkdown({
+    spec,
+    method: op.method,
+    path: op.path,
+    operationId: op.operationId,
+  })
 
   const content = [
     '---',
@@ -286,7 +280,11 @@ function buildOperationPage(op: OperationInfo, prefix: string): PageData {
     '---',
     '',
     "import spec from './openapi.json'",
-    "import { OpenAPIOperation } from '@zpress/ui/theme'",
+    "import { CopyMarkdownButton, OpenAPIOperation } from '@zpress/ui/theme'",
+    '',
+    `export const markdown = ${JSON.stringify(markdown)}`,
+    '',
+    '<CopyMarkdownButton markdown={markdown} />',
     '',
     '<OpenAPIOperation',
     '  spec={spec}',
@@ -312,8 +310,13 @@ function buildOperationPage(op: OperationInfo, prefix: string): PageData {
  * @param prefix - URL prefix for the OpenAPI section
  * @returns Page data with MDX content rendering the overview component
  */
-function buildIndexPage(title: string, prefix: string): PageData {
+function buildIndexPage(
+  title: string,
+  prefix: string,
+  spec: Record<string, unknown>
+): PageData {
   const outputPath = `${stripLeadingSlash(prefix)}/index.mdx`
+  const markdown = renderOverviewMarkdown({ spec })
 
   const content = [
     '---',
@@ -321,7 +324,11 @@ function buildIndexPage(title: string, prefix: string): PageData {
     '---',
     '',
     "import spec from './openapi.json'",
-    "import { OpenAPIOverview } from '@zpress/ui/theme'",
+    "import { CopyMarkdownButton, OpenAPIOverview } from '@zpress/ui/theme'",
+    '',
+    `export const markdown = ${JSON.stringify(markdown)}`,
+    '',
+    '<CopyMarkdownButton markdown={markdown} />',
     '',
     '<OpenAPIOverview spec={spec} />',
     '',

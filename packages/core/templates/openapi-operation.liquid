@@ -1,0 +1,71 @@
+# {{ method }} `{{ path }}`
+{%- if deprecated %} DEPRECATED{% endif %}
+{%- if summary %}
+
+{{ summary }}
+{%- endif %}
+{%- if description and description != summary %}
+
+{{ description }}
+{%- endif %}
+{%- if hasParameters %}
+
+## Parameters
+{%- for group in parameterGroups %}
+
+**{{ group.label }} parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+{%- for param in group.items %}
+| `{{ param.name }}` | {{ param.type }} | {{ param.required }} | {{ param.description }} |
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
+{%- if hasRequestBody %}
+
+## Request Body
+{%- if requestBody.description %}
+
+{{ requestBody.description }}
+{%- endif %}
+
+**Content-Type:** `{{ requestBody.contentType }}`
+{%- if requestBody.schema %}
+
+{{ requestBody.schema }}
+{%- endif %}
+{%- if requestBody.example %}
+
+**Example:**
+
+```json
+{{ requestBody.example }}
+```
+{%- endif %}
+{%- endif %}
+{%- if hasResponses %}
+
+## Responses
+{%- for response in responses %}
+
+### {{ response.code }} — {{ response.description }}
+{%- if response.schema %}
+
+{{ response.schema }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- if hasSecurity %}
+
+## Authentication
+{%- for sec in securities %}
+- {{ sec.text }}
+{%- endfor %}
+{%- endif %}
+
+## Example
+
+```bash
+{{ curlExample }}
+```

@@ -27,5 +27,9 @@ export function CopyMarkdownButton({ markdown }: CopyMarkdownButtonProps): React
     [markdown]
   )
 
-  return <LlmsCopyButton text="Copy Markdown" onClick={handleClick} />
+  return (
+    <div className="zp-oas-copy-markdown">
+      <LlmsCopyButton text="Copy Markdown" onClick={handleClick} />
+    </div>
+  )
 }

@@ -44,7 +44,7 @@ apps: [
     title: 'API',
     icon: { id: 'devicon:hono', color: 'blue' },
     description: 'REST API with typed routes',
-    prefix: '/apps/api',
+    path: '/apps/api',
   },
 ]
 ```
@@ -62,22 +62,22 @@ Or on a card config within a section entry:
 }
 ```
 
-## Feature card icons
+## Feature card colors
 
-Feature cards on the home page accept a plain icon string identifier — they do not support `{ id, color }` objects. Feature icons inherit their native or `currentColor` styling.
+Feature cards on the home page use the same color values via the `color` field on a `Feature` icon:
 
 ```ts
 features: [
   {
     title: 'Getting Started',
-    icon: 'pixelarticons:speed-fast',
+    icon: { id: 'pixelarticons:speed-fast', color: 'purple' },
     description: 'Set up and start building.',
     link: '/getting-started',
   },
 ]
 ```
 
-Color-tinted icons (`{ id, color }` objects) are supported on workspace cards and `CardConfig` entries, not on feature cards.
+The CSS class for feature cards follows the pattern `.home-card-icon--{color}`.
 
 ## Default behavior
 

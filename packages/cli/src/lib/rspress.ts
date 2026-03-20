@@ -6,14 +6,16 @@ import { platform } from 'node:os'
 import { dev, build, serve } from '@rspress/core'
 import type { Paths, ZpressConfig } from '@zpress/core'
 import { createRspressConfig } from '@zpress/ui'
+import getPort from 'get-port'
 import { match } from 'ts-pattern'
 
 import { toError } from './error'
 
 /**
- * Default port used by the development and preview servers.
+ * Preferred port for the development and preview servers.
+ * Falls back to a random available port if occupied.
  */
-export const DEFAULT_PORT = 6174
+export const PREFERRED_PORT = 6174
 
 interface ServerOptions {
   readonly config: ZpressConfig
@@ -50,6 +52,8 @@ export async function startDevServer(
   options: ServerOptions
 ): Promise<(newConfig: ZpressConfig) => Promise<void>> {
   const { paths } = options
+  // Resolve port once so restarts reuse the same port
+  const port = await getPort({ port: PREFERRED_PORT })
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
@@ -63,7 +67,7 @@ export async function startDevServer(
         configFilePath: '',
         extraBuilderConfig: {
           server: {
-            port: DEFAULT_PORT,
+            port,
             strictPort: true,
           },
         },
@@ -158,15 +162,17 @@ export async function buildSiteForCheck(options: ServerOptions): Promise<void> {
  * Serve the built Rspress site (static preview).
  *
  * @param options - Serve configuration including config and paths
- * @returns A promise that resolves when the server starts
+ * @returns The port the server is listening on
  */
-export async function serveSite(options: ServerOptions): Promise<void> {
+export async function serveSite(options: ServerOptions): Promise<number> {
   const rspressConfig = createRspressConfig(options)
+  const port = await getPort({ port: PREFERRED_PORT })
   await serve({
     config: rspressConfig,
     configFilePath: '',
-    port: DEFAULT_PORT,
+    port,
   })
+  return port
 }
 
 /**

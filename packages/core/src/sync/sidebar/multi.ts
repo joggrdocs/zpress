@@ -7,7 +7,7 @@ import { generateSidebar } from './index.ts'
 /**
  * Build a multi-sidebar record from resolved entries.
  *
- * Root entries go under `"/"`, each isolated section gets its own namespace
+ * Root entries go under `"/"`, each standalone section gets its own namespace
  * keyed by `link`.
  * Keys are sorted by string length (descending) for Rspress matching precedence.
  *
@@ -19,29 +19,29 @@ export function buildMultiSidebar(
   resolved: readonly ResolvedEntry[],
   openapiEntries: readonly OpenAPISidebarEntry[]
 ): Record<string, unknown[]> {
-  const rootEntries = resolved.filter((e) => !e.isolated)
-  const isolatedEntries = resolved.filter((e) => e.isolated && e.link)
+  const rootEntries = resolved.filter((e) => !e.standalone)
+  const standaloneEntries = resolved.filter((e) => e.standalone && e.link)
 
   const docsSidebar = generateSidebar(rootEntries)
 
-  // Pre-compute children per isolated entry for building grouped sidebars
+  // Pre-compute children per standalone entry for building grouped sidebars
   const childrenByLink = new Map<string, SidebarItem[]>(
-    isolatedEntries.map((entry) => {
+    standaloneEntries.map((entry) => {
       const link = entry.link as string
       const items = resolveEntryItems(entry.items)
       return [link, generateSidebar(items)]
     })
   )
 
-  const isolatedSidebar: Record<string, unknown[]> = Object.fromEntries(
-    isolatedEntries.flatMap((entry) => {
+  const standaloneSidebar: Record<string, unknown[]> = Object.fromEntries(
+    standaloneEntries.flatMap((entry) => {
       const entryLink = entry.link as string
       const children = resolveChildrenByLink(childrenByLink, entryLink)
 
-      // Discover sibling isolated sections that are children of this entry's parent
+      // Discover sibling standalone sections that are children of this entry's parent
       const parentLink = resolveParentLink(entryLink)
       const parentEntry = match(parentLink)
-        .with(P.nonNullable, (pl) => isolatedEntries.find((e) => e.link === pl))
+        .with(P.nonNullable, (pl) => standaloneEntries.find((e) => e.link === pl))
         .otherwise(() => {})
 
       const isChild = parentEntry !== null && parentEntry !== undefined && parentEntry !== entry
@@ -60,7 +60,7 @@ export function buildMultiSidebar(
             link: peLink,
           }
 
-          const siblings = isolatedEntries.filter((sib) => {
+          const siblings = standaloneEntries.filter((sib) => {
             const sibLink = sib.link as string
             return sib.link !== peLink && sibLink.startsWith(`${peLink}/`)
           })
@@ -78,7 +78,7 @@ export function buildMultiSidebar(
         .otherwise(() => {
           const childGroups: SidebarItem[] = match(children.length === 0)
             .with(true, () =>
-              isolatedEntries
+              standaloneEntries
                 .filter((child) => {
                   const childLink = child.link as string
                   return child.link !== entry.link && childLink.startsWith(`${entryLink}/`)
@@ -107,18 +107,18 @@ export function buildMultiSidebar(
     })
   )
 
-  // Partition OpenAPI entries: workspace-scoped go into parent isolated sidebar,
+  // Partition OpenAPI entries: workspace-scoped go into parent standalone sidebar,
   // root-scoped get their own sidebar namespace
-  const isolatedLinks = new Set(isolatedEntries.map((e) => e.link as string))
+  const standaloneLinks = new Set(standaloneEntries.map((e) => e.link as string))
   const workspaceOpenapi = openapiEntries.filter((entry) =>
-    [...isolatedLinks].some((link) => entry.prefix.startsWith(`${link}/`))
+    [...standaloneLinks].some((link) => entry.prefix.startsWith(`${link}/`))
   )
   const rootOpenapi = openapiEntries.filter(
-    (entry) => ![...isolatedLinks].some((link) => entry.prefix.startsWith(`${link}/`))
+    (entry) => ![...standaloneLinks].some((link) => entry.prefix.startsWith(`${link}/`))
   )
 
-  // Inject workspace-scoped OpenAPI sidebar items into matching isolated sidebars
-  const mergedIsolatedSidebar = mergeOpenapiIntoIsolated(isolatedSidebar, workspaceOpenapi)
+  // Inject workspace-scoped OpenAPI sidebar items into matching standalone sidebars
+  const mergedIsolatedSidebar = mergeOpenapiIntoStandalone(standaloneSidebar, workspaceOpenapi)
 
   const rootOpenapiSidebarRecord = buildOpenapiSidebarEntries(rootOpenapi)
 
@@ -222,30 +222,30 @@ function buildSidebarGroup(
 }
 
 /**
- * Merge workspace-scoped OpenAPI sidebar items into their parent isolated sidebars.
+ * Merge workspace-scoped OpenAPI sidebar items into their parent standalone sidebars.
  *
- * For each OpenAPI entry whose prefix starts with an isolated sidebar key,
- * appends the OpenAPI sidebar items to that isolated sidebar. Both trailing-slash
+ * For each OpenAPI entry whose prefix starts with an standalone sidebar key,
+ * appends the OpenAPI sidebar items to that standalone sidebar. Both trailing-slash
  * and non-trailing-slash variants are updated.
  *
  * @private
- * @param isolatedSidebar - Existing isolated sidebar record
+ * @param standaloneSidebar - Existing standalone sidebar record
  * @param openapiEntries - Workspace-scoped OpenAPI entries to merge
  * @returns Updated sidebar record with OpenAPI items injected
  */
-function mergeOpenapiIntoIsolated(
-  isolatedSidebar: Record<string, unknown[]>,
+function mergeOpenapiIntoStandalone(
+  standaloneSidebar: Record<string, unknown[]>,
   openapiEntries: readonly OpenAPISidebarEntry[]
 ): Record<string, unknown[]> {
   if (openapiEntries.length === 0) {
-    return isolatedSidebar
+    return standaloneSidebar
   }
 
   // Build a list of OpenAPI → parent sidebar key pairings
-  const trailingSlashKeys = Object.keys(isolatedSidebar).filter((key) => key.endsWith('/'))
+  const trailingSlashKeys = Object.keys(standaloneSidebar).filter((key) => key.endsWith('/'))
 
   const pairings = openapiEntries.map((entry) => {
-    // Find the longest (most specific) matching isolated sidebar key
+    // Find the longest (most specific) matching standalone sidebar key
     const candidates = trailingSlashKeys.filter((key) => entry.prefix.startsWith(key))
     const matchingKey = candidates.toSorted((a, b) => b.length - a.length)[0] ?? null
     return { entry, matchingKey }
@@ -263,7 +263,7 @@ function mergeOpenapiIntoIsolated(
         [baseKey]: [...(acc[baseKey] ?? []), ...entry.sidebar],
       })
     },
-    { ...isolatedSidebar }
+    { ...standaloneSidebar }
   )
 }
 

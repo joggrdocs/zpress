@@ -24,8 +24,8 @@ export default defineConfig({
   sections: [
     {
       title: 'Getting Started',
-      prefix: '/getting-started',
-      from: 'docs/getting-started/*.md',
+      path: '/getting-started',
+      include: 'docs/getting-started/*.md',
     },
   ],
 })
@@ -36,8 +36,8 @@ Add a section that auto-discovers pages from a directory:
 ```ts
 {
   title: 'Guides',
-  prefix: '/guides',
-  from: 'docs/guides/*.md',
+  path: '/guides',
+  include: 'docs/guides/*.md',
   icon: 'pixelarticons:book-open',
 }
 ```
@@ -89,5 +89,5 @@ Add `.zpress/` to your `.gitignore`.
 
 ## Next steps
 
-- [Sections and Pages](/concepts/sections-and-pages) — understand the building blocks of your information architecture
+- [Content](/concepts/content) — understand the building blocks of your information architecture
 - [Configuration reference](/reference/configuration) — complete field reference for `zpress.config.ts`

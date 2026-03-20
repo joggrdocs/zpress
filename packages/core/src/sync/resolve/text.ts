@@ -37,17 +37,17 @@ export function deriveText(
  *
  * When `title` is a string, returns it directly.
  * When `title` is a TitleConfig object (e.g. `{ from: 'heading' }`),
- * derives a human-readable name from the prefix or link's last segment.
- * Falls back to `'Section'` only when no prefix or link is available.
+ * derives a human-readable name from the path's last segment.
+ * Falls back to `'Section'` only when no path is available.
  *
- * @param section - Section with title and optional prefix/link
+ * @param section - Section with title and optional path
  * @returns Display title string
  */
 export function resolveSectionTitle(section: Section): string {
   return match(section.title)
     .with(P.string, (t) => t)
     .otherwise(() => {
-      const prefix = section.prefix ?? section.link
+      const prefix = section.path
       const lastSegment = match(prefix)
         .with(P.string, (p) => p.split('/').findLast(Boolean))
         .otherwise(() => '')

@@ -53,7 +53,7 @@ export function injectLandingPages(
         }
       } else if (!entry.items || entry.items.length === 0) {
         // Check for workspace items matching this section's link prefix
-        const matching = workspaces.filter((item) => item.prefix.startsWith(`${entry.link}/`))
+        const matching = workspaces.filter((item) => item.path.startsWith(`${entry.link}/`))
 
         if (matching.length > 0) {
           const segments = entry.link.split('/')
@@ -68,7 +68,7 @@ export function injectLandingPages(
 
         if (matching.length === 0) {
           const entryLink = entry.link
-          const exact = workspaces.find((item) => item.prefix === entryLink)
+          const exact = workspaces.find((item) => item.path === entryLink)
           if (exact) {
             const titleStr = match(exact.title)
               .with(P.string, (t) => t)
@@ -168,15 +168,16 @@ function generateWorkspaceLandingPage(
       .with(P.string, (t) => t)
       .otherwise(String)
     return buildWorkspaceCardJsx({
-      link: item.prefix,
+      link: item.path,
       title: titleStr,
       icon: match(resolved)
-        .with(P.nonNullable, (r) => r.id)
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
-      iconColor: match(resolved)
-        .with(P.nonNullable, (r) => r.color)
+        .with(
+          P.nonNullable,
+          (r): string | { readonly id: string; readonly color: string } =>
+            match(r.color)
+              .with('purple', () => r.id)
+              .otherwise(() => ({ id: r.id, color: r.color }))
+        )
         // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
         .with(P.nullish, (): undefined => undefined)
         .exhaustive(),
@@ -203,7 +204,7 @@ function generateWorkspaceLandingPage(
  * @returns Matching section, or undefined
  */
 function findConfigSection(sections: readonly Section[], link: string): Section | undefined {
-  const direct = sections.find((section) => section.link === link)
+  const direct = sections.find((section) => section.path === link)
   if (direct) {
     return direct
   }

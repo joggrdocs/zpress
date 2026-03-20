@@ -44,9 +44,6 @@ patchedDependencies:
   rspress-plugin-katex@1.0.0:
     hash: 8c9dcd8aca1bbab93f2a13bb06f509e487f592ee764d14f025ecdbb226a0de67
     path: patches/rspress-plugin-katex@1.0.0.patch
-  rspress-plugin-mermaid@1.0.1:
-    hash: 81d5080b61d237c2db9def350e470d65d584009a92671923943879d920bbbb48
-    path: patches/rspress-plugin-mermaid@1.0.1.patch
   rspress-plugin-supersub@1.0.0:
     hash: 74c7104bb4976968c6fb2f4355788b6b4384427476f7b802f8d99b86c59ed787
     path: patches/rspress-plugin-supersub@1.0.0.patch
@@ -173,6 +170,9 @@ importers:
       es-toolkit:
         specifier: 'catalog:'
         version: 1.45.1
+      get-port:
+        specifier: ^7.1.0
+        version: 7.1.0
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -259,6 +259,9 @@ importers:
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
+      liquidjs:
+        specifier: ^10.25.0
+        version: 10.25.0
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -358,27 +361,33 @@ importers:
       katex:
         specifier: ^0.16.38
         version: 0.16.38
+      mermaid:
+        specifier: ^10.9.5
+        version: 10.9.5
       openapi-sampler:
         specifier: ^1.7.2
         version: 1.7.2
       react-aria-components:
         specifier: ^1.16.0
         version: 1.16.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      rspress-plugin-devkit:
+        specifier: ^1.0.0
+        version: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       rspress-plugin-file-tree:
         specifier: ^1.0.4
         version: 1.0.4(patch_hash=69db8f95da53ec548ff7acc8e86c5aff49a8f436439d1b4febce1a023d9aa7a3)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       rspress-plugin-katex:
         specifier: ^1.0.0
         version: 1.0.0(patch_hash=8c9dcd8aca1bbab93f2a13bb06f509e487f592ee764d14f025ecdbb226a0de67)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
-      rspress-plugin-mermaid:
-        specifier: ^1.0.1
-        version: 1.0.1(patch_hash=81d5080b61d237c2db9def350e470d65d584009a92671923943879d920bbbb48)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       rspress-plugin-supersub:
         specifier: ^1.0.0
         version: 1.0.0(patch_hash=74c7104bb4976968c6fb2f4355788b6b4384427476f7b802f8d99b86c59ed787)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
     devDependencies:
       '@rslib/core':
         specifier: 'catalog:'
@@ -3663,6 +3672,10 @@ packages:
     resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
     engines: {node: '>= 0.4'}
 
+  get-port@7.1.0:
+    resolution: {integrity: sha512-QB9NKEeDg3xxVwCCwJQ9+xycaz6pBB6iQ76wiWMl1927n0Kir6alPiP+yuiICLLU4jpMe08dXfpebuQppFA2zw==}
+    engines: {node: '>=16'}
+
   get-proto@1.0.1:
     resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
     engines: {node: '>= 0.4'}
@@ -5046,11 +5059,6 @@ packages:
 
   rspress-plugin-katex@1.0.0:
     resolution: {integrity: sha512-DTLIOkHqJkqgF5UV5gdRLzj7jFrp7rHPqCS3ABSMa24ajzOpKRXmcpYQJE/qBVPe7kgOBZwtqcHeXewgj4wenA==}
-    peerDependencies:
-      '@rspress/core': ^2.0.0-rc.4 || ^2.0.0
-
-  rspress-plugin-mermaid@1.0.1:
-    resolution: {integrity: sha512-FAL9Q5+DZJqCnuYPCYaOr+FY6WS56jFBJy5YyXKQWwzIYqWmS/tBgaNSdCBctLAG8AKeyUlFODg/7s6WqTY2/Q==}
     peerDependencies:
       '@rspress/core': ^2.0.0-rc.4 || ^2.0.0
 
@@ -9512,6 +9520,8 @@ snapshots:
       hasown: 2.0.2
       math-intrinsics: 1.1.0
 
+  get-port@7.1.0: {}
+
   get-proto@1.0.1:
     dependencies:
       dunder-proto: 1.0.1
@@ -11605,14 +11615,6 @@ snapshots:
       remark-math: 6.0.0
       rspress-plugin-devkit: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       unist-util-visit: 5.1.0
-    transitivePeerDependencies:
-      - supports-color
-
-  rspress-plugin-mermaid@1.0.1(patch_hash=81d5080b61d237c2db9def350e470d65d584009a92671923943879d920bbbb48)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
-    dependencies:
-      '@rspress/core': 2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
-      mermaid: 10.9.5
-      rspress-plugin-devkit: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
     transitivePeerDependencies:
       - supports-color
 

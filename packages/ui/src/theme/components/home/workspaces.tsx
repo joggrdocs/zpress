@@ -62,7 +62,6 @@ function renderGroup(
           title={card.title}
           href={card.href}
           icon={card.icon}
-          iconColor={card.iconColor}
           scope={card.scope}
           description={card.description}
           tags={card.tags}

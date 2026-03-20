@@ -1,0 +1,238 @@
+/* ── Base desktop window ─────────────────────────────────── */
+.zp-window {
+  border: 1px solid var(--zp-c-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--zp-c-bg-soft);
+  margin: 16px 0;
+}
+
+.zp-window__titlebar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 12px;
+  background: var(--zp-c-bg-elv);
+  border-bottom: 1px solid var(--zp-c-border);
+  min-height: 36px;
+}
+
+.zp-window__dots {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.zp-window__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.zp-window__dot--close {
+  background: #ff5f57;
+}
+
+.zp-window__dot--minimize {
+  background: #febc2e;
+}
+
+.zp-window__dot--maximize {
+  background: #28c840;
+}
+
+/* ── Default title (all variants inherit this) ─────────── */
+.zp-window__title {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  font-family: var(--rp-font-family-mono);
+  color: var(--zp-c-text-3, #888);
+}
+
+/* ── Tabs (built into base) ────────────────────────────── */
+.zp-window__tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.zp-window__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: var(--rp-font-family-mono);
+  color: var(--zp-c-text-3);
+  border-right: 1px solid var(--zp-c-border);
+  white-space: nowrap;
+  cursor: default;
+}
+
+.zp-window__tab--active {
+  color: var(--zp-c-text-1);
+  background: var(--zp-c-bg-soft);
+}
+
+.zp-window__tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--zp-c-text-3);
+  opacity: 0.5;
+}
+
+/* ── Content area (isolated from Rspress global styles) ── */
+.zp-window__content {
+  position: relative;
+  padding: 16px;
+}
+
+.zp-window__content p {
+  margin: 0;
+  padding: 0;
+}
+
+.zp-window__content img {
+  width: 100%;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide Rspress floating buttons (Copy Markdown, etc.) inside windows */
+.zp-window__content .rspress-doc-footer,
+.zp-window__content [class*='llms-copy'],
+.zp-window__content [class*='LlmsCopy'] {
+  display: none;
+}
+
+/* ── Browser variant ────────────────────────────────────── */
+.zp-window--browser .zp-window__titlebar {
+  padding: 0;
+  gap: 0;
+}
+
+.zp-window--browser .zp-window__dots {
+  padding: 8px 12px;
+}
+
+.zp-window--browser .zp-window__url-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--zp-c-border);
+  background: var(--zp-c-bg-elv);
+}
+
+.zp-window--browser .zp-window__url {
+  font-size: 11px;
+  color: var(--zp-c-text-3);
+  background: var(--zp-c-bg-soft);
+  border-radius: 4px;
+  padding: 2px 12px;
+  text-align: center;
+  flex: 1;
+  max-width: 480px;
+}
+
+/* ── IDE variant ────────────────────────────────────────── */
+.zp-window--ide .zp-window__titlebar {
+  padding: 0;
+  gap: 0;
+}
+
+.zp-window--ide .zp-window__dots {
+  padding: 8px 12px;
+}
+
+.zp-window--ide .zp-window__content {
+  padding: 0;
+}
+
+.zp-window--ide .zp-window__code {
+  margin: 0;
+  overflow: hidden;
+}
+
+.zp-window--ide .zp-window__code .rp-codeblock {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+}
+
+.zp-window--ide .zp-window__code .rp-codeblock pre,
+.zp-window--ide .zp-window__code .rp-codeblock code {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+}
+
+/* ── Terminal variant ───────────────────────────────────── */
+.zp-window--terminal {
+  background: #0d0d0d;
+}
+
+.zp-window--terminal .zp-window__titlebar {
+  background: #161616;
+  border-bottom-color: #222;
+}
+
+.zp-window--terminal .zp-window__title {
+  color: #888;
+}
+
+.zp-window--terminal .zp-window__content {
+  font-family: var(--rp-font-family-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #d4d4d4;
+}
+
+/* Terminal line structure */
+.zp-term-line {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.zp-term-line--command::before {
+  content: '$ ';
+  color: #888;
+}
+
+.zp-term-line--output {
+  color: #aaa;
+}
+
+.zp-term-line + .zp-term-line--command {
+  margin-top: 8px;
+}
+
+/* Terminal text colors */
+.zp-term-text--red { color: #f87171; }
+.zp-term-text--green { color: #4ade80; }
+.zp-term-text--blue { color: #60a5fa; }
+.zp-term-text--yellow { color: #fbbf24; }
+.zp-term-text--cyan { color: #22d3ee; }
+.zp-term-text--magenta { color: #c084fc; }
+.zp-term-text--white { color: #f5f5f5; }
+.zp-term-text--gray { color: #888; }
+.zp-term-text--dim { opacity: 0.5; }
+.zp-term-text--bold { font-weight: 700; }
+
+/* Terminal semantic colors (clack-style) */
+.zp-term-text--success { color: #4ade80; }
+.zp-term-text--error { color: #f87171; }
+.zp-term-text--warn { color: #fbbf24; }
+.zp-term-text--info { color: #60a5fa; }
+.zp-term-text--muted { color: #888; }
+
+/* Terminal clack-style symbols */
+.zp-term-text--bar { color: #888; }
+.zp-term-text--step { color: #c084fc; }

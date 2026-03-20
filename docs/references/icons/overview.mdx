@@ -60,8 +60,8 @@ Top-level sections display an icon in the collapsed sidebar rail. Set via the `i
 ```ts
 {
   title: 'Guides',
-  prefix: '/guides',
-  from: 'docs/guides/*.md',
+  path: '/guides',
+  include: 'docs/guides/*.md',
   icon: 'pixelarticons:book-open',
 }
 ```
@@ -83,15 +83,15 @@ With `nav: 'auto'`, icons are inherited from the corresponding section.
 
 ### Workspace cards
 
-Workspace items (`apps`, `packages`, `workspaces`) display an icon on their home page card and landing page:
+Workspace items display an icon on their home page card and landing page:
 
 ```ts
-apps: [
+workspaces: [
   {
     title: 'API',
     icon: 'devicon:hono',
     description: 'REST API with typed routes',
-    prefix: '/apps/api',
+    path: '/apps/api',
   },
 ]
 ```
@@ -113,14 +113,14 @@ features: [
 
 ### Technology tags
 
-Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/references/icons/technology) reference for the full list of supported tag names.
+Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/references/technology) reference for the full list of supported tag names.
 
 ## Validation
 
 Icons are validated at config load time. An icon must:
 
 - Contain exactly one `:` separator
-- Use a recognized `prefix` (one of the nine bundled sets)
+- Use a recognized `prefix` (one of the six bundled sets)
 
 Invalid icons produce a config error with type `invalid_icon`.
 

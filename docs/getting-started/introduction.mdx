@@ -3,7 +3,7 @@ title: Introduction
 description: What zpress is, why it exists, and what it gives you out of the box.
 ---
 
-import { FeatureCard, FeatureGrid, Icon } from '@zpress/ui/theme'
+import { FeatureCard, FeatureGrid } from '@zpress/ui/theme'
 
 # Introduction
 
@@ -25,7 +25,7 @@ There are great documentation tools — [VitePress](https://vitepress.dev), [Rsp
 
 **Your structure, not ours.** The config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
 
-**Built for the vibe.** AI coding tools are everywhere. When you're vibing on a project — spinning up features with Claude, Copilot, Cursor — documentation shouldn't slow you down. Tell your AI to write markdown, run `zpress dev`, done. No plugin config, no theme wiring, no boilerplate.
+**AI-friendly by design.** AI coding tools generate markdown effortlessly — but most doc frameworks can't keep up without manual wiring. zpress closes that gap. It auto-generates `llms.txt` for LLM discovery, serves every page as raw `text/markdown` for agent consumption, and glob discovery picks up new files without config changes. Your AI writes the docs, zpress handles the rest.
 
 ## Features
 
@@ -34,48 +34,42 @@ There are great documentation tools — [VitePress](https://vitepress.dev), [Rsp
     title="Zero Effort"
     description="No restructuring, no plugins, no theme wiring. Point it at markdown and ship."
     href="/getting-started/quick-start"
-    icon={<Icon icon="pixelarticons:speed-fast" />}
-    iconColor="purple"
+    icon="pixelarticons:speed-fast"
     span={4}
   />
   <FeatureCard
     title="Your Structure"
     description="Config maps to how you already organize markdown. The tool fits your docs."
-    href="/concepts/sections-and-pages"
-    icon={<Icon icon="pixelarticons:layout" />}
-    iconColor="blue"
+    href="/concepts/content"
+    icon={{ id: "pixelarticons:layout", color: "blue" }}
     span={4}
   />
   <FeatureCard
-    title="Built for AI"
-    description="Tell your AI to write markdown, run one command, ship a docs site."
-    href="/concepts/auto-discovery"
-    icon={<Icon icon="pixelarticons:zap" />}
-    iconColor="green"
+    title="AI-Friendly"
+    description="Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes."
+    href="/concepts/content"
+    icon={{ id: "pixelarticons:robot", color: "green" }}
     span={4}
   />
   <FeatureCard
     title="Monorepo Native"
     description="First-class workspace support with isolated sidebars and landing pages."
     href="/concepts/workspaces"
-    icon={<Icon icon="pixelarticons:git-merge" />}
-    iconColor="amber"
+    icon={{ id: "pixelarticons:git-merge", color: "amber" }}
     span={4}
   />
   <FeatureCard
-    title="Themes & Dark Mode"
-    description="Three built-in themes with dark mode, color overrides, and a runtime switcher."
-    href="/concepts/themes"
-    icon={<Icon icon="pixelarticons:paint-bucket" />}
-    iconColor="pink"
+    title="VSCode Extension"
+    description="Preview your docs site directly inside VS Code as you write."
+    href="/reference/vscode-extension"
+    icon={{ id: "simple-icons:visualstudiocode", color: "blue" }}
     span={4}
   />
   <FeatureCard
-    title="Auto Navigation"
-    description="Sidebar and nav bar generated from your config. Glob discovery, sorting, nesting."
-    href="/concepts/navigation"
-    icon={<Icon icon="pixelarticons:list-box" />}
-    iconColor="cyan"
+    title="OpenAPI Support"
+    description="Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests."
+    href="/concepts/content"
+    icon={{ id: "simple-icons:openapiinitiative", color: "green" }}
     span={4}
   />
 </FeatureGrid>

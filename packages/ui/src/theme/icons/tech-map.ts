@@ -207,6 +207,9 @@ export const TECH_ICONS = {
   shopify: { icon: 'logos:shopify', label: 'Shopify' },
   ghost: { icon: 'devicon:ghost', label: 'Ghost' },
 
+  // -- Runtimes --
+  node: { icon: 'devicon:nodejs', label: 'Node.js' },
+
   // -- Infrastructure --
   nginx: { icon: 'devicon:nginx', label: 'Nginx' },
   apache: { icon: 'devicon:apache', label: 'Apache' },

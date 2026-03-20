@@ -29,6 +29,14 @@ export default defineConfig({
         from: './src/theme',
         to: 'theme',
       },
+      {
+        from: './src/plugins/mermaid/MermaidRenderer.tsx',
+        to: 'plugins/mermaid/MermaidRenderer.tsx',
+      },
+      {
+        from: './src/plugins/mermaid/mermaid.css',
+        to: 'plugins/mermaid/mermaid.css',
+      },
     ],
   },
 })

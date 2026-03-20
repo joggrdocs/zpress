@@ -2,7 +2,7 @@ import { command } from '@kidd-cli/core'
 import { createPaths, loadConfig } from '@zpress/core'
 import { z } from 'zod'
 
-import { DEFAULT_PORT, openBrowser, serveSite } from '../lib/rspress.ts'
+import { openBrowser, serveSite } from '../lib/rspress.ts'
 
 /**
  * Registers the `serve` CLI command to preview a previously built site.
@@ -27,10 +27,10 @@ export const serveCommand = command({
       process.exit(1)
     }
 
-    if (ctx.args.open) {
-      setTimeout(() => openBrowser(`http://localhost:${DEFAULT_PORT}`), 2000)
-    }
+    const port = await serveSite({ config, paths })
 
-    await serveSite({ config, paths })
+    if (ctx.args.open) {
+      openBrowser(`http://localhost:${port}`)
+    }
   },
 })

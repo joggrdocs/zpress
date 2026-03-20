@@ -95,44 +95,62 @@ export const diffCommand = command({
 // ---------------------------------------------------------------------------
 
 /**
- * Collect unique directory paths from all section `from` fields in the config.
+ * Collect unique directory paths from all section `include` fields in the config.
  *
  * @private
  * @param config - Resolved zpress config
  * @returns Deduplicated array of directory paths to watch
  */
 function collectWatchPaths(config: ZpressConfig): readonly string[] {
-  const dirs = flattenFromPaths(config.sections)
+  const dirs = flattenIncludePaths(config.sections)
   return uniq([...dirs.map(toDirectory), ...CONFIG_GLOBS])
 }
 
 /**
- * Recursively extract all `from` values from a section tree.
+ * Recursively extract all `include` values from a section tree.
  *
  * @private
  * @param sections - Section tree to traverse
- * @returns Flat array of all `from` path strings
+ * @returns Flat array of all `include` path strings
  */
-function flattenFromPaths(sections: readonly Section[]): readonly string[] {
+function flattenIncludePaths(sections: readonly Section[]): readonly string[] {
   return sections.flatMap(flattenSection)
 }
 
 /**
- * Extract `from` paths from a single section, including nested items.
+ * Normalize an include value to a flat array of strings.
  *
  * @private
- * @param section - Section to extract from paths from
- * @returns Array of `from` path strings found in this section and its children
+ * @param include - Optional include value (string, string[], or undefined)
+ * @returns Array of include path strings
+ */
+function normalizeInclude(include: string | readonly string[] | undefined): readonly string[] {
+  if (Array.isArray(include)) {
+    return include
+  }
+  if (typeof include === 'string') {
+    return [include]
+  }
+  return []
+}
+
+/**
+ * Extract `include` paths from a single section, including nested items.
+ *
+ * @private
+ * @param section - Section to extract include paths from
+ * @returns Array of `include` path strings found in this section and its children
  */
 function flattenSection(section: Section): readonly string[] {
-  if (section.from && section.items) {
-    return [section.from, ...flattenFromPaths(section.items)]
+  const includes = normalizeInclude(section.include)
+  if (includes.length > 0 && section.items) {
+    return [...includes, ...flattenIncludePaths(section.items)]
   }
-  if (section.from) {
-    return [section.from]
+  if (includes.length > 0) {
+    return includes
   }
   if (section.items) {
-    return flattenFromPaths(section.items)
+    return flattenIncludePaths(section.items)
   }
   return []
 }

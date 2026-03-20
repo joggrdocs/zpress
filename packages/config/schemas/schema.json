@@ -92,7 +92,7 @@
         "tagline": {
           "type": "string"
         },
-        "apps": {
+        "workspaces": {
           "type": "array",
           "items": {
             "type": "object",
@@ -123,190 +123,11 @@
                   }
                 ]
               },
-              "icon": {
-                "anyOf": [
-                  {
-                    "$ref": "#/definitions/ZpressConfig/properties/icon"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "$ref": "#/definitions/ZpressConfig/properties/icon"
-                      },
-                      "color": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "id",
-                      "color"
-                    ],
-                    "additionalProperties": false
-                  }
-                ]
-              },
               "description": {
                 "type": "string"
               },
-              "tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "badge": {
-                "type": "object",
-                "properties": {
-                  "src": {
-                    "type": "string"
-                  },
-                  "alt": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "src",
-                  "alt"
-                ],
-                "additionalProperties": false
-              },
-              "prefix": {
-                "type": "string"
-              },
-              "discovery": {
-                "type": "object",
-                "properties": {
-                  "from": {
-                    "type": "string"
-                  },
-                  "title": {
-                    "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
-                  },
-                  "sort": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "default",
-                          "alpha",
-                          "filename"
-                        ]
-                      },
-                      {}
-                    ]
-                  },
-                  "exclude": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "frontmatter": {
-                    "type": "object",
-                    "properties": {
-                      "title": {
-                        "type": "string"
-                      },
-                      "titleTemplate": {
-                        "type": [
-                          "string",
-                          "boolean"
-                        ]
-                      },
-                      "description": {
-                        "type": "string"
-                      },
-                      "layout": {
-                        "type": "string"
-                      },
-                      "sidebar": {
-                        "type": "boolean"
-                      },
-                      "aside": {
-                        "anyOf": [
-                          {
-                            "type": "boolean"
-                          },
-                          {
-                            "type": "string",
-                            "const": "left"
-                          }
-                        ]
-                      },
-                      "outline": {
-                        "anyOf": [
-                          {
-                            "type": "boolean",
-                            "const": false
-                          },
-                          {
-                            "type": "number"
-                          },
-                          {
-                            "type": "array",
-                            "minItems": 2,
-                            "maxItems": 2,
-                            "items": [
-                              {
-                                "type": "number"
-                              },
-                              {
-                                "type": "number"
-                              }
-                            ]
-                          },
-                          {
-                            "type": "string",
-                            "const": "deep"
-                          }
-                        ]
-                      },
-                      "navbar": {
-                        "type": "boolean"
-                      },
-                      "editLink": {
-                        "type": "boolean"
-                      },
-                      "lastUpdated": {
-                        "type": "boolean"
-                      },
-                      "footer": {
-                        "type": "boolean"
-                      },
-                      "pageClass": {
-                        "type": "string"
-                      },
-                      "head": {
-                        "type": "array",
-                        "items": {
-                          "type": "array",
-                          "minItems": 2,
-                          "maxItems": 2,
-                          "items": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "object",
-                              "additionalProperties": {
-                                "type": "string"
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    "additionalProperties": true
-                  },
-                  "recursive": {
-                    "type": "boolean"
-                  },
-                  "indexFile": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
+              "icon": {
+                "$ref": "#/definitions/ZpressConfig/properties/icon"
               },
               "items": {
                 "type": "array",
@@ -314,61 +135,293 @@
                   "type": "object",
                   "properties": {
                     "title": {
-                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
+                      "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/title"
                     },
-                    "link": {
-                      "type": "string"
-                    },
-                    "from": {
-                      "type": "string"
-                    },
-                    "prefix": {
-                      "type": "string"
-                    },
-                    "content": {
+                    "icon": {
                       "anyOf": [
                         {
-                          "type": "string"
-                        },
-                        {}
-                      ]
-                    },
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/items/items"
-                      }
-                    },
-                    "landing": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "auto",
-                            "cards",
-                            "overview"
-                          ]
+                          "$ref": "#/definitions/ZpressConfig/properties/icon"
                         },
                         {
-                          "type": "boolean",
-                          "const": false
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "$ref": "#/definitions/ZpressConfig/properties/icon"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "color"
+                          ],
+                          "additionalProperties": false
                         }
                       ]
                     },
-                    "collapsible": {
-                      "type": "boolean"
+                    "description": {
+                      "type": "string"
                     },
-                    "exclude": {
+                    "tags": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
-                    "hidden": {
-                      "type": "boolean"
+                    "badge": {
+                      "type": "object",
+                      "properties": {
+                        "src": {
+                          "type": "string"
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "src",
+                        "alt"
+                      ],
+                      "additionalProperties": false
                     },
-                    "frontmatter": {
-                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/discovery/properties/frontmatter"
+                    "path": {
+                      "type": "string"
+                    },
+                    "include": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/title"
+                          },
+                          "path": {
+                            "type": "string"
+                          },
+                          "include": {
+                            "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/include"
+                          },
+                          "content": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {}
+                            ]
+                          },
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/items/items"
+                            }
+                          },
+                          "landing": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "auto",
+                                  "cards",
+                                  "overview"
+                                ]
+                              },
+                              {
+                                "type": "boolean",
+                                "const": false
+                              }
+                            ]
+                          },
+                          "collapsible": {
+                            "type": "boolean"
+                          },
+                          "exclude": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "frontmatter": {
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string"
+                              },
+                              "titleTemplate": {
+                                "type": [
+                                  "string",
+                                  "boolean"
+                                ]
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "layout": {
+                                "type": "string"
+                              },
+                              "sidebar": {
+                                "type": "boolean"
+                              },
+                              "aside": {
+                                "anyOf": [
+                                  {
+                                    "type": "boolean"
+                                  },
+                                  {
+                                    "type": "string",
+                                    "const": "left"
+                                  }
+                                ]
+                              },
+                              "outline": {
+                                "anyOf": [
+                                  {
+                                    "type": "boolean",
+                                    "const": false
+                                  },
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "items": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "const": "deep"
+                                  }
+                                ]
+                              },
+                              "navbar": {
+                                "type": "boolean"
+                              },
+                              "editLink": {
+                                "type": "boolean"
+                              },
+                              "lastUpdated": {
+                                "type": "boolean"
+                              },
+                              "footer": {
+                                "type": "boolean"
+                              },
+                              "pageClass": {
+                                "type": "string"
+                              },
+                              "head": {
+                                "type": "array",
+                                "items": {
+                                  "type": "array",
+                                  "minItems": 2,
+                                  "maxItems": 2,
+                                  "items": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "additionalProperties": true
+                          },
+                          "sort": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "default",
+                                  "alpha",
+                                  "filename"
+                                ]
+                              },
+                              {}
+                            ]
+                          },
+                          "recursive": {
+                            "type": "boolean"
+                          },
+                          "entryFile": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/icon"
+                          },
+                          "card": {
+                            "type": "object",
+                            "properties": {
+                              "icon": {
+                                "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/icon"
+                              },
+                              "scope": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "badge": {
+                                "type": "object",
+                                "properties": {
+                                  "src": {
+                                    "type": "string"
+                                  },
+                                  "alt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "src",
+                                  "alt"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "standalone": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "title"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "sort": {
                       "anyOf": [
@@ -381,137 +434,58 @@
                           ]
                         },
                         {
-                          "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/discovery/properties/sort/anyOf/1"
+                          "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/items/items/properties/sort/anyOf/1"
                         }
                       ]
+                    },
+                    "exclude": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "recursive": {
                       "type": "boolean"
                     },
-                    "indexFile": {
+                    "entryFile": {
                       "type": "string"
                     },
-                    "icon": {
-                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/icon"
+                    "frontmatter": {
+                      "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/items/items/properties/frontmatter"
                     },
-                    "card": {
+                    "openapi": {
                       "type": "object",
                       "properties": {
-                        "icon": {
-                          "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/icon"
-                        },
-                        "scope": {
+                        "spec": {
                           "type": "string"
                         },
-                        "description": {
+                        "path": {
                           "type": "string"
                         },
-                        "tags": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                        "title": {
+                          "type": "string"
                         },
-                        "badge": {
-                          "type": "object",
-                          "properties": {
-                            "src": {
-                              "type": "string"
-                            },
-                            "alt": {
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "src",
-                            "alt"
-                          ],
-                          "additionalProperties": false
+                        "sidebarLayout": {
+                          "type": "string",
+                          "enum": [
+                            "method-path",
+                            "title"
+                          ]
                         }
                       },
+                      "required": [
+                        "spec",
+                        "path"
+                      ],
                       "additionalProperties": false
-                    },
-                    "isolated": {
-                      "type": "boolean"
-                    },
-                    "titleFrom": {
-                      "type": "string",
-                      "enum": [
-                        "filename",
-                        "heading",
-                        "frontmatter",
-                        "auto"
-                      ]
-                    },
-                    "titleTransform": {
-                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title/anyOf/1/properties/transform"
                     }
                   },
                   "required": [
-                    "title"
+                    "title",
+                    "description",
+                    "path"
                   ],
                   "additionalProperties": false
-                }
-              },
-              "openapi": {
-                "type": "object",
-                "properties": {
-                  "spec": {
-                    "type": "string"
-                  },
-                  "prefix": {
-                    "type": "string"
-                  },
-                  "title": {
-                    "type": "string"
-                  },
-                  "sidebarLayout": {
-                    "type": "string",
-                    "enum": [
-                      "method-path",
-                      "title"
-                    ]
-                  }
-                },
-                "required": [
-                  "spec",
-                  "prefix"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "required": [
-              "title",
-              "description",
-              "prefix"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "packages": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ZpressConfig/properties/apps/items"
-          }
-        },
-        "workspaces": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "title": {
-                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
-              },
-              "description": {
-                "type": "string"
-              },
-              "icon": {
-                "$ref": "#/definitions/ZpressConfig/properties/icon"
-              },
-              "items": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/ZpressConfig/properties/apps/items"
                 },
                 "minItems": 1
               },
@@ -534,7 +508,7 @@
             "type": "object",
             "properties": {
               "title": {
-                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
+                "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/title"
               },
               "description": {
                 "type": "string"
@@ -543,7 +517,7 @@
                 "type": "string"
               },
               "icon": {
-                "$ref": "#/definitions/ZpressConfig/properties/icon"
+                "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/icon"
               }
             },
             "required": [
@@ -595,7 +569,7 @@
                     "type": "string"
                   },
                   "icon": {
-                    "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/icon"
+                    "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/icon"
                   },
                   "style": {
                     "type": "string",
@@ -633,7 +607,7 @@
         "sections": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/items/items"
+            "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/items/items"
           },
           "minItems": 1
         },
@@ -796,6 +770,9 @@
             }
           },
           "additionalProperties": false
+        },
+        "openapi": {
+          "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/items/items/properties/openapi"
         }
       },
       "required": [

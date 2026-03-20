@@ -41,9 +41,19 @@ describe('buildWorkspaceCardJsx()', () => {
     expect(result).toContain('icon="devicon:react"')
   })
 
-  it('should default iconColor to purple', () => {
+  it('should default icon color to purple (plain string)', () => {
     const result = buildWorkspaceCardJsx({ title: 'Doc', link: '/doc' })
-    expect(result).toContain('iconColor="purple"')
+    expect(result).toContain('icon="pixelarticons:file"')
+    expect(result).not.toContain('color')
+  })
+
+  it('should serialize object icon with color', () => {
+    const result = buildWorkspaceCardJsx({
+      title: 'Doc',
+      link: '/doc',
+      icon: { id: 'devicon:react', color: 'blue' },
+    })
+    expect(result).toContain('icon={{ id: "devicon:react", color: "blue" }}')
   })
 
   it('should include scope prop when provided', () => {

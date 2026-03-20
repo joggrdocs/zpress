@@ -5,17 +5,18 @@
  * Uses BEM naming: block__element--modifier.
  */
 
-/* ── Copy markdown button ─────────────────────────────────── */
-.zp-oas-operation__copy {
-  display: flex;
-  justify-content: flex-end;
-  grid-column: 1 / -1;
+/* ── Hide Rspress default LLMs copy button on OpenAPI pages ── */
+/* OpenAPI pages use a custom CopyMarkdownButton with build-time rendered markdown */
+:has(.zp-oas-operation) > .rp-llms-container,
+:has(.zp-oas-overview) > .rp-llms-container {
+  display: none;
 }
 
-.zp-oas-overview__copy {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.5rem;
+/* ── Copy markdown button ─────────────────────────────────── */
+.zp-oas-copy-markdown {
+  float: right;
+  margin-top: 8px;
+  margin-bottom: 0;
 }
 
 /* ── Two-column operation layout ───────────────────────────── */
@@ -534,29 +535,6 @@
 /* ── Overview page ─────────────────────────────────────────── */
 .zp-oas-overview {
   max-width: 800px;
-}
-
-.zp-oas-overview__header {
-  margin-bottom: 2rem;
-}
-
-.zp-oas-overview__title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--zp-c-text-1);
-  margin: 0 0 0.5rem;
-}
-
-.zp-oas-overview__version {
-  display: inline-flex;
-  padding: 2px 8px;
-  border-radius: var(--rp-radius-small);
-  font-size: 0.75rem;
-  font-weight: 600;
-  font-family: var(--zp-font-family-mono, monospace);
-  background: color-mix(in srgb, var(--zp-c-brand-1) 15%, transparent);
-  color: var(--zp-c-brand-2);
-  margin-left: 0.5rem;
 }
 
 .zp-oas-overview__description {

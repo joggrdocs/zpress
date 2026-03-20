@@ -1,7 +1,6 @@
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
-import type { IconColor } from '../home/feature-card'
 import { Card } from './card'
 import { Icon } from './icon'
 
@@ -9,15 +8,14 @@ export interface SectionCardProps {
   readonly href: string
   readonly title: string
   readonly description?: string
-  readonly icon?: string
-  readonly iconColor?: IconColor
+  readonly icon?: string | { readonly id: string; readonly color: string }
 }
 
 /**
  * Section card — simple icon + title + description link card
  * used on auto-generated section landing pages.
  *
- * @param props - Props with href, title, optional description, icon, and iconColor
+ * @param props - Props with href, title, optional description and icon
  * @returns React element with a linked section card
  */
 export function SectionCard({
@@ -25,8 +23,8 @@ export function SectionCard({
   title,
   description,
   icon = 'pixelarticons:file',
-  iconColor = 'purple',
 }: SectionCardProps): React.ReactElement {
+  const resolved = resolveCardIcon(icon)
   const descEl = match(description)
     .with(P.nonNullable, (d) => <span className="zp-section-card__desc">{d}</span>)
     .otherwise(() => null)
@@ -34,12 +32,33 @@ export function SectionCard({
   return (
     <Card href={href} className="zp-section-card">
       <div className="zp-section-card__header">
-        <span className={`zp-section-card__icon zp-section-card__icon--${iconColor}`}>
-          <Icon icon={icon} />
+        <span className={`zp-section-card__icon zp-section-card__icon--${resolved.color}`}>
+          <Icon icon={resolved.id} />
         </span>
         <span className="zp-section-card__title">{title}</span>
       </div>
       {descEl}
     </Card>
   )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve a unified icon config into id + color.
+ *
+ * @private
+ * @param icon - Icon config (string or object)
+ * @returns Resolved icon with id and color
+ */
+function resolveCardIcon(icon: string | { readonly id: string; readonly color: string }): {
+  readonly id: string
+  readonly color: string
+} {
+  if (typeof icon === 'string') {
+    return { id: icon, color: 'purple' }
+  }
+  return icon
 }

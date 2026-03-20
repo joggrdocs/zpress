@@ -1,10 +1,7 @@
 import type React from 'react'
-import { useMemo } from 'react'
 import { match, P } from 'ts-pattern'
 
 import { CodeSample } from './code-sample'
-import { CopyMarkdownButton } from './copy-markdown-button'
-import { generateOperationMarkdown } from './markdown'
 import { MethodBadge } from './method-badge'
 import { ParametersTable } from './parameters-table'
 import { RequestBody } from './request-body'
@@ -48,10 +45,6 @@ export function OpenAPIOperation({
   operationId,
 }: OpenAPIOperationProps): React.ReactElement {
   const operation = resolveOperation({ spec, path, method })
-  const markdown = useMemo(
-    () => generateOperationMarkdown({ spec, method, path, operationId }),
-    [spec, method, path, operationId]
-  )
 
   return match(operation)
     .with(P.nonNullable, (op) => {
@@ -99,9 +92,6 @@ export function OpenAPIOperation({
 
       return (
         <div className="zp-oas-operation">
-          <div className="zp-oas-operation__copy">
-            <CopyMarkdownButton markdown={markdown} />
-          </div>
           <div className="zp-oas-operation-spec">
             <OperationHeader
               method={method}

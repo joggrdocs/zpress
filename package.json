@@ -23,10 +23,7 @@
     "docs:build": "node packages/zpress/dist/cli.mjs build",
     "docs:serve": "node packages/zpress/dist/cli.mjs serve",
     "docs:generate": "lauf run docs",
-    "predev": "turbo run //#docs:generate",
-    "dev": "turbo run dev",
-    "predev:playground": "turbo run build --force",
-    "dev:playground": "pnpm --filter @zpress/ui dev"
+    "dev": "turbo run dev"
   },
   "dependencies": {
     "@zpress/kit": "workspace:*"
@@ -67,7 +64,6 @@
       "rspress-plugin-devkit@1.0.0": "patches/rspress-plugin-devkit@1.0.0.patch",
       "rspress-plugin-supersub@1.0.0": "patches/rspress-plugin-supersub@1.0.0.patch",
       "rspress-plugin-file-tree@1.0.4": "patches/rspress-plugin-file-tree@1.0.4.patch",
-      "rspress-plugin-mermaid@1.0.1": "patches/rspress-plugin-mermaid@1.0.1.patch",
       "rspress-plugin-katex@1.0.0": "patches/rspress-plugin-katex@1.0.0.patch"
     },
     "overrides": {

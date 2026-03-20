@@ -1,18 +1,15 @@
-import type { IconColor } from '@zpress/config'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
 import './feature-card.css'
 import { Card } from '../shared/card'
-
-export type { IconColor } from '@zpress/config'
+import { Icon } from '../shared/icon'
 
 export interface FeatureCardProps {
   readonly title: string
   readonly description: string
   readonly href?: string
-  readonly icon?: React.ReactNode
-  readonly iconColor?: IconColor
+  readonly icon?: string | { readonly id: string; readonly color: string }
   readonly span?: 2 | 3 | 4 | 6
   readonly titleLines?: number
   readonly descriptionLines?: number
@@ -25,8 +22,7 @@ export interface FeatureItem {
   readonly title: string
   readonly details: string
   readonly link?: string
-  readonly icon?: string
-  readonly iconColor?: IconColor
+  readonly icon?: string | { readonly id: string; readonly color: string }
   readonly span?: 2 | 3 | 4 | 6
 }
 
@@ -34,7 +30,7 @@ export interface FeatureItem {
  * Feature card for landing pages — matches the workspace/section card design.
  * Renders as `<a>` when `href` is provided, `<div>` otherwise.
  *
- * @param props - Feature card props including title, description, href, icon, iconColor, span, titleLines, descriptionLines
+ * @param props - Feature card props including title, description, href, icon, span, titleLines, descriptionLines
  * @returns React element with feature card layout
  */
 export function FeatureCard({
@@ -42,14 +38,17 @@ export function FeatureCard({
   description,
   href,
   icon,
-  iconColor = 'purple',
   span = 4,
   titleLines,
   descriptionLines,
 }: FeatureCardProps): React.ReactElement {
-  const iconEl = match(icon)
-    .with(P.nonNullable, (ic) => (
-      <span className={`zp-card__icon zp-card__icon--${iconColor}`}>{ic}</span>
+  const resolved = resolveCardIcon(icon)
+
+  const iconEl = match(resolved)
+    .with(P.nonNullable, (r) => (
+      <span className={`zp-card__icon zp-card__icon--${r.color}`}>
+        <Icon icon={r.id} />
+      </span>
     ))
     .otherwise(() => null)
 
@@ -99,6 +98,35 @@ export function FeatureGrid({ children }: FeatureGridProps): React.ReactElement 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Resolved icon with id and color.
+ *
+ * @private
+ */
+interface ResolvedCardIcon {
+  readonly id: string
+  readonly color: string
+}
+
+/**
+ * Resolve a unified icon config into id + color.
+ *
+ * @private
+ * @param icon - Icon config (string, object, or undefined)
+ * @returns Resolved icon or undefined
+ */
+function resolveCardIcon(
+  icon: string | { readonly id: string; readonly color: string } | undefined
+): ResolvedCardIcon | undefined {
+  if (icon === undefined) {
+    return undefined
+  }
+  if (typeof icon === 'string') {
+    return { id: icon, color: 'purple' }
+  }
+  return icon
+}
 
 /**
  * Build a className string with optional `zp-clamp` suffix.

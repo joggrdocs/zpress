@@ -10,7 +10,7 @@ interface DumpEntry {
   readonly link?: string
   readonly collapsible?: boolean
   readonly hidden?: boolean
-  readonly isolated?: boolean
+  readonly standalone?: boolean
   readonly items?: DumpEntry[]
 }
 
@@ -106,17 +106,17 @@ function maybeHidden(
 }
 
 /**
- * Conditionally include an `isolated` property in the spread object.
+ * Conditionally include a `standalone` property in the spread object.
  *
  * @private
- * @param isolated - Optional isolated flag
- * @returns Object with `isolated` if truthy, empty object otherwise
+ * @param standalone - Optional standalone flag
+ * @returns Object with `standalone` if truthy, empty object otherwise
  */
-function maybeIsolated(
-  isolated: boolean | undefined
-): { readonly isolated: boolean } | Record<string, never> {
-  if (isolated) {
-    return { isolated }
+function maybeStandalone(
+  standalone: boolean | undefined
+): { readonly standalone: boolean } | Record<string, never> {
+  if (standalone) {
+    return { standalone }
   }
   return {}
 }
@@ -161,7 +161,7 @@ function buildDumpEntry(entry: ResolvedEntry): DumpEntry {
     ...maybeLink(entry.link),
     ...maybeCollapsible(entry.collapsible),
     ...maybeHidden(entry.hidden),
-    ...maybeIsolated(entry.isolated),
+    ...maybeStandalone(entry.standalone),
     ...maybeItems(entry.items as readonly ResolvedEntry[] | undefined),
   }
 }

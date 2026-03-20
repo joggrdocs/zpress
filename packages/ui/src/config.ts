@@ -14,7 +14,8 @@ import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
-import mermaid from 'rspress-plugin-mermaid'
+import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
+import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import supersub from 'rspress-plugin-supersub'
 
 import { getThemeCss } from './css.ts'
@@ -86,7 +87,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     themeDir: path.resolve(import.meta.dirname, 'theme'),
 
-    plugins: [zpressPlugin(), mermaid(), fileTree({ initialExpandDepth: 1 }), supersub(), katex()],
+    plugins: [zpressPlugin(), mermaidPlugin(), fileTree({ initialExpandDepth: 1 }), supersub(), katex()],
+
+    markdown: {
+      remarkPlugins: [remarkMathToDiv],
+    },
 
     builderConfig: {
       ...(() => {

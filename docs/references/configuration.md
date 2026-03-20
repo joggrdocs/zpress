@@ -13,7 +13,7 @@ import { defineConfig } from '@zpress/kit'
 export default defineConfig({
   title: 'My Docs',
   description: 'Project documentation',
-  sections: [{ title: 'Introduction', prefix: '/intro', from: 'docs/intro/*.md' }],
+  sections: [{ title: 'Introduction', path: '/intro', include: 'docs/intro/*.md' }],
 })
 ```
 
@@ -31,11 +31,8 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 | `theme`       | `ThemeConfig`              | —          | Theme configuration (name, color mode, color overrides)                                        |
 | `features`    | `Feature[]`                | —          | Explicit home page feature cards (replaces auto-gen)                                           |
 | `actions`     | `HeroAction[]`             | —          | Home page hero call-to-action buttons                                                          |
-| `seo`         | `SeoConfig`                | —          | SEO meta tag configuration                                                                     |
 | `sidebar`     | `SidebarConfig`            | —          | Persistent links above/below the sidebar nav tree                                              |
-| `apps`        | `Workspace[]`              | —          | Monorepo app metadata for home/landing pages                                                   |
-| `packages`    | `Workspace[]`              | —          | Monorepo package metadata for home/landing pages                                               |
-| `workspaces`  | `WorkspaceCategory[]`      | —          | Custom named groups of workspace items                                                         |
+| `workspaces`  | `WorkspaceCategory[]`      | —          | Named groups of workspace items for home/landing pages                                         |
 | `openapi`     | `OpenAPIConfig`            | —          | OpenAPI spec integration for interactive API docs                                              |
 | `exclude`     | `string[]`                 | —          | Glob patterns excluded globally across all sources                                             |
 | `icon`        | `string`                   | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
@@ -47,19 +44,19 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 **Page — single file:**
 
 ```ts
-{ title: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
+{ title: 'Architecture', path: '/architecture', include: 'docs/architecture.md' }
 ```
 
 **Page — inline content:**
 
 ```ts
-{ title: 'Overview', link: '/overview', content: '# Overview\nProject overview content.' }
+{ title: 'Overview', path: '/overview', content: '# Overview\nProject overview content.' }
 ```
 
 **Page — async content generator:**
 
 ```ts
-{ title: 'Status', link: '/status', content: async () => fetchStatus() }
+{ title: 'Status', path: '/status', content: async () => fetchStatus() }
 ```
 
 **Section — explicit children:**
@@ -68,8 +65,8 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 {
   title: 'Guides',
   items: [
-    { title: 'Quick Start', link: '/guides/quick-start', from: 'docs/guides/quick-start.md' },
-    { title: 'Deployment', link: '/guides/deployment', from: 'docs/guides/deployment.md' },
+    { title: 'Quick Start', path: '/guides/quick-start', include: 'docs/guides/quick-start.md' },
+    { title: 'Deployment', path: '/guides/deployment', include: 'docs/guides/deployment.md' },
   ],
 }
 ```
@@ -77,7 +74,7 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 **Section — auto-discovered from glob:**
 
 ```ts
-{ title: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
+{ title: 'Guides', path: '/guides', include: 'docs/guides/*.md' }
 ```
 
 ### Section fields
@@ -85,9 +82,8 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 | Field            | Type                                                    | Description                                     |
 | ---------------- | ------------------------------------------------------- | ----------------------------------------------- |
 | `title`          | `TitleConfig`                                           | Display name or derived title config            |
-| `link`           | `string`                                                | Output URL path                                 |
-| `from`           | `string`                                                | Source file path or glob pattern                |
-| `prefix`         | `string`                                                | URL prefix for glob-discovered children         |
+| `path`           | `string`                                                | Output URL path                                 |
+| `include`        | `string \| string[]`                                    | Source file path(s) or glob pattern(s)          |
 | `content`        | `string \| (() => string \| Promise<string>)`           | Inline or generated markdown content            |
 | `items`          | `Section[]`                                             | Explicit child entries                          |
 | `landing`        | `'auto' \| 'cards' \| 'overview' \| false`              | Landing page generation mode                    |
@@ -97,25 +93,18 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 | `frontmatter`    | `Frontmatter`                                           | Injected YAML frontmatter                       |
 | `sort`           | `'default' \| 'alpha' \| 'filename' \| comparator`     | Sort order for discovered children              |
 | `recursive`      | `boolean`                                               | Directory-based nesting for recursive globs     |
-| `indexFile`      | `string`                                                | Section header filename (default: `"overview"`) |
+| `entryFile`      | `string`                                                | Section header filename (default: `"overview"`) |
 | `icon`           | `IconConfig`                                            | Icon for cards and landing pages                |
 | `card`           | `CardConfig`                                            | Landing page card metadata                      |
-| `isolated`       | `boolean`                                               | Separate sidebar namespace (requires `link`)    |
+| `standalone`     | `boolean`                                               | Separate sidebar namespace (requires `path`)    |
 
 `TitleConfig` is either a plain `string` or `{ from: 'auto' | 'filename' | 'heading' | 'frontmatter', transform?: (text, slug) => string }` for derived titles.
 
 The `'default'` sort strategy pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then sorts alphabetically. This is the implicit default when `sort` is omitted.
 
-**Deprecated fields** (still accepted, will be removed in a future release):
-
-| Field            | Replacement                                  |
-| ---------------- | -------------------------------------------- |
-| `titleFrom`      | `title: { from: '...' }`                    |
-| `titleTransform` | `title: { from: '...', transform: fn }`     |
-
 ## Workspace
 
-Metadata for monorepo apps and packages. Drives home page cards, landing page cards, and introduction content.
+Metadata for a monorepo app or package. Drives home page cards, landing page cards, and introduction content. Workspaces are grouped under `WorkspaceCategory` entries in the top-level `workspaces` array.
 
 ```ts
 {
@@ -123,32 +112,32 @@ Metadata for monorepo apps and packages. Drives home page cards, landing page ca
   icon: { id: 'devicon:hono', color: 'blue' },
   description: 'REST API with typed routes',
   tags: ['hono', 'typescript'],
-  prefix: '/apps/api',
-  discovery: {
-    from: 'docs/*.md',
-    title: { from: 'auto' },
-    sort: 'alpha',
-  },
+  path: '/apps/api',
+  include: 'docs/*.md',
+  sort: 'alpha',
 }
 ```
 
-| Field         | Type                           | Required | Description                                                     |
-| ------------- | ------------------------------ | -------- | --------------------------------------------------------------- |
-| `title`       | `TitleConfig`                  | yes      | Display name or derived title config                            |
-| `icon`        | `IconConfig`                   | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
-| `description` | `string`                       | yes      | Short description for cards                                     |
-| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                                    |
-| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                              |
-| `prefix`      | `string`                       | yes      | URL prefix for this workspace's documentation                   |
-| `discovery`   | `Discovery`                    | no       | Content discovery config (glob, title, sort, etc.)              |
-| `items`       | `Section[]`                    | no       | Explicit child sections                                         |
-| `openapi`     | `OpenAPIConfig`                | no       | OpenAPI spec integration for this workspace                     |
-
-The `discovery` field accepts the same auto-discovery options documented in `DiscoveryConfig`: `from`, `title`, `sort`, `exclude`, `frontmatter`, `recursive`, and `indexFile`.
+| Field         | Type                                                    | Required | Description                                                     |
+| ------------- | ------------------------------------------------------- | -------- | --------------------------------------------------------------- |
+| `title`       | `TitleConfig`                                           | yes      | Display name or derived title config                            |
+| `icon`        | `IconConfig`                                            | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `description` | `string`                                                | yes      | Short description for cards                                     |
+| `tags`        | `string[]`                                              | no       | Technology tags (kebab-case)                                    |
+| `badge`       | `{ src: string; alt: string }`                          | no       | Deploy badge image                                              |
+| `path`        | `string`                                                | yes      | URL prefix for this workspace's documentation                   |
+| `include`     | `string \| string[]`                                    | no       | Source file path(s) or glob pattern(s) for content discovery    |
+| `sort`        | `'default' \| 'alpha' \| 'filename' \| comparator`     | no       | Sort order for discovered content                               |
+| `exclude`     | `string[]`                                              | no       | Glob patterns excluded from discovery                           |
+| `recursive`   | `boolean`                                               | no       | Directory-based nesting for recursive globs                     |
+| `entryFile`   | `string`                                                | no       | Section header filename (default: `"overview"`)                 |
+| `frontmatter` | `Frontmatter`                                           | no       | Injected YAML frontmatter for all discovered pages              |
+| `items`       | `Section[]`                                             | no       | Explicit child sections                                         |
+| `openapi`     | `OpenAPIConfig`                                         | no       | OpenAPI spec integration for this workspace                     |
 
 ## WorkspaceCategory
 
-Custom named groups beyond the built-in `apps` and `packages`. Each group receives the same card and landing page treatment.
+Named groups of workspace items. Each category receives card and landing page treatment on the home page.
 
 ```ts
 {
@@ -156,7 +145,7 @@ Custom named groups beyond the built-in `apps` and `packages`. Each group receiv
   description: 'Third-party service connectors',
   icon: 'pixelarticons:integration',
   items: [
-    { title: 'Stripe', description: 'Payment processing', prefix: '/integrations/stripe' },
+    { title: 'Stripe', description: 'Payment processing', path: '/integrations/stripe' },
   ],
 }
 ```
@@ -209,7 +198,7 @@ nav: [
 | `items`       | `NavItem[]` | Dropdown children                       |
 | `activeMatch` | `string`    | Regex pattern for active state matching |
 
-Set `nav: 'auto'` to generate one nav item per non-isolated top-level section.
+Set `nav: 'auto'` to generate one nav item per non-standalone top-level section.
 
 ## Feature
 
@@ -240,7 +229,7 @@ Configuration for OpenAPI spec integration.
 | Field           | Type                       | Default          | Description                                    |
 | --------------- | -------------------------- | ---------------- | ---------------------------------------------- |
 | `spec`          | `string`                   | (required)       | Path to `openapi.json` from repo root          |
-| `prefix`        | `string`                   | (required)       | URL prefix for API operation pages             |
+| `path`          | `string`                   | (required)       | URL prefix for API operation pages             |
 | `title`         | `string`                   | `'API Reference'`| Sidebar group title                            |
 | `sidebarLayout` | `'method-path' \| 'title'` | `'method-path'`  | How operations appear in the sidebar           |
 
@@ -292,16 +281,3 @@ Each `SidebarLink` has:
 | `text` | `string`     | yes      | Link display text         |
 | `link` | `string`     | yes      | Target URL                |
 | `icon` | `IconConfig` | no       | Iconify icon identifier   |
-
-## SeoConfig
-
-SEO meta tag configuration for social sharing and search engines.
-
-| Field         | Type                                                        | Description              |
-| ------------- | ----------------------------------------------------------- | ------------------------ |
-| `title`       | `string`                                                    | Override the page title  |
-| `description` | `string`                                                    | Meta description         |
-| `image`       | `string`                                                    | Open Graph image URL     |
-| `siteName`    | `string`                                                    | Open Graph site name     |
-| `locale`      | `string`                                                    | Locale (e.g. `"en_US"`) |
-| `twitterCard` | `'summary' \| 'summary_large_image' \| 'app' \| 'player'`  | Twitter card type        |

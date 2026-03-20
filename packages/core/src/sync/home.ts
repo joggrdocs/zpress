@@ -5,8 +5,7 @@ import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from '../glob.ts'
-import { ICON_COLORS, resolveOptionalIcon } from '../icon.ts'
-import type { IconColor } from '../icon.ts'
+import { resolveOptionalIcon } from '../icon.ts'
 import type { Section, Feature, ZpressConfig, Workspace } from '../types.ts'
 import { resolveSectionTitle } from './resolve/text.ts'
 
@@ -16,8 +15,7 @@ import { resolveSectionTitle } from './resolve/text.ts'
 export interface HomeWorkspaceCardData {
   readonly title: string
   readonly href: string
-  readonly icon: string | undefined
-  readonly iconColor: string | undefined
+  readonly icon: string | { readonly id: string; readonly color: string } | undefined
   readonly scope: string | undefined
   readonly description: string | undefined
   readonly tags: readonly string[]
@@ -133,39 +131,11 @@ export async function generateDefaultHomePage(
  * @returns Workspace data result containing all groups
  */
 export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
-  const apps = config.apps ?? []
-  const packages = config.packages ?? []
   const workspaceGroups = config.workspaces ?? []
 
-  const hasWorkspaceItems = apps.length > 0 || packages.length > 0 || workspaceGroups.length > 0
-
-  if (!hasWorkspaceItems) {
+  if (workspaceGroups.length === 0) {
     return { data: [] }
   }
-
-  const appsResult = match(apps.length > 0)
-    .with(true, () =>
-      buildGroupData(
-        'apps',
-        'Apps',
-        'Deployable applications that make up the platform \u2014 each runs as an independent service.',
-        apps,
-        'apps/'
-      )
-    )
-    .otherwise(() => null)
-
-  const packagesResult = match(packages.length > 0)
-    .with(true, () =>
-      buildGroupData(
-        'packages',
-        'Packages',
-        'Shared libraries and utilities consumed across apps and services.',
-        packages,
-        'packages/'
-      )
-    )
-    .otherwise(() => null)
 
   const groupResults = workspaceGroups.map((g) => {
     const titleStr = match(g.title)
@@ -175,12 +145,8 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
     return buildGroupData('workspaces', titleStr, descStr, g.items, '')
   })
 
-  const allResults = [appsResult, packagesResult, ...groupResults].filter(
-    (r): r is GroupDataResult => r !== null
-  )
-
   return {
-    data: allResults.map((r) => r.group),
+    data: groupResults.map((r) => r.group),
   }
 }
 
@@ -215,8 +181,7 @@ interface ResolvedFeature {
   readonly title: string
   readonly details: string
   readonly link: string | undefined
-  readonly iconId: string | null
-  readonly iconColor: IconColor
+  readonly icon: string | { readonly id: string; readonly color: string } | null
 }
 
 /**
@@ -228,8 +193,7 @@ interface FrontmatterFeature {
   readonly title: string
   readonly details: string
   readonly link?: string
-  readonly icon?: string
-  readonly iconColor: IconColor
+  readonly icon?: string | { readonly id: string; readonly color: string }
 }
 
 /**
@@ -249,10 +213,9 @@ function buildFrontmatterFeatures(
     ...match(f.link)
       .with(P.nonNullable, (l) => ({ link: l }))
       .otherwise(() => ({})),
-    ...match(f.iconId)
-      .with(P.nonNullable, (id) => ({ icon: id }))
+    ...match(f.icon)
+      .with(P.nonNullable, (ic) => ({ icon: ic }))
       .otherwise(() => ({})),
-    iconColor: f.iconColor,
   }))
 }
 
@@ -276,12 +239,13 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
         title: titleStr,
         details: descStr,
         link: f.link,
-        iconId: match(resolved)
-          .with(P.nonNullable, (r) => r.id)
+        icon: match(resolved)
+          .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
+            match(r.color)
+              .with('purple', () => r.id)
+              .otherwise(() => ({ id: r.id, color: r.color }))
+          )
           .otherwise(() => null),
-        iconColor: match(resolved)
-          .with(P.nonNullable, (r) => r.color)
-          .otherwise(() => ICON_COLORS[index % ICON_COLORS.length]),
       }
     })
   )
@@ -312,14 +276,15 @@ function buildGroupData(
       .otherwise(String)
     return {
       title: titleStr,
-      href: item.prefix,
+      href: item.path,
       icon: match(resolved)
-        .with(P.nonNullable, (r) => r.id)
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
-      iconColor: match(resolved)
-        .with(P.nonNullable, (r) => r.color)
+        .with(
+          P.nonNullable,
+          (r): string | { readonly id: string; readonly color: string } =>
+            match(r.color)
+              .with('purple', () => r.id)
+              .otherwise(() => ({ id: r.id, color: r.color }))
+        )
         // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
         .with(P.nullish, (): undefined => undefined)
         .exhaustive(),
@@ -347,7 +312,7 @@ function findFirstLink(sections: readonly Section[]): string {
   if (!first) {
     return '/'
   }
-  return first.link ?? first.prefix ?? '/'
+  return first.path ?? '/'
 }
 
 /**
@@ -365,17 +330,20 @@ function buildFeatures(
 ): Promise<readonly ResolvedFeature[]> {
   return Promise.all(
     sections.slice(0, 3).map(async (section, index) => {
-      const link = section.link ?? findFirstChildLink(section)
+      const link = section.path ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
       const resolved = resolveOptionalIcon(section.icon)
-      const iconId = match(resolved)
-        .with(P.nonNullable, (r) => r.id)
-        .otherwise(() => null)
-      const iconColor: IconColor = match(resolved)
-        .with(P.nonNullable, (r) => r.color)
-        .otherwise(() => ICON_COLORS[index % ICON_COLORS.length])
+      const icon = match(resolved)
+        .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
+          match(r.color)
+            .with('purple', () => r.id)
+            .otherwise(() => ({ id: r.id, color: r.color }))
+        )
+        .otherwise(
+          (): { readonly id: string; readonly color: string } | null => null
+        )
       const titleStr = resolveSectionTitle(section)
-      return { title: titleStr, details, link, iconId, iconColor }
+      return { title: titleStr, details, link, icon }
     })
   )
 }
@@ -391,9 +359,9 @@ function findFirstChildLink(section: Section): string | undefined {
   if (!section.items) {
     return undefined
   }
-  const first = section.items.find((item) => item.link)
+  const first = section.items.find((item) => item.path)
   if (first) {
-    return first.link
+    return first.path
   }
   const nested = section.items.find((item) => findFirstChildLink(item))
   if (nested) {
@@ -414,8 +382,8 @@ function findFirstChildLink(section: Section): string | undefined {
  */
 async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
   // Single-file source — read frontmatter description
-  if (section.from && !hasGlobChars(section.from)) {
-    const description = await readFrontmatterDescription(path.resolve(repoRoot, section.from))
+  if (typeof section.include === 'string' && !hasGlobChars(section.include)) {
+    const description = await readFrontmatterDescription(path.resolve(repoRoot, section.include))
     if (description) {
       return description
     }

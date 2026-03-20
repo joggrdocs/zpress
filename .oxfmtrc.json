@@ -19,6 +19,7 @@
     ".claude",
     ".vitepress",
     ".zpress",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "packages/config/schemas/**"
   ]
 }

@@ -20,13 +20,9 @@ export interface WorkspaceCardData {
    */
   readonly title: string
   /**
-   * Iconify identifier for the card icon (e.g. 'devicon:hono').
+   * Icon config — Iconify identifier string or `{ id, color }` object.
    */
-  readonly icon?: string
-  /**
-   * CSS class suffix for the icon color.
-   */
-  readonly iconColor?: string
+  readonly icon?: string | { readonly id: string; readonly color: string }
   /**
    * Scope label shown above the name (e.g. 'apps/').
    */
@@ -100,18 +96,15 @@ export async function generateLandingContent(
  * @returns JSX string for a single WorkspaceCard component
  */
 export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
-  const icon =
-    data.icon ??
-    match(data.hasChildren === true)
-      .with(true, () => 'pixelarticons:folder')
-      .otherwise(() => 'pixelarticons:file')
-  const iconColor = data.iconColor ?? 'purple'
+  const defaultIcon = match(data.hasChildren === true)
+    .with(true, () => 'pixelarticons:folder')
+    .otherwise(() => 'pixelarticons:file')
+  const icon = data.icon ?? defaultIcon
 
   const props: readonly string[] = [
     `title="${escapeJsxProp(data.title)}"`,
     `href="${data.link}"`,
-    `icon="${icon}"`,
-    `iconColor="${iconColor}"`,
+    ...serializeIconProp(icon),
     ...maybeScopeProp(data.scope),
     ...maybeDescriptionProp(data.description),
     ...maybeTagsProp(data.tags),
@@ -141,12 +134,13 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
     link: entry.link ?? '',
     title: entry.title,
     icon: match(resolved)
-      .with(P.nonNullable, (r) => r.id)
-      // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-      .with(P.nullish, (): undefined => undefined)
-      .exhaustive(),
-    iconColor: match(resolved)
-      .with(P.nonNullable, (r) => r.color)
+      .with(
+        P.nonNullable,
+        (r): string | { readonly id: string; readonly color: string } =>
+          match(r.color)
+            .with('purple', () => r.id)
+            .otherwise(() => ({ id: r.id, color: r.color }))
+      )
       // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
       .with(P.nullish, (): undefined => undefined)
       .exhaustive(),
@@ -168,16 +162,18 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
  */
 async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Promise<string> {
   const hasChildren = entry.items && entry.items.length > 0
-  const icon = match(hasChildren)
+  const iconId = match(hasChildren)
     .with(true, () => 'pixelarticons:folder')
     .otherwise(() => 'pixelarticons:file')
+  const icon: string | { readonly id: string; readonly color: string } = match(iconColor)
+    .with('purple', () => iconId)
+    .otherwise(() => ({ id: iconId, color: iconColor }))
   const description = await resolveDescription(entry)
 
   const props = [
     `href="${entry.link}"`,
     `title="${escapeJsxProp(entry.title)}"`,
-    `icon="${icon}"`,
-    `iconColor="${iconColor}"`,
+    ...serializeIconProp(icon),
   ]
   if (description) {
     props.push(`description="${escapeJsxProp(description)}"`)
@@ -303,6 +299,25 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
       },
       { done: false, result: [] }
     ).result
+}
+
+/**
+ * Serialize a unified icon config into JSX prop strings.
+ *
+ * - String → `icon="prefix:name"`
+ * - Object → `icon={{ id: "prefix:name", color: "blue" }}`
+ *
+ * @private
+ * @param icon - Icon config value (string or object)
+ * @returns Array with the icon JSX prop string
+ */
+function serializeIconProp(
+  icon: string | { readonly id: string; readonly color: string }
+): readonly string[] {
+  if (typeof icon === 'string') {
+    return [`icon="${icon}"`]
+  }
+  return [`icon={{ id: "${icon.id}", color: "${icon.color}" }}`]
 }
 
 /**
