@@ -49,7 +49,9 @@ export function generateNav(
   const nonStandalone = visible.filter((e) => !e.standalone).slice(0, 3)
   const standalone = visible.filter((e) => e.standalone)
 
-  return [...nonStandalone, ...standalone].map(buildNavEntry).filter((item) => item.link !== undefined)
+  return [...nonStandalone, ...standalone]
+    .map(buildNavEntry)
+    .filter((item) => item.link !== undefined)
 }
 
 // ---------------------------------------------------------------------------

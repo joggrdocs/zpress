@@ -54,18 +54,18 @@ This runs `sync` to copy and process your source files, starts a file watcher fo
 
 ## Commands
 
-| Command           | Purpose                                            |
-| ----------------- | -------------------------------------------------- |
-| `zpress setup`    | Create a starter config and generate SVG assets    |
-| `zpress sync`     | Sync source files into the content dir             |
-| `zpress dev`      | Start the dev server with live reload              |
-| `zpress build`    | Build the static site for production               |
-| `zpress serve`    | Preview the production build locally               |
-| `zpress check`    | Validate config and check for broken links         |
-| `zpress draft`    | Scaffold a new documentation file from a template  |
-| `zpress clean`    | Remove build artifacts, synced content, and cache  |
-| `zpress dump`     | Print the resolved entry tree as JSON              |
-| `zpress generate` | Generate banner, logo, and icon SVG assets         |
+| Command           | Purpose                                           |
+| ----------------- | ------------------------------------------------- |
+| `zpress setup`    | Create a starter config and generate SVG assets   |
+| `zpress sync`     | Sync source files into the content dir            |
+| `zpress dev`      | Start the dev server with live reload             |
+| `zpress build`    | Build the static site for production              |
+| `zpress serve`    | Preview the production build locally              |
+| `zpress check`    | Validate config and check for broken links        |
+| `zpress draft`    | Scaffold a new documentation file from a template |
+| `zpress clean`    | Remove build artifacts, synced content, and cache |
+| `zpress dump`     | Print the resolved entry tree as JSON             |
+| `zpress generate` | Generate banner, logo, and icon SVG assets        |
 
 ## Project structure
 

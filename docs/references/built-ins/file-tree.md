@@ -123,12 +123,12 @@ Use a fenced code block with the `tree` language.
 
 ## Syntax
 
-| Character | Meaning |
-| --- | --- |
-| `├──` | Item with siblings after it |
-| `└──` | Last item in a directory |
-| `│` | Vertical connector for nesting |
-| Trailing `/` | Directory |
+| Character    | Meaning                        |
+| ------------ | ------------------------------ |
+| `├──`        | Item with siblings after it    |
+| `└──`        | Last item in a directory       |
+| `│`          | Vertical connector for nesting |
+| Trailing `/` | Directory                      |
 
 ## Comments
 

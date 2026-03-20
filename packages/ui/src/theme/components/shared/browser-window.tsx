@@ -3,4 +3,4 @@
  * New code should import from '@theme' directly.
  */
 export { BrowserWindow } from './desktop-window'
-export type { BrowserWindowProps } from './desktop-window'
+export type { BrowserWindowProps, BrowserTab } from './desktop-window'

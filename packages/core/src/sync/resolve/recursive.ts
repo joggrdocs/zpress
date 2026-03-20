@@ -72,8 +72,8 @@ export async function resolveRecursiveGlob(
     .with(P.nonNullable, (tc) => tc.from)
     .otherwise(() => 'auto' as const)
   const titleTransform = match(titleConfig)
-    .with(P.nonNullable, (tc) => tc.transform)
-    .otherwise(() => undefined)
+    .with(P.nonNullable, (tc) => tc.transform ?? null)
+    .otherwise(() => null)
 
   const root = buildDirTree(files, baseDir)
   return buildEntryTree({
@@ -168,7 +168,7 @@ interface BuildEntryTreeParams {
   readonly node: DirNode
   readonly prefix: string
   readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
-  readonly titleTransform: ((text: string, slug: string) => string) | undefined
+  readonly titleTransform: ((text: string, slug: string) => string) | null
   readonly sort: Section['sort']
   readonly collapsible: boolean | undefined
   readonly entryFile: string
@@ -295,7 +295,7 @@ interface ResolveSubdirSectionParams {
   readonly subPrefix: string
   readonly entryFile: string
   readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
-  readonly titleTransform: ((text: string, slug: string) => string) | undefined
+  readonly titleTransform: ((text: string, slug: string) => string) | null
   readonly ctx: SyncContext
   readonly frontmatter: Frontmatter
 }

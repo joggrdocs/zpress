@@ -24,16 +24,16 @@ Template for how-to guides — task-oriented documentation that walks the reader
 
 ## Structure
 
-| Section         | Required | Description                                           |
-| --------------- | -------- | ----------------------------------------------------- |
-| H1 verb-led title | yes   | Starts with an action verb                            |
-| One-liner       | yes      | What the reader will accomplish                       |
-| Prerequisites   | yes      | What the reader needs before starting                 |
-| Steps           | yes      | Numbered H3 sub-steps                                 |
-| Verification    | yes      | How to confirm success                                |
-| Next Steps      | no       | Follow-on tasks or deeper topics                      |
-| Troubleshooting | no       | Common failures and fixes                             |
-| References      | yes      | Related docs and external resources                   |
+| Section           | Required | Description                           |
+| ----------------- | -------- | ------------------------------------- |
+| H1 verb-led title | yes      | Starts with an action verb            |
+| One-liner         | yes      | What the reader will accomplish       |
+| Prerequisites     | yes      | What the reader needs before starting |
+| Steps             | yes      | Numbered H3 sub-steps                 |
+| Verification      | yes      | How to confirm success                |
+| Next Steps        | no       | Follow-on tasks or deeper topics      |
+| Troubleshooting   | no       | Common failures and fixes             |
+| References        | yes      | Related docs and external resources   |
 
 ## Template
 

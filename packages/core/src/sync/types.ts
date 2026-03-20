@@ -84,6 +84,7 @@ export interface ManifestEntry {
  */
 export interface ResolvedEntry {
   readonly title: string
+  readonly description?: string
   readonly link?: string
   readonly collapsible?: boolean
   readonly hidden?: boolean
@@ -103,12 +104,17 @@ export interface ResolvedEntry {
   page?: PageData
   readonly card?: CardConfig
   /**
+   * When false, skip auto-generated landing page for this section.
+   * Defaults to true.
+   */
+  readonly landing?: boolean
+  /**
    * When true, this section gets its own sidebar namespace keyed by `link`.
    */
   readonly standalone?: boolean
   /**
    * When true, `link` was auto-derived from `path` or children's common prefix
-   * rather than explicitly set in the config. Used to skip overview child promotion.
+   * rather than explicitly set in the config.
    */
   readonly autoLink?: boolean
 }

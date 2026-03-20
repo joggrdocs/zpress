@@ -211,18 +211,18 @@ pie title Tech Stack
 
 ## All supported types
 
-| Type | Directive |
-| --- | --- |
-| Flowchart | `graph` or `flowchart` |
-| Sequence | `sequenceDiagram` |
-| Class | `classDiagram` |
-| State | `stateDiagram-v2` |
-| Entity Relationship | `erDiagram` |
-| Gantt | `gantt` |
-| Pie | `pie` |
-| Git Graph | `gitGraph` |
-| Mindmap | `mindmap` |
-| Timeline | `timeline` |
+| Type                | Directive              |
+| ------------------- | ---------------------- |
+| Flowchart           | `graph` or `flowchart` |
+| Sequence            | `sequenceDiagram`      |
+| Class               | `classDiagram`         |
+| State               | `stateDiagram-v2`      |
+| Entity Relationship | `erDiagram`            |
+| Gantt               | `gantt`                |
+| Pie                 | `pie`                  |
+| Git Graph           | `gitGraph`             |
+| Mindmap             | `mindmap`              |
+| Timeline            | `timeline`             |
 
 ## References
 

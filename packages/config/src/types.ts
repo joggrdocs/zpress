@@ -243,11 +243,12 @@ export interface SidebarConfig {
  */
 export interface Section {
   readonly title: TitleConfig
+  readonly description?: string
   readonly path?: string
   readonly include?: string | readonly string[]
   readonly content?: string | (() => string | Promise<string>)
   readonly items?: readonly Section[]
-  readonly landing?: 'auto' | 'cards' | 'overview' | false
+  readonly landing?: boolean
   readonly collapsible?: boolean
   readonly exclude?: readonly string[]
   readonly hidden?: boolean

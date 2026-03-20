@@ -156,9 +156,7 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
     }
   })
 
-  return categoryEntries.filter(
-    (section): section is Section => section !== null
-  )
+  return categoryEntries.filter((section): section is Section => section !== null)
 }
 
 /**
@@ -279,12 +277,10 @@ function buildWorkspaceSection(
       link: item.path,
       title: titleStr,
       icon: match(resolved)
-        .with(
-          P.nonNullable,
-          (r): string | { readonly id: string; readonly color: string } =>
-            match(r.color)
-              .with('purple', () => r.id)
-              .otherwise(() => ({ id: r.id, color: r.color }))
+        .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
+          match(r.color)
+            .with('purple', () => r.id)
+            .otherwise(() => ({ id: r.id, color: r.color }))
         )
         // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
         .with(P.nullish, (): undefined => undefined)

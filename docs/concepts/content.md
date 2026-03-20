@@ -229,12 +229,12 @@ Transforms only apply to auto-discovered children. Sections with explicit `title
 
 ### Sorting
 
-| Strategy      | Behavior                                                              |
-| ------------- | --------------------------------------------------------------------- |
+| Strategy      | Behavior                                                                                |
+| ------------- | --------------------------------------------------------------------------------------- |
 | `'default'`   | Pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then alpha |
-| `'alpha'`     | Alphabetical by derived text                                          |
-| `'filename'`  | Alphabetical by filename                                              |
-| `(a, b) => n` | Custom comparator on `ResolvedPage`                                   |
+| `'alpha'`     | Alphabetical by derived text                                                            |
+| `'filename'`  | Alphabetical by filename                                                                |
+| `(a, b) => n` | Custom comparator on `ResolvedPage`                                                     |
 
 When `sort` is omitted, the `'default'` strategy is used.
 

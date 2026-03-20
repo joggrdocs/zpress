@@ -11,6 +11,8 @@ export const serveCommand = command({
   description: 'Preview the built Rspress site',
   options: z.object({
     open: z.boolean().optional().default(true),
+    port: z.number().optional(),
+    vscode: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {
     ctx.logger.intro('zpress serve')
@@ -27,7 +29,7 @@ export const serveCommand = command({
       process.exit(1)
     }
 
-    const port = await serveSite({ config, paths })
+    const port = await serveSite({ config, paths, port: ctx.args.port, vscode: ctx.args.vscode })
 
     if (ctx.args.open) {
       openBrowser(`http://localhost:${port}`)

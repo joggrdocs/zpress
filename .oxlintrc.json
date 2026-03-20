@@ -109,6 +109,12 @@
       "rules": {
         "security/detect-non-literal-fs-filename": "off"
       }
+    },
+    {
+      "files": ["**/MermaidRenderer.tsx"],
+      "rules": {
+        "unicorn/filename-case": "off"
+      }
     }
   ],
   "ignorePatterns": [

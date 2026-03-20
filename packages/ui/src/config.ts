@@ -14,28 +14,30 @@ import type { Paths } from '@zpress/core'
 import { isBuiltInTheme, resolveDefaultColorMode } from '@zpress/theme'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
-import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
-import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import supersub from 'rspress-plugin-supersub'
 
 import { getThemeCss } from './css.ts'
 import { readJs } from './head/read.ts'
 import { zpressPlugin } from './plugin.ts'
+import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
+import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
 
 interface CreateRspressConfigOptions {
   readonly config: ZpressConfig
   readonly paths: Paths
   readonly logLevel?: 'info' | 'warn' | 'error' | 'silent'
+  readonly vscode?: boolean
 }
 
 interface HeadScriptOptions {
   readonly colorMode: string
   readonly themeName: string
+  readonly vscode: boolean
 }
 
 const COLOR_MODE_DARK_JS = readJs('js/color-mode-dark.js')
 const COLOR_MODE_LIGHT_JS = readJs('js/color-mode-light.js')
-const VSCODE_DETECT_JS = readJs('js/vscode-detect.js')
+const VSCODE_SET_JS = `document.documentElement.dataset.zpressEnv='vscode'`
 const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 
 /**
@@ -46,7 +48,7 @@ const LOADER_DOTS_JS = readJs('js/loader-dots.js')
  * @returns Complete Rspress UserConfig object
  */
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
-  const { config, paths, logLevel } = options
+  const { config, paths, logLevel, vscode } = options
 
   const sidebar = loadGenerated({
     contentDir: paths.contentDir,
@@ -68,7 +70,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const themeDarkColors = resolveThemeDarkColors(config)
 
   const themeCss = getThemeCss(themeName)
-  const headScriptBody = buildHeadScriptBody({ colorMode, themeName })
+  const isVscode = vscode === true
+  const headScriptBody = buildHeadScriptBody({ colorMode, themeName, vscode: isVscode })
 
   return {
     root: paths.contentDir,
@@ -87,7 +90,13 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     themeDir: path.resolve(import.meta.dirname, 'theme'),
 
-    plugins: [zpressPlugin(), mermaidPlugin(), fileTree({ initialExpandDepth: 1 }), supersub(), katex()],
+    plugins: [
+      zpressPlugin(),
+      mermaidPlugin(),
+      fileTree({ initialExpandDepth: 1 }),
+      supersub(),
+      katex(),
+    ],
 
     markdown: {
       remarkPlugins: [remarkMathToDiv],
@@ -132,6 +141,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           __ZPRESS_THEME_COLORS__: JSON.stringify(JSON.stringify(themeColors)),
           __ZPRESS_THEME_DARK_COLORS__: JSON.stringify(JSON.stringify(themeDarkColors)),
           __ZPRESS_THEME_SWITCHER__: JSON.stringify(themeSwitcher),
+          __ZPRESS_VSCODE__: JSON.stringify(isVscode),
         },
       },
       output: {
@@ -352,17 +362,18 @@ function buildColorModeJs(colorMode: string): string {
 /**
  * Build the raw JS body for the inline head script (no wrapping tags).
  *
- * Handles three concerns synchronously, before React hydration:
+ * Handles concerns synchronously, before React hydration:
  * 1. Force color mode — sets localStorage and toggles rp-dark class
  * 2. Set data-zp-theme — enables theme-scoped CSS immediately
- * 3. Detect vscode env — sets data-zpress-env so static vscode.css applies
+ * 3. (vscode only) Set data-zpress-env="vscode" so static vscode.css applies
  *
  * @private
- * @param options - Color mode and theme name
+ * @param options - Color mode, theme name, and vscode flag
  * @returns Concatenated inline JS string
  */
 function buildHeadScriptBody(options: HeadScriptOptions): string {
   const colorModeJs = buildColorModeJs(options.colorMode)
   const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
-  return [colorModeJs, themeAttrJs, VSCODE_DETECT_JS, LOADER_DOTS_JS].filter(Boolean).join(';')
+  const vscodeJs = options.vscode ? VSCODE_SET_JS : ''
+  return [colorModeJs, themeAttrJs, vscodeJs, LOADER_DOTS_JS].filter(Boolean).join(';')
 }

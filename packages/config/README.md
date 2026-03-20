@@ -12,7 +12,7 @@ This package provides comprehensive configuration management for zpress, includi
 - **Type-safe config definitions** with `defineConfig` helper
 - **Runtime validation** using Zod schemas
 - **JSON Schema generation** for IDE autocomplete and validation
-- **Result-based error handling** following functional patterns
+- **Result-based error handling** with typed error tuples
 - **Theme integration** via `@zpress/theme` package
 - **c12-powered loader** for flexible config resolution
 
@@ -21,7 +21,7 @@ This package provides comprehensive configuration management for zpress, includi
 This package is typically installed as a dependency of `@zpress/core`:
 
 ```bash
-pnpm add @zpress/config
+npm install @zpress/config
 ```
 
 ## Usage
@@ -52,7 +52,7 @@ export default defineConfig({
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json",
+  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.3.0/packages/config/schemas/schema.json",
   "title": "My Documentation",
   "theme": {
     "name": "arcade",
@@ -70,7 +70,7 @@ export default defineConfig({
 ### YAML Config with Schema
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.3.0/packages/config/schemas/schema.json
 
 title: My Documentation
 theme:
@@ -165,7 +165,7 @@ Add `$schema` property to your `zpress.config.json`:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json"
+  "$schema": "https://raw.githubusercontent.com/joggrdocs/zpress/v0.3.0/packages/config/schemas/schema.json"
 }
 ```
 
@@ -174,7 +174,7 @@ Add `$schema` property to your `zpress.config.json`:
 Add a modeline comment to your `zpress.config.yaml`:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.2.0/packages/config/schemas/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/joggrdocs/zpress/v0.3.0/packages/config/schemas/schema.json
 ```
 
 ### Versioned Schemas
@@ -339,7 +339,7 @@ Zod schemas for validation:
 
 ## Error Handling
 
-This package follows functional error handling patterns using Result tuples instead of throwing exceptions.
+All fallible operations return Result tuples instead of throwing exceptions.
 
 ### Result Type
 

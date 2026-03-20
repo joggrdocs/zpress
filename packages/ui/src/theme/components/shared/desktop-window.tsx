@@ -9,9 +9,13 @@ import './desktop-window.css'
 // ---------------------------------------------------------------------------
 
 export interface WindowTab {
-  /** Tab label text. */
+  /**
+   * Tab label text.
+   */
   readonly name: string
-  /** Whether this tab is the active/selected tab. */
+  /**
+   * Whether this tab is the active/selected tab.
+   */
   readonly active?: boolean
 }
 
@@ -20,13 +24,21 @@ export interface WindowTab {
 // ---------------------------------------------------------------------------
 
 export interface DesktopWindowProps {
-  /** Optional title text displayed in the title bar (12px mono, muted by default). */
+  /**
+   * Optional title text displayed in the title bar (12px mono, muted by default).
+   */
   readonly title?: string
-  /** Optional tabs rendered in the title bar after the dots. */
+  /**
+   * Optional tabs rendered in the title bar after the dots.
+   */
   readonly tabs?: readonly WindowTab[]
-  /** Optional CSS class name for the window variant (e.g. `zp-window--browser`). */
+  /**
+   * Optional CSS class name for the window variant (e.g. `zp-window--browser`).
+   */
   readonly variant?: string
-  /** Content rendered inside the window body. */
+  /**
+   * Content rendered inside the window body.
+   */
   readonly children: React.ReactNode
 }
 
@@ -68,7 +80,7 @@ export function DesktopWindow({
     .otherwise(() =>
       match(title)
         .with(P.nonNullable, (t) => <span className="zp-window__title">{t}</span>)
-        .otherwise(() => null),
+        .otherwise(() => null)
     )
 
   return (
@@ -90,23 +102,92 @@ export function DesktopWindow({
 // BrowserWindow
 // ---------------------------------------------------------------------------
 
+export interface BrowserTab {
+  /**
+   * Tab label text.
+   */
+  readonly title: string
+  /**
+   * Optional icon rendered before the title.
+   */
+  readonly icon?: React.ReactNode
+}
+
 export interface BrowserWindowProps {
-  /** URL displayed in the address bar below the title bar. */
+  /**
+   * URL displayed in the address bar.
+   */
   readonly url?: string
-  /** Optional tabs rendered in the title bar. */
+  /**
+   * Optional tab rendered in the title bar with icon + title.
+   */
+  readonly tab?: BrowserTab
+  /**
+   * Optional tabs rendered in the title bar (passed through to DesktopWindow).
+   */
   readonly tabs?: readonly WindowTab[]
-  /** Content rendered inside the window body. */
-  readonly children: React.ReactNode
+  /**
+   * Image source rendered as content when no children are provided.
+   */
+  readonly image?: string
+  /**
+   * Content rendered inside the window body. Takes priority over `image`.
+   */
+  readonly children?: React.ReactNode
 }
 
 /**
- * Browser-style window with traffic-light dots, optional tabs in the
- * title bar, and an optional URL bar below the header.
+ * Browser-style window with traffic-light dots, a configurable tab,
+ * and a Chrome-style URL bar with navigation controls.
  *
- * @param props - Props with optional URL, tabs, and children
+ * When `children` are provided they are rendered as the body content.
+ * Otherwise, if `image` is provided it is rendered as a full-width image.
+ *
+ * @param props - Props with optional URL, tab, tabs, image, and children
  * @returns React element with browser window chrome
  */
-export function BrowserWindow({ url, tabs, children }: BrowserWindowProps): React.ReactElement {
+export function BrowserWindow({
+  url,
+  tab,
+  tabs,
+  image,
+  children,
+}: BrowserWindowProps): React.ReactElement {
+  const body = match({ children, image })
+    .with({ children: P.nonNullable }, ({ children: c }) => (
+      <div className="zp-window__content">{c}</div>
+    ))
+    .with({ image: P.nonNullable }, ({ image: src }) => (
+      <div className="zp-window__content">
+        <img
+          src={src}
+          alt={match(tab)
+            .with(P.nonNullable, (t) => t.title)
+            .otherwise(() => '')}
+        />
+      </div>
+    ))
+    .otherwise(() => null)
+
+  const titlebarTabs = match(tabs)
+    .with(P.nonNullable, (t) => (
+      <div className="zp-window__tabs">
+        {t.map((windowTab) => {
+          const tabClass = match(windowTab.active)
+            .with(true, () => 'zp-window__tab zp-window__tab--active')
+            .otherwise(() => 'zp-window__tab')
+
+          return (
+            <span key={windowTab.name} className={tabClass}>
+              <span className="zp-window__tab-dot" />
+              {windowTab.name}
+            </span>
+          )
+        })}
+      </div>
+    ))
+    .otherwise(() => null)
+
   return (
     <div className="zp-window zp-window--browser">
       <div className="zp-window__titlebar">
@@ -115,34 +196,97 @@ export function BrowserWindow({ url, tabs, children }: BrowserWindowProps): Reac
           <span className="zp-window__dot zp-window__dot--minimize" />
           <span className="zp-window__dot zp-window__dot--maximize" />
         </div>
-        {match(tabs)
+        {match(tab)
           .with(P.nonNullable, (t) => (
-            <div className="zp-window__tabs">
-              {t.map((tab) => {
-                const tabClass = match(tab.active)
-                  .with(true, () => 'zp-window__tab zp-window__tab--active')
-                  .otherwise(() => 'zp-window__tab')
-
-                return (
-                  <span key={tab.name} className={tabClass}>
-                    <span className="zp-window__tab-dot" />
-                    {tab.name}
-                  </span>
-                )
-              })}
+            <div className="zp-browser__tab">
+              {match(t.icon)
+                .with(P.nonNullable, (icon) => <span className="zp-browser__tab-icon">{icon}</span>)
+                .otherwise(() => null)}
+              <span className="zp-browser__tab-title">{t.title}</span>
             </div>
           ))
           .otherwise(() => null)}
+        {titlebarTabs}
       </div>
       {match(url)
         .with(P.nonNullable, (u) => (
-          <div className="zp-window__url-bar">
-            <span className="zp-window__url">{u}</span>
+          <div className="zp-browser__url-bar">
+            <BrowserNavButtons />
+            <span className="zp-browser__url">{u}</span>
+            <BrowserMenuButton />
           </div>
         ))
         .otherwise(() => null)}
-      <div className="zp-window__content">{children}</div>
+      {body}
     </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Browser chrome sub-components
+// ---------------------------------------------------------------------------
+
+/**
+ * Back, forward, and refresh navigation buttons for the browser URL bar.
+ *
+ * @private
+ * @returns SVG icon group
+ */
+function BrowserNavButtons(): React.ReactElement {
+  return (
+    <div className="zp-browser__nav">
+      <svg className="zp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
+        <path
+          d="M10.5 3L5.5 8l5 5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <svg className="zp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
+        <path
+          d="M5.5 3L10.5 8l-5 5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <svg className="zp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
+        <path
+          d="M13 8A5 5 0 113 8a5 5 0 0110 0z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          fill="none"
+        />
+        <path
+          d="M8 3v2"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </svg>
+    </div>
+  )
+}
+
+/**
+ * Vertical three-dot menu button for the browser URL bar.
+ *
+ * @private
+ * @returns SVG icon
+ */
+function BrowserMenuButton(): React.ReactElement {
+  return (
+    <svg className="zp-browser__menu-icon" viewBox="0 0 16 16" fill="currentColor">
+      <circle cx="8" cy="3" r="1.2" />
+      <circle cx="8" cy="8" r="1.2" />
+      <circle cx="8" cy="13" r="1.2" />
+    </svg>
   )
 }
 
@@ -151,20 +295,32 @@ export function BrowserWindow({ url, tabs, children }: BrowserWindowProps): Reac
 // ---------------------------------------------------------------------------
 
 export interface IDEFileTab {
-  /** Filename displayed in the tab. */
+  /**
+   * Filename displayed in the tab.
+   */
   readonly name: string
-  /** Whether this tab is the active/selected tab. */
+  /**
+   * Whether this tab is the active/selected tab.
+   */
   readonly active?: boolean
 }
 
 export interface IDEWindowProps {
-  /** File tabs displayed in the title bar. At least one should be `active`. */
+  /**
+   * File tabs displayed in the title bar. At least one should be `active`.
+   */
   readonly files: readonly IDEFileTab[]
-  /** Raw code string to display. Define as an `export const` in MDX to preserve indentation. */
+  /**
+   * Raw code string to display. Define as an `export const` in MDX to preserve indentation.
+   */
   readonly code?: string
-  /** Language identifier for the code block (e.g. `'ts'`, `'json'`). Only used with `code`. */
+  /**
+   * Language identifier for the code block (e.g. `'ts'`, `'json'`). Only used with `code`.
+   */
   readonly lang?: string
-  /** Content rendered inside the window body. Ignored when `code` is provided. */
+  /**
+   * Content rendered inside the window body. Ignored when `code` is provided.
+   */
   readonly children?: React.ReactNode
 }
 
@@ -182,7 +338,12 @@ export function IDEWindow({ files, code, lang, children }: IDEWindowProps): Reac
   const body = match(code)
     .with(P.nonNullable, (c) => (
       <div className="zp-window__code">
-        <CodeBlockRuntime lang={match(lang).with(P.nonNullable, (l) => l).otherwise(() => 'text')} code={c} />
+        <CodeBlockRuntime
+          lang={match(lang)
+            .with(P.nonNullable, (l) => l)
+            .otherwise(() => 'text')}
+          code={c}
+        />
       </div>
     ))
     .otherwise(() => children)
@@ -216,16 +377,24 @@ export type TerminalColor =
   | 'step'
 
 export interface TerminalLineConfig {
-  /** The text content of this line. */
+  /**
+   * The text content of this line.
+   */
   readonly text: string
-  /** Whether this is a command (prefixed with `$`) or output. Defaults to `'output'`. */
+  /**
+   * Whether this is a command (prefixed with `$`) or output. Defaults to `'output'`.
+   */
   readonly type?: 'command' | 'output'
 }
 
 export interface TerminalWindowProps {
-  /** Optional title displayed in the center of the title bar (e.g. `"zsh"`, `"bash"`). */
+  /**
+   * Optional title displayed in the center of the title bar (e.g. `"zsh"`, `"bash"`).
+   */
   readonly title?: string
-  /** Lines to render in the terminal. */
+  /**
+   * Lines to render in the terminal.
+   */
   readonly children: React.ReactNode
 }
 
@@ -250,7 +419,9 @@ export function TerminalWindow({ title, children }: TerminalWindowProps): React.
 // ---------------------------------------------------------------------------
 
 export interface CommandProps {
-  /** The command text (rendered after a `$` prompt). */
+  /**
+   * The command text (rendered after a `$` prompt).
+   */
   readonly children: React.ReactNode
 }
 
@@ -265,7 +436,9 @@ export function Command({ children }: CommandProps): React.ReactElement {
 }
 
 export interface OutputProps {
-  /** The output text. */
+  /**
+   * The output text.
+   */
   readonly children: React.ReactNode
 }
 
@@ -280,13 +453,21 @@ export function Output({ children }: OutputProps): React.ReactElement {
 }
 
 export interface LineProps {
-  /** Text color. Accepts terminal colors or semantic colors. */
+  /**
+   * Text color. Accepts terminal colors or semantic colors.
+   */
   readonly color?: TerminalColor
-  /** Whether the text is bold. */
+  /**
+   * Whether the text is bold.
+   */
   readonly bold?: boolean
-  /** Whether the text is dimmed. */
+  /**
+   * Whether the text is dimmed.
+   */
   readonly dim?: boolean
-  /** The text content. */
+  /**
+   * The text content.
+   */
   readonly children: React.ReactNode
 }
 

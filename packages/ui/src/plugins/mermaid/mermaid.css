@@ -137,7 +137,9 @@
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
-  transition: color 150ms ease, border-color 150ms ease;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
 }
 
 .zpress-mermaid-btn:hover {
@@ -179,7 +181,9 @@
   font-size: 11px;
   font-family: var(--rp-font-family-mono);
   cursor: pointer;
-  transition: color 150ms ease, background 150ms ease;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }

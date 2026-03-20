@@ -18,7 +18,9 @@ import { TerminalWindow, Command, Output } from '@theme'
 
 <TerminalWindow>
   <Command>pnpm install @zpress/kit</Command>
-  <Output>Packages: +42{'\n'}Progress: resolved 187, reused 180, downloaded 7{'\n'}Done in 2.3s</Output>
+  <Output>
+    Packages: +42{'\n'}Progress: resolved 187, reused 180, downloaded 7{'\n'}Done in 2.3s
+  </Output>
 </TerminalWindow>
 ```
 
@@ -26,7 +28,9 @@ import { TerminalWindow, Command, Output } from '@theme'
 
 <TerminalWindow>
   <Command>pnpm install @zpress/kit</Command>
-  <Output>Packages: +42{'\n'}Progress: resolved 187, reused 180, downloaded 7{'\n'}Done in 2.3s</Output>
+  <Output>
+    Packages: +42{'\n'}Progress: resolved 187, reused 180, downloaded 7{'\n'}Done in 2.3s
+  </Output>
 </TerminalWindow>
 
 ## Multiple commands
@@ -58,7 +62,7 @@ import { TerminalWindow, Command, Output } from '@theme'
 ```mdx
 <TerminalWindow title="zsh — ~/projects/my-docs">
   <Command>ls docs/</Command>
-  <Output>getting-started/  concepts/  references/  README.md</Output>
+  <Output>getting-started/ concepts/ references/ README.md</Output>
 </TerminalWindow>
 ```
 
@@ -66,7 +70,7 @@ import { TerminalWindow, Command, Output } from '@theme'
 
 <TerminalWindow title="zsh — ~/projects/my-docs">
   <Command>ls docs/</Command>
-  <Output>getting-started/  concepts/  references/  README.md</Output>
+  <Output>getting-started/ concepts/ references/ README.md</Output>
 </TerminalWindow>
 
 ## Colored output
@@ -81,13 +85,23 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 <TerminalWindow>
   <Command>zpress check</Command>
   <Output>
-    <Line color="step" bold>{'◆'}</Line> <Line bold>zpress check</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
+    <Line color="step" bold>
+      {'◆'}
+    </Line>{' '}
+    <Line bold>zpress check</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
     <Line color="success">{'◇'}</Line> Config valid{'\n'}
     <Line color="success">{'◇'}</Line> 24 pages resolved{'\n'}
-    <Line color="warn">{'▲'}</Line> <Line color="yellow">2 pages missing descriptions</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="success" bold>{'└'}</Line> <Line color="success">All checks passed</Line>
+    <Line color="warn">{'▲'}</Line> <Line color="yellow">2 pages missing descriptions</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="success" bold>
+      {'└'}
+    </Line>{' '}
+    <Line color="success">All checks passed</Line>
   </Output>
 </TerminalWindow>
 ```
@@ -97,13 +111,23 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 <TerminalWindow>
   <Command>zpress check</Command>
   <Output>
-    <Line color="step" bold>{'◆'}</Line> <Line bold>zpress check</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
+    <Line color="step" bold>
+      {'◆'}
+    </Line>{' '}
+    <Line bold>zpress check</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
     <Line color="success">{'◇'}</Line> Config valid{'\n'}
     <Line color="success">{'◇'}</Line> 24 pages resolved{'\n'}
-    <Line color="warn">{'▲'}</Line> <Line color="yellow">2 pages missing descriptions</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="success" bold>{'└'}</Line> <Line color="success">All checks passed</Line>
+    <Line color="warn">{'▲'}</Line> <Line color="yellow">2 pages missing descriptions</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="success" bold>
+      {'└'}
+    </Line>{' '}
+    <Line color="success">All checks passed</Line>
   </Output>
 </TerminalWindow>
 
@@ -115,14 +139,33 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 <TerminalWindow>
   <Command>zpress build</Command>
   <Output>
-    <Line color="step" bold>{'◆'}</Line> <Line bold>zpress build</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="error">{'✖'}</Line> <Line color="red">Configuration validation failed</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="bar">│</Line>  <Line color="red" bold>sections</Line>: must have at least one entry{'\n'}
-    <Line color="bar">│</Line>  <Line color="red" bold>title</Line>: required{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="error" bold>{'└'}</Line> <Line color="red">Build failed</Line>
+    <Line color="step" bold>
+      {'◆'}
+    </Line>{' '}
+    <Line bold>zpress build</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="error">{'✖'}</Line> <Line color="red">Configuration validation failed</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="bar">│</Line>{' '}
+    <Line color="red" bold>
+      sections
+    </Line>
+    : must have at least one entry{'\n'}
+    <Line color="bar">│</Line>{' '}
+    <Line color="red" bold>
+      title
+    </Line>
+    : required{'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="error" bold>
+      {'└'}
+    </Line>{' '}
+    <Line color="red">Build failed</Line>
   </Output>
 </TerminalWindow>
 ```
@@ -132,14 +175,33 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 <TerminalWindow>
   <Command>zpress build</Command>
   <Output>
-    <Line color="step" bold>{'◆'}</Line> <Line bold>zpress build</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="error">{'✖'}</Line> <Line color="red">Configuration validation failed</Line>{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="bar">│</Line>  <Line color="red" bold>sections</Line>: must have at least one entry{'\n'}
-    <Line color="bar">│</Line>  <Line color="red" bold>title</Line>: required{'\n'}
-    <Line color="bar">│</Line>{'\n'}
-    <Line color="error" bold>{'└'}</Line> <Line color="red">Build failed</Line>
+    <Line color="step" bold>
+      {'◆'}
+    </Line>{' '}
+    <Line bold>zpress build</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="error">{'✖'}</Line> <Line color="red">Configuration validation failed</Line>
+    {'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="bar">│</Line>{' '}
+    <Line color="red" bold>
+      sections
+    </Line>
+    : must have at least one entry{'\n'}
+    <Line color="bar">│</Line>{' '}
+    <Line color="red" bold>
+      title
+    </Line>
+    : required{'\n'}
+    <Line color="bar">│</Line>
+    {'\n'}
+    <Line color="error" bold>
+      {'└'}
+    </Line>{' '}
+    <Line color="red">Build failed</Line>
   </Output>
 </TerminalWindow>
 
@@ -151,13 +213,19 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 <TerminalWindow title="zsh">
   <Command>git status</Command>
   <Output>
-    On branch <Line color="green">feat/docs</Line>{'\n'}
+    On branch <Line color="green">feat/docs</Line>
+    {'\n'}
     Changes not staged for commit:{'\n'}
-    {'  '}<Line color="red">modified:   zpress.config.ts</Line>{'\n'}
-    {'  '}<Line color="red">modified:   docs/getting-started/intro.md</Line>{'\n'}
+    {'  '}
+    <Line color="red">modified: zpress.config.ts</Line>
+    {'\n'}
+    {'  '}
+    <Line color="red">modified: docs/getting-started/intro.md</Line>
+    {'\n'}
     {'\n'}
     Untracked files:{'\n'}
-    {'  '}<Line color="green">docs/concepts/workspaces.md</Line>
+    {'  '}
+    <Line color="green">docs/concepts/workspaces.md</Line>
   </Output>
   <Command>git add -A && git commit -m "docs: add workspace guide"</Command>
   <Output>
@@ -172,13 +240,19 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 <TerminalWindow title="zsh">
   <Command>git status</Command>
   <Output>
-    On branch <Line color="green">feat/docs</Line>{'\n'}
+    On branch <Line color="green">feat/docs</Line>
+    {'\n'}
     Changes not staged for commit:{'\n'}
-    {'  '}<Line color="red">modified:   zpress.config.ts</Line>{'\n'}
-    {'  '}<Line color="red">modified:   docs/getting-started/intro.md</Line>{'\n'}
+    {'  '}
+    <Line color="red">modified: zpress.config.ts</Line>
+    {'\n'}
+    {'  '}
+    <Line color="red">modified: docs/getting-started/intro.md</Line>
+    {'\n'}
     {'\n'}
     Untracked files:{'\n'}
-    {'  '}<Line color="green">docs/concepts/workspaces.md</Line>
+    {'  '}
+    <Line color="green">docs/concepts/workspaces.md</Line>
   </Output>
   <Command>git add -A && git commit -m "docs: add workspace guide"</Command>
   <Output>
@@ -191,65 +265,65 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 
 ### Terminal colors
 
-| Color | Usage |
-| --- | --- |
-| `red` | Errors, deletions, removed files |
-| `green` | Success, additions, new files |
-| `blue` | Links, info highlights |
-| `yellow` | Warnings, caution |
-| `cyan` | Accents, metadata |
-| `magenta` | Branding, special markers |
-| `white` | Emphasis on dark background |
-| `gray` | Secondary, muted text |
+| Color     | Usage                            |
+| --------- | -------------------------------- |
+| `red`     | Errors, deletions, removed files |
+| `green`   | Success, additions, new files    |
+| `blue`    | Links, info highlights           |
+| `yellow`  | Warnings, caution                |
+| `cyan`    | Accents, metadata                |
+| `magenta` | Branding, special markers        |
+| `white`   | Emphasis on dark background      |
+| `gray`    | Secondary, muted text            |
 
 ### Semantic colors
 
-| Color | Usage |
-| --- | --- |
-| `success` | Checkmarks, completion (green) |
-| `error` | Failures, errors (red) |
-| `warn` | Warnings, caution (yellow) |
-| `info` | Informational highlights (blue) |
-| `muted` | De-emphasized text (gray) |
-| `bar` | Clack-style vertical bars (gray) |
-| `step` | Clack-style step markers (purple) |
+| Color     | Usage                             |
+| --------- | --------------------------------- |
+| `success` | Checkmarks, completion (green)    |
+| `error`   | Failures, errors (red)            |
+| `warn`    | Warnings, caution (yellow)        |
+| `info`    | Informational highlights (blue)   |
+| `muted`   | De-emphasized text (gray)         |
+| `bar`     | Clack-style vertical bars (gray)  |
+| `step`    | Clack-style step markers (purple) |
 
 ### Modifiers
 
-| Prop | Effect |
-| --- | --- |
-| `bold` | Bold weight |
-| `dim` | Reduced opacity |
+| Prop   | Effect          |
+| ------ | --------------- |
+| `bold` | Bold weight     |
+| `dim`  | Reduced opacity |
 
 ## Props
 
 ### TerminalWindow
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `title` | `string` | no | `'Terminal'` | Title in the center of the title bar |
-| `children` | `ReactNode` | yes | — | Terminal content (Command, Output elements) |
+| Prop       | Type        | Required | Default      | Description                                 |
+| ---------- | ----------- | -------- | ------------ | ------------------------------------------- |
+| `title`    | `string`    | no       | `'Terminal'` | Title in the center of the title bar        |
+| `children` | `ReactNode` | yes      | —            | Terminal content (Command, Output elements) |
 
 ### Command
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes | — | Command text (rendered after `$` prompt) |
+| Prop       | Type        | Required | Default | Description                              |
+| ---------- | ----------- | -------- | ------- | ---------------------------------------- |
+| `children` | `ReactNode` | yes      | —       | Command text (rendered after `$` prompt) |
 
 ### Output
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `children` | `ReactNode` | yes | — | Output text (supports nested Line elements) |
+| Prop       | Type        | Required | Default | Description                                 |
+| ---------- | ----------- | -------- | ------- | ------------------------------------------- |
+| `children` | `ReactNode` | yes      | —       | Output text (supports nested Line elements) |
 
 ### Line
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `color` | `TerminalColor` | no | — | Text color (terminal or semantic) |
-| `bold` | `boolean` | no | `false` | Bold text |
-| `dim` | `boolean` | no | `false` | Dimmed text |
-| `children` | `ReactNode` | yes | — | Text content |
+| Prop       | Type            | Required | Default | Description                       |
+| ---------- | --------------- | -------- | ------- | --------------------------------- |
+| `color`    | `TerminalColor` | no       | —       | Text color (terminal or semantic) |
+| `bold`     | `boolean`       | no       | `false` | Bold text                         |
+| `dim`      | `boolean`       | no       | `false` | Dimmed text                       |
+| `children` | `ReactNode`     | yes      | —       | Text content                      |
 
 ## References
 

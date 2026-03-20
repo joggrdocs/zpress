@@ -125,9 +125,13 @@ function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): stri
  * @param ctx - Sync context with repo root and output directory
  * @returns Content with rewritten image paths
  */
-async function rewriteSourceImages(content: string, page: PageData, ctx: SyncContext): Promise<string> {
+function rewriteSourceImages(
+  content: string,
+  page: PageData,
+  ctx: SyncContext
+): Promise<string> {
   if (page.source === null || page.source === undefined) {
-    return content
+    return Promise.resolve(content)
   }
   const sourcePath = path.relative(ctx.repoRoot, page.source)
   return rewriteImages({

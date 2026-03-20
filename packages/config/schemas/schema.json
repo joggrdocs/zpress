@@ -209,6 +209,9 @@
                           "title": {
                             "$ref": "#/definitions/ZpressConfig/properties/workspaces/items/properties/title"
                           },
+                          "description": {
+                            "type": "string"
+                          },
                           "path": {
                             "type": "string"
                           },
@@ -230,20 +233,7 @@
                             }
                           },
                           "landing": {
-                            "anyOf": [
-                              {
-                                "type": "string",
-                                "enum": [
-                                  "auto",
-                                  "cards",
-                                  "overview"
-                                ]
-                              },
-                              {
-                                "type": "boolean",
-                                "const": false
-                              }
-                            ]
+                            "type": "boolean"
                           },
                           "collapsible": {
                             "type": "boolean"

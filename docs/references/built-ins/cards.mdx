@@ -3,7 +3,14 @@ title: Cards
 description: Card components for landing pages, feature grids, and workspace indexes.
 ---
 
-import { SectionCard, SectionGrid, FeatureCard, FeatureGrid, WorkspaceCard, WorkspaceGrid } from '@theme'
+import {
+  SectionCard,
+  SectionGrid,
+  FeatureCard,
+  FeatureGrid,
+  WorkspaceCard,
+  WorkspaceGrid,
+} from '@theme'
 
 # Cards
 
@@ -32,12 +39,12 @@ import { SectionCard, SectionGrid } from '@theme'
     href="/guides/setup"
     title="Setup Guide"
     description="Get your project running in minutes."
-    icon={{ id: "pixelarticons:cloud-upload", color: "blue" }}
+    icon={{ id: 'pixelarticons:cloud-upload', color: 'blue' }}
   />
   <SectionCard
     href="/guides/config"
     title="Configuration"
-    icon={{ id: "pixelarticons:sliders", color: "green" }}
+    icon={{ id: 'pixelarticons:sliders', color: 'green' }}
   />
 </SectionGrid>
 ```
@@ -49,23 +56,23 @@ import { SectionCard, SectionGrid } from '@theme'
     href="/guides/setup"
     title="Setup Guide"
     description="Get your project running in minutes."
-    icon={{ id: "pixelarticons:cloud-upload", color: "blue" }}
+    icon={{ id: 'pixelarticons:cloud-upload', color: 'blue' }}
   />
   <SectionCard
     href="/guides/config"
     title="Configuration"
-    icon={{ id: "pixelarticons:sliders", color: "green" }}
+    icon={{ id: 'pixelarticons:sliders', color: 'green' }}
   />
 </SectionGrid>
 
 ### Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `href` | `string` | yes | — | Navigation target URL |
-| `title` | `string` | yes | — | Card heading |
-| `description` | `string` | no | — | Subtitle below the title |
-| `icon` | `string \| { id: string, color: string }` | no | `'pixelarticons:file'` | Iconify icon — string (purple default) or `{ id, color }` |
+| Prop          | Type                                      | Required | Default                | Description                                               |
+| ------------- | ----------------------------------------- | -------- | ---------------------- | --------------------------------------------------------- |
+| `href`        | `string`                                  | yes      | —                      | Navigation target URL                                     |
+| `title`       | `string`                                  | yes      | —                      | Card heading                                              |
+| `description` | `string`                                  | no       | —                      | Subtitle below the title                                  |
+| `icon`        | `string \| { id: string, color: string }` | no       | `'pixelarticons:file'` | Iconify icon — string (purple default) or `{ id, color }` |
 
 ## FeatureCard
 
@@ -81,13 +88,13 @@ import { FeatureCard, FeatureGrid } from '@theme'
     title="Fast by default"
     description="Built on Rspress and Rsbuild for sub-second HMR."
     href="/docs/performance"
-    icon={{ id: "pixelarticons:speed-fast", color: "amber" }}
+    icon={{ id: 'pixelarticons:speed-fast', color: 'amber' }}
     span={6}
   />
   <FeatureCard
     title="Type-safe config"
     description="Zod-validated configuration with full IntelliSense."
-    icon={{ id: "pixelarticons:check", color: "blue" }}
+    icon={{ id: 'pixelarticons:check', color: 'blue' }}
     span={6}
   />
 </FeatureGrid>
@@ -99,28 +106,28 @@ import { FeatureCard, FeatureGrid } from '@theme'
   <FeatureCard
     title="Fast by default"
     description="Built on Rspress and Rsbuild for sub-second HMR."
-    icon={{ id: "pixelarticons:speed-fast", color: "amber" }}
+    icon={{ id: 'pixelarticons:speed-fast', color: 'amber' }}
     span={6}
   />
   <FeatureCard
     title="Type-safe config"
     description="Zod-validated configuration with full IntelliSense."
-    icon={{ id: "pixelarticons:check", color: "blue" }}
+    icon={{ id: 'pixelarticons:check', color: 'blue' }}
     span={6}
   />
 </FeatureGrid>
 
 ### Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `title` | `string` | yes | — | Card heading |
-| `description` | `string` | yes | — | Body text |
-| `href` | `string` | no | — | Makes card clickable |
-| `icon` | `string \| { id: string, color: string }` | no | — | Iconify icon — string (purple default) or `{ id, color }` |
-| `span` | `2 \| 3 \| 4 \| 6` | no | `4` | Column span in the 12-column grid |
-| `titleLines` | `number` | no | — | Max lines before truncation |
-| `descriptionLines` | `number` | no | — | Max lines before truncation |
+| Prop               | Type                                      | Required | Default | Description                                               |
+| ------------------ | ----------------------------------------- | -------- | ------- | --------------------------------------------------------- |
+| `title`            | `string`                                  | yes      | —       | Card heading                                              |
+| `description`      | `string`                                  | yes      | —       | Body text                                                 |
+| `href`             | `string`                                  | no       | —       | Makes card clickable                                      |
+| `icon`             | `string \| { id: string, color: string }` | no       | —       | Iconify icon — string (purple default) or `{ id, color }` |
+| `span`             | `2 \| 3 \| 4 \| 6`                        | no       | `4`     | Column span in the 12-column grid                         |
+| `titleLines`       | `number`                                  | no       | —       | Max lines before truncation                               |
+| `descriptionLines` | `number`                                  | no       | —       | Max lines before truncation                               |
 
 ## WorkspaceCard
 
@@ -136,7 +143,7 @@ import { WorkspaceCard, WorkspaceGrid } from '@theme'
     title="@acme/core"
     href="/packages/core"
     scope="packages/"
-    icon={{ id: "pixelarticons:cpu", color: "blue" }}
+    icon={{ id: 'pixelarticons:cpu', color: 'blue' }}
     description="Core business logic and domain types."
     tags={['typescript', 'node']}
   />
@@ -144,7 +151,7 @@ import { WorkspaceCard, WorkspaceGrid } from '@theme'
     title="@acme/ui"
     href="/packages/ui"
     scope="packages/"
-    icon={{ id: "pixelarticons:paint-bucket", color: "pink" }}
+    icon={{ id: 'pixelarticons:paint-bucket', color: 'pink' }}
     description="Shared React component library."
     tags={['typescript', 'react']}
   />
@@ -153,22 +160,22 @@ import { WorkspaceCard, WorkspaceGrid } from '@theme'
 
 ### WorkspaceCard props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `title` | `string` | yes | — | Display name |
-| `href` | `string` | yes | — | Link target |
-| `icon` | `string \| { id: string, color: string }` | no | — | Iconify icon — string (purple default) or `{ id, color }` |
-| `scope` | `string` | no | — | Scope prefix shown above the name (e.g. `"apps/"`) |
-| `description` | `string` | no | — | Short description |
-| `tags` | `string[]` | no | — | Tech tag names resolved via the built-in tech map |
-| `badge` | `{ src: string, alt: string }` | no | — | Deploy badge image |
-| `titleLines` | `number` | no | — | Max lines before truncation |
-| `descriptionLines` | `number` | no | — | Max lines before truncation |
+| Prop               | Type                                      | Required | Default | Description                                               |
+| ------------------ | ----------------------------------------- | -------- | ------- | --------------------------------------------------------- |
+| `title`            | `string`                                  | yes      | —       | Display name                                              |
+| `href`             | `string`                                  | yes      | —       | Link target                                               |
+| `icon`             | `string \| { id: string, color: string }` | no       | —       | Iconify icon — string (purple default) or `{ id, color }` |
+| `scope`            | `string`                                  | no       | —       | Scope prefix shown above the name (e.g. `"apps/"`)        |
+| `description`      | `string`                                  | no       | —       | Short description                                         |
+| `tags`             | `string[]`                                | no       | —       | Tech tag names resolved via the built-in tech map         |
+| `badge`            | `{ src: string, alt: string }`            | no       | —       | Deploy badge image                                        |
+| `titleLines`       | `number`                                  | no       | —       | Max lines before truncation                               |
+| `descriptionLines` | `number`                                  | no       | —       | Max lines before truncation                               |
 
 ### WorkspaceGrid props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `heading` | `string` | yes | — | Section heading |
-| `description` | `string` | yes | — | Description below the heading |
-| `columns` | `number` | no | — | Number of grid columns |
+| Prop          | Type     | Required | Default | Description                   |
+| ------------- | -------- | -------- | ------- | ----------------------------- |
+| `heading`     | `string` | yes      | —       | Section heading               |
+| `description` | `string` | yes      | —       | Description below the heading |
+| `columns`     | `number` | no       | —       | Number of grid columns        |

@@ -102,12 +102,12 @@ Navigating to `/guides` shows a landing page with cards for each discovered guid
 
 The `landing` field controls how the page is generated:
 
-| Mode         | Behavior                                                                                          |
-| ------------ | ------------------------------------------------------------------------------------------------- |
-| `'auto'`     | Default. Card-style if the section has children, overview-style if it has an index file            |
-| `'cards'`    | Always generates a card grid linking to child entries                                              |
-| `'overview'` | Always uses the promoted index file content as the landing page                                    |
-| `false`      | Disables landing page generation entirely                                                         |
+| Mode         | Behavior                                                                                |
+| ------------ | --------------------------------------------------------------------------------------- |
+| `'auto'`     | Default. Card-style if the section has children, overview-style if it has an index file |
+| `'cards'`    | Always generates a card grid linking to child entries                                   |
+| `'overview'` | Always uses the promoted index file content as the landing page                         |
+| `false`      | Disables landing page generation entirely                                               |
 
 ```ts
 {

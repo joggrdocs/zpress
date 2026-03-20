@@ -35,7 +35,7 @@ const groups = groupBy(
 
 ## Requirements
 
-- Node.js 20+
+- Node.js 24+
 - TypeScript 5.0+ (for type-level features)
 
 ## Next steps

@@ -12,6 +12,7 @@ import type {
   ThemeIcon,
   TreeDataProvider,
   TreeItem,
+  TreeItemLabel,
 } from 'vscode'
 
 interface SidebarJsonItem {
@@ -84,7 +85,82 @@ const ITEM_ICONS: Readonly<Record<string, string>> = {
   architecture: 'symbol-structure',
 }
 
+/**
+ * Detect whether a sidebar label contains HTML (from OpenAPI sidebar entries).
+ *
+ * @param label - Sidebar label text
+ * @returns True if the label contains HTML tags
+ */
+function containsHtml(label: string): boolean {
+  return /<[^>]+>/.test(label)
+}
+
+/**
+ * Strip HTML tags from a sidebar label, returning plain text.
+ * Inserts a space between the method badge and path for readability.
+ *
+ * @param html - HTML sidebar label (e.g. `<span class="...">GET</span><code class="...">/pets</code>`)
+ * @returns Plain text label (e.g. `GET /pets`)
+ */
+function stripHtmlLabel(html: string): string {
+  return html
+    .replaceAll(/<\/[^>]+>\s*<[^>]+>/g, ' ')
+    .replaceAll(/<[^>]+>/g, '')
+    .trim()
+}
+
+/**
+ * Parse an OpenAPI HTML sidebar label into a method + path pair.
+ *
+ * @param html - HTML sidebar label
+ * @returns Parsed method and path, or null if not recognized
+ */
+function parseOpenApiLabel(html: string): { readonly method: string; readonly path: string } | null {
+  const text = stripHtmlLabel(html)
+  const spaceIndex = text.indexOf(' ')
+  if (spaceIndex === -1) {
+    return null
+  }
+  const method = text.slice(0, spaceIndex)
+  const apiPath = text.slice(spaceIndex + 1)
+  const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'TRACE']
+  if (!METHODS.includes(method)) {
+    return null
+  }
+  return { method, path: apiPath }
+}
+
+/**
+ * Resolve a sidebar label for display in a VS Code TreeItem.
+ *
+ * Plain text labels pass through unchanged. HTML labels (from OpenAPI
+ * method-path sidebar entries) are stripped to plain text with the
+ * method portion highlighted.
+ *
+ * @param raw - Raw sidebar label (plain text or HTML)
+ * @returns Plain string or TreeItemLabel with highlights
+ */
+function resolveTreeItemLabel(raw: string): string | TreeItemLabel {
+  if (!containsHtml(raw)) {
+    return raw
+  }
+
+  const parsed = parseOpenApiLabel(raw)
+  if (parsed) {
+    const text = `${parsed.method} ${parsed.path}`
+    return {
+      label: text,
+      highlights: [[0, parsed.method.length]],
+    }
+  }
+
+  return stripHtmlLabel(raw)
+}
+
 function getIconId(node: SidebarNode): string {
+  if (containsHtml(node.label)) {
+    return 'symbol-method'
+  }
   const key = node.label.toLowerCase()
   const mapped = ITEM_ICONS[key]
   if (mapped) {
@@ -245,8 +321,10 @@ function createSidebar(deps: SidebarDeps): Sidebar {
           return 2 /* TreeItemCollapsibleState.Expanded */
         })()
 
+        const label: string | TreeItemLabel = resolveTreeItemLabel(node.label)
+
         const item: TreeItem = {
-          label: node.label,
+          label,
           collapsibleState,
           iconPath: new deps.ThemeIcon(getIconId(node)),
         }

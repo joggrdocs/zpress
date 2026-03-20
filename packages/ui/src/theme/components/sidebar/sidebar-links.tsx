@@ -95,9 +95,11 @@ function SidebarLinkEntry({ item }: { readonly item: SidebarLinkItem }): React.R
   const variant = item.style ?? 'ghost'
   const shape = item.shape ?? 'square'
   const cls = `zp-sidebar-link zp-sidebar-link--${variant} zp-sidebar-link--${shape}`
+  /* oxlint-disable unicorn/no-useless-undefined -- React aria-label expects undefined, not null */
   const ariaLabel = match(isCircle)
     .with(true, () => item.text)
     .otherwise(() => undefined)
+  /* oxlint-enable unicorn/no-useless-undefined */
 
   return match(isExternal(item.link))
     .with(true, () => (

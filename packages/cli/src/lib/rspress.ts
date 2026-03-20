@@ -12,14 +12,16 @@ import { match } from 'ts-pattern'
 import { toError } from './error'
 
 /**
- * Preferred port for the development and preview servers.
+ * Default port for the development and preview servers.
  * Falls back to a random available port if occupied.
  */
-export const PREFERRED_PORT = 6174
+export const PORT = 6174
 
 interface ServerOptions {
   readonly config: ZpressConfig
   readonly paths: Paths
+  readonly port?: number
+  readonly vscode?: boolean
 }
 
 /**
@@ -53,12 +55,12 @@ export async function startDevServer(
 ): Promise<(newConfig: ZpressConfig) => Promise<void>> {
   const { paths } = options
   // Resolve port once so restarts reuse the same port
-  const port = await getPort({ port: PREFERRED_PORT })
+  const port = await getPort({ port: options.port ?? PORT })
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
   async function startServer(config: ZpressConfig): Promise<boolean> {
-    const rspressConfig = createRspressConfig({ config, paths })
+    const rspressConfig = createRspressConfig({ config, paths, vscode: options.vscode })
     try {
       serverInstance = await dev({
         appDirectory: paths.repoRoot,
@@ -130,7 +132,7 @@ export async function startDevServer(
  * @returns A promise that resolves when the build completes
  */
 export async function buildSite(options: ServerOptions): Promise<void> {
-  const rspressConfig = createRspressConfig(options)
+  const rspressConfig = createRspressConfig({ config: options.config, paths: options.paths })
   await build({
     docDirectory: options.paths.contentDir,
     config: rspressConfig,
@@ -150,7 +152,7 @@ export async function buildSite(options: ServerOptions): Promise<void> {
  * @returns A promise that resolves when the build completes
  */
 export async function buildSiteForCheck(options: ServerOptions): Promise<void> {
-  const rspressConfig = createRspressConfig(options)
+  const rspressConfig = createRspressConfig({ config: options.config, paths: options.paths })
   await build({
     docDirectory: options.paths.contentDir,
     config: rspressConfig,
@@ -165,8 +167,8 @@ export async function buildSiteForCheck(options: ServerOptions): Promise<void> {
  * @returns The port the server is listening on
  */
 export async function serveSite(options: ServerOptions): Promise<number> {
-  const rspressConfig = createRspressConfig(options)
-  const port = await getPort({ port: PREFERRED_PORT })
+  const rspressConfig = createRspressConfig({ config: options.config, paths: options.paths, vscode: options.vscode })
+  const port = await getPort({ port: options.port ?? PORT })
   await serve({
     config: rspressConfig,
     configFilePath: '',

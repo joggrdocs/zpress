@@ -100,11 +100,12 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
   z
     .object({
       title: titleConfigSchema,
+      description: z.string().optional(),
       path: z.string().optional(),
       include: includeSchema.optional(),
       content: z.union([z.string(), contentFnSchema]).optional(),
       items: z.array(entrySchema).optional(),
-      landing: z.union([z.enum(['auto', 'cards', 'overview']), z.literal(false)]).optional(),
+      landing: z.boolean().optional(),
       collapsible: z.boolean().optional(),
       exclude: z.array(z.string()).optional(),
       hidden: z.boolean().optional(),

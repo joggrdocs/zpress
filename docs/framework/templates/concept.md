@@ -24,19 +24,19 @@ Template for explanation docs — understanding-oriented documentation that cove
 
 ## Structure
 
-| Section                | Required | Description                                                 |
-| ---------------------- | -------- | ----------------------------------------------------------- |
-| H1 concept name        | yes      | Single noun or short phrase                                 |
-| One-liner              | yes      | What this concept is and what role it plays                 |
-| Overview               | yes      | Definition, scope, and mental model                         |
-| Diagram                | no       | Visual aid (flowchart, architecture, decision tree)         |
-| Key Terms              | no       | Domain-specific vocabulary                                  |
-| Background             | no       | Context, history, or prior art                              |
-| Body sections          | yes      | H2 headings that unpack the concept (flexible naming)       |
-| When to Use            | no       | Conditions for choosing this approach                       |
-| Comparing Approaches   | no       | Variants, alternatives, or competing strategies             |
-| Design Decisions       | yes      | Why it works this way, alternatives considered              |
-| References             | yes      | Curated links grouped by type                               |
+| Section              | Required | Description                                           |
+| -------------------- | -------- | ----------------------------------------------------- |
+| H1 concept name      | yes      | Single noun or short phrase                           |
+| One-liner            | yes      | What this concept is and what role it plays           |
+| Overview             | yes      | Definition, scope, and mental model                   |
+| Diagram              | no       | Visual aid (flowchart, architecture, decision tree)   |
+| Key Terms            | no       | Domain-specific vocabulary                            |
+| Background           | no       | Context, history, or prior art                        |
+| Body sections        | yes      | H2 headings that unpack the concept (flexible naming) |
+| When to Use          | no       | Conditions for choosing this approach                 |
+| Comparing Approaches | no       | Variants, alternatives, or competing strategies       |
+| Design Decisions     | yes      | Why it works this way, alternatives considered        |
+| References           | yes      | Curated links grouped by type                         |
 
 ## Template
 

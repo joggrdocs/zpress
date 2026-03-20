@@ -58,12 +58,12 @@ Build the static site for production.
 zpress build [--quiet] [--clean]
 ```
 
-| Flag         | Type      | Default | Description                                           |
-| ------------ | --------- | ------- | ----------------------------------------------------- |
-| `--quiet`    | `boolean` | `false` | Suppress non-error output                             |
-| `--clean`    | `boolean` | `false` | Remove build artifacts before building                |
+| Flag         | Type      | Default | Description                                             |
+| ------------ | --------- | ------- | ------------------------------------------------------- |
+| `--quiet`    | `boolean` | `false` | Suppress non-error output                               |
+| `--clean`    | `boolean` | `false` | Remove build artifacts before building                  |
 | `--check`    | `boolean` | `true`  | Validate config and check for broken links during build |
-| `--no-check` | —         | —       | Skip config validation and deadlink checks            |
+| `--no-check` | —         | —       | Skip config validation and deadlink checks              |
 
 Runs `sync` first, then builds the Rspress site. Output is written to `.zpress/dist/`.
 
@@ -131,11 +131,11 @@ Scaffold a new documentation file from a template.
 zpress draft [--type <type>] [--title <title>] [--out <dir>]
 ```
 
-| Flag      | Type     | Default | Description                          |
-| --------- | -------- | ------- | ------------------------------------ |
-| `--type`  | `string` | —       | Template type (prompts if omitted)   |
-| `--title` | `string` | —       | Document title (prompts if omitted)  |
-| `--out`   | `string` | `"."`   | Output directory for the new file    |
+| Flag      | Type     | Default | Description                         |
+| --------- | -------- | ------- | ----------------------------------- |
+| `--type`  | `string` | —       | Template type (prompts if omitted)  |
+| `--title` | `string` | —       | Document title (prompts if omitted) |
+| `--out`   | `string` | `"."`   | Output directory for the new file   |
 
 When `--type` or `--title` are omitted, an interactive prompt lets you select from the available templates and enter a title. The output filename is derived from the title slug (e.g. `"Authentication"` → `authentication.md`).
 

@@ -116,7 +116,9 @@ export function renderOverviewMarkdown(input: OverviewInput): string {
 
   const data = {
     title,
-    version: version.length > 0 ? version : undefined,
+    version: match(version.length > 0)
+      .with(true, () => version)
+      .otherwise(() => null),
     description,
     hasServers: servers.length > 0,
     servers: servers.map((s) => ({
@@ -158,9 +160,7 @@ function loadTemplate(filename: string): string {
  * @param parameters - OpenAPI parameter objects
  * @returns Array of groups with label and items
  */
-function flattenParameterGroups(
-  parameters: readonly Record<string, unknown>[]
-): readonly {
+function flattenParameterGroups(parameters: readonly Record<string, unknown>[]): readonly {
   readonly label: string
   readonly items: readonly {
     readonly name: string
@@ -175,7 +175,9 @@ function flattenParameterGroups(
     items: group.items.map((param) => ({
       name: String(param['name'] ?? ''),
       type: extractParamType(param),
-      required: param['required'] === true ? 'Yes' : 'No',
+      required: match(param['required'] === true)
+        .with(true, () => 'Yes')
+        .otherwise(() => 'No'),
       description: String(param['description'] ?? ''),
     })),
   }))
@@ -188,14 +190,12 @@ function flattenParameterGroups(
  * @param requestBody - OpenAPI request body object or undefined
  * @returns Flattened request body or undefined
  */
-function flattenRequestBody(
-  requestBody: Record<string, unknown> | undefined
-):
+function flattenRequestBody(requestBody: Record<string, unknown> | undefined):
   | {
       readonly description: string | undefined
       readonly contentType: string
-      readonly schema: string | undefined
-      readonly example: string | undefined
+      readonly schema: string | null
+      readonly example: string | null
     }
   | undefined {
   if (requestBody === undefined) {
@@ -206,25 +206,28 @@ function flattenRequestBody(
   const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
 
   if (content === null || content === undefined) {
-    return { description, contentType: 'application/json', schema: undefined, example: undefined }
+    return { description, contentType: 'application/json', schema: null, example: null }
   }
 
   const entries = Object.entries(content)
   if (entries.length === 0) {
-    return { description, contentType: 'application/json', schema: undefined, example: undefined }
+    return { description, contentType: 'application/json', schema: null, example: null }
   }
 
   const [[contentType, mediaType]] = entries
   const schema = mediaType['schema'] as Record<string, unknown> | undefined
-  const schemaText = schema !== undefined ? renderSchemaText(schema, 0) : undefined
+  const schemaText = match(schema)
+    .with(P.nonNullable, (s) => renderSchemaText(s, 0))
+    .otherwise(() => null)
   const example = mediaType['example'] as unknown
 
   return {
     description,
     contentType,
     schema: schemaText,
-    example:
-      example !== null && example !== undefined ? JSON.stringify(example, null, 2) : undefined,
+    example: match(example)
+      .with(P.nonNullable, (ex) => JSON.stringify(ex, null, 2))
+      .otherwise(() => null),
   }
 }
 
@@ -237,7 +240,11 @@ function flattenRequestBody(
  */
 function flattenResponses(
   responses: Record<string, unknown>
-): readonly { readonly code: string; readonly description: string; readonly schema: string | undefined }[] {
+): readonly {
+  readonly code: string
+  readonly description: string
+  readonly schema: string | null
+}[] {
   return Object.entries(responses).map(([code, value]) => {
     const response = (value ?? {}) as Record<string, unknown>
     const description = String(response['description'] ?? '')
@@ -245,7 +252,9 @@ function flattenResponses(
     return {
       code,
       description,
-      schema: schema !== null ? renderSchemaText(schema, 0) : undefined,
+      schema: match(schema)
+        .with(P.nonNullable, (s) => renderSchemaText(s, 0))
+        .otherwise(() => null),
     }
   })
 }
@@ -275,7 +284,9 @@ function flattenSecurities(
       return { text: 'No authentication' }
     }
 
-    const prefix = securities.length > 1 ? `Option ${String(index + 1)}: ` : ''
+    const prefix = match(securities.length > 1)
+      .with(true, () => `Option ${String(index + 1)}: `)
+      .otherwise(() => '')
     return { text: `${prefix}${schemes.join(' + ')}` }
   })
 }
@@ -330,9 +341,9 @@ function buildCurl(
   const url = `${baseUrl}${urlPath}`
   const upper = normalizedMethod.toUpperCase()
 
-  const headerPart = isBodyMethod(normalizedMethod)
-    ? " \\\n  -H 'Content-Type: application/json'"
-    : ''
+  const headerPart = match(isBodyMethod(normalizedMethod))
+    .with(true, () => " \\\n  -H 'Content-Type: application/json'")
+    .otherwise(() => '')
 
   const bodyExample = extractBodyExample(requestBody)
   const bodyPart = match(bodyExample)
@@ -371,17 +382,13 @@ function renderSchemaText(schema: Record<string, unknown>, depth: number): strin
 
   const oneOf = schema['oneOf'] as readonly Record<string, unknown>[] | undefined
   if (oneOf !== undefined) {
-    const variants = oneOf.map(
-      (v, i) => `  ${String(i + 1)}. ${renderSchemaText(v, depth + 1)}`
-    )
+    const variants = oneOf.map((v, i) => `  ${String(i + 1)}. ${renderSchemaText(v, depth + 1)}`)
     return ['**One of:**', ...variants].join('\n')
   }
 
   const anyOf = schema['anyOf'] as readonly Record<string, unknown>[] | undefined
   if (anyOf !== undefined) {
-    const variants = anyOf.map(
-      (v, i) => `  ${String(i + 1)}. ${renderSchemaText(v, depth + 1)}`
-    )
+    const variants = anyOf.map((v, i) => `  ${String(i + 1)}. ${renderSchemaText(v, depth + 1)}`)
     return ['**Any of:**', ...variants].join('\n')
   }
 
@@ -392,7 +399,9 @@ function renderSchemaText(schema: Record<string, unknown>, depth: number): strin
   if (schemaType === 'array') {
     const items = (schema['items'] ?? {}) as Record<string, unknown>
     const itemDesc = renderSchemaText(items, depth + 1)
-    const descSuffix = description !== undefined ? ` — ${description}` : ''
+    const descSuffix = match(description)
+      .with(P.nonNullable, (d) => ` — ${d}`)
+      .otherwise(() => '')
     return `array of ${itemDesc}${descSuffix}`
   }
 
@@ -403,7 +412,9 @@ function renderSchemaText(schema: Record<string, unknown>, depth: number): strin
       (e) => ` (enum: ${e.map(String).join(', ')})`
     )
     .otherwise(() => '')
-  const descSuffix = description !== undefined ? ` — ${description}` : ''
+  const descSuffix = match(description)
+    .with(P.nonNullable, (d) => ` — ${d}`)
+    .otherwise(() => '')
 
   return `\`${schemaType}\`${enumSuffix}${descSuffix}`
 }
@@ -426,7 +437,9 @@ function renderObjectSchema(
   const requiredList = (schema['required'] ?? []) as readonly string[]
   const propEntries = Object.entries(properties)
 
-  const descSuffix = description !== undefined ? ` — ${description}` : ''
+  const descSuffix = match(description)
+    .with(P.nonNullable, (d) => ` — ${d}`)
+    .otherwise(() => '')
 
   if (propEntries.length === 0) {
     return `\`object\`${descSuffix}`
@@ -434,7 +447,9 @@ function renderObjectSchema(
 
   const indent = '  '.repeat(depth)
   const rows = propEntries.map(([name, propSchema]) => {
-    const required = requiredList.includes(name) ? ' **(required)**' : ''
+    const required = match(requiredList.includes(name))
+      .with(true, () => ' **(required)**')
+      .otherwise(() => '')
     const propDesc = renderSchemaText(propSchema, depth + 1)
     return `${indent}- \`${name}\`${required}: ${propDesc}`
   })

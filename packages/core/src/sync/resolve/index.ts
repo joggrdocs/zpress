@@ -98,9 +98,12 @@ function resolveFilePage(
   ctx: SyncContext,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
-  const include = section.include
+  const { include } = section
   if (include === null || include === undefined || typeof include !== 'string') {
-    return [syncError('missing_from', 'resolveFilePage called without single-file section.include'), null]
+    return [
+      syncError('missing_from', 'resolveFilePage called without single-file section.include'),
+      null,
+    ]
   }
 
   const sourcePath = path.resolve(ctx.repoRoot, include)
@@ -121,6 +124,7 @@ function resolveFilePage(
     null,
     {
       title: resolveSectionTitle(section),
+      description: section.description,
       link: section.path,
       hidden: section.hidden,
       card: section.card,
@@ -153,6 +157,7 @@ function resolveVirtualPage(
     null,
     {
       title: resolveSectionTitle(section),
+      description: section.description,
       link: section.path,
       hidden: section.hidden,
       card: section.card,
@@ -232,10 +237,12 @@ async function resolveNestedSection(
     null,
     {
       title: resolveSectionTitle(section),
+      description: section.description,
       link,
       collapsible,
       hidden: section.hidden,
       card: section.card,
+      landing: section.landing,
       standalone: section.standalone,
       autoLink,
       items: sorted,
@@ -348,8 +355,8 @@ async function resolveGlob(
     .with(P.nonNullable, (tc) => tc.from)
     .otherwise(() => 'auto' as const)
   const titleTransform = match(titleConfig)
-    .with(P.nonNullable, (tc) => tc.transform)
-    .otherwise(() => undefined)
+    .with(P.nonNullable, (tc) => tc.transform ?? null)
+    .otherwise(() => null)
 
   return Promise.all(
     files.map(async (file) => {

@@ -123,6 +123,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     dereference: { circular: 'ignore' },
   }).catch(() => null)
 
+  // oxlint-disable-next-line security/detect-possible-timing-attacks -- not a security comparison
   if (api === null) {
     return { sidebar: [], pages: [] }
   }
@@ -310,11 +311,7 @@ function buildOperationPage(
  * @param prefix - URL prefix for the OpenAPI section
  * @returns Page data with MDX content rendering the overview component
  */
-function buildIndexPage(
-  title: string,
-  prefix: string,
-  spec: Record<string, unknown>
-): PageData {
+function buildIndexPage(title: string, prefix: string, spec: Record<string, unknown>): PageData {
   const outputPath = `${stripLeadingSlash(prefix)}/index.mdx`
   const markdown = renderOverviewMarkdown({ spec })
 

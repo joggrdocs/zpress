@@ -61,9 +61,9 @@ npx zpress build     # build for production
 npx zpress serve     # preview production build
 ```
 
-## Why `@zpress/kit`?
+## Why `@zpress/kit` and not `zpress`?
 
-The package is published as `@zpress/kit` because npm's moniker rules are overly aggressive and ban names that are similar in anyway to existing packages, we will fix once we get npm to allow us to push to that namespace.
+The package is published as `@zpress/kit` because npm's moniker rules are overly aggressive and ban names that are similar in any way to existing packages. We will fix once we get npm to allow us to push to that namespace. If you work at `npm` please feel free to help out :)
 
 ## License
 

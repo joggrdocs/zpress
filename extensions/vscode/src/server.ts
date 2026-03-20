@@ -33,7 +33,7 @@ function findBinary(
   const localBin = path.join(workspaceRoot, 'node_modules', '.bin', 'zpress')
   // oxlint-disable-next-line security/detect-non-literal-fs-filename
   if (fs.existsSync(localBin)) {
-    return { cmd: localBin, args: ['dev'] }
+    return { cmd: localBin, args: ['dev', '--vscode'] }
   }
   return null
 }

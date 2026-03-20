@@ -134,12 +134,10 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
     link: entry.link ?? '',
     title: entry.title,
     icon: match(resolved)
-      .with(
-        P.nonNullable,
-        (r): string | { readonly id: string; readonly color: string } =>
-          match(r.color)
-            .with('purple', () => r.id)
-            .otherwise(() => ({ id: r.id, color: r.color }))
+      .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
+        match(r.color)
+          .with('purple', () => r.id)
+          .otherwise(() => ({ id: r.id, color: r.color }))
       )
       // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
       .with(P.nullish, (): undefined => undefined)
@@ -191,12 +189,7 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
  * @returns Description string, or undefined if none found
  */
 async function resolveDescription(entry: ResolvedEntry): Promise<string | undefined> {
-  // Explicit card description wins
-  if (entry.card !== null && entry.card !== undefined && entry.card.description) {
-    return entry.card.description
-  }
-
-  // Try to extract from source file
+  // 1. Source file frontmatter is the primary source of truth
   if (entry.page !== null && entry.page !== undefined && entry.page.source) {
     try {
       const desc = await extractDescription(entry.page.source)
@@ -208,15 +201,9 @@ async function resolveDescription(entry: ResolvedEntry): Promise<string | undefi
     }
   }
 
-  // Fallback to page frontmatter
-  if (
-    entry.page !== null &&
-    entry.page !== undefined &&
-    entry.page.frontmatter !== null &&
-    entry.page.frontmatter !== undefined &&
-    entry.page.frontmatter.description
-  ) {
-    return String(entry.page.frontmatter.description)
+  // 2. Config-level description as fallback (no file, or file has no description)
+  if (entry.description) {
+    return entry.description
   }
 
   return undefined

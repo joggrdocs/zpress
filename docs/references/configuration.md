@@ -21,21 +21,21 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 
 ## Top-level fields
 
-| Field         | Type                       | Default    | Description                                                                                    |
-| ------------- | -------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `title`       | `string`                   | —          | Site title shown in browser tab and home page                                                  |
-| `description` | `string`                   | —          | Meta description and home page hero headline                                                   |
-| `tagline`     | `string`                   | —          | Hero tagline below the headline on the home page                                               |
-| `sections`    | `Section[]`                | (required) | Information architecture tree                                                                  |
-| `nav`         | `'auto' \| NavItem[]`      | `'auto'`   | Top navigation bar                                                                             |
-| `theme`       | `ThemeConfig`              | —          | Theme configuration (name, color mode, color overrides)                                        |
-| `features`    | `Feature[]`                | —          | Explicit home page feature cards (replaces auto-gen)                                           |
-| `actions`     | `HeroAction[]`             | —          | Home page hero call-to-action buttons                                                          |
-| `sidebar`     | `SidebarConfig`            | —          | Persistent links above/below the sidebar nav tree                                              |
-| `workspaces`  | `WorkspaceCategory[]`      | —          | Named groups of workspace items for home/landing pages                                         |
-| `openapi`     | `OpenAPIConfig`            | —          | OpenAPI spec integration for interactive API docs                                              |
-| `exclude`     | `string[]`                 | —          | Glob patterns excluded globally across all sources                                             |
-| `icon`        | `string`                   | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
+| Field         | Type                  | Default    | Description                                                                                    |
+| ------------- | --------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| `title`       | `string`              | —          | Site title shown in browser tab and home page                                                  |
+| `description` | `string`              | —          | Meta description and home page hero headline                                                   |
+| `tagline`     | `string`              | —          | Hero tagline below the headline on the home page                                               |
+| `sections`    | `Section[]`           | (required) | Information architecture tree                                                                  |
+| `nav`         | `'auto' \| NavItem[]` | `'auto'`   | Top navigation bar                                                                             |
+| `theme`       | `ThemeConfig`         | —          | Theme configuration (name, color mode, color overrides)                                        |
+| `features`    | `Feature[]`           | —          | Explicit home page feature cards (replaces auto-gen)                                           |
+| `actions`     | `HeroAction[]`        | —          | Home page hero call-to-action buttons                                                          |
+| `sidebar`     | `SidebarConfig`       | —          | Persistent links above/below the sidebar nav tree                                              |
+| `workspaces`  | `WorkspaceCategory[]` | —          | Named groups of workspace items for home/landing pages                                         |
+| `openapi`     | `OpenAPIConfig`       | —          | OpenAPI spec integration for interactive API docs                                              |
+| `exclude`     | `string[]`            | —          | Glob patterns excluded globally across all sources                                             |
+| `icon`        | `string`              | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
 
 ## Entry
 
@@ -79,24 +79,24 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 
 ### Section fields
 
-| Field            | Type                                                    | Description                                     |
-| ---------------- | ------------------------------------------------------- | ----------------------------------------------- |
-| `title`          | `TitleConfig`                                           | Display name or derived title config            |
-| `path`           | `string`                                                | Output URL path                                 |
-| `include`        | `string \| string[]`                                    | Source file path(s) or glob pattern(s)          |
-| `content`        | `string \| (() => string \| Promise<string>)`           | Inline or generated markdown content            |
-| `items`          | `Section[]`                                             | Explicit child entries                          |
-| `landing`        | `'auto' \| 'cards' \| 'overview' \| false`              | Landing page generation mode                    |
-| `collapsible`    | `boolean`                                               | Make sidebar section collapsible                |
-| `exclude`        | `string[]`                                              | Exclude globs scoped to this entry              |
-| `hidden`         | `boolean`                                               | Hide from sidebar (page still routable)         |
-| `frontmatter`    | `Frontmatter`                                           | Injected YAML frontmatter                       |
-| `sort`           | `'default' \| 'alpha' \| 'filename' \| comparator`     | Sort order for discovered children              |
-| `recursive`      | `boolean`                                               | Directory-based nesting for recursive globs     |
-| `entryFile`      | `string`                                                | Section header filename (default: `"overview"`) |
-| `icon`           | `IconConfig`                                            | Icon for cards and landing pages                |
-| `card`           | `CardConfig`                                            | Landing page card metadata                      |
-| `standalone`     | `boolean`                                               | Separate sidebar namespace (requires `path`)    |
+| Field         | Type                                               | Description                                     |
+| ------------- | -------------------------------------------------- | ----------------------------------------------- |
+| `title`       | `TitleConfig`                                      | Display name or derived title config            |
+| `path`        | `string`                                           | Output URL path                                 |
+| `include`     | `string \| string[]`                               | Source file path(s) or glob pattern(s)          |
+| `content`     | `string \| (() => string \| Promise<string>)`      | Inline or generated markdown content            |
+| `items`       | `Section[]`                                        | Explicit child entries                          |
+| `landing`     | `'auto' \| 'cards' \| 'overview' \| false`         | Landing page generation mode                    |
+| `collapsible` | `boolean`                                          | Make sidebar section collapsible                |
+| `exclude`     | `string[]`                                         | Exclude globs scoped to this entry              |
+| `hidden`      | `boolean`                                          | Hide from sidebar (page still routable)         |
+| `frontmatter` | `Frontmatter`                                      | Injected YAML frontmatter                       |
+| `sort`        | `'default' \| 'alpha' \| 'filename' \| comparator` | Sort order for discovered children              |
+| `recursive`   | `boolean`                                          | Directory-based nesting for recursive globs     |
+| `entryFile`   | `string`                                           | Section header filename (default: `"overview"`) |
+| `icon`        | `IconConfig`                                       | Icon for cards and landing pages                |
+| `card`        | `CardConfig`                                       | Landing page card metadata                      |
+| `standalone`  | `boolean`                                          | Separate sidebar namespace (requires `path`)    |
 
 `TitleConfig` is either a plain `string` or `{ from: 'auto' | 'filename' | 'heading' | 'frontmatter', transform?: (text, slug) => string }` for derived titles.
 
@@ -118,22 +118,22 @@ Metadata for a monorepo app or package. Drives home page cards, landing page car
 }
 ```
 
-| Field         | Type                                                    | Required | Description                                                     |
-| ------------- | ------------------------------------------------------- | -------- | --------------------------------------------------------------- |
-| `title`       | `TitleConfig`                                           | yes      | Display name or derived title config                            |
-| `icon`        | `IconConfig`                                            | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
-| `description` | `string`                                                | yes      | Short description for cards                                     |
-| `tags`        | `string[]`                                              | no       | Technology tags (kebab-case)                                    |
-| `badge`       | `{ src: string; alt: string }`                          | no       | Deploy badge image                                              |
-| `path`        | `string`                                                | yes      | URL prefix for this workspace's documentation                   |
-| `include`     | `string \| string[]`                                    | no       | Source file path(s) or glob pattern(s) for content discovery    |
-| `sort`        | `'default' \| 'alpha' \| 'filename' \| comparator`     | no       | Sort order for discovered content                               |
-| `exclude`     | `string[]`                                              | no       | Glob patterns excluded from discovery                           |
-| `recursive`   | `boolean`                                               | no       | Directory-based nesting for recursive globs                     |
-| `entryFile`   | `string`                                                | no       | Section header filename (default: `"overview"`)                 |
-| `frontmatter` | `Frontmatter`                                           | no       | Injected YAML frontmatter for all discovered pages              |
-| `items`       | `Section[]`                                             | no       | Explicit child sections                                         |
-| `openapi`     | `OpenAPIConfig`                                         | no       | OpenAPI spec integration for this workspace                     |
+| Field         | Type                                               | Required | Description                                                     |
+| ------------- | -------------------------------------------------- | -------- | --------------------------------------------------------------- |
+| `title`       | `TitleConfig`                                      | yes      | Display name or derived title config                            |
+| `icon`        | `IconConfig`                                       | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
+| `description` | `string`                                           | yes      | Short description for cards                                     |
+| `tags`        | `string[]`                                         | no       | Technology tags (kebab-case)                                    |
+| `badge`       | `{ src: string; alt: string }`                     | no       | Deploy badge image                                              |
+| `path`        | `string`                                           | yes      | URL prefix for this workspace's documentation                   |
+| `include`     | `string \| string[]`                               | no       | Source file path(s) or glob pattern(s) for content discovery    |
+| `sort`        | `'default' \| 'alpha' \| 'filename' \| comparator` | no       | Sort order for discovered content                               |
+| `exclude`     | `string[]`                                         | no       | Glob patterns excluded from discovery                           |
+| `recursive`   | `boolean`                                          | no       | Directory-based nesting for recursive globs                     |
+| `entryFile`   | `string`                                           | no       | Section header filename (default: `"overview"`)                 |
+| `frontmatter` | `Frontmatter`                                      | no       | Injected YAML frontmatter for all discovered pages              |
+| `items`       | `Section[]`                                        | no       | Explicit child sections                                         |
+| `openapi`     | `OpenAPIConfig`                                    | no       | OpenAPI spec integration for this workspace                     |
 
 ## WorkspaceCategory
 
@@ -150,13 +150,13 @@ Named groups of workspace items. Each category receives card and landing page tr
 }
 ```
 
-| Field         | Type            | Required | Description                                                     |
-| ------------- | --------------- | -------- | --------------------------------------------------------------- |
-| `title`       | `TitleConfig`   | yes      | Group display name                                              |
-| `description` | `string`        | yes      | Short description                                               |
-| `icon`        | `string`        | yes      | Iconify identifier                                              |
-| `items`       | `Workspace[]`   | yes      | Workspace items in this group                                   |
-| `link`        | `string`        | no       | URL prefix override (defaults to `/${slugify(title)}`)          |
+| Field         | Type          | Required | Description                                            |
+| ------------- | ------------- | -------- | ------------------------------------------------------ |
+| `title`       | `TitleConfig` | yes      | Group display name                                     |
+| `description` | `string`      | yes      | Short description                                      |
+| `icon`        | `string`      | yes      | Iconify identifier                                     |
+| `items`       | `Workspace[]` | yes      | Workspace items in this group                          |
+| `link`        | `string`      | no       | URL prefix override (defaults to `/${slugify(title)}`) |
 
 ## CardConfig
 
@@ -215,25 +215,26 @@ features: [
 ]
 ```
 
-| Field         | Type          | Description                                                     |
-| ------------- | ------------- | --------------------------------------------------------------- |
-| `title`       | `TitleConfig` | Card title (string or derived title config)                     |
-| `description` | `string`      | Short description below title                                   |
-| `link`        | `string`      | Click target URL                                                |
-| `icon`        | `string`      | Iconify identifier                                              |
+| Field         | Type          | Description                                 |
+| ------------- | ------------- | ------------------------------------------- |
+| `title`       | `TitleConfig` | Card title (string or derived title config) |
+| `description` | `string`      | Short description below title               |
+| `link`        | `string`      | Click target URL                            |
+| `icon`        | `string`      | Iconify identifier                          |
 
 ## OpenAPIConfig
 
 Configuration for OpenAPI spec integration.
 
-| Field           | Type                       | Default          | Description                                    |
-| --------------- | -------------------------- | ---------------- | ---------------------------------------------- |
-| `spec`          | `string`                   | (required)       | Path to `openapi.json` from repo root          |
-| `path`          | `string`                   | (required)       | URL prefix for API operation pages             |
-| `title`         | `string`                   | `'API Reference'`| Sidebar group title                            |
-| `sidebarLayout` | `'method-path' \| 'title'` | `'method-path'`  | How operations appear in the sidebar           |
+| Field           | Type                       | Default           | Description                           |
+| --------------- | -------------------------- | ----------------- | ------------------------------------- |
+| `spec`          | `string`                   | (required)        | Path to `openapi.json` from repo root |
+| `path`          | `string`                   | (required)        | URL prefix for API operation pages    |
+| `title`         | `string`                   | `'API Reference'` | Sidebar group title                   |
+| `sidebarLayout` | `'method-path' \| 'title'` | `'method-path'`   | How operations appear in the sidebar  |
 
 `sidebarLayout` controls how API operations are displayed in the sidebar:
+
 - `'method-path'` — shows `GET /users` with method badge and path in code font
 - `'title'` — shows the operation summary (e.g., "List Users")
 
@@ -248,11 +249,11 @@ actions: [
 ]
 ```
 
-| Field   | Type               | Description                    |
-| ------- | ------------------ | ------------------------------ |
-| `theme` | `'brand' \| 'alt'` | Button style variant           |
-| `text`  | `string`           | Button label                   |
-| `link`  | `string`           | Click target URL               |
+| Field   | Type               | Description          |
+| ------- | ------------------ | -------------------- |
+| `theme` | `'brand' \| 'alt'` | Button style variant |
+| `text`  | `string`           | Button label         |
+| `link`  | `string`           | Click target URL     |
 
 ## SidebarConfig
 
@@ -269,15 +270,15 @@ sidebar: {
 }
 ```
 
-| Field   | Type             | Description                          |
-| ------- | ---------------- | ------------------------------------ |
-| `above` | `SidebarLink[]`  | Links rendered above the nav tree    |
-| `below` | `SidebarLink[]`  | Links rendered below the nav tree    |
+| Field   | Type            | Description                       |
+| ------- | --------------- | --------------------------------- |
+| `above` | `SidebarLink[]` | Links rendered above the nav tree |
+| `below` | `SidebarLink[]` | Links rendered below the nav tree |
 
 Each `SidebarLink` has:
 
-| Field  | Type         | Required | Description               |
-| ------ | ------------ | -------- | ------------------------- |
-| `text` | `string`     | yes      | Link display text         |
-| `link` | `string`     | yes      | Target URL                |
-| `icon` | `IconConfig` | no       | Iconify icon identifier   |
+| Field  | Type         | Required | Description             |
+| ------ | ------------ | -------- | ----------------------- |
+| `text` | `string`     | yes      | Link display text       |
+| `link` | `string`     | yes      | Target URL              |
+| `icon` | `IconConfig` | no       | Iconify icon identifier |

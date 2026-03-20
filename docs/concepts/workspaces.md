@@ -53,22 +53,22 @@ export default defineConfig({
 
 ### Fields
 
-| Field         | Type                           | Required | Description                                              |
-| ------------- | ------------------------------ | -------- | -------------------------------------------------------- |
-| `title`       | `TitleConfig`                  | yes      | Display name or derived title config                     |
-| `icon`        | `IconConfig`                   | no       | Icon ID string or `{ id, color }` object                 |
-| `description` | `string`                       | yes      | Short description for cards                              |
-| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                              |
-| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                       |
-| `path`        | `string`                       | yes      | URL path for this workspace's documentation              |
-| `include`     | `string \| string[]`           | no       | Glob pattern(s) for content discovery                    |
-| `sort`        | `SortStrategy`                 | no       | Sort strategy for discovered pages                       |
-| `exclude`     | `string[]`                     | no       | Glob patterns to exclude from discovery                  |
-| `recursive`   | `boolean`                      | no       | Map subdirectories to nested sidebar groups              |
-| `entryFile`   | `string`                       | no       | Filename promoted to section header in recursive mode    |
-| `frontmatter` | `Record<string, unknown>`      | no       | Frontmatter injected into all discovered pages           |
-| `items`       | `Section[]`                    | no       | Explicit child sections                                  |
-| `openapi`     | `OpenAPIConfig`                | no       | OpenAPI spec integration for this workspace              |
+| Field         | Type                           | Required | Description                                           |
+| ------------- | ------------------------------ | -------- | ----------------------------------------------------- |
+| `title`       | `TitleConfig`                  | yes      | Display name or derived title config                  |
+| `icon`        | `IconConfig`                   | no       | Icon ID string or `{ id, color }` object              |
+| `description` | `string`                       | yes      | Short description for cards                           |
+| `tags`        | `string[]`                     | no       | Technology tags (kebab-case)                          |
+| `badge`       | `{ src: string; alt: string }` | no       | Deploy badge image                                    |
+| `path`        | `string`                       | yes      | URL path for this workspace's documentation           |
+| `include`     | `string \| string[]`           | no       | Glob pattern(s) for content discovery                 |
+| `sort`        | `SortStrategy`                 | no       | Sort strategy for discovered pages                    |
+| `exclude`     | `string[]`                     | no       | Glob patterns to exclude from discovery               |
+| `recursive`   | `boolean`                      | no       | Map subdirectories to nested sidebar groups           |
+| `entryFile`   | `string`                       | no       | Filename promoted to section header in recursive mode |
+| `frontmatter` | `Record<string, unknown>`      | no       | Frontmatter injected into all discovered pages        |
+| `items`       | `Section[]`                    | no       | Explicit child sections                               |
+| `openapi`     | `OpenAPIConfig`                | no       | OpenAPI spec integration for this workspace           |
 
 ### Path matching
 

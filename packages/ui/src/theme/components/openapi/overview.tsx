@@ -74,10 +74,7 @@ function collectTags(spec: Record<string, unknown>): readonly TagInfo[] {
         const operation = pathItem[method] as Record<string, unknown>
         const tags = (operation['tags'] ?? ['default']) as readonly string[]
         return tags.reduce<Record<string, number>>(
-          (tagAcc, tag) => ({
-            ...tagAcc,
-            [tag]: (tagAcc[tag] ?? 0) + 1,
-          }),
+          (tagAcc, tag) => Object.assign(tagAcc, { [tag]: (tagAcc[tag] ?? 0) + 1 }),
           methodAcc
         )
       }, pathAcc),

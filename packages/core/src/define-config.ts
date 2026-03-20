@@ -297,7 +297,10 @@ function validateSection(section: Section): ConfigResult<true> {
 
   if (isSingleFile(section.include) && !section.items && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": single-file 'include' requires 'path'`),
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": single-file 'include' requires 'path'`
+      ),
       null,
     ]
   }
@@ -338,7 +341,7 @@ function validateSection(section: Section): ConfigResult<true> {
   }
 
   // Validate landing requires path
-  if (section.landing !== undefined && section.landing !== false && !section.path) {
+  if (section.landing === true && !section.path) {
     return [
       configError('invalid_section', `Section "${titleStr}": 'landing' requires 'path' to be set`),
       null,
@@ -348,7 +351,10 @@ function validateSection(section: Section): ConfigResult<true> {
   // Validate standalone requires path
   if (section.standalone && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": 'standalone' requires 'path' to be set`),
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": 'standalone' requires 'path' to be set`
+      ),
       null,
     ]
   }

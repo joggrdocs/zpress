@@ -15,7 +15,7 @@ Define code as an `export const` and pass it via the `code` prop. This preserves
 
 **Code**
 
-````mdx
+```mdx
 import { IDEWindow } from '@theme'
 
 export const configExample = `import { defineConfig } from '@zpress/kit'
@@ -32,12 +32,8 @@ export default defineConfig({
   ],
 })`
 
-<IDEWindow
-  files={[{ name: 'zpress.config.ts', active: true }]}
-  lang="ts"
-  code={configExample}
-/>
-````
+<IDEWindow files={[{ name: 'zpress.config.ts', active: true }]} lang="ts" code={configExample} />
+```
 
 **Output**
 
@@ -55,11 +51,7 @@ export default defineConfig({
   ],
 })`
 
-<IDEWindow
-  files={[{ name: 'zpress.config.ts', active: true }]}
-  lang="ts"
-  code={configExample}
-/>
+<IDEWindow files={[{ name: 'zpress.config.ts', active: true }]} lang="ts" code={configExample} />
 
 ## Multiple tabs
 
@@ -72,31 +64,23 @@ export const multiTabExample = `export const config = {
 
 **Code**
 
-````mdx
+```mdx
 export const multiTabExample = `export const config = {
   port: 3000,
   host: 'localhost',
 }`
 
 <IDEWindow
-  files={[
-    { name: 'index.ts' },
-    { name: 'config.ts', active: true },
-    { name: 'types.ts' },
-  ]}
+  files={[{ name: 'index.ts' }, { name: 'config.ts', active: true }, { name: 'types.ts' }]}
   lang="ts"
   code={multiTabExample}
 />
-````
+```
 
 **Output**
 
 <IDEWindow
-  files={[
-    { name: 'index.ts' },
-    { name: 'config.ts', active: true },
-    { name: 'types.ts' },
-  ]}
+  files={[{ name: 'index.ts' }, { name: 'config.ts', active: true }, { name: 'types.ts' }]}
   lang="ts"
   code={multiTabExample}
 />
@@ -117,7 +101,7 @@ export const sync = async (root: string) => {
 
 **Code**
 
-````mdx
+```mdx
 export const pathExample = `import { resolveConfig } from './config'
 import { generateSidebar } from './sidebar'
 import { writeManifest } from './manifest'
@@ -133,7 +117,7 @@ export const sync = async (root: string) => {
   lang="ts"
   code={pathExample}
 />
-````
+```
 
 **Output**
 
@@ -152,13 +136,13 @@ export const jsonExample = `{
     "build": "zpress build"
   },
   "dependencies": {
-    "@zpress/kit": "^0.2.0"
+    "@zpress/kit": "^0.2.4"
   }
 }`
 
 **Code**
 
-````mdx
+```mdx
 export const jsonExample = `{
   "name": "@acme/docs",
   "scripts": {
@@ -166,42 +150,34 @@ export const jsonExample = `{
     "build": "zpress build"
   },
   "dependencies": {
-    "@zpress/kit": "^0.2.0"
+    "@zpress/kit": "^0.2.4"
   }
 }`
 
-<IDEWindow
-  files={[{ name: 'package.json', active: true }]}
-  lang="json"
-  code={jsonExample}
-/>
-````
+<IDEWindow files={[{ name: 'package.json', active: true }]} lang="json" code={jsonExample} />
+```
 
 **Output**
 
-<IDEWindow
-  files={[{ name: 'package.json', active: true }]}
-  lang="json"
-  code={jsonExample}
-/>
+<IDEWindow files={[{ name: 'package.json', active: true }]} lang="json" code={jsonExample} />
 
 ## Props
 
 ### IDEWindow
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `files` | `IDEFileTab[]` | yes | — | File tabs in the title bar |
-| `code` | `string` | no | — | Code string to display (define as `export const` to preserve indentation) |
-| `lang` | `string` | no | — | Language identifier (e.g. `'ts'`, `'json'`) |
-| `children` | `ReactNode` | no | — | Fallback content when `code` is not provided |
+| Prop       | Type           | Required | Default | Description                                                               |
+| ---------- | -------------- | -------- | ------- | ------------------------------------------------------------------------- |
+| `files`    | `IDEFileTab[]` | yes      | —       | File tabs in the title bar                                                |
+| `code`     | `string`       | no       | —       | Code string to display (define as `export const` to preserve indentation) |
+| `lang`     | `string`       | no       | —       | Language identifier (e.g. `'ts'`, `'json'`)                               |
+| `children` | `ReactNode`    | no       | —       | Fallback content when `code` is not provided                              |
 
 ### IDEFileTab
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `name` | `string` | yes | — | Filename displayed in the tab |
-| `active` | `boolean` | no | `false` | Whether this tab is selected |
+| Prop     | Type      | Required | Default | Description                   |
+| -------- | --------- | -------- | ------- | ----------------------------- |
+| `name`   | `string`  | yes      | —       | Filename displayed in the tab |
+| `active` | `boolean` | no       | `false` | Whether this tab is selected  |
 
 ## References
 

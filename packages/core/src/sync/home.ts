@@ -229,7 +229,7 @@ function buildFrontmatterFeatures(
  */
 function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly ResolvedFeature[]> {
   return Promise.resolve(
-    features.map((f, index) => {
+    features.map((f, _index) => {
       const resolved = resolveOptionalIcon(f.icon)
       const titleStr = match(f.title)
         .with(P.string, (t) => t)
@@ -278,12 +278,10 @@ function buildGroupData(
       title: titleStr,
       href: item.path,
       icon: match(resolved)
-        .with(
-          P.nonNullable,
-          (r): string | { readonly id: string; readonly color: string } =>
-            match(r.color)
-              .with('purple', () => r.id)
-              .otherwise(() => ({ id: r.id, color: r.color }))
+        .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
+          match(r.color)
+            .with('purple', () => r.id)
+            .otherwise(() => ({ id: r.id, color: r.color }))
         )
         // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
         .with(P.nullish, (): undefined => undefined)
@@ -329,7 +327,7 @@ function buildFeatures(
   repoRoot: string
 ): Promise<readonly ResolvedFeature[]> {
   return Promise.all(
-    sections.slice(0, 3).map(async (section, index) => {
+    sections.slice(0, 3).map(async (section, _index) => {
       const link = section.path ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
       const resolved = resolveOptionalIcon(section.icon)
@@ -339,9 +337,7 @@ function buildFeatures(
             .with('purple', () => r.id)
             .otherwise(() => ({ id: r.id, color: r.color }))
         )
-        .otherwise(
-          (): { readonly id: string; readonly color: string } | null => null
-        )
+        .otherwise((): { readonly id: string; readonly color: string } | null => null)
       const titleStr = resolveSectionTitle(section)
       return { title: titleStr, details, link, icon }
     })

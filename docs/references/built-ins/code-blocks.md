@@ -107,10 +107,10 @@ Or use inline notation comments:
 
 ````md
 ```ts
-import { defineConfig } from '@zpress/kit'  // [!code highlight]
+import { defineConfig } from '@zpress/kit' // [!code highlight]
 
 export default defineConfig({
-  title: 'My Docs',  // [!code highlight]
+  title: 'My Docs', // [!code highlight]
 })
 ```
 ````
@@ -118,10 +118,10 @@ export default defineConfig({
 **Output**
 
 ```ts
-import { defineConfig } from '@zpress/kit'  // [!code highlight]
+import { defineConfig } from '@zpress/kit' // [!code highlight]
 
 export default defineConfig({
-  title: 'My Docs',  // [!code highlight]
+  title: 'My Docs', // [!code highlight]
 })
 ```
 
@@ -135,8 +135,8 @@ Mark added and removed lines with inline notation:
 ```ts
 export default defineConfig({
   title: 'My Docs',
-  description: 'Old description',  // [!code --]
-  description: 'New description',  // [!code ++]
+  description: 'Old description', // [!code --]
+  description: 'New description', // [!code ++]
 })
 ```
 ````
@@ -146,8 +146,8 @@ export default defineConfig({
 ```ts
 export default defineConfig({
   title: 'My Docs',
-  description: 'Old description',  // [!code --]
-  description: 'New description',  // [!code ++]
+  description: 'Old description', // [!code --]
+  description: 'New description', // [!code ++]
 })
 ```
 
@@ -164,16 +164,16 @@ Or use the `diff` language for classic `+`/`-` prefix syntax:
 
 ````md
 ```ts
-const port = process.env.PORT    // [!code warning]
-const secret = 'hardcoded'       // [!code error]
+const port = process.env.PORT // [!code warning]
+const secret = 'hardcoded' // [!code error]
 ```
 ````
 
 **Output**
 
 ```ts
-const port = process.env.PORT    // [!code warning]
-const secret = 'hardcoded'       // [!code error]
+const port = process.env.PORT // [!code warning]
+const secret = 'hardcoded' // [!code error]
 ```
 
 ## Focus
@@ -187,8 +187,8 @@ Dim everything except the focused lines:
 import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
-  title: 'My Docs',  // [!code focus]
-  description: 'Only this line is focused',  // [!code focus]
+  title: 'My Docs', // [!code focus]
+  description: 'Only this line is focused', // [!code focus]
   theme: { colorMode: 'dark' },
 })
 ```
@@ -200,8 +200,8 @@ export default defineConfig({
 import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
-  title: 'My Docs',  // [!code focus]
-  description: 'Only this line is focused',  // [!code focus]
+  title: 'My Docs', // [!code focus]
+  description: 'Only this line is focused', // [!code focus]
   theme: { colorMode: 'dark' },
 })
 ```
@@ -214,14 +214,16 @@ Wrap long lines instead of horizontal scrolling:
 
 ````md
 ```ts wrapCode
-const message = 'This is a very long string that would normally cause horizontal scrolling but instead wraps to the next line because wrapCode is enabled on this code block'
+const message =
+  'This is a very long string that would normally cause horizontal scrolling but instead wraps to the next line because wrapCode is enabled on this code block'
 ```
 ````
 
 **Output**
 
 ```ts wrapCode
-const message = 'This is a very long string that would normally cause horizontal scrolling but instead wraps to the next line because wrapCode is enabled on this code block'
+const message =
+  'This is a very long string that would normally cause horizontal scrolling but instead wraps to the next line because wrapCode is enabled on this code block'
 ```
 
 ## File embedding
@@ -230,6 +232,7 @@ Pull content from a file at build time:
 
 ````md
 ```tsx file="./relative-file.tsx"
+
 ```
 ````
 
@@ -237,6 +240,7 @@ Use `<root>` to reference the project root:
 
 ````md
 ```tsx file="<root>/src/components/Button.tsx"
+
 ```
 ````
 
@@ -272,7 +276,7 @@ export default defineConfig({
 
 Wrap code blocks in switchable tabs using Rspress's built-in components. Requires an `.mdx` file:
 
-```mdx
+````mdx
 import { Tab, Tabs } from 'rspress/theme'
 
 <Tabs>
@@ -281,6 +285,7 @@ import { Tab, Tabs } from 'rspress/theme'
 ```ts title="index.mjs"
 import { foo } from './foo.js'
 ```
+````
 
 </Tab>
 <Tab label="CJS">
@@ -293,13 +298,13 @@ const { foo } = require('./foo')
 </Tabs>
 ```
 
-| Prop | Component | Description |
-| --- | --- | --- |
-| `groupId` | `Tabs` | Sync selection across multiple tab groups on the page |
-| `defaultValue` | `Tabs` | Pre-select a tab by its `value` |
-| `tabPosition` | `Tabs` | `'left'` or `'center'` |
-| `label` | `Tab` | Display text (required) |
-| `value` | `Tab` | Identifier for `defaultValue` matching |
+| Prop           | Component | Description                                           |
+| -------------- | --------- | ----------------------------------------------------- |
+| `groupId`      | `Tabs`    | Sync selection across multiple tab groups on the page |
+| `defaultValue` | `Tabs`    | Pre-select a tab by its `value`                       |
+| `tabPosition`  | `Tabs`    | `'left'` or `'center'`                                |
+| `label`        | `Tab`     | Display text (required)                               |
+| `value`        | `Tab`     | Identifier for `defaultValue` matching                |
 
 ## Package manager tabs
 

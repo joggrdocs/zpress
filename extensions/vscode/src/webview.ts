@@ -89,15 +89,7 @@ function getStartingHtml(_cspSource: string): string {
 function getRunningHtml(serverUri: string, cspSource: string): string {
   const nonce = crypto.randomBytes(16).toString('hex')
 
-  const separator = (() => {
-    if (serverUri.includes('?')) {
-      return '&'
-    }
-    return '?'
-  })()
-
-  const fullUrl = `${serverUri}${separator}env=vscode`
-  const safeUrl = escapeHtml(fullUrl)
+  const safeUrl = escapeHtml(serverUri)
   const safeOrigin = escapeHtml(new URL(serverUri).origin)
   const safeCspSource = escapeHtml(cspSource)
 

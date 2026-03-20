@@ -1,9 +1,9 @@
 ---
-title: Machine-Readable Output
+title: LLM Output
 description: How zpress serves documentation as structured text for LLMs, AI agents, and programmatic consumers.
 ---
 
-# Machine-Readable Output
+# LLM Output
 
 How zpress makes your documentation consumable by LLMs, AI agents, and other programmatic tools — automatically, with zero configuration.
 
@@ -11,11 +11,11 @@ How zpress makes your documentation consumable by LLMs, AI agents, and other pro
 
 Every zpress site exposes three machine-readable interfaces out of the box:
 
-| Interface | Endpoint | Description |
-| --- | --- | --- |
-| LLMs.txt index | `/llms.txt` | Page listing with titles and URLs |
-| LLMs.txt full | `/llms-full.txt` | All page content concatenated into one document |
-| Per-page markdown | `{any-page}.md` | Raw markdown for any individual page |
+| Interface         | Endpoint         | Description                                     |
+| ----------------- | ---------------- | ----------------------------------------------- |
+| LLMs.txt index    | `/llms.txt`      | Page listing with titles and URLs               |
+| LLMs.txt full     | `/llms-full.txt` | All page content concatenated into one document |
+| Per-page markdown | `{any-page}.md`  | Raw markdown for any individual page            |
 
 These are generated at build time and served alongside your HTML pages. No configuration, no opt-in — they exist on every zpress site.
 
@@ -78,9 +78,9 @@ Create a config file:
 
 Every documentation page is also available as raw markdown by appending `.md` to the URL:
 
-| URL | Content-Type | Description |
-| --- | --- | --- |
-| `/getting-started/introduction` | `text/html` | Rendered HTML page |
+| URL                                | Content-Type    | Description         |
+| ---------------------------------- | --------------- | ------------------- |
+| `/getting-started/introduction`    | `text/html`     | Rendered HTML page  |
 | `/getting-started/introduction.md` | `text/markdown` | Raw source markdown |
 
 This is useful for:
@@ -107,7 +107,7 @@ documentation site from scratch.
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 24+
 - A project with markdown files
 ```
 

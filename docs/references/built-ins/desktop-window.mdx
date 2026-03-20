@@ -75,12 +75,12 @@ Content with tabs in the title bar.
 
 ## Props
 
-| Prop | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `title` | `string` | no | — | Title text centered in the title bar (12px mono, muted) |
-| `tabs` | `WindowTab[]` | no | — | Tabs rendered in the title bar (replaces title when present) |
-| `variant` | `string` | no | — | CSS class for window variant styling |
-| `children` | `ReactNode` | yes | — | Content rendered inside the window body |
+| Prop       | Type          | Required | Default | Description                                                  |
+| ---------- | ------------- | -------- | ------- | ------------------------------------------------------------ |
+| `title`    | `string`      | no       | —       | Title text centered in the title bar (12px mono, muted)      |
+| `tabs`     | `WindowTab[]` | no       | —       | Tabs rendered in the title bar (replaces title when present) |
+| `variant`  | `string`      | no       | —       | CSS class for window variant styling                         |
+| `children` | `ReactNode`   | yes      | —       | Content rendered inside the window body                      |
 
 When both `title` and `tabs` are provided, `tabs` takes precedence.
 
