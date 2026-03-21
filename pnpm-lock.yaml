@@ -37,20 +37,6 @@ catalogs:
 overrides:
   '@rsbuild/core': 2.0.0-beta.9
 
-patchedDependencies:
-  rspress-plugin-devkit@1.0.0:
-    hash: 595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032
-    path: patches/rspress-plugin-devkit@1.0.0.patch
-  rspress-plugin-file-tree@1.0.4:
-    hash: 69db8f95da53ec548ff7acc8e86c5aff49a8f436439d1b4febce1a023d9aa7a3
-    path: patches/rspress-plugin-file-tree@1.0.4.patch
-  rspress-plugin-katex@1.0.0:
-    hash: 8c9dcd8aca1bbab93f2a13bb06f509e487f592ee764d14f025ecdbb226a0de67
-    path: patches/rspress-plugin-katex@1.0.0.patch
-  rspress-plugin-supersub@1.0.0:
-    hash: 74c7104bb4976968c6fb2f4355788b6b4384427476f7b802f8d99b86c59ed787
-    path: patches/rspress-plugin-supersub@1.0.0.patch
-
 importers:
 
   .:
@@ -376,18 +362,6 @@ importers:
       react-aria-components:
         specifier: ^1.16.0
         version: 1.16.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      rspress-plugin-devkit:
-        specifier: ^1.0.0
-        version: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
-      rspress-plugin-file-tree:
-        specifier: ^1.0.4
-        version: 1.0.4(patch_hash=69db8f95da53ec548ff7acc8e86c5aff49a8f436439d1b4febce1a023d9aa7a3)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
-      rspress-plugin-katex:
-        specifier: ^1.0.0
-        version: 1.0.0(patch_hash=8c9dcd8aca1bbab93f2a13bb06f509e487f592ee764d14f025ecdbb226a0de67)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
-      rspress-plugin-supersub:
-        specifier: ^1.0.0
-        version: 1.0.0(patch_hash=74c7104bb4976968c6fb2f4355788b6b4384427476f7b802f8d99b86c59ed787)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -419,6 +393,18 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      rspress-plugin-devkit:
+        specifier: ^1.0.0
+        version: 1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
+      rspress-plugin-file-tree:
+        specifier: ^1.0.4
+        version: 1.0.4(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
+      rspress-plugin-katex:
+        specifier: ^1.0.0
+        version: 1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
+      rspress-plugin-supersub:
+        specifier: ^1.0.0
+        version: 1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -11652,7 +11638,7 @@ snapshots:
       '@typescript/native-preview': 7.0.0-dev.20260320.1
       typescript: 5.9.3
 
-  rspress-plugin-devkit@1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
+  rspress-plugin-devkit@1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
     dependencies:
       '@rspress/core': 2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
       '@types/estree-jsx': 1.0.5
@@ -11677,28 +11663,28 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  rspress-plugin-file-tree@1.0.4(patch_hash=69db8f95da53ec548ff7acc8e86c5aff49a8f436439d1b4febce1a023d9aa7a3)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
+  rspress-plugin-file-tree@1.0.4(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
     dependencies:
       '@rspress/core': 2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
-      rspress-plugin-devkit: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
+      rspress-plugin-devkit: 1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
     transitivePeerDependencies:
       - supports-color
 
-  rspress-plugin-katex@1.0.0(patch_hash=8c9dcd8aca1bbab93f2a13bb06f509e487f592ee764d14f025ecdbb226a0de67)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
+  rspress-plugin-katex@1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
     dependencies:
       '@rspress/core': 2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
       katex: 0.16.40
       rehype-katex: 7.0.1
       remark-math: 6.0.0
-      rspress-plugin-devkit: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
+      rspress-plugin-devkit: 1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       unist-util-visit: 5.1.0
     transitivePeerDependencies:
       - supports-color
 
-  rspress-plugin-supersub@1.0.0(patch_hash=74c7104bb4976968c6fb2f4355788b6b4384427476f7b802f8d99b86c59ed787)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
+  rspress-plugin-supersub@1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)):
     dependencies:
       '@rspress/core': 2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
-      rspress-plugin-devkit: 1.0.0(patch_hash=595a3e93835470899033307b339bc02b6888572da448053f2d6d898ce5bb7032)(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
+      rspress-plugin-devkit: 1.0.0(@rspress/core@2.0.6(@types/mdast@4.0.4)(@types/react@19.2.14)(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       throttle-debounce: 5.0.2
     transitivePeerDependencies:
       - supports-color
