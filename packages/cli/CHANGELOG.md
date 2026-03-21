@@ -1,5 +1,13 @@
 # @zpress/cli
 
+## 0.4.1
+
+### Patch Changes
+
+- b090c88: diff command now watches top-level root directories so asset and image changes are detected
+- Updated dependencies [03f1229]
+  - @zpress/ui@0.8.1
+
 ## 0.4.0
 
 ### Minor Changes
