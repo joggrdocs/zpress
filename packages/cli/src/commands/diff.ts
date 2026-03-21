@@ -102,8 +102,9 @@ export const diffCommand = command({
  * @returns Deduplicated array of directory paths to watch
  */
 function collectWatchPaths(config: ZpressConfig): readonly string[] {
-  const dirs = flattenIncludePaths(config.sections)
-  return uniq([...dirs.map(toDirectory), ...CONFIG_GLOBS])
+  const dirs = flattenIncludePaths(config.sections).map(toDirectory)
+  const roots = dirs.map(toTopLevelRoot).filter((r) => r.length > 0)
+  return uniq([...dirs, ...roots, ...CONFIG_GLOBS])
 }
 
 /**
@@ -153,6 +154,25 @@ function toDirectory(from: string): string {
     return dirSegments.join('/') || '.'
   }
   return from
+}
+
+/**
+ * Extract the top-level root directory from a path (the first segment).
+ *
+ * For example, `docs/getting-started` → `docs/`, `packages/cli` → `packages/`.
+ * This ensures that sibling directories (e.g. asset folders) within the same
+ * root are also watched for changes.
+ *
+ * @private
+ * @param dir - A directory path
+ * @returns The top-level root directory with trailing slash, or empty string for root paths
+ */
+function toTopLevelRoot(dir: string): string {
+  const idx = dir.indexOf('/')
+  if (idx === -1) {
+    return ''
+  }
+  return dir.slice(0, idx + 1)
 }
 
 /**
