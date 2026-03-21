@@ -2,6 +2,7 @@
   "name": "zpress-vscode",
   "displayName": "zpress",
   "version": "0.2.2",
+  "private": true,
   "description": "Run zpress dev server and preview documentation from VS Code",
   "categories": [
     "Other"
