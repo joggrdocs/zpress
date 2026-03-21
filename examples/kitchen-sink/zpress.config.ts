@@ -88,6 +88,31 @@ export default defineConfig({
         },
       ],
     },
+    {
+      title: 'Infrastructure',
+      description: 'Deployment and orchestration tooling',
+      icon: 'mdi:server',
+      items: [
+        {
+          title: 'Docker',
+          icon: 'logos:docker-icon',
+          description: 'Container images and compose configurations',
+          tags: ['docker', 'containers'],
+          path: '/infrastructure/docker',
+          include: 'docs/*.md',
+          sort: 'alpha',
+        },
+        {
+          title: 'Terraform',
+          icon: 'devicon:terraform',
+          description: 'Infrastructure-as-code for cloud provisioning',
+          tags: ['terraform', 'iac', 'aws'],
+          path: '/infrastructure/terraform',
+          include: 'docs/*.md',
+          sort: 'alpha',
+        },
+      ],
+    },
   ],
   sections: [
     {

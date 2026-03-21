@@ -67,6 +67,11 @@
         "command": "zpress.openInBrowser",
         "title": "zpress: Open in Browser",
         "icon": "$(link-external)"
+      },
+      {
+        "command": "zpress.collapseAll",
+        "title": "zpress: Collapse All Sections",
+        "icon": "$(collapse-all)"
       }
     ],
     "menus": {
@@ -81,22 +86,27 @@
         {
           "command": "zpress.start",
           "when": "view == zpress.loading && !zpress:serverReady && !zpress:serverStarting",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "zpress.stop",
           "when": "view == zpress.loading && zpress:serverStarting",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "zpress.stop",
-          "when": "view == zpress.section.0 && zpress:serverReady",
-          "group": "navigation"
+          "when": "view == zpress.pages && zpress:serverReady",
+          "group": "navigation@1"
         },
         {
           "command": "zpress.openInBrowser",
-          "when": "view == zpress.section.0 && zpress:serverReady",
-          "group": "navigation"
+          "when": "view == zpress.pages && zpress:serverReady",
+          "group": "navigation@2"
+        },
+        {
+          "command": "zpress.collapseAll",
+          "when": "view == zpress.pages && zpress:serverReady",
+          "group": "navigation@3"
         }
       ]
     },
@@ -169,52 +179,28 @@
           "when": "zpress:isProject && !zpress:serverReady"
         },
         {
-          "id": "zpress.section.0",
-          "name": "Section",
-          "when": "zpress:section.0 && zpress:serverReady",
+          "id": "zpress.pages",
+          "name": "Pages",
+          "when": "zpress:section.pages && zpress:serverReady",
           "visibility": "visible"
         },
         {
-          "id": "zpress.section.1",
-          "name": "Section",
-          "when": "zpress:section.1 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.apps",
+          "name": "Apps",
+          "when": "zpress:section.apps && zpress:serverReady",
+          "visibility": "visible"
         },
         {
-          "id": "zpress.section.2",
-          "name": "Section",
-          "when": "zpress:section.2 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.packages",
+          "name": "Packages",
+          "when": "zpress:section.packages && zpress:serverReady",
+          "visibility": "visible"
         },
         {
-          "id": "zpress.section.3",
-          "name": "Section",
-          "when": "zpress:section.3 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.4",
-          "name": "Section",
-          "when": "zpress:section.4 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.5",
-          "name": "Section",
-          "when": "zpress:section.5 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.6",
-          "name": "Section",
-          "when": "zpress:section.6 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.7",
-          "name": "Section",
-          "when": "zpress:section.7 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.workspaces",
+          "name": "Workspaces",
+          "when": "zpress:section.workspaces && zpress:serverReady",
+          "visibility": "visible"
         }
       ]
     }

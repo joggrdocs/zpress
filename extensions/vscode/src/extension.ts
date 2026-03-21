@@ -120,7 +120,7 @@ export function activate(context: ExtensionContext): void {
   const sectionTreeViews = sidebar.sections.map((section) =>
     window.createTreeView(section.viewId, {
       treeDataProvider: section.treeDataProvider,
-      showCollapseAll: true,
+      showCollapseAll: false,
     })
   )
 
@@ -141,14 +141,15 @@ export function activate(context: ExtensionContext): void {
     treeView.reveal(match.node, { select: true, focus: false, expand: true })
   }
 
+  /** Context key names matching the `when` clauses in package.json views */
+  const SECTION_CONTEXT_KEYS = ['pages', 'apps', 'packages', 'workspaces'] as const
+
   function refreshSectionViews(): void {
-    const activeCount = sidebar.activeSectionCount()
     // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (setting context on each section)
     sidebar.sections.map((section, i) => {
-      commands.executeCommand('setContext', `zpress:section.${String(i)}`, i < activeCount)
-      const treeView = sectionTreeViews[i]
-      if (treeView && i < activeCount) {
-        treeView.title = section.title
+      const contextKey = SECTION_CONTEXT_KEYS[i]
+      if (contextKey) {
+        commands.executeCommand('setContext', `zpress:section.${contextKey}`, section.hasItems)
       }
       return null
     })
@@ -282,6 +283,15 @@ export function activate(context: ExtensionContext): void {
     }),
     commands.registerCommand('zpress.restart', () => {
       server.restart()
+    }),
+    commands.registerCommand('zpress.collapseAll', () => {
+      // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (collapsing all sections)
+      sidebar.sections.map((section) => {
+        if (section.hasItems) {
+          commands.executeCommand(`workbench.actions.treeView.${section.viewId}.collapseAll`)
+        }
+        return null
+      })
     }),
     commands.registerCommand('zpress.openInBrowser', () => {
       const baseUrl = server.getBaseUrl()

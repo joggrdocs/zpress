@@ -37,7 +37,7 @@
     "build": "rslib build",
     "dev": "node ./dist/index.mjs dev --cwd ../..",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@kidd-cli/core": "^0.10.0",

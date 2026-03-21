@@ -33,7 +33,7 @@
     "build": "rslib build",
     "dev": "rslib build --watch --no-clean",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "ts-pattern": "catalog:",

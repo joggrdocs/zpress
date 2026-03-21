@@ -29,6 +29,7 @@ interface SidebarNode {
   readonly link: string | undefined
   readonly children: readonly SidebarNode[]
   readonly collapsed: boolean
+  readonly isWorkspace?: boolean
 }
 
 interface SidebarSection {
@@ -40,6 +41,7 @@ interface SidebarSection {
 interface SectionView extends Disposable {
   readonly viewId: string
   readonly title: string
+  readonly hasItems: boolean
   readonly treeDataProvider: TreeDataProvider<SidebarNode>
 }
 
@@ -67,9 +69,21 @@ interface Sidebar extends Disposable {
 }
 
 /**
- * Maximum number of sidebar section views registered in package.json.
+ * Fixed view IDs matching the 4 views registered in package.json.
  */
-const MAX_SECTIONS = 8
+const VIEW_IDS = ['zpress.pages', 'zpress.apps', 'zpress.packages', 'zpress.workspaces'] as const
+
+/**
+ * The sidebar.json keys that map to the 3 fixed sections.
+ * Everything else is nested under the "Workspaces" view.
+ */
+const FIXED_KEYS: Readonly<Record<string, number>> = {
+  '/': 0,
+  '/apps': 1,
+  '/packages': 2,
+}
+
+const NUM_SECTIONS = VIEW_IDS.length
 
 const SIDEBAR_RELATIVE = path.join('.zpress', 'content', '.generated', 'sidebar.json')
 
@@ -208,6 +222,9 @@ function buildParentMap(
 }
 
 function getIconId(node: SidebarNode): string {
+  if (node.isWorkspace) {
+    return 'root-folder'
+  }
   if (node.children.length > 0) {
     return 'folder'
   }
@@ -262,45 +279,83 @@ function jsonItemToNode(item: SidebarJsonItem): SidebarNode {
 }
 
 /**
- * Parse sidebar.json keys into deduplicated sections.
+ * Normalize and deduplicate sidebar.json entries.
  *
- * Keys like `/apps` and `/apps/` are duplicates (Rspress routing).
- * We keep only the canonical form (without trailing slash, except `/`).
- * Order: `/` first, then `/apps`, `/packages`, then the rest alphabetically.
+ * @private
+ * @param sidebar - Raw sidebar.json data
+ * @returns Deduplicated entries with normalized keys
  */
-const SECTION_ORDER: readonly string[] = ['/', '/apps', '/packages']
-
-function sectionSortKey(key: string): string {
-  const index = SECTION_ORDER.indexOf(key)
-  if (index !== -1) {
-    return String(index).padStart(4, '0')
-  }
-  return `9999${key}`
+function normalizeSidebarEntries(
+  sidebar: SidebarJson
+): readonly { readonly key: string; readonly items: readonly SidebarJsonItem[] }[] {
+  return Object.entries(sidebar)
+    .map(([key, items]) => {
+      if (key.endsWith('/') && key.length > 1) {
+        return { key: key.slice(0, -1), items }
+      }
+      return { key, items }
+    })
+    .filter((entry, i, arr) => arr.findIndex((e) => e.key === entry.key) === i)
 }
 
+/**
+ * Parse sidebar.json into exactly 4 fixed sections:
+ * Pages (/), Apps (/apps), Packages (/packages), and Workspaces (everything else).
+ *
+ * Workspace sections become top-level group nodes with an `isWorkspace` flag
+ * so the tree view can render them with a distinct icon.
+ *
+ * @private
+ * @param sidebar - Raw sidebar.json data
+ * @returns Array of exactly 4 sections (some may have empty items)
+ */
 function parseSidebarSections(sidebar: SidebarJson): readonly SidebarSection[] {
-  return (
-    Object.entries(sidebar)
-      .map(([key, items]) => {
-        if (key.endsWith('/') && key.length > 1) {
-          return { key: key.slice(0, -1), items }
-        }
-        return { key, items }
-      })
-      /* Deduplicate by keeping only the first entry per normalized key */
-      .filter((entry, i, arr) => arr.findIndex((e) => e.key === entry.key) === i)
-      .map(({ key, items }) => {
-        const nodes = items.map(jsonItemToNode)
-        /* For isolated sections, drop the landing-page item whose link matches the section key */
-        if (key === '/') {
-          return { key, title: sectionTitle(key), items: nodes }
-        }
-        const filtered = nodes.filter((n) => n.link !== key)
-        return { key, title: sectionTitle(key), items: filtered }
-      })
-      // oxlint-disable-next-line no-array-sort -- intermediate array from .map(), not mutating original
-      .sort((a, b) => sectionSortKey(a.key).localeCompare(sectionSortKey(b.key)))
-  )
+  const entries = normalizeSidebarEntries(sidebar)
+
+  const fixedSections: readonly SidebarSection[] = [
+    { key: '/', title: 'Pages', items: [] },
+    { key: '/apps', title: 'Apps', items: [] },
+    { key: '/packages', title: 'Packages', items: [] },
+    { key: 'workspaces', title: 'Workspaces', items: [] },
+  ]
+
+  /* Build workspace nodes from all non-fixed sections */
+  const workspaceNodes = entries
+    .filter((entry) => FIXED_KEYS[entry.key] === undefined)
+    // oxlint-disable-next-line no-array-sort -- intermediate array from .filter(), not mutating original
+    .sort((a, b) => a.key.localeCompare(b.key))
+    .map((entry) => {
+      const children = entry.items.map(jsonItemToNode).filter((n) => n.link !== entry.key)
+      return {
+        label: sectionTitle(entry.key),
+        link: entry.key,
+        children,
+        collapsed: false,
+        isWorkspace: true,
+      } satisfies SidebarNode
+    })
+
+  /* Resolve items for each fixed section */
+  const resolvedItems: readonly (readonly SidebarNode[])[] = fixedSections.map((section) => {
+    if (section.key === 'workspaces') {
+      return workspaceNodes
+    }
+    const entry = entries.find((e) => e.key === section.key)
+    if (!entry) {
+      return []
+    }
+    const nodes = entry.items.map(jsonItemToNode)
+    if (section.key === '/') {
+      return nodes
+    }
+    return nodes.filter((n) => n.link !== section.key)
+  })
+
+  return fixedSections.map((section, i) => ({
+    key: section.key,
+    title: section.title,
+    items: resolvedItems[i] ?? [],
+  }))
 }
 
 /**
@@ -314,7 +369,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
   }
 
   const sectionEmitters = Array.from(
-    { length: MAX_SECTIONS },
+    { length: NUM_SECTIONS },
     () => new deps.EventEmitter<SidebarNode | undefined>()
   )
 
@@ -333,11 +388,6 @@ function createSidebar(deps: SidebarDeps): Sidebar {
       buildParentMap(section.items, state.parentMap)
       return null
     })
-    if (state.sections.length > MAX_SECTIONS) {
-      console.warn(
-        `[zpress] sidebar has ${String(state.sections.length)} sections but only ${String(MAX_SECTIONS)} are supported`
-      )
-    }
     // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- EventEmitter.fire requires explicit undefined argument
     sectionEmitters.map((e) => e.fire(undefined))
     reloadEmitter.fire()
@@ -435,14 +485,21 @@ function createSidebar(deps: SidebarDeps): Sidebar {
     }
   }
 
-  const sections: readonly SectionView[] = Array.from({ length: MAX_SECTIONS }, (_, i) => ({
-    viewId: `zpress.section.${String(i)}`,
+  const sections: readonly SectionView[] = VIEW_IDS.map((viewId, i) => ({
+    viewId,
     get title(): string {
       const section = state.sections[i]
       if (section) {
         return section.title
       }
       return ''
+    },
+    get hasItems(): boolean {
+      const section = state.sections[i]
+      if (section) {
+        return section.items.length > 0
+      }
+      return false
     },
     treeDataProvider: createSectionProvider(i),
     dispose: (): void => {
@@ -452,7 +509,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
 
   return {
     sections,
-    activeSectionCount: () => state.sections.length,
+    activeSectionCount: () => state.sections.filter((s) => s.items.length > 0).length,
     onDidReload: reloadEmitter.event,
     findNodeByPath: (urlPath: string): SidebarMatch | null => {
       const target = normalizePath(urlPath)
@@ -491,5 +548,5 @@ function createSidebar(deps: SidebarDeps): Sidebar {
   }
 }
 
-export { createSidebar, MAX_SECTIONS }
+export { createSidebar }
 export type { Sidebar, SidebarMatch, SidebarNode }
