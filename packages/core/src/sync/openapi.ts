@@ -121,7 +121,13 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   const specAbsPath = path.resolve(ctx.repoRoot, config.spec)
   const api = await SwaggerParser.dereference(specAbsPath, {
     dereference: { circular: 'ignore' },
-  }).catch(() => null)
+  }).catch((error: unknown) => {
+    const message = match(error)
+      .with(P.instanceOf(Error), (e) => e.message)
+      .otherwise((e) => String(e))
+    console.warn(`[zpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
+    return null
+  })
 
   // oxlint-disable-next-line security/detect-possible-timing-attacks -- not a security comparison
   if (api === null) {
@@ -402,7 +408,7 @@ function formatSidebarText(op: OperationInfo, style: 'method-path' | 'title'): s
     .with('method-path', () => {
       const method = op.method.toUpperCase()
       const badge = `<span class="zp-oas-sidebar-badge zp-oas-sidebar-badge--${op.method}">${method}</span>`
-      const pathHtml = `<code class="zp-oas-sidebar-path">${op.path}</code>`
+      const pathHtml = `<code class="zp-oas-sidebar-path">${escapeHtml(op.path)}</code>`
       return `${badge}${pathHtml}`
     })
     .exhaustive()
@@ -419,6 +425,22 @@ function resolveTitle(config: OpenAPIConfig): string {
   return match(config.title)
     .with(P.string, (t) => t)
     .otherwise(() => 'API Reference')
+}
+
+/**
+ * Escape HTML special characters for safe interpolation into HTML strings.
+ *
+ * @private
+ * @param text - Raw text to escape
+ * @returns HTML-escaped text
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 }
 
 /**

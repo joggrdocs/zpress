@@ -19,7 +19,7 @@ The web app is a Next.js application that serves the Acme Platform frontend.
 
 ## Directory structure
 
-```
+```tree
 apps/web/
 ├── src/
 │   ├── app/              # App router pages

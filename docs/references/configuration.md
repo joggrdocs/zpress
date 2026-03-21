@@ -86,7 +86,7 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 | `include`     | `string \| string[]`                               | Source file path(s) or glob pattern(s)          |
 | `content`     | `string \| (() => string \| Promise<string>)`      | Inline or generated markdown content            |
 | `items`       | `Section[]`                                        | Explicit child entries                          |
-| `landing`     | `'auto' \| 'cards' \| 'overview' \| false`         | Landing page generation mode                    |
+| `landing`     | `boolean`                                          | Enable/disable landing page generation          |
 | `collapsible` | `boolean`                                          | Make sidebar section collapsible                |
 | `exclude`     | `string[]`                                         | Exclude globs scoped to this entry              |
 | `hidden`      | `boolean`                                          | Hide from sidebar (page still routable)         |
@@ -153,7 +153,7 @@ Named groups of workspace items. Each category receives card and landing page tr
 | Field         | Type          | Required | Description                                            |
 | ------------- | ------------- | -------- | ------------------------------------------------------ |
 | `title`       | `TitleConfig` | yes      | Group display name                                     |
-| `description` | `string`      | yes      | Short description                                      |
+| `description` | `string`      | no       | Short description                                      |
 | `icon`        | `string`      | yes      | Iconify identifier                                     |
 | `items`       | `Workspace[]` | yes      | Workspace items in this group                          |
 | `link`        | `string`      | no       | URL prefix override (defaults to `/${slugify(title)}`) |
@@ -186,7 +186,7 @@ Explicit navigation bar configuration. Used when `nav` is an array instead of `'
 
 ```ts
 nav: [
-  { title: 'Guides', link: '/guides/sections-and-pages' },
+  { title: 'Guides', link: '/guides/deploying-to-vercel' },
   { title: 'API', link: '/api/overview' },
 ]
 ```

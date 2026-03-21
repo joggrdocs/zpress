@@ -146,6 +146,7 @@ function escapeHtml(text: string): string {
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 }
 
 /**
@@ -211,10 +212,14 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
   const [svg, setSvg] = useState('')
   const [renderError, setRenderError] = useState(false)
   const [transform, setTransform] = useState<Transform>(INITIAL_TRANSFORM)
+  const transformRef = useRef<Transform>(INITIAL_TRANSFORM)
   const [fullscreen, setFullscreen] = useState(false)
   const [tab, setTab] = useState<Tab>('preview')
 
   const highlightedCode = useMemo(() => highlightMermaid(code), [code])
+
+  // Keep transformRef in sync with transform state for stable callbacks
+  transformRef.current = transform
 
   const isPreview = tab === 'preview'
 
@@ -222,7 +227,7 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     const hasDarkClass = document.documentElement.classList.contains('dark')
 
     const mermaidConfig: MermaidConfig = {
-      securityLevel: 'loose',
+      securityLevel: 'strict',
       startOnLoad: false,
       theme: hasDarkClass ? 'dark' : 'default',
       ...config,
@@ -296,17 +301,18 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
         return
       }
 
+      const current = transformRef.current
       dragRef.current = {
         dragging: true,
         startX: e.clientX,
         startY: e.clientY,
-        originX: transform.x,
-        originY: transform.y,
+        originX: current.x,
+        originY: current.y,
       }
       const container = e.currentTarget as HTMLElement
       container.setPointerCapture(e.pointerId)
     },
-    [isPreview, transform.x, transform.y]
+    [isPreview]
   )
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
@@ -363,13 +369,13 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
 
   // Lock body scroll in fullscreen
   useEffect(() => {
-    if (fullscreen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
+    if (!fullscreen) {
+      return
     }
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = previous
     }
   }, [fullscreen])
 

@@ -137,9 +137,9 @@ export default defineConfig({
   title: '${escaped}',
   sections: [
     {
-      text: 'Getting Started',
-      prefix: '/getting-started',
-      from: 'docs/*.md',
+      title: 'Getting Started',
+      path: '/getting-started',
+      include: 'docs/*.md',
     },
   ],
 })

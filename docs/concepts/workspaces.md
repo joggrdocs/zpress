@@ -27,22 +27,32 @@ import { defineConfig } from '@zpress/kit'
 export default defineConfig({
   workspaces: [
     {
-      title: 'API',
-      icon: { id: 'devicon:hono', color: 'blue' },
-      description: 'REST API with typed routes',
-      tags: ['hono', 'typescript', 'node'],
-      path: '/apps/api',
-      include: 'docs/*.md',
-      title: { from: 'auto' },
-      sort: 'alpha',
+      title: 'Services',
+      icon: 'pixelarticons:server',
+      items: [
+        {
+          title: 'API',
+          icon: { id: 'devicon:hono', color: 'blue' },
+          description: 'REST API with typed routes',
+          tags: ['hono', 'typescript', 'node'],
+          path: '/apps/api',
+          include: 'docs/*.md',
+          sort: 'alpha',
+        },
+      ],
     },
     {
-      title: 'SDK',
-      description: 'TypeScript client SDK',
-      tags: ['typescript', 'npm'],
-      path: '/packages/sdk',
-      include: 'docs/*.md',
-      title: { from: 'auto' },
+      title: 'Libraries',
+      icon: 'pixelarticons:package',
+      items: [
+        {
+          title: 'SDK',
+          description: 'TypeScript client SDK',
+          tags: ['typescript', 'npm'],
+          path: '/packages/sdk',
+          include: 'docs/*.md',
+        },
+      ],
     },
   ],
   sections: [
@@ -94,13 +104,13 @@ See the [Navigation](/concepts/navigation) concept for details on auto-generated
 
 ### Workspace categories
 
-Entries in the `workspaces` array can include a `category` field to group related workspaces under a named label (e.g. `"apps"` or `"packages"`). All entries receive the same card and landing page treatment regardless of category.
+The `workspaces` array contains `WorkspaceCategory` entries — named groups that organize workspace items. Each category has a `title`, `icon`, and an `items` array of `Workspace` entries. This grouping drives the home page layout, rendering one card section per category.
 
 ## Design Decisions
 
 - **Metadata separate from sections** — workspace metadata lives in `workspaces` rather than inline on sections. This keeps section definitions focused on information architecture while workspace metadata focuses on project identity.
 - **Path-based matching** — matching by URL path rather than explicit IDs keeps the two systems loosely coupled. A section works with or without workspace metadata.
-- **Flat list with optional categories** — all workspaces live in a single `workspaces` array. Use the optional `category` field to group them for display purposes.
+- **Category-based grouping** — workspaces are organized into named `WorkspaceCategory` groups, each with its own icon and title, providing visual structure on the home page.
 
 ## References
 

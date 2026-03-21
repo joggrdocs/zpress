@@ -168,16 +168,17 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
     .otherwise(() => ({ id: iconId, color: iconColor }))
   const description = await resolveDescription(entry)
 
-  const props = [
+  const baseProps = [
     `href="${entry.link}"`,
     `title="${escapeJsxProp(entry.title)}"`,
     ...serializeIconProp(icon),
   ]
-  if (description) {
-    props.push(`description="${escapeJsxProp(description)}"`)
-  }
+  const descriptionProps = match(description)
+    .with(P.string, (d) => [`description="${escapeJsxProp(d)}"`])
+    .otherwise(() => [] as string[])
+  const allProps = [...baseProps, ...descriptionProps]
 
-  return `  <SectionCard ${props.join(' ')} />`
+  return `  <SectionCard ${allProps.join(' ')} />`
 }
 
 /**

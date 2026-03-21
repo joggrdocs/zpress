@@ -15,4 +15,4 @@ Understand the building blocks of a zpress documentation site.
 | [Navigation](/concepts/navigation)                    | Sidebar, navbar, and link generation                        |
 | [Workspaces](/concepts/workspaces)                    | Monorepo support with standalone sidebars and landing pages |
 | [Themes](/concepts/themes)                            | Customizing the look and feel of your site                  |
-| [Machine-Readable Output](/concepts/machine-readable) | llms.txt, raw markdown endpoints, and glob discovery        |
+| [Machine-Readable Output](/concepts/llm-output)       | llms.txt, raw markdown endpoints, and glob discovery        |

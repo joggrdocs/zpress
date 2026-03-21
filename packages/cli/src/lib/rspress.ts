@@ -187,7 +187,8 @@ export async function serveSite(options: ServerOptions): Promise<number> {
     themeOverride: options.theme,
     colorModeOverride: options.colorMode,
   })
-  const port = options.port ?? SERVE_PORT
+  const preferredPort = options.port ?? SERVE_PORT
+  const port = await getPort({ port: portNumbers(preferredPort, preferredPort + DEV_PORT_RANGE) })
   await serve({
     config: rspressConfig,
     configFilePath: '',

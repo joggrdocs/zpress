@@ -482,6 +482,7 @@ function deduplicateByLink(entries: readonly ResolvedEntry[]): ResolvedEntry[] {
       }
       const existing = acc.seen.get(entry.link)
       if (existing === undefined) {
+        // intentional mutation: seen Map is mutated in-place for O(1) dedup lookups
         acc.seen.set(entry.link, acc.result.length)
         return {
           seen: acc.seen,

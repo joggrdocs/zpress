@@ -98,23 +98,16 @@ A landing page is created when a section has:
 
 Navigating to `/guides` shows a landing page with cards for each discovered guide.
 
-### Landing page modes
+### Disabling landing pages
 
-The `landing` field controls how the page is generated:
-
-| Mode         | Behavior                                                                                |
-| ------------ | --------------------------------------------------------------------------------------- |
-| `'auto'`     | Default. Card-style if the section has children, overview-style if it has an index file |
-| `'cards'`    | Always generates a card grid linking to child entries                                   |
-| `'overview'` | Always uses the promoted index file content as the landing page                         |
-| `false`      | Disables landing page generation entirely                                               |
+The `landing` field controls whether the auto-generated landing page is created. It defaults to `true` when omitted. Set `landing: false` to disable landing page generation entirely for a section:
 
 ```ts
 {
   title: 'Guides',
   path: '/guides',
   include: 'docs/guides/*.md',
-  landing: 'cards',
+  landing: false,
 }
 ```
 

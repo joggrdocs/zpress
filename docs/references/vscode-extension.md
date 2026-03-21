@@ -28,8 +28,7 @@ The preview panel opens alongside your editor. Navigate between pages, and the p
 
 ## Requirements
 
-- The zpress dev server must be running (`zpress dev` or `pnpm docs:dev`)
-- The extension connects to the local dev server and renders the site in a webview panel
+See the [Quick Start](https://zpress.dev/getting-started/quick-start#install) guide for setup instructions.
 
 ## References
 

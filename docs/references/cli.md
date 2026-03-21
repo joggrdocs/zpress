@@ -111,7 +111,7 @@ zpress dump
 
 Loads the config, resolves all entries (including glob patterns and recursive discovery), and outputs the resolved navigation tree to stdout. Useful for debugging the information architecture.
 
-Output includes `text`, `link`, `collapsible`, `hidden`, `isolated`, and nested `items` for each entry.
+Output includes `text`, `link`, `collapsible`, `hidden`, `standalone`, and nested `items` for each entry.
 
 ## check
 

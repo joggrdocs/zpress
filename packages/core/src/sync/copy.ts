@@ -144,15 +144,6 @@ function rewriteSourceImages(content: string, page: PageData, ctx: SyncContext):
 }
 
 /**
- * Merge frontmatter into markdown.
- * Config-level frontmatter acts as defaults; source file frontmatter wins.
- *
- * @private
- * @param raw - Raw markdown content (may include existing frontmatter)
- * @param fm - Frontmatter key-value pairs to inject as defaults
- * @returns Markdown string with merged frontmatter
- */
-/**
  * Regex matching ESM export declarations that `remarkSplitMdx` strips during SSG-MD.
  *
  * @private

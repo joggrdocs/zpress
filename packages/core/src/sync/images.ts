@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -70,6 +71,7 @@ export async function rewriteImages(params: {
   const imagesOutDir = path.resolve(params.outDir, 'public', 'images')
 
   // 1. Protect code blocks
+  // intentional mutation: collect code blocks during regex replacement
   const codeBlocks: string[] = []
   const withoutCode = params.content.replace(CODE_BLOCK_RE, (block) => {
     const idx = codeBlocks.length
@@ -82,31 +84,34 @@ export async function rewriteImages(params: {
   const htmlMatches = [...withoutCode.matchAll(IMG_SRC_RE)]
   const allImagePaths = [...mdMatches.map((m) => m[1]), ...htmlMatches.map((m) => m[1])]
 
-  const imageMap = await allImagePaths.reduce(async (prevPromise, imagePath) => {
-    const acc = await prevPromise
+  const uniqueImagePaths = allImagePaths.filter(
+    (imagePath, index, arr) =>
+      !isAbsoluteOrExternal(imagePath) &&
+      IMAGE_EXTENSIONS.has(path.extname(imagePath).toLowerCase()) &&
+      arr.indexOf(imagePath) === index,
+  )
 
-    if (isAbsoluteOrExternal(imagePath) || acc.has(imagePath)) {
-      return acc
-    }
+  const entries = await Promise.all(
+    uniqueImagePaths.map(async (imagePath): Promise<readonly [string, string] | null> => {
+      const ext = path.extname(imagePath).toLowerCase()
+      const absoluteImagePath = path.resolve(sourceDir, imagePath)
+      const exists = await fs.stat(absoluteImagePath).catch(() => null)
+      if (!exists) {
+        return null
+      }
 
-    const ext = path.extname(imagePath).toLowerCase()
-    if (!IMAGE_EXTENSIONS.has(ext)) {
-      return acc
-    }
+      const baseName = path.basename(imagePath, path.extname(imagePath))
+      const hash = createHash('md5').update(imagePath).digest('hex').slice(0, 8)
+      const filename = `${baseName}-${hash}${ext}`
+      await fs.mkdir(imagesOutDir, { recursive: true })
+      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- paths are constructed from trusted repo root + user source paths
+      await fs.copyFile(absoluteImagePath, path.resolve(imagesOutDir, filename))
 
-    const absoluteImagePath = path.resolve(sourceDir, imagePath)
-    const exists = await fs.stat(absoluteImagePath).catch(() => null)
-    if (!exists) {
-      return acc
-    }
+      return [imagePath, `/images/${filename}`] as const
+    }),
+  )
 
-    const filename = path.basename(imagePath)
-    await fs.mkdir(imagesOutDir, { recursive: true })
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- paths are constructed from trusted repo root + user source paths
-    await fs.copyFile(absoluteImagePath, path.resolve(imagesOutDir, filename))
-
-    return new Map([...acc, [imagePath, `/images/${filename}`]])
-  }, Promise.resolve(new Map<string, string>()))
+  const imageMap = new Map(entries.filter((entry): entry is readonly [string, string] => entry !== null))
 
   // 3. Replace image paths in content (markdown syntax and HTML/JSX tags)
   const mdRewritten = withoutCode.replace(IMAGE_RE, (fullMatch, url: string) => {
