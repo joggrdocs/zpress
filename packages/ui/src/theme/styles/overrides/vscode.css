@@ -23,37 +23,50 @@ html[data-zpress-env='vscode'] .rp-doc-layout__doc {
   margin: 0 auto;
 }
 
+/* ── Hide Copy Markdown in VS Code — replaced by Edit button ── */
+html[data-zpress-env='vscode'] .rp-llms-copy-button {
+  display: none;
+}
+
 /* ── Edit source button (inside .rp-llms-container) ────── */
+/* Matches Rspress .rp-llms-button styles exactly */
 .zp-edit-source-btn {
-  display: inline-flex;
+  border: 1px solid var(--rp-c-divider-light);
+  background: var(--rp-c-bg);
+  height: 36px;
+  color: var(--rp-c-text-2);
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 8px;
+  justify-content: center;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  margin-right: 6px;
-  font-size: 13px;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 14px;
   font-weight: 500;
   font-family: var(--rp-font-family-base, system-ui, sans-serif);
-  color: var(--zp-c-text-2, var(--rp-c-text-2));
-  background: transparent;
-  border: 1px solid var(--zp-c-divider, var(--rp-c-divider));
-  border-radius: 6px;
-  cursor: pointer;
+  line-height: normal;
   transition:
-    color 0.15s,
-    border-color 0.15s,
-    background 0.15s;
-  line-height: 1;
-  vertical-align: middle;
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+  display: inline-flex;
 }
 
 .zp-edit-source-btn:hover {
-  color: var(--zp-c-brand-1, var(--rp-c-brand));
-  border-color: var(--zp-c-brand-1, var(--rp-c-brand));
-  background: color-mix(in srgb, var(--zp-c-brand-1, var(--rp-c-brand)) 8%, transparent);
+  background: var(--rp-c-bg-soft);
+  border-color: var(--rp-c-divider);
+  color: var(--rp-c-text-1);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
 }
 
 .zp-edit-source-btn:active {
-  transform: scale(0.97);
+  background: var(--rp-c-bg-soft);
+  box-shadow: none;
 }
 
 .zp-edit-source-btn svg {
