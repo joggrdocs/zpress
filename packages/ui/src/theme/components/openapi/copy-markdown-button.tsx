@@ -18,7 +18,11 @@ export interface CopyMarkdownButtonProps {
  * @param props - Props with the markdown string to copy to the clipboard
  * @returns React element with the copy button
  */
-export function CopyMarkdownButton({ markdown }: CopyMarkdownButtonProps): React.ReactElement {
+export function CopyMarkdownButton({ markdown }: CopyMarkdownButtonProps): React.ReactElement | null {
+  if (import.meta.env.SSG_MD) {
+    return null
+  }
+
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()

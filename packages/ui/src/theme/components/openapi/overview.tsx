@@ -10,6 +10,12 @@ export interface OpenAPIOverviewProps {
    * Parsed OpenAPI spec object.
    */
   readonly spec: Record<string, unknown>
+  /**
+   * Pre-rendered markdown for the SSG-MD pass.
+   * When provided and `import.meta.env.SSG_MD` is true, this string
+   * is rendered instead of the interactive UI.
+   */
+  readonly markdown?: string
 }
 
 interface TagInfo {
@@ -27,7 +33,11 @@ interface TagInfo {
  * @param props - Overview props with parsed spec
  * @returns React element with full API overview
  */
-export function OpenAPIOverview({ spec }: OpenAPIOverviewProps): React.ReactElement {
+export function OpenAPIOverview({ spec, markdown }: OpenAPIOverviewProps): React.ReactElement {
+  if (import.meta.env.SSG_MD && markdown) {
+    return <>{markdown}</>
+  }
+
   const info = (spec['info'] ?? {}) as Record<string, unknown>
   const description = info['description'] as string | undefined
   const servers = (spec['servers'] ?? []) as readonly Record<string, unknown>[]

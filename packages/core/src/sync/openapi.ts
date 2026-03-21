@@ -255,9 +255,15 @@ function groupByTag(operations: readonly OperationInfo[]): readonly TagGroup[] {
 /**
  * Build an MDX page for a single OpenAPI operation.
  *
+ * Wraps the interactive component with a `LlmsMarkdownOverride` component that
+ * renders the pre-generated markdown during Rspress's SSR markdown pass,
+ * so the per-page `.md` endpoint serves structured content instead of
+ * raw MDX/JSX source.
+ *
  * @private
  * @param op - Operation info (method, path, operationId, summary)
  * @param prefix - URL prefix for the OpenAPI section
+ * @param spec - Dereferenced OpenAPI spec
  * @returns Page data with MDX content importing the spec and rendering the operation
  */
 function buildOperationPage(
@@ -285,13 +291,14 @@ function buildOperationPage(
     '',
     `export const markdown = ${JSON.stringify(markdown)}`,
     '',
-    '<CopyMarkdownButton markdown={markdown} />',
+    `<CopyMarkdownButton markdown={${JSON.stringify(markdown)}} />`,
     '',
     '<OpenAPIOperation',
     '  spec={spec}',
     `  method={${JSON.stringify(op.method)}}`,
     `  path={${JSON.stringify(op.path)}}`,
     `  operationId={${JSON.stringify(op.operationId)}}`,
+    `  markdown={${JSON.stringify(markdown)}}`,
     '/>',
     '',
   ].join('\n')
@@ -306,9 +313,13 @@ function buildOperationPage(
 /**
  * Build an index/overview MDX page for the OpenAPI spec.
  *
+ * Includes a `LlmsMarkdownOverride` component so Rspress's SSR markdown pass
+ * outputs the pre-rendered overview markdown for the `.md` endpoint.
+ *
  * @private
  * @param title - Display title for the overview page
  * @param prefix - URL prefix for the OpenAPI section
+ * @param spec - Dereferenced OpenAPI spec
  * @returns Page data with MDX content rendering the overview component
  */
 function buildIndexPage(title: string, prefix: string, spec: Record<string, unknown>): PageData {
@@ -325,9 +336,9 @@ function buildIndexPage(title: string, prefix: string, spec: Record<string, unkn
     '',
     `export const markdown = ${JSON.stringify(markdown)}`,
     '',
-    '<CopyMarkdownButton markdown={markdown} />',
+    `<CopyMarkdownButton markdown={${JSON.stringify(markdown)}} />`,
     '',
-    '<OpenAPIOverview spec={spec} />',
+    `<OpenAPIOverview spec={spec} markdown={${JSON.stringify(markdown)}} />`,
     '',
   ].join('\n')
 

@@ -465,6 +465,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
             command: 'zpress.openPage',
             arguments: [`${base}${segment}`],
           }
+          item.contextValue = 'zpressLeaf'
         }
 
         return item

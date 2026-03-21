@@ -117,6 +117,74 @@ export function activate(context: ExtensionContext): void {
     treeDataProvider: { getTreeItem: () => ({ label: '' }), getChildren: () => [] },
   })
 
+  /* Server panel — shows status, start/stop, and open-in-browser as tree items */
+  const serverEmitter = new EventEmitter<void>()
+  const serverTreeView = window.createTreeView('zpress.server', {
+    treeDataProvider: {
+      onDidChangeTreeData: serverEmitter.event,
+      getTreeItem: (item: { readonly id: string }) => {
+        if (item.id === 'status') {
+          const status = server.isRunning() ? 'Running' : 'Stopped'
+          const icon = server.isRunning() ? 'circle-large-filled' : 'circle-large-outline'
+          const color = server.isRunning() ? 'charts.green' : 'descriptionForeground'
+          const port = (() => {
+            const baseUrl = server.getBaseUrl()
+            if (baseUrl) {
+              try {
+                return new URL(baseUrl).port
+              } catch {
+                return null
+              }
+            }
+            return null
+          })()
+          const description = port ? `port ${port}` : undefined
+          return {
+            label: status,
+            description,
+            iconPath: new ThemeIcon(icon, new ThemeColor(color)),
+            collapsibleState: 0,
+          }
+        }
+        if (item.id === 'toggle') {
+          const label = server.isRunning() ? 'Stop Server' : 'Start Server'
+          const icon = server.isRunning() ? 'debug-stop' : 'debug-start'
+          const command = server.isRunning() ? 'zpress.stop' : 'zpress.start'
+          return {
+            label,
+            iconPath: new ThemeIcon(icon),
+            collapsibleState: 0,
+            command: { title: label, command },
+          }
+        }
+        if (item.id === 'restart') {
+          return {
+            label: 'Restart Server',
+            iconPath: new ThemeIcon('debug-restart'),
+            collapsibleState: 0,
+            command: { title: 'Restart Server', command: 'zpress.restart' },
+          }
+        }
+        if (item.id === 'browser') {
+          return {
+            label: 'Open in Browser',
+            iconPath: new ThemeIcon('link-external'),
+            collapsibleState: 0,
+            command: { title: 'Open in Browser', command: 'zpress.openInBrowser' },
+          }
+        }
+        return { label: '' }
+      },
+      getChildren: () => {
+        const items: { readonly id: string }[] = [{ id: 'status' }, { id: 'toggle' }]
+        if (server.isRunning()) {
+          return [...items, { id: 'restart' }, { id: 'browser' }]
+        }
+        return items
+      },
+    },
+  })
+
   const sectionTreeViews = sidebar.sections.map((section) =>
     window.createTreeView(section.viewId, {
       treeDataProvider: section.treeDataProvider,
@@ -175,6 +243,7 @@ export function activate(context: ExtensionContext): void {
     onStatusChange: (status) => {
       setServerStatus(status)
       previewPanel.updateStatus(status)
+      serverEmitter.fire()
     },
     onReady: (baseUrl) => {
       manifestReader.reload(baseUrl)
@@ -246,6 +315,8 @@ export function activate(context: ExtensionContext): void {
     sidebar,
     codeLensProvider,
     loadingView,
+    serverTreeView,
+    serverEmitter,
     loadingView.onDidChangeVisibility((e) => {
       const autoStart = workspace.getConfiguration('zpress.server').get<boolean>('autoStart', true)
       if (e.visible && autoStart && !server.isRunning()) {
@@ -268,6 +339,23 @@ export function activate(context: ExtensionContext): void {
       }
     }),
     ...sectionTreeViews,
+    commands.registerCommand('zpress.editSource', async (node: { readonly link?: string }) => {
+      if (!node || !node.link) {
+        return
+      }
+      const sourcePath = manifestReader.getSourceByUrlPath(node.link)
+      if (!sourcePath) {
+        window.showErrorMessage(`No source file found for path: ${node.link}`)
+        return
+      }
+      try {
+        const doc = await workspace.openTextDocument(Uri.file(sourcePath))
+        await window.showTextDocument(doc, { preview: false, preserveFocus: false })
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error)
+        window.showErrorMessage(`Failed to open source file: ${message}`)
+      }
+    }),
     commands.registerCommand('zpress.start', () => {
       server.start()
     }),

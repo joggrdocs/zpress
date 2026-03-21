@@ -332,6 +332,12 @@ export default defineConfig({
           include: 'docs/references/vscode-extension.md',
         },
         {
+          title: 'OpenAPI',
+          description: 'Generate interactive API reference pages from an OpenAPI spec.',
+          path: '/reference/openapi',
+          include: 'docs/references/openapi.mdx',
+        },
+        {
           title: 'Built-ins',
           description: 'Components, diagrams, and markdown extensions included out of the box.',
           path: '/references/built-ins',
@@ -395,12 +401,6 @@ export default defineConfig({
               description: 'Inline superscript and subscript syntax.',
               path: '/references/built-ins/superscript-subscript',
               include: 'docs/references/built-ins/superscript-subscript.md',
-            },
-            {
-              title: 'OpenAPI',
-              description: 'Generate interactive API reference pages from an OpenAPI spec.',
-              path: '/references/built-ins/openapi',
-              include: 'docs/references/built-ins/openapi.mdx',
             },
           ],
         },

@@ -26,6 +26,12 @@ export interface OpenAPIOperationProps {
    * Operation ID for identification.
    */
   readonly operationId: string
+  /**
+   * Pre-rendered markdown for the SSG-MD pass.
+   * When provided and `import.meta.env.SSG_MD` is true, this string
+   * is rendered instead of the interactive UI.
+   */
+  readonly markdown?: string
 }
 
 /**
@@ -43,7 +49,12 @@ export function OpenAPIOperation({
   method,
   path,
   operationId,
+  markdown,
 }: OpenAPIOperationProps): React.ReactElement {
+  if (import.meta.env.SSG_MD && markdown) {
+    return <>{markdown}</>
+  }
+
   const operation = resolveOperation({ spec, path, method })
 
   return match(operation)

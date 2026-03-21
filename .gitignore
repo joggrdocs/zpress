@@ -8,9 +8,6 @@ dist/
 # Turbo
 .turbo/
 
-# zpress
-.zpress/
-
 # Vercel
 .vercel/
 
@@ -51,3 +48,9 @@ Thumbs.db
 *.vsix
 .cache/
 .vercel
+
+# zpress (ignore all except public assets)
+.zpress/*
+!.zpress/public/
+
+
