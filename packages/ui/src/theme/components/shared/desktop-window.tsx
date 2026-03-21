@@ -55,7 +55,11 @@ export function DesktopWindow({
   tabs,
   variant,
   children,
-}: DesktopWindowProps): React.ReactElement {
+}: DesktopWindowProps): React.ReactElement | null {
+  if (import.meta.env.SSG_MD) {
+    return null
+  }
+
   const className = match(variant)
     .with(P.nonNullable, (v) => `zp-window ${v}`)
     .otherwise(() => 'zp-window')
@@ -152,7 +156,20 @@ export function BrowserWindow({
   tabs,
   image,
   children,
-}: BrowserWindowProps): React.ReactElement {
+}: BrowserWindowProps): React.ReactElement | null {
+  if (import.meta.env.SSG_MD) {
+    const title = match(tab)
+      .with(P.nonNullable, (t) => t.title)
+      .otherwise(() => 'Browser')
+    const urlLine = match(url)
+      .with(P.nonNullable, (u) => `\n\n${u}`)
+      .otherwise(() => '')
+    const header = `**${title}**${urlLine}`
+    return match(children)
+      .with(P.nonNullable, (c) => <>{header}{c}</>)
+      .otherwise(() => <>{header}</>)
+  }
+
   const body = match({ children, image })
     .with({ children: P.nonNullable }, ({ children: c }) => (
       <div className="zp-window__content">{c}</div>
@@ -332,7 +349,22 @@ export interface IDEWindowProps {
  * @param props - Props with file tabs and code or children
  * @returns React element with IDE window chrome
  */
-export function IDEWindow({ files, code, lang, children }: IDEWindowProps): React.ReactElement {
+export function IDEWindow({ files, code, lang, children }: IDEWindowProps): React.ReactElement | null {
+  if (import.meta.env.SSG_MD) {
+    const activeFile = files.find((f) => f.active)
+    const filename = match(activeFile)
+      .with(P.nonNullable, (f) => f.name)
+      .otherwise(() => match(files[0]).with(P.nonNullable, (f) => f.name).otherwise(() => ''))
+    const langId = lang ?? 'text'
+    const header = `**${filename}**\n\n`
+    const codeBlock = match(code)
+      .with(P.nonNullable, (c) => `${header}\`\`\`${langId}\n${c}\n\`\`\``)
+      .otherwise(() => match(children).with(P.nonNullable, () => header).otherwise(() => null))
+    return match(codeBlock)
+      .with(P.nonNullable, (md) => <>{md}</>)
+      .otherwise(() => null)
+  }
+
   const tabs = files.map((file) => ({ name: file.name, active: file.active }))
 
   const body = match(code)
@@ -407,6 +439,10 @@ export interface TerminalWindowProps {
  * @returns React element with terminal window chrome
  */
 export function TerminalWindow({ title, children }: TerminalWindowProps): React.ReactElement {
+  if (import.meta.env.SSG_MD) {
+    return <>{children}</>
+  }
+
   return (
     <DesktopWindow variant="zp-window--terminal" title={title ?? 'Terminal'}>
       {children}
@@ -432,6 +468,10 @@ export interface CommandProps {
  * @returns React element for a terminal command line
  */
 export function Command({ children }: CommandProps): React.ReactElement {
+  if (import.meta.env.SSG_MD) {
+    return <>{`$ ${String(children)}\n`}</>
+  }
+
   return <span className="zp-term-line zp-term-line--command">{children}</span>
 }
 
@@ -449,6 +489,10 @@ export interface OutputProps {
  * @returns React element for terminal output
  */
 export function Output({ children }: OutputProps): React.ReactElement {
+  if (import.meta.env.SSG_MD) {
+    return <>{`${String(children)}\n`}</>
+  }
+
   return <span className="zp-term-line zp-term-line--output">{children}</span>
 }
 
@@ -479,6 +523,10 @@ export interface LineProps {
  * @returns React element with colored terminal text
  */
 export function Line({ color, bold, dim, children }: LineProps): React.ReactElement {
+  if (import.meta.env.SSG_MD) {
+    return <>{String(children)}</>
+  }
+
   const classes = [
     match(color)
       .with(P.nonNullable, (c) => `zp-term-text--${c}`)

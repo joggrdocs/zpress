@@ -43,6 +43,11 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
     return ''
   })()
 
+  // Only warn for user-authored source files, not generated pages
+  if (page.source) {
+    warnMdxExports(content, page.outputPath)
+  }
+
   const contentHash = createHash('sha256').update(content).digest('hex')
 
   // Store source as repo-relative path (not machine-local absolute path)
@@ -136,6 +141,76 @@ function rewriteSourceImages(content: string, page: PageData, ctx: SyncContext):
     repoRoot: ctx.repoRoot,
     outDir: ctx.outDir,
   })
+}
+
+/**
+ * Merge frontmatter into markdown.
+ * Config-level frontmatter acts as defaults; source file frontmatter wins.
+ *
+ * @private
+ * @param raw - Raw markdown content (may include existing frontmatter)
+ * @param fm - Frontmatter key-value pairs to inject as defaults
+ * @returns Markdown string with merged frontmatter
+ */
+/**
+ * Regex matching ESM export declarations that `remarkSplitMdx` strips during SSG-MD.
+ *
+ * @private
+ */
+const MDX_EXPORT_PATTERN = /^export\s+(const|let|var|function|default)\s/
+
+/**
+ * Warn when an `.mdx` file contains top-level ESM exports outside fenced code blocks.
+ *
+ * Rspress's `remarkSplitMdx` strips all `mdxjsEsm` nodes during the SSG-MD pass,
+ * so any `export const` referenced by JSX will cause a `ReferenceError` at build time.
+ * This check catches those issues early during sync.
+ *
+ * @private
+ * @param content - Full page content string
+ * @param outputPath - Output path used for the warning message
+ */
+function warnMdxExports(content: string, outputPath: string): void {
+  if (!outputPath.endsWith('.mdx')) {
+    return
+  }
+
+  const lines = content.split('\n')
+  const exportLines = lines.reduce<readonly number[]>((acc, line, index) => {
+    if (MDX_EXPORT_PATTERN.test(line)) {
+      return [...acc, index + 1]
+    }
+    return acc
+  }, [])
+
+  if (exportLines.length === 0) {
+    return
+  }
+
+  // Filter out exports inside fenced code blocks
+  const fenceRanges = lines.reduce<readonly (readonly [number, number])[]>((acc, line, index) => {
+    const isFence = line.trimStart().startsWith('```')
+    const lastRange = acc[acc.length - 1]
+    if (isFence && lastRange && lastRange[1] === -1) {
+      return [...acc.slice(0, -1), [lastRange[0], index + 1] as const]
+    }
+    if (isFence) {
+      return [...acc, [index + 1, -1] as const]
+    }
+    return acc
+  }, [])
+
+  const outsideFence = exportLines.filter(
+    (lineNum) => !fenceRanges.some(([start, end]) => lineNum >= start && (end === -1 || lineNum <= end))
+  )
+
+  if (outsideFence.length > 0) {
+    log.warn(
+      `[zpress] ${outputPath}: found ESM export(s) on line(s) ${outsideFence.join(', ')}. ` +
+        'ESM exports are stripped during SSG-MD rendering and will cause ReferenceErrors ' +
+        'if referenced by JSX. Use inline values instead.'
+    )
+  }
 }
 
 /**
