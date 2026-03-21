@@ -1,5 +1,11 @@
 # zpress-vscode
 
+## 0.2.1
+
+### Patch Changes
+
+- a57d0f3: Improve VS Code extension UX, add new commands, and update marketplace assets
+
 ## 0.2.0
 
 ### Minor Changes

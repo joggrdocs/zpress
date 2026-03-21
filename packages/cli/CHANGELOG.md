@@ -1,5 +1,21 @@
 # @zpress/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- 1f6b8c1: Add `zpress diff` command to show changed files in configured source directories
+
+### Patch Changes
+
+- 03b0726: Wait for port release before restarting dev server to prevent EADDRINUSE errors
+- 179ae48: Add sidebar button variants (style/shape), site footer with social links toggle, client-side navigation via Link, typed IconId, and ESM compatibility patches for rspress plugins
+- Updated dependencies [d8cf9b2]
+- Updated dependencies [8a125b8]
+- Updated dependencies [179ae48]
+  - @zpress/ui@0.8.0
+  - @zpress/core@0.7.1
+
 ## 0.3.4
 
 ### Patch Changes

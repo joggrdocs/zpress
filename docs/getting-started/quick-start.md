@@ -65,7 +65,7 @@ This copies and processes your source markdown into the `.zpress/content/` build
 | `zpress check`    | Validate config and check for broken links        |
 | `zpress draft`    | Scaffold a new documentation file from a template |
 | `zpress clean`    | Remove build artifacts, synced content, and cache |
-| `zpress dump`     | Print the resolved site structure as JSON          |
+| `zpress dump`     | Print the resolved site structure as JSON         |
 | `zpress generate` | Generate banner, logo, and icon SVG assets        |
 
 ## Project structure
