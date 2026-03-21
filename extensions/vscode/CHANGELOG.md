@@ -1,5 +1,11 @@
 # zpress-vscode
 
+## 0.2.2
+
+### Patch Changes
+
+- 9bbd6e5: fix README images to use absolute GitHub URLs instead of relative paths
+
 ## 0.2.1
 
 ### Patch Changes
