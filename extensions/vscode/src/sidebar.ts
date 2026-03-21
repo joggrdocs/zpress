@@ -51,11 +51,18 @@ interface SidebarDeps {
   readonly RelativePattern: new (base: string, pattern: string) => RelativePattern
 }
 
+interface SidebarMatch {
+  readonly sectionIndex: number
+  readonly node: SidebarNode
+}
+
 interface Sidebar extends Disposable {
   readonly sections: readonly SectionView[]
   readonly activeSectionCount: () => number
   readonly onDidReload: Event<void>
   readonly setBaseUrl: (url: string) => void
+  readonly findNodeByPath: (path: string) => SidebarMatch | null
+  readonly refreshSections: (exclude: number) => void
 }
 
 /**
@@ -65,25 +72,6 @@ const MAX_SECTIONS = 8
 
 const SIDEBAR_RELATIVE = path.join('.zpress', 'content', '.generated', 'sidebar.json')
 
-const ITEM_ICONS: Readonly<Record<string, string>> = {
-  'getting started': 'zap',
-  guides: 'book',
-  guide: 'book',
-  reference: 'references',
-  references: 'references',
-  contributing: 'git-merge',
-  apps: 'window',
-  packages: 'package',
-  api: 'plug',
-  overview: 'info',
-  standards: 'checklist',
-  concepts: 'lightbulb',
-  icons: 'symbol-color',
-  configuration: 'gear',
-  config: 'gear',
-  integrations: 'extensions',
-  architecture: 'symbol-structure',
-}
 
 const HTTP_METHODS: ReadonlySet<string> = new Set([
   'GET',
@@ -158,12 +146,66 @@ function parseOpenApiLabel(html: string): { readonly method: string; readonly pa
   return { method, path: apiPath }
 }
 
-function getIconId(node: SidebarNode): string {
-  const key = node.label.toLowerCase()
-  const mapped = ITEM_ICONS[key]
-  if (mapped) {
-    return mapped
+/**
+ * Normalize a URL path for comparison: strip trailing slash, default empty to '/'.
+ *
+ * @param p - URL path string
+ * @returns Normalized path
+ */
+function normalizePath(p: string): string {
+  if (p === '' || p === '/') {
+    return '/'
   }
+  if (p.endsWith('/')) {
+    return p.slice(0, -1)
+  }
+  return p
+}
+
+/**
+ * Search a tree of sidebar nodes for one whose link matches the given path.
+ *
+ * @param nodes - Nodes to search
+ * @param targetPath - Normalized URL path to match
+ * @returns Matching node or null
+ */
+function findInNodes(nodes: readonly SidebarNode[], targetPath: string): SidebarNode | null {
+  return nodes.reduce<SidebarNode | null>((found, node) => {
+    if (found) {
+      return found
+    }
+    if (node.link && normalizePath(node.link) === targetPath) {
+      return node
+    }
+    return findInNodes(node.children, targetPath)
+  }, null)
+}
+
+/**
+ * Build a map from child node to parent node for a tree.
+ *
+ * @param nodes - Root nodes
+ * @param parentMap - Map to populate (mutated for performance)
+ * @returns The populated parent map
+ */
+function buildParentMap(
+  nodes: readonly SidebarNode[],
+  parentMap: Map<SidebarNode, SidebarNode>
+): Map<SidebarNode, SidebarNode> {
+  // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (populating parent map)
+  nodes.map((node) => {
+    // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (populating parent map)
+    node.children.map((child) => {
+      parentMap.set(child, node)
+      return null
+    })
+    buildParentMap(node.children, parentMap)
+    return null
+  })
+  return parentMap
+}
+
+function getIconId(node: SidebarNode): string {
   if (node.children.length > 0) {
     return 'folder'
   }
@@ -266,6 +308,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
   const state = {
     sections: [] as readonly SidebarSection[],
     baseUrl: null as string | null,
+    parentMap: new Map<SidebarNode, SidebarNode>(),
   }
 
   const sectionEmitters = Array.from(
@@ -282,6 +325,12 @@ function createSidebar(deps: SidebarDeps): Sidebar {
     } else {
       state.sections = []
     }
+    state.parentMap = new Map()
+    // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (building parent map)
+    state.sections.map((section) => {
+      buildParentMap(section.items, state.parentMap)
+      return null
+    })
     if (state.sections.length > MAX_SECTIONS) {
       console.warn(
         `[zpress] sidebar has ${String(state.sections.length)} sections but only ${String(MAX_SECTIONS)} are supported`
@@ -367,6 +416,10 @@ function createSidebar(deps: SidebarDeps): Sidebar {
         return item
       },
 
+      getParent: (node: SidebarNode): SidebarNode | undefined => {
+        return state.parentMap.get(node)
+      },
+
       getChildren: (node?: SidebarNode): SidebarNode[] => {
         if (node) {
           return [...node.children]
@@ -399,6 +452,29 @@ function createSidebar(deps: SidebarDeps): Sidebar {
     sections,
     activeSectionCount: () => state.sections.length,
     onDidReload: reloadEmitter.event,
+    findNodeByPath: (urlPath: string): SidebarMatch | null => {
+      const target = normalizePath(urlPath)
+      return state.sections.reduce<SidebarMatch | null>((found, section, i) => {
+        if (found) {
+          return found
+        }
+        const node = findInNodes(section.items, target)
+        if (node) {
+          return { sectionIndex: i, node }
+        }
+        return null
+      }, null)
+    },
+    refreshSections: (exclude: number): void => {
+      // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (clearing selection in other sections)
+      sectionEmitters.map((e, i) => {
+        if (i !== exclude) {
+          // oxlint-disable-next-line no-useless-undefined -- EventEmitter.fire requires explicit undefined argument
+          e.fire(undefined)
+        }
+        return null
+      })
+    },
     setBaseUrl: (url: string): void => {
       state.baseUrl = url
       // oxlint-disable-next-line no-unused-expressions, no-useless-undefined -- EventEmitter.fire requires explicit undefined argument
@@ -414,4 +490,4 @@ function createSidebar(deps: SidebarDeps): Sidebar {
 }
 
 export { createSidebar, MAX_SECTIONS }
-export type { Sidebar, SidebarNode }
+export type { Sidebar, SidebarMatch, SidebarNode }

@@ -25,7 +25,7 @@ There are great documentation tools — [VitePress](https://vitepress.dev), [Rsp
 
 **Your structure, not ours.** The config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
 
-**AI-friendly by design.** AI coding tools generate markdown effortlessly — but most doc frameworks can't keep up without manual wiring. zpress closes that gap. It auto-generates `llms.txt` for LLM discovery, serves every page as raw `text/markdown` for agent consumption, and glob discovery picks up new files without config changes. Your AI writes the docs, zpress handles the rest.
+**AI-friendly by design.** zpress auto-generates `llms.txt` and serves every page as `text/markdown` — just append `.md` to any URL.
 
 ## Features
 
@@ -46,7 +46,7 @@ There are great documentation tools — [VitePress](https://vitepress.dev), [Rsp
   />
   <FeatureCard
     title="AI-Friendly"
-    description="Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes."
+    description="Auto-generated llms.txt and every page served as text/markdown — just append .md to any URL."
     href="/concepts/content"
     icon={{ id: 'pixelarticons:robot', color: 'green' }}
     span={4}

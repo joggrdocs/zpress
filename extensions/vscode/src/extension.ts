@@ -93,6 +93,7 @@ export function activate(context: ExtensionContext): void {
     asExternalUri: (uri) => env.asExternalUri(uri),
     parseUri: (value) => Uri.parse(value),
     iconPath: Uri.joinPath(context.extensionUri, 'resources', 'icon.svg'),
+    EventEmitter,
     onError: (message) => {
       outputChannel.appendLine(`[zpress] ${message}`)
     },
@@ -121,6 +122,23 @@ export function activate(context: ExtensionContext): void {
       showCollapseAll: true,
     })
   )
+
+  /**
+   * Reveal the sidebar node matching the given URL path, expanding its
+   * parent group and selecting it in the correct section tree view.
+   */
+  function revealSidebarNode(urlPath: string): void {
+    const match = sidebar.findNodeByPath(urlPath)
+    if (!match) {
+      return
+    }
+    const treeView = sectionTreeViews[match.sectionIndex]
+    if (!treeView) {
+      return
+    }
+    sidebar.refreshSections(match.sectionIndex)
+    treeView.reveal(match.node, { select: true, focus: false, expand: true })
+  }
 
   function refreshSectionViews(): void {
     const activeCount = sidebar.activeSectionCount()
@@ -231,6 +249,21 @@ export function activate(context: ExtensionContext): void {
       if (e.visible && autoStart && !server.isRunning()) {
         server.start()
       }
+    }),
+    previewPanel.onNavigate(revealSidebarNode),
+    previewPanel.onEdit((urlPath: string) => {
+      const sourcePath = manifestReader.getSourceByUrlPath(urlPath)
+      if (!sourcePath) {
+        window.showErrorMessage(`No source file found for path: ${urlPath}`)
+        return
+      }
+      workspace.openTextDocument(Uri.file(sourcePath)).then(
+        (doc) => window.showTextDocument(doc, { preview: false, preserveFocus: false }),
+        (error: unknown) => {
+          const message = error instanceof Error ? error.message : String(error)
+          window.showErrorMessage(`Failed to open source file: ${message}`)
+        }
+      )
     }),
     ...sectionTreeViews,
     commands.registerCommand('zpress.start', () => {

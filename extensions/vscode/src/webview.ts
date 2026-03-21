@@ -16,6 +16,7 @@ interface PreviewPanel extends Disposable {
   readonly open: (url: string) => void
   readonly updateStatus: (status: ServerStatus) => void
   readonly onNavigate: Event<string>
+  readonly onEdit: Event<string>
 }
 
 interface PreviewPanelDeps {
@@ -139,7 +140,10 @@ function getRunningHtml(serverUri: string, cspSource: string): string {
     var vscode = acquireVsCodeApi();
     window.addEventListener('message', function(e) {
       if (e.data && e.data.type === 'zpress:navigate') {
-        vscode.postMessage({ command: 'navigate', path: e.data.path });
+        vscode.postMessage({ command: 'navigate', path: e.data.path, title: e.data.title });
+      }
+      if (e.data && e.data.type === 'zpress:edit') {
+        vscode.postMessage({ command: 'edit', path: e.data.path });
       }
     });
   </script>
@@ -156,6 +160,7 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
    * when reusing a single webview panel across multiple opens.
    */
   const navigateEmitter = new deps.EventEmitter<string>()
+  const editEmitter = new deps.EventEmitter<string>()
 
   const state = {
     panel: null as WebviewPanel | null,
@@ -198,11 +203,22 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
 
       state.panel.iconPath = deps.iconPath
 
-      state.panel.webview.onDidReceiveMessage((message: { readonly command: string }) => {
-        if (message.command === 'start') {
-          deps.onStart()
+      state.panel.webview.onDidReceiveMessage(
+        (message: { readonly command: string; readonly path?: string; readonly title?: string }) => {
+          if (message.command === 'start') {
+            deps.onStart()
+          }
+          if (message.command === 'navigate' && message.path) {
+            navigateEmitter.fire(message.path)
+          }
+          if (message.command === 'navigate' && message.title && state.panel) {
+            state.panel.title = message.title
+          }
+          if (message.command === 'edit' && message.path) {
+            editEmitter.fire(message.path)
+          }
         }
-      })
+      )
 
       updatePanel()
       state.panel.onDidDispose(() => {
@@ -232,7 +248,11 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
   return {
     open,
     updateStatus,
+    onNavigate: navigateEmitter.event,
+    onEdit: editEmitter.event,
     dispose: (): void => {
+      navigateEmitter.dispose()
+      editEmitter.dispose()
       if (state.panel) {
         state.panel.dispose()
       }

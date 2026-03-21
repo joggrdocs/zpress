@@ -25,6 +25,7 @@ interface Manifest {
 interface ManifestReader extends Disposable {
   readonly getUrl: (fsPath: string) => string | undefined
   readonly getPath: (fsPath: string) => string | undefined
+  readonly getSourceByUrlPath: (urlPath: string) => string | undefined
   readonly isTracked: (fsPath: string) => boolean
   readonly reload: (baseUrl?: string | null) => void
   readonly onDidChange: Event<void>
@@ -73,13 +74,35 @@ function buildPathMap(
   )
 }
 
+function buildUrlToSourceMap(
+  manifest: Manifest | null,
+  workspaceRoot: string
+): ReadonlyMap<string, string> {
+  if (!manifest) {
+    return new Map()
+  }
+
+  return new Map(
+    Object.values(manifest.files)
+      .filter((entry): entry is ManifestFileEntry & { source: string } => Boolean(entry.source))
+      .map((entry) => {
+        const urlPath = entry.outputPath.replace(/\.md$/, '')
+        const normalized = urlPath.startsWith('/') ? urlPath : `/${urlPath}`
+        const absoluteSource = path.resolve(workspaceRoot, entry.source)
+        return [normalized, absoluteSource] as const
+      })
+  )
+}
+
 /**
  * Creates a manifest reader that watches for changes to the generated manifest.json.
  */
 function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
   const emitter = new deps.EventEmitter()
+  const initialManifest = readManifest(deps.workspaceRoot)
   const state = {
-    pathMap: buildPathMap(readManifest(deps.workspaceRoot), deps.workspaceRoot),
+    pathMap: buildPathMap(initialManifest, deps.workspaceRoot),
+    urlToSourceMap: buildUrlToSourceMap(initialManifest, deps.workspaceRoot),
     baseUrl: null as string | null,
   }
 
@@ -87,7 +110,9 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
     if (baseUrl !== undefined) {
       state.baseUrl = baseUrl
     }
-    state.pathMap = buildPathMap(readManifest(deps.workspaceRoot), deps.workspaceRoot)
+    const manifest = readManifest(deps.workspaceRoot)
+    state.pathMap = buildPathMap(manifest, deps.workspaceRoot)
+    state.urlToSourceMap = buildUrlToSourceMap(manifest, deps.workspaceRoot)
     emitter.fire()
   }
 
@@ -102,6 +127,18 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
 
   return {
     getPath: (fsPath: string): string | undefined => state.pathMap.get(fsPath),
+    getSourceByUrlPath: (urlPath: string): string | undefined => {
+      const normalized = urlPath.startsWith('/') ? urlPath : `/${urlPath}`
+      /* Try exact match first, then without trailing slash */
+      const exact = state.urlToSourceMap.get(normalized)
+      if (exact) {
+        return exact
+      }
+      if (normalized.endsWith('/')) {
+        return state.urlToSourceMap.get(normalized.slice(0, -1))
+      }
+      return state.urlToSourceMap.get(`${normalized}/`)
+    },
     getUrl: (fsPath: string): string | undefined => {
       const urlPath = state.pathMap.get(fsPath)
       if (!urlPath || !state.baseUrl) {

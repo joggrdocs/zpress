@@ -23,6 +23,43 @@ html[data-zpress-env='vscode'] .rp-doc-layout__doc {
   margin: 0 auto;
 }
 
+/* ── Edit source button (inside .rp-llms-container) ────── */
+.zp-edit-source-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  margin-right: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--rp-font-family-base, system-ui, sans-serif);
+  color: var(--zp-c-text-2, var(--rp-c-text-2));
+  background: transparent;
+  border: 1px solid var(--zp-c-divider, var(--rp-c-divider));
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.zp-edit-source-btn:hover {
+  color: var(--zp-c-brand-1, var(--rp-c-brand));
+  border-color: var(--zp-c-brand-1, var(--rp-c-brand));
+  background: color-mix(in srgb, var(--zp-c-brand-1, var(--rp-c-brand)) 8%, transparent);
+}
+
+.zp-edit-source-btn:active {
+  transform: scale(0.97);
+}
+
+.zp-edit-source-btn svg {
+  flex-shrink: 0;
+}
+
 /* Hide nav items, social links, hamburger, mobile nav, appearance toggle */
 html[data-zpress-env='vscode'] .rp-nav-menu__item,
 html[data-zpress-env='vscode'] .rp-social-links,
@@ -32,6 +69,7 @@ html[data-zpress-env='vscode'] .rp-nav-screen-menu,
 html[data-zpress-env='vscode'] .rp-local-nav,
 html[data-zpress-env='vscode'] .rp-switch-appearance,
 html[data-zpress-env='vscode'] .rp-nav-screen-appearance,
-html[data-zpress-env='vscode'] .rp-doc-layout__menu {
+html[data-zpress-env='vscode'] .rp-doc-layout__menu,
+html[data-zpress-env='vscode'] .zp-site-footer {
   display: none;
 }
