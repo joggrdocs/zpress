@@ -8,6 +8,7 @@ export default defineConfig({
       syntax: 'esnext',
       autoExtension: false,
       autoExternal: true,
+      shims: { esm: { __dirname: true, __filename: true, require: true } },
       dts: { bundle: true },
       source: {
         entry: {
