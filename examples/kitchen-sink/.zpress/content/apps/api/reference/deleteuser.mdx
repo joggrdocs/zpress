@@ -1,0 +1,13 @@
+---
+title: Delete user
+---
+
+import spec from './openapi.json'
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  spec={spec}
+  method={"delete"}
+  path={"/users/{id}"}
+  operationId={"deleteUser"}
+/>

@@ -1,0 +1,193 @@
+{
+  "files": {
+    "getting-started.md": {
+      "source": "docs/getting-started.md",
+      "sourceMtime": 1773092087492.3193,
+      "contentHash": "046eebf674b4cea17d476cf4ecc36b6f5ae2b11c4fdc8f94f972eb94733331f9",
+      "outputPath": "getting-started.md"
+    },
+    "architecture.md": {
+      "source": "docs/architecture.md",
+      "sourceMtime": 1773092087483.8267,
+      "contentHash": "916d66dbe65be4592d6f1f2d9a864bb95422d1dc7bed254d91cfd7bcaa542c69",
+      "outputPath": "architecture.md"
+    },
+    "guides.mdx": {
+      "contentHash": "32885007f1a1a491aacfb3d02f64bebd2aac258c443cbd60d141ce1914b0a094",
+      "outputPath": "guides.mdx"
+    },
+    "guides/adding-a-package.md": {
+      "source": "docs/guides/adding-a-package.md",
+      "sourceMtime": 1773176139257.92,
+      "contentHash": "4180ecf7d70d99cd8a2cdfa889903d5ba9e3a3e2cbfcc139a9349f059e5a50f0",
+      "outputPath": "guides/adding-a-package.md"
+    },
+    "guides/deployment.md": {
+      "source": "docs/guides/deployment.md",
+      "sourceMtime": 1773090732470.5154,
+      "contentHash": "4fb0f0b9e38c3dc1cf4377aaf1e6a4e379d10f7923f11dcb8ac9c7f9555475a9",
+      "outputPath": "guides/deployment.md"
+    },
+    "guides/local-development.md": {
+      "source": "docs/guides/local-development.md",
+      "sourceMtime": 1773092087474.4624,
+      "contentHash": "ab7b1d6a726fe07bfe0865b3a95d5a2e376c842dac80d0ff91f23e26ec5f535d",
+      "outputPath": "guides/local-development.md"
+    },
+    "contributing/guides.mdx": {
+      "contentHash": "9b4800ca6d24cf34d8ba85c6fc765ff1287088c99f6f8b2f07ce9ef045e2a0e2",
+      "outputPath": "contributing/guides.mdx"
+    },
+    "contributing/guides/code-style.md": {
+      "source": "contributing/guides/code-style.md",
+      "sourceMtime": 1773092087483.8264,
+      "contentHash": "bff4b044b217d238d0d6d067382e3b1990670bddd51d7fe86ace23cf375056c7",
+      "outputPath": "contributing/guides/code-style.md"
+    },
+    "contributing/guides/pull-requests.md": {
+      "source": "contributing/guides/pull-requests.md",
+      "sourceMtime": 1773090836519.419,
+      "contentHash": "0ce460f50f9484f5ad5a3eccbdd3d0560c423cd11980f1ee5ccbefbd9bc576a5",
+      "outputPath": "contributing/guides/pull-requests.md"
+    },
+    "contributing.md": {
+      "source": "contributing/README.md",
+      "sourceMtime": 1773090836514.5498,
+      "contentHash": "76ad4475cdc218d5fe7414237adca418a7ec182e3f45e7c4f4e7cdfa6ca065c2",
+      "outputPath": "contributing.md"
+    },
+    "apps.mdx": {
+      "contentHash": "c2f0e0ddadf047e88e2cf2b55c03e606a860c769c1ef27a3942adbab02bd062c",
+      "outputPath": "apps.mdx"
+    },
+    "apps/web.md": {
+      "source": "apps/web/docs/overview.md",
+      "sourceMtime": 1773092087464.6833,
+      "contentHash": "a171ac61fd3cb9323dfdc4f2eaca4b8f4f04ef02c788becfa1a1493dc17c08b5",
+      "outputPath": "apps/web.md"
+    },
+    "apps/web/deployment.md": {
+      "source": "apps/web/docs/deployment.md",
+      "sourceMtime": 1773092087471.2249,
+      "contentHash": "9b37e2117783cd19db074ee900afcface6966c369d9be80659856ab3b6314408",
+      "outputPath": "apps/web/deployment.md"
+    },
+    "apps/web/routing.md": {
+      "source": "apps/web/docs/routing.md",
+      "sourceMtime": 1773090768776.6353,
+      "contentHash": "f364d7190db76d6e86970a4ddc24f01ed22d444adcda91d915e90b800273af99",
+      "outputPath": "apps/web/routing.md"
+    },
+    "apps/api.md": {
+      "contentHash": "a654eb322e31cc3a630c8ccee4f4121003e0d1ea192994415cb35db3a57733c5",
+      "outputPath": "apps/api.md"
+    },
+    "packages.mdx": {
+      "contentHash": "d242d0a4734c3c0d6a94efba1d377db0dc5747e5b3bb7ba875ebd64a27be308c",
+      "outputPath": "packages.mdx"
+    },
+    "packages/config.md": {
+      "source": "packages/config/docs/overview.md",
+      "sourceMtime": 1773092087526.6707,
+      "contentHash": "457f792c49b6fe40540466fdc7233206b1583d932c69d842c6df1628601ce130",
+      "outputPath": "packages/config.md"
+    },
+    "packages/db.md": {
+      "source": "packages/db/docs/overview.md",
+      "sourceMtime": 1773092087507.569,
+      "contentHash": "ad2c9a5ed39f15d952c42a63351c96106fa4f5dec6c5f7796383c735a34aeca8",
+      "outputPath": "packages/db.md"
+    },
+    "packages/db/migrations.md": {
+      "source": "packages/db/docs/migrations.md",
+      "sourceMtime": 1773090817711.1426,
+      "contentHash": "04b83e45a806ac5cd9588d198cf0558e4f87af0aa60163e5ce2bb6c6c047ced7",
+      "outputPath": "packages/db/migrations.md"
+    },
+    "packages/db/schema.md": {
+      "source": "packages/db/docs/schema.md",
+      "sourceMtime": 1773090817709.4297,
+      "contentHash": "67c9e64a5d86a7099bfb7b92df601d35a549d8644f9feda7bef217583bb26df8",
+      "outputPath": "packages/db/schema.md"
+    },
+    "packages/ui.md": {
+      "source": "packages/ui/docs/overview.md",
+      "sourceMtime": 1773090817701.935,
+      "contentHash": "4d16bd03b425f8c8bca4fd08e300a68235e4c2c721563aed0515734969f477a9",
+      "outputPath": "packages/ui.md"
+    },
+    "packages/ui/components.md": {
+      "source": "packages/ui/docs/components.md",
+      "sourceMtime": 1773092087526.6697,
+      "contentHash": "4ce38b6085c3c8decff3a6a8e70b52a6180511dc3ca3c8ffa43be2b5d1097570",
+      "outputPath": "packages/ui/components.md"
+    },
+    "packages/ui/theming.md": {
+      "source": "packages/ui/docs/theming.md",
+      "sourceMtime": 1773092087526.691,
+      "contentHash": "ba01fd225478f637357250ff646f924223db6ae3a3befe417124aa8032686432",
+      "outputPath": "packages/ui/theming.md"
+    },
+    "integrations.mdx": {
+      "contentHash": "d1d0c5e7b732f8c5cf42e95651864c8a88719310f4f0a68e2971cc5f73aef588",
+      "outputPath": "integrations.mdx"
+    },
+    "integrations/stripe.md": {
+      "contentHash": "06ee10ae1a4d36db22481f6d9877773b85abd59e504b729a4a81fd0c2f231033",
+      "outputPath": "integrations/stripe.md"
+    },
+    "index.md": {
+      "contentHash": "c04c47827f355eb5c5684736e0560106a0b1a3a27562ccef33868c41e7428c53",
+      "outputPath": "index.md"
+    },
+    "apps/api/reference/openapi.json": {
+      "contentHash": "43b95a5659c4d7a3d25e68178ae6e92da071160b0c27e5769495cc321e2881b1",
+      "outputPath": "apps/api/reference/openapi.json"
+    },
+    "apps/api/reference/index.mdx": {
+      "contentHash": "429e934a30d7f945acd4aea12bfde9c35c8eee4f67b58913d2be2eac0935a65a",
+      "outputPath": "apps/api/reference/index.mdx"
+    },
+    "apps/api/reference/listusers.mdx": {
+      "contentHash": "5a18c902309aaf7013f80590154f8ee39290ce604f5ac2258322aa6124e13093",
+      "outputPath": "apps/api/reference/listusers.mdx"
+    },
+    "apps/api/reference/createuser.mdx": {
+      "contentHash": "63cbcdd3571c547fa3d77343c9d41a18f8d9c3afe4d6bbf343abd2529674475f",
+      "outputPath": "apps/api/reference/createuser.mdx"
+    },
+    "apps/api/reference/getuser.mdx": {
+      "contentHash": "46fad67c185448c9dc502cdfa9fdcae486c284964a8cdc538e3837e99424edb8",
+      "outputPath": "apps/api/reference/getuser.mdx"
+    },
+    "apps/api/reference/updateuser.mdx": {
+      "contentHash": "4f5202f780e6ad0afd3141c012ec33564d85207ff2c99ebe7e8f7d82ef0d9d00",
+      "outputPath": "apps/api/reference/updateuser.mdx"
+    },
+    "apps/api/reference/deleteuser.mdx": {
+      "contentHash": "6902a83571cbaa503b560e6a399131f507c87992fe35ddf38475657254aa4150",
+      "outputPath": "apps/api/reference/deleteuser.mdx"
+    },
+    "apps/api/reference/listteams.mdx": {
+      "contentHash": "706418e9828b1ab30644aceee73eb79f22f48c64691a395a86877439086b935e",
+      "outputPath": "apps/api/reference/listteams.mdx"
+    },
+    "apps/api/reference/createteam.mdx": {
+      "contentHash": "edaa18eb8538fa22cbc7b5849d753583df9b0eab310b2a7f845273fa0c37feb5",
+      "outputPath": "apps/api/reference/createteam.mdx"
+    },
+    "apps/api/reference/listteammembers.mdx": {
+      "contentHash": "a057cea0ac819685923733b8312f15a2b0bf159c351db9b07fff3f0b887851b8",
+      "outputPath": "apps/api/reference/listteammembers.mdx"
+    },
+    "apps/api/reference/login.mdx": {
+      "contentHash": "dd24aee9d83eb982f614e3746806e9670343e47d7d1e8c043830d0f190cc6aba",
+      "outputPath": "apps/api/reference/login.mdx"
+    },
+    "apps/api/reference/refreshtoken.mdx": {
+      "contentHash": "eef61a956df47839e6cd87d422f4ae1996212e1b8ac5bace231fef0152c4df13",
+      "outputPath": "apps/api/reference/refreshtoken.mdx"
+    }
+  },
+  "timestamp": 1773936311745
+}

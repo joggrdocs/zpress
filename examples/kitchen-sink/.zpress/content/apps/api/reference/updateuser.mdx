@@ -1,0 +1,13 @@
+---
+title: Update user
+---
+
+import spec from './openapi.json'
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  spec={spec}
+  method={"patch"}
+  path={"/users/{id}"}
+  operationId={"updateUser"}
+/>

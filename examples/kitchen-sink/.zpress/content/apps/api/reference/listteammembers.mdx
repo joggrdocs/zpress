@@ -1,0 +1,13 @@
+---
+title: List team members
+---
+
+import spec from './openapi.json'
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  spec={spec}
+  method={"get"}
+  path={"/teams/{id}/members"}
+  operationId={"listTeamMembers"}
+/>

@@ -1,0 +1,13 @@
+---
+title: Refresh token
+---
+
+import spec from './openapi.json'
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  spec={spec}
+  method={"post"}
+  path={"/auth/refresh"}
+  operationId={"refreshToken"}
+/>

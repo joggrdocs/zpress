@@ -1,0 +1,13 @@
+---
+title: Get user by ID
+---
+
+import spec from './openapi.json'
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  spec={spec}
+  method={"get"}
+  path={"/users/{id}"}
+  operationId={"getUser"}
+/>

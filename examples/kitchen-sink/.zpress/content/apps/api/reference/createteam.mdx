@@ -1,0 +1,13 @@
+---
+title: Create team
+---
+
+import spec from './openapi.json'
+import { OpenAPIOperation } from '@zpress/ui/theme'
+
+<OpenAPIOperation
+  spec={spec}
+  method={"post"}
+  path={"/teams"}
+  operationId={"createTeam"}
+/>
