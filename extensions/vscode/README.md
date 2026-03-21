@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
-<img src="resources/logo.png" alt="zpress" width="420" />
+<img src="https://raw.githubusercontent.com/joggrdocs/zpress/main/extensions/vscode/resources/logo.png" alt="zpress" width="420" />
 
 <br />
 <br />
@@ -21,7 +21,7 @@
 This extension brings your zpress docs into VS Code so you can browse them without leaving your editor.
 
 <div align="center">
-<img src="resources/screenshot-base.png" alt="zpress in VS Code" width="100%" />
+<img src="https://raw.githubusercontent.com/joggrdocs/zpress/main/extensions/vscode/resources/screenshot-base.png" alt="zpress in VS Code" width="100%" />
 </div>
 
 ## Features
@@ -35,7 +35,7 @@ This extension brings your zpress docs into VS Code so you can browse them witho
 ### OpenAPI
 
 <div align="center">
-<img src="resources/screenshot-openapi.png" alt="zpress OpenAPI reference" width="100%" />
+<img src="https://raw.githubusercontent.com/joggrdocs/zpress/main/extensions/vscode/resources/screenshot-openapi.png" alt="zpress OpenAPI reference" width="100%" />
 </div>
 
 ## Getting Started
