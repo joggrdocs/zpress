@@ -4,6 +4,7 @@ import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'ts-pattern'
 
+import { normalizeInclude } from '../../glob.ts'
 import type { Section, Frontmatter } from '../../types.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
@@ -378,21 +379,4 @@ function resolveSectionLink(
     return `${subPrefix}/${entryFile}`
   }
   return undefined
-}
-
-/**
- * Normalize include to a string array.
- *
- * @private
- * @param include - String, array of strings, or undefined
- * @returns Array of include patterns
- */
-function normalizeInclude(include: string | readonly string[] | undefined): readonly string[] {
-  if (include === null || include === undefined) {
-    return []
-  }
-  if (typeof include === 'string') {
-    return [include]
-  }
-  return include
 }

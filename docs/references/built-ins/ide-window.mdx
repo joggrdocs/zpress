@@ -21,7 +21,9 @@ import { IDEWindow } from '@theme'
 <IDEWindow
   files={[{ name: 'zpress.config.ts', active: true }]}
   lang="ts"
-  code={"import { defineConfig } from '@zpress/kit'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"}
+  code={
+    "import { defineConfig } from '@zpress/kit'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+  }
 />
 ```
 
@@ -30,7 +32,9 @@ import { IDEWindow } from '@theme'
 <IDEWindow
   files={[{ name: 'zpress.config.ts', active: true }]}
   lang="ts"
-  code={"import { defineConfig } from '@zpress/kit'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"}
+  code={
+    "import { defineConfig } from '@zpress/kit'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+  }
 />
 
 ## Multiple tabs
@@ -65,7 +69,9 @@ Use full paths for clarity in monorepo contexts:
 <IDEWindow
   files={[{ name: 'packages/core/src/sync/index.ts', active: true }]}
   lang="ts"
-  code={"import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"}
+  code={
+    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
+  }
 />
 ```
 
@@ -74,7 +80,9 @@ Use full paths for clarity in monorepo contexts:
 <IDEWindow
   files={[{ name: 'packages/core/src/sync/index.ts', active: true }]}
   lang="ts"
-  code={"import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"}
+  code={
+    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
+  }
 />
 
 ## JSON example
@@ -85,7 +93,9 @@ Use full paths for clarity in monorepo contexts:
 <IDEWindow
   files={[{ name: 'package.json', active: true }]}
   lang="json"
-  code={"{\n  \"name\": \"@acme/docs\",\n  \"scripts\": {\n    \"dev\": \"zpress dev\",\n    \"build\": \"zpress build\"\n  },\n  \"dependencies\": {\n    \"@zpress/kit\": \"^0.2.4\"\n  }\n}"}
+  code={
+    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "zpress dev",\n    "build": "zpress build"\n  },\n  "dependencies": {\n    "@zpress/kit": "^0.2.4"\n  }\n}'
+  }
 />
 ```
 
@@ -94,19 +104,21 @@ Use full paths for clarity in monorepo contexts:
 <IDEWindow
   files={[{ name: 'package.json', active: true }]}
   lang="json"
-  code={"{\n  \"name\": \"@acme/docs\",\n  \"scripts\": {\n    \"dev\": \"zpress dev\",\n    \"build\": \"zpress build\"\n  },\n  \"dependencies\": {\n    \"@zpress/kit\": \"^0.2.4\"\n  }\n}"}
+  code={
+    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "zpress dev",\n    "build": "zpress build"\n  },\n  "dependencies": {\n    "@zpress/kit": "^0.2.4"\n  }\n}'
+  }
 />
 
 ## Props
 
 ### IDEWindow
 
-| Prop       | Type           | Required | Default | Description                                      |
-| ---------- | -------------- | -------- | ------- | ------------------------------------------------ |
-| `files`    | `IDEFileTab[]` | yes      | —       | File tabs in the title bar                       |
-| `code`     | `string`       | no       | —       | Code string to display                           |
-| `lang`     | `string`       | no       | —       | Language identifier (e.g. `'ts'`, `'json'`)      |
-| `children` | `ReactNode`    | no       | —       | Fallback content when `code` is not provided     |
+| Prop       | Type           | Required | Default | Description                                  |
+| ---------- | -------------- | -------- | ------- | -------------------------------------------- |
+| `files`    | `IDEFileTab[]` | yes      | —       | File tabs in the title bar                   |
+| `code`     | `string`       | no       | —       | Code string to display                       |
+| `lang`     | `string`       | no       | —       | Language identifier (e.g. `'ts'`, `'json'`)  |
+| `children` | `ReactNode`    | no       | —       | Fallback content when `code` is not provided |
 
 ### IDEFileTab
 

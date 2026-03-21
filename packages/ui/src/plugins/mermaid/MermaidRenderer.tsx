@@ -3,6 +3,11 @@
 // context (react, mermaid, CSS). Do NOT import ts-pattern, es-toolkit, or other
 // workspace dependencies here — they will cause "factory is undefined" runtime
 // errors. See packages/ui/AGENTS.md for details.
+//
+// IMPORTANT: mermaid must stay on v10.x. Mermaid v11 uses langium for its parser,
+// which depends on vscode-languageserver-types and has broken ESM exports that
+// Rspack cannot resolve. It also lazy-loads every diagram type via dynamic
+// import() — incompatible with Rspress's webpack compilation of global components.
 
 // oxlint-disable no-ternary
 
@@ -227,7 +232,7 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     const hasDarkClass = document.documentElement.classList.contains('dark')
 
     const mermaidConfig: MermaidConfig = {
-      securityLevel: 'strict',
+      securityLevel: 'loose',
       startOnLoad: false,
       theme: hasDarkClass ? 'dark' : 'default',
       ...config,

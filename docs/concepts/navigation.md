@@ -24,7 +24,7 @@ flowchart TD
 
 ### Auto navigation
 
-Set `nav: 'auto'` (the default) to generate one nav item per non-isolated top-level section:
+Set `nav: 'auto'` (the default) to generate one nav item per top-level section (excluding those with `standalone: true`):
 
 ```ts
 export default defineConfig({

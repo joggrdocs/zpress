@@ -5,7 +5,7 @@ import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
 import { hasGlobChars } from '../glob.ts'
-import { resolveOptionalIcon } from '../icon.ts'
+import { resolveOptionalIcon, serializeIcon } from '../icon.ts'
 import type { Section, Feature, ZpressConfig, Workspace } from '../types.ts'
 import { resolveSectionTitle } from './resolve/text.ts'
 
@@ -239,13 +239,7 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
         title: titleStr,
         details: descStr,
         link: f.link,
-        icon: match(resolved)
-          .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
-            match(r.color)
-              .with('purple', () => r.id)
-              .otherwise(() => ({ id: r.id, color: r.color }))
-          )
-          .otherwise(() => null),
+        icon: serializeIcon(resolved) ?? null,
       }
     })
   )
@@ -277,15 +271,7 @@ function buildGroupData(
     return {
       title: titleStr,
       href: item.path,
-      icon: match(resolved)
-        .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
-          match(r.color)
-            .with('purple', () => r.id)
-            .otherwise(() => ({ id: r.id, color: r.color }))
-        )
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
+      icon: serializeIcon(resolved),
       scope: resolveScope(scopePrefix),
       description: item.description,
       tags: resolveTagLabels(item.tags),
@@ -331,13 +317,7 @@ function buildFeatures(
       const link = section.path ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
       const resolved = resolveOptionalIcon(section.icon)
-      const icon = match(resolved)
-        .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
-          match(r.color)
-            .with('purple', () => r.id)
-            .otherwise(() => ({ id: r.id, color: r.color }))
-        )
-        .otherwise((): { readonly id: string; readonly color: string } | null => null)
+      const icon = serializeIcon(resolved) ?? null
       const titleStr = resolveSectionTitle(section)
       return { title: titleStr, details, link, icon }
     })

@@ -276,7 +276,7 @@ export default defineConfig({
 
 Wrap code blocks in switchable tabs using Rspress's built-in components. Requires an `.mdx` file:
 
-````mdx
+`````mdx
 import { Tab, Tabs } from 'rspress/theme'
 
 <Tabs>
@@ -285,7 +285,6 @@ import { Tab, Tabs } from 'rspress/theme'
 ```ts title="index.mjs"
 import { foo } from './foo.js'
 ```
-````
 
 </Tab>
 <Tab label="CJS">
@@ -296,7 +295,7 @@ const { foo } = require('./foo')
 
 </Tab>
 </Tabs>
-```
+`````
 
 | Prop           | Component | Description                                           |
 | -------------- | --------- | ----------------------------------------------------- |
@@ -331,7 +330,7 @@ Or provide custom per-manager commands:
 
 ## TypeScript twoslash
 
-Render inline type information and compiler errors:
+Render inline type tooltips and compiler diagnostics directly in code blocks. The `twoslash` meta attribute activates the [TypeScript Twoslash](https://www.typescriptlang.org/dev/twoslash/) integration, which runs the TypeScript compiler over your code and injects the results as annotations. This works out of the box with no additional configuration.
 
 ````md
 ```ts twoslash
@@ -339,3 +338,5 @@ const str = 'hello'
 //    ^?
 ```
 ````
+
+The `^?` comment triggers a type query, rendering the inferred type (`const str: "hello"`) as an inline tooltip below the variable.

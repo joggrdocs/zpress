@@ -227,7 +227,7 @@ Each directory becomes a collapsible sidebar group automatically.
 
 ### Landing pages for section entry points
 
-Give each major section a landing page using `link` on the section:
+Sections with children and a `path` automatically get a generated landing page with cards linking to each child entry:
 
 ```ts
 {
@@ -237,7 +237,7 @@ Give each major section a landing page using `link` on the section:
 }
 ```
 
-The `link` page serves as an overview, orienting the reader before they dive into individual pages.
+Navigating to `/concepts` shows a landing page with cards for each discovered page, orienting the reader before they dive into individual pages. Set `landing: false` to disable this behavior.
 
 ### Custom sort for intentional ordering
 
@@ -250,7 +250,7 @@ When alphabetical order doesn't tell the right story, use a custom comparator:
   include: 'docs/getting-started/*.md',
   sort: (a, b) => {
     const order = { Introduction: 0, 'Quick Start': 1, 'Next Steps': 2 }
-    return (order[a.text] ?? 99) - (order[b.text] ?? 99)
+    return (order[a.title] ?? 99) - (order[b.title] ?? 99)
   },
 }
 ```

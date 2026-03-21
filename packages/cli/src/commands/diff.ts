@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process'
 
 import { command } from '@kidd-cli/core'
 import type { Section, ZpressConfig, Result } from '@zpress/core'
-import { createPaths, hasGlobChars, loadConfig } from '@zpress/core'
+import { createPaths, hasGlobChars, loadConfig, normalizeInclude } from '@zpress/core'
 import { uniq } from 'es-toolkit'
 import { z } from 'zod'
 
@@ -115,23 +115,6 @@ function collectWatchPaths(config: ZpressConfig): readonly string[] {
  */
 function flattenIncludePaths(sections: readonly Section[]): readonly string[] {
   return sections.flatMap(flattenSection)
-}
-
-/**
- * Normalize an include value to a flat array of strings.
- *
- * @private
- * @param include - Optional include value (string, string[], or undefined)
- * @returns Array of include path strings
- */
-function normalizeInclude(include: string | readonly string[] | undefined): readonly string[] {
-  if (Array.isArray(include)) {
-    return include
-  }
-  if (typeof include === 'string') {
-    return [include]
-  }
-  return []
 }
 
 /**

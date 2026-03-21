@@ -3,6 +3,7 @@ import { match, P } from 'ts-pattern'
 
 import { Card } from './card'
 import { Icon } from './icon'
+import { resolveCardIcon } from './resolve-card-icon'
 
 export interface SectionCardProps {
   readonly href: string
@@ -24,7 +25,7 @@ export function SectionCard({
   description,
   icon = 'pixelarticons:file',
 }: SectionCardProps): React.ReactElement {
-  const resolved = resolveCardIcon(icon)
+  const resolved = resolveCardIcon(icon) ?? { id: 'pixelarticons:file', color: 'purple' }
   const descEl = match(description)
     .with(P.nonNullable, (d) => <span className="zp-section-card__desc">{d}</span>)
     .otherwise(() => null)
@@ -45,20 +46,3 @@ export function SectionCard({
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
-
-/**
- * Resolve a unified icon config into id + color.
- *
- * @private
- * @param icon - Icon config (string or object)
- * @returns Resolved icon with id and color
- */
-function resolveCardIcon(icon: string | { readonly id: string; readonly color: string }): {
-  readonly id: string
-  readonly color: string
-} {
-  if (typeof icon === 'string') {
-    return { id: icon, color: 'purple' }
-  }
-  return icon
-}

@@ -1,6 +1,6 @@
 ---
 title: Content
-description: How sections and pages define your information architecture — explicit items, glob discovery, inline content, and frontmatter injection.
+description: How sections and pages define your site structure — explicit items, glob discovery, inline content, and frontmatter injection.
 ---
 
 # Content
@@ -9,7 +9,7 @@ How documentation is structured, discovered, and enriched with metadata in zpres
 
 ## Overview
 
-Content in zpress is a tree of **sections** and **pages** defined in the `sections` array of your config. Sections group pages under collapsible sidebar headings. Pages map source markdown files (or inline content) to URLs. Together they define your entire information architecture without requiring you to restructure your existing files.
+Content in zpress is a tree of **sections** and **pages** defined in the `sections` array of your config. Sections group pages under collapsible sidebar headings. Pages map source markdown files (or inline content) to URLs. Together they define your entire site structure without requiring you to restructure your existing files.
 
 ```mermaid
 flowchart TD

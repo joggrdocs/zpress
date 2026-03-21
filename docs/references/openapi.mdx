@@ -77,15 +77,22 @@ Attach an OpenAPI spec to any workspace item for per-package API docs:
 export default defineConfig({
   workspaces: [
     {
-      title: '@acme/api',
-      path: '/packages/api',
-      openapi: {
-        spec: 'packages/api/openapi.yaml',
-        path: '/packages/api/reference',
-        title: 'API Reference',
-        sidebarLayout: 'title',
-      },
-      items: [{ title: 'Overview', path: '/packages/api', include: 'packages/api/README.md' }],
+      title: 'Services',
+      icon: 'pixelarticons:server',
+      items: [
+        {
+          title: '@acme/api',
+          description: 'REST API service',
+          path: '/packages/api',
+          openapi: {
+            spec: 'packages/api/openapi.yaml',
+            path: '/packages/api/reference',
+            title: 'API Reference',
+            sidebarLayout: 'title',
+          },
+          items: [{ title: 'Overview', path: '/packages/api', include: 'packages/api/README.md' }],
+        },
+      ],
     },
   ],
 })

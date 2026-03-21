@@ -7,9 +7,9 @@ import { FeatureCard, FeatureGrid } from '@zpress/ui/theme'
 
 # Introduction
 
-## What is zpress
+## What is zpress?
 
-zpress is a documentation framework for monorepos. Your config file _is_ the information architecture — it defines what content exists, where it comes from, and how it's organized. Source files are never modified. zpress syncs them into a build directory, injects frontmatter, generates sidebars and navigation, and outputs a static site.
+zpress is a documentation framework for monorepos. Your config file _is_ your site structure — it defines what content exists, where it comes from, and how it's organized. Source files are never modified. zpress syncs them into a build directory, injects frontmatter, generates sidebars and navigation, and outputs a static site.
 
 ```bash
 npx @zpress/kit dev
@@ -17,11 +17,11 @@ npx @zpress/kit dev
 
 That's it. One command, working docs site.
 
-## Why zpress
+## Why zpress?
 
-There are great documentation tools — [VitePress](https://vitepress.dev), [Rspress](https://rspress.dev), [Docusaurus](https://docusaurus.io). They inspired this project. So why build another one?
+There are great documentation tools — [VitePress](https://vitepress.dev), [Rspress](https://rspress.dev), [Docusaurus](https://docusaurus.io). They inspired zpress. Here's what it does differently:
 
-**Zero effort.** Most doc tools need significant setup before they produce anything useful — plugins, theme wiring, sidebar config, restructuring your files. zpress ships with perfect defaults that match the 80% use case. Put markdown in `docs/`, run one command, get a working site with sidebar, navigation, and themes.
+**Zero effort.** Most doc tools need significant setup before they produce anything useful — plugins, theme wiring, sidebar configuration, file restructuring. zpress ships with perfect defaults that match the 80% use case. Put markdown in `docs/`, run one command, get a working site with sidebar, navigation, and themes.
 
 **Your structure, not ours.** The config maps to how you already organize your markdown. You describe where your files are and how they should be grouped. You don't restructure your docs to fit the tool — the tool fits your docs.
 
@@ -47,7 +47,7 @@ There are great documentation tools — [VitePress](https://vitepress.dev), [Rsp
   <FeatureCard
     title="AI-Friendly"
     description="Auto-generated llms.txt and every page served as text/markdown — just append .md to any URL."
-    href="/concepts/content"
+    href="/concepts/llm-output"
     icon={{ id: 'pixelarticons:robot', color: 'green' }}
     span={4}
   />
@@ -68,7 +68,7 @@ There are great documentation tools — [VitePress](https://vitepress.dev), [Rsp
   <FeatureCard
     title="OpenAPI Support"
     description="Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests."
-    href="/concepts/content"
+    href="/reference/openapi"
     icon={{ id: 'simple-icons:openapiinitiative', color: 'green' }}
     span={4}
   />

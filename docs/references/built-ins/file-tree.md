@@ -5,7 +5,7 @@ description: Render interactive file tree visualizations.
 
 # File Tree
 
-zpress bundles `rspress-plugin-file-tree` for rendering file and directory structures. Trees are interactive and expanded one level deep by default. No configuration required.
+zpress bundles `rspress-plugin-file-tree` for rendering file and directory structures. Trees are collapsible and expanded one level deep by default. No configuration required.
 
 Use a fenced code block with the `tree` language.
 

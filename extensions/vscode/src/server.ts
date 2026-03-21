@@ -37,7 +37,7 @@ function findBinary(
     const config = workspace.getConfiguration('zpress')
     const baseArgs: string[] = ['dev', '--vscode']
     const port = config.get<number>('server.port')
-    if (port != null) {
+    if (port !== null && port !== undefined) {
       baseArgs.push('--port', String(port))
     }
     const theme = config.get<string>('theme')

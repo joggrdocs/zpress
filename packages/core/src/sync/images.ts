@@ -88,8 +88,12 @@ export async function rewriteImages(params: {
     (imagePath, index, arr) =>
       !isAbsoluteOrExternal(imagePath) &&
       IMAGE_EXTENSIONS.has(path.extname(imagePath).toLowerCase()) &&
-      arr.indexOf(imagePath) === index,
+      arr.indexOf(imagePath) === index
   )
+
+  if (uniqueImagePaths.length > 0) {
+    await fs.mkdir(imagesOutDir, { recursive: true })
+  }
 
   const entries = await Promise.all(
     uniqueImagePaths.map(async (imagePath): Promise<readonly [string, string] | null> => {
@@ -103,15 +107,16 @@ export async function rewriteImages(params: {
       const baseName = path.basename(imagePath, path.extname(imagePath))
       const hash = createHash('md5').update(imagePath).digest('hex').slice(0, 8)
       const filename = `${baseName}-${hash}${ext}`
-      await fs.mkdir(imagesOutDir, { recursive: true })
       // oxlint-disable-next-line security/detect-non-literal-fs-filename -- paths are constructed from trusted repo root + user source paths
       await fs.copyFile(absoluteImagePath, path.resolve(imagesOutDir, filename))
 
       return [imagePath, `/images/${filename}`] as const
-    }),
+    })
   )
 
-  const imageMap = new Map(entries.filter((entry): entry is readonly [string, string] => entry !== null))
+  const imageMap = new Map(
+    entries.filter((entry): entry is readonly [string, string] => entry !== null)
+  )
 
   // 3. Replace image paths in content (markdown syntax and HTML/JSX tags)
   const mdRewritten = withoutCode.replace(IMAGE_RE, (fullMatch, url: string) => {

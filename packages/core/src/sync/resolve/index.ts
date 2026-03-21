@@ -5,7 +5,7 @@ import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'ts-pattern'
 
-import { hasGlobChars } from '../../glob.ts'
+import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '../../glob.ts'
 import type { Section, Frontmatter } from '../../types.ts'
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
@@ -380,48 +380,6 @@ async function resolveGlob(
       } satisfies ResolvedEntry
     })
   )
-}
-
-/**
- * Check if `include` is a single non-glob file string.
- *
- * @private
- * @param include - Include value from section config
- * @returns True if include is a single string without glob characters
- */
-function isSingleFileInclude(include: Section['include']): boolean {
-  return typeof include === 'string' && !hasGlobChars(include)
-}
-
-/**
- * Check if `include` has any glob patterns.
- *
- * @private
- * @param include - Include value from section config
- * @returns True if include contains glob patterns
- */
-function hasAnyGlobInclude(include: Section['include']): boolean {
-  if (include === null || include === undefined) {
-    return false
-  }
-  if (typeof include === 'string') {
-    return hasGlobChars(include)
-  }
-  return include.length > 0
-}
-
-/**
- * Normalize include to a string array.
- *
- * @private
- * @param include - String or array of strings
- * @returns Array of include patterns
- */
-function normalizeInclude(include: string | readonly string[]): readonly string[] {
-  if (typeof include === 'string') {
-    return [include]
-  }
-  return include
 }
 
 /**

@@ -1,7 +1,7 @@
 import { THEME_NAMES, COLOR_MODES } from '@zpress/theme'
 import { match, P } from 'ts-pattern'
 
-import { hasGlobChars } from './glob.ts'
+import { hasAnyGlobInclude, isSingleFileInclude } from './glob.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
 import type {
@@ -91,23 +91,6 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
 // ---------------------------------------------------------------------------
 
 /**
- * Check if include has any glob patterns.
- *
- * @private
- * @param include - Include value from section config
- * @returns True if include contains glob patterns
- */
-function includeHasGlobs(include: Section['include']): boolean {
-  if (include === null || include === undefined) {
-    return false
-  }
-  if (typeof include === 'string') {
-    return hasGlobChars(include)
-  }
-  return include.some(hasGlobChars)
-}
-
-/**
  * Check if include contains a recursive glob pattern ('**').
  *
  * @private
@@ -122,17 +105,6 @@ function includeHasRecursive(include: Section['include']): boolean {
     return include.includes('**')
   }
   return include.some((p) => p.includes('**'))
-}
-
-/**
- * Check if include is a single non-glob file.
- *
- * @private
- * @param include - Include value from section config
- * @returns True if include is a single string without glob characters
- */
-function isSingleFile(include: Section['include']): boolean {
-  return typeof include === 'string' && !hasGlobChars(include)
 }
 
 /**
@@ -288,7 +260,7 @@ function validateSection(section: Section): ConfigResult<true> {
     ]
   }
 
-  if (isSingleFile(section.include) && !section.items && !section.path) {
+  if (isSingleFileInclude(section.include) && !section.items && !section.path) {
     return [
       configError(
         'invalid_section',
@@ -298,7 +270,7 @@ function validateSection(section: Section): ConfigResult<true> {
     ]
   }
 
-  if (includeHasGlobs(section.include) && !section.path) {
+  if (hasAnyGlobInclude(section.include) && !section.path) {
     return [
       configError('invalid_section', `Section "${titleStr}": glob 'include' requires 'path'`),
       null,

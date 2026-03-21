@@ -166,7 +166,12 @@ export function BrowserWindow({
       .otherwise(() => '')
     const header = `**${title}**${urlLine}`
     return match(children)
-      .with(P.nonNullable, (c) => <>{header}{c}</>)
+      .with(P.nonNullable, (c) => (
+        <>
+          {header}
+          {c}
+        </>
+      ))
       .otherwise(() => <>{header}</>)
   }
 
@@ -349,17 +354,30 @@ export interface IDEWindowProps {
  * @param props - Props with file tabs and code or children
  * @returns React element with IDE window chrome
  */
-export function IDEWindow({ files, code, lang, children }: IDEWindowProps): React.ReactElement | null {
+export function IDEWindow({
+  files,
+  code,
+  lang,
+  children,
+}: IDEWindowProps): React.ReactElement | null {
   if (import.meta.env.SSG_MD) {
     const activeFile = files.find((f) => f.active)
     const filename = match(activeFile)
       .with(P.nonNullable, (f) => f.name)
-      .otherwise(() => match(files[0]).with(P.nonNullable, (f) => f.name).otherwise(() => ''))
+      .otherwise(() =>
+        match(files[0])
+          .with(P.nonNullable, (f) => f.name)
+          .otherwise(() => '')
+      )
     const langId = lang ?? 'text'
     const header = `**${filename}**\n\n`
     const codeBlock = match(code)
       .with(P.nonNullable, (c) => `${header}\`\`\`${langId}\n${c}\n\`\`\``)
-      .otherwise(() => match(children).with(P.nonNullable, () => header).otherwise(() => null))
+      .otherwise(() =>
+        match(children)
+          .with(P.nonNullable, () => header)
+          .otherwise(() => null)
+      )
     return match(codeBlock)
       .with(P.nonNullable, (md) => <>{md}</>)
       .otherwise(() => null)

@@ -35,11 +35,14 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 | `workspaces`  | `WorkspaceCategory[]` | —          | Named groups of workspace items for home/landing pages                                         |
 | `openapi`     | `OpenAPIConfig`       | —          | OpenAPI spec integration for interactive API docs                                              |
 | `exclude`     | `string[]`            | —          | Glob patterns excluded globally across all sources                                             |
+| `home`        | `HomeConfig`          | —          | Home page grid layout for features and workspaces                                              |
+| `socialLinks` | `SocialLink[]`        | —          | Social media links displayed in the navigation bar                                             |
+| `footer`      | `FooterConfig`        | —          | Footer message, copyright text, and social link visibility                                     |
 | `icon`        | `string`              | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
 
 ## Entry
 
-Each node in `sections` is an `Entry`. What you provide determines what it is:
+Each node in `sections` is a `Section`. What you provide determines what it is:
 
 **Page — single file:**
 
@@ -100,7 +103,9 @@ Each node in `sections` is an `Entry`. What you provide determines what it is:
 
 `TitleConfig` is either a plain `string` or `{ from: 'auto' | 'filename' | 'heading' | 'frontmatter', transform?: (text, slug) => string }` for derived titles.
 
-The `'default'` sort strategy pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then sorts alphabetically. This is the implicit default when `sort` is omitted.
+`IconConfig` is either a plain Iconify identifier string (e.g. `'devicon:hono'`) or an object `{ id: string, color: string }` for explicit color control. See [Icon Colors](/references/icons/colors) for available color values.
+
+The `sort` field accepts `'default'`, `'alpha'`, `'filename'`, or a custom comparator function with the signature `(a: ResolvedPage, b: ResolvedPage) => number` where each `ResolvedPage` has `title`, `link`, and `frontmatter` properties. The `'default'` strategy pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then sorts alphabetically. This is the implicit default when `sort` is omitted.
 
 ## Workspace
 
@@ -228,7 +233,7 @@ Configuration for OpenAPI spec integration.
 
 | Field           | Type                       | Default           | Description                           |
 | --------------- | -------------------------- | ----------------- | ------------------------------------- |
-| `spec`          | `string`                   | (required)        | Path to `openapi.json` from repo root |
+| `spec`          | `string`                   | (required)        | Path to OpenAPI JSON or YAML file, relative to repo root |
 | `path`          | `string`                   | (required)        | URL prefix for API operation pages    |
 | `title`         | `string`                   | `'API Reference'` | Sidebar group title                   |
 | `sidebarLayout` | `'method-path' \| 'title'` | `'method-path'`   | How operations appear in the sidebar  |
@@ -279,6 +284,70 @@ Each `SidebarLink` has:
 
 | Field  | Type         | Required | Description             |
 | ------ | ------------ | -------- | ----------------------- |
-| `text` | `string`     | yes      | Link display text       |
-| `link` | `string`     | yes      | Target URL              |
-| `icon` | `IconConfig` | no       | Iconify icon identifier |
+| `text`  | `string`                                   | yes      | Link display text                            |
+| `link`  | `string`                                   | yes      | Target URL                                   |
+| `icon`  | `IconConfig`                               | no       | Iconify icon identifier                      |
+| `style` | `'brand' \| 'alt' \| 'ghost'`              | no       | Visual style variant                         |
+| `shape` | `'square' \| 'rounded' \| 'circle'`        | no       | Icon shape                                   |
+
+## HomeConfig
+
+Layout and styling options for the home page card grids.
+
+```ts
+home: {
+  features: { columns: 3, truncate: { description: 2 } },
+  workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
+}
+```
+
+| Field        | Type             | Description                         |
+| ------------ | ---------------- | ----------------------------------- |
+| `features`   | `HomeGridConfig` | Layout options for feature cards    |
+| `workspaces` | `HomeGridConfig` | Layout options for workspace cards  |
+
+Each `HomeGridConfig` has:
+
+| Field      | Type                 | Description                                      |
+| ---------- | -------------------- | ------------------------------------------------ |
+| `columns`  | `1 \| 2 \| 3 \| 4`  | Number of grid columns                           |
+| `truncate` | `TruncateConfig`     | Max visible lines before clipping with ellipsis  |
+
+`TruncateConfig` accepts `title?: number` and `description?: number` for line-clamp values.
+
+## SocialLink
+
+Social media links displayed in the navigation bar.
+
+```ts
+socialLinks: [
+  { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
+  { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
+]
+```
+
+| Field     | Type                                | Required | Description                                                  |
+| --------- | ----------------------------------- | -------- | ------------------------------------------------------------ |
+| `icon`    | `SocialLinkIcon \| { svg: string }` | yes      | Built-in icon name or custom SVG                             |
+| `mode`    | `'link' \| 'text' \| 'img' \| 'dom'` | yes    | How the content is rendered                                  |
+| `content` | `string`                            | yes      | URL, text, image source, or HTML depending on `mode`         |
+
+Built-in icon names: `github`, `discord`, `x`, `slack`, `linkedin`, `youtube`, `npm`, `gitlab`, `bluesky`, `facebook`, `instagram`.
+
+## FooterConfig
+
+Footer displayed below all page content.
+
+```ts
+footer: {
+  message: 'Built with zpress',
+  copyright: 'Copyright © 2025 Acme Inc.',
+  socials: true,
+}
+```
+
+| Field       | Type      | Description                                       |
+| ----------- | --------- | ------------------------------------------------- |
+| `message`   | `string`  | Footer message text                               |
+| `copyright` | `string`  | Copyright notice                                  |
+| `socials`   | `boolean` | Show social links from `socialLinks` in the footer |

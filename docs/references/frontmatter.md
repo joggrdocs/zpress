@@ -28,13 +28,13 @@ See the [Content](/concepts/content#frontmatter) concept for injection and inher
 | `layout`        | `'doc' \| 'page' \| 'home'`           | `'doc'` | Page layout mode                               |
 | `sidebar`       | `boolean`                             | `true`  | Show or hide the sidebar                       |
 | `aside`         | `boolean \| 'left'`                   | `true`  | Table of contents position                     |
-| `outline`       | `false \| number \| [n, n] \| 'deep'` | —       | Outline heading depth                          |
+| `outline`       | `false \| number \| [min, max] \| 'deep'` | —       | Outline heading depth                          |
 | `navbar`        | `boolean`                             | `true`  | Show or hide the top navigation bar            |
 | `editLink`      | `boolean`                             | `true`  | Show or hide the "Edit this page" link         |
 | `lastUpdated`   | `boolean`                             | `true`  | Show or hide the last updated timestamp        |
 | `footer`        | `boolean`                             | `true`  | Show or hide the page footer                   |
 | `pageClass`     | `string`                              | —       | Custom CSS class added to the page container   |
-| `head`          | `[tag, attrs][]`                      | —       | Extra elements injected into `<head>`          |
+| `head`          | `[string, Record<string, string>][]`  | —       | Extra elements injected into `<head>` (see below) |
 
 ## Layout values
 

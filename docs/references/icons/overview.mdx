@@ -3,7 +3,7 @@ title: Icons
 description: Supported icon sets and how to use them across your site.
 ---
 
-import { Icon, TechIconTable } from '@zpress/ui/theme'
+import { Icon } from '@zpress/ui/theme'
 
 # Icons
 
@@ -165,7 +165,7 @@ Top-level sections display an icon in the collapsed sidebar rail. Set via the `i
 }
 ```
 
-Only top-level sections (depth 0) render icons. Nested sections ignore the `icon` field.
+Only top-level sections render icons in the sidebar rail. Icons set on nested (child) sections are ignored.
 
 ### Navigation bar
 
@@ -219,7 +219,7 @@ Workspace cards display technology tags with auto-resolved icons. See the [Techn
 Icons are validated at config load time. An icon must:
 
 - Contain exactly one `:` separator
-- Use a recognized `prefix` (one of the six bundled sets)
+- Use a recognized `prefix` (one of the nine bundled sets)
 
 Invalid icons produce a config error with type `invalid_icon`.
 

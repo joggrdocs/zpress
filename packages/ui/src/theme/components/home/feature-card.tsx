@@ -4,6 +4,7 @@ import { match, P } from 'ts-pattern'
 import './feature-card.css'
 import { Card } from '../shared/card'
 import { Icon } from '../shared/icon'
+import { resolveCardIcon } from '../shared/resolve-card-icon'
 
 export interface FeatureCardProps {
   readonly title: string
@@ -98,35 +99,6 @@ export function FeatureGrid({ children }: FeatureGridProps): React.ReactElement 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
-
-/**
- * Resolved icon with id and color.
- *
- * @private
- */
-interface ResolvedCardIcon {
-  readonly id: string
-  readonly color: string
-}
-
-/**
- * Resolve a unified icon config into id + color.
- *
- * @private
- * @param icon - Icon config (string, object, or undefined)
- * @returns Resolved icon or undefined
- */
-function resolveCardIcon(
-  icon: string | { readonly id: string; readonly color: string } | undefined
-): ResolvedCardIcon | undefined {
-  if (icon === undefined) {
-    return undefined
-  }
-  if (typeof icon === 'string') {
-    return { id: icon, color: 'purple' }
-  }
-  return icon
-}
 
 /**
  * Build a className string with optional `zp-clamp` suffix.

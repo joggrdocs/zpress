@@ -28,7 +28,10 @@ The preview panel opens alongside your editor. Navigate between pages, and the p
 
 ## Requirements
 
-See the [Quick Start](https://zpress.dev/getting-started/quick-start#install) guide for setup instructions.
+- A zpress project with a `zpress.config.ts` file
+- The zpress dev server running (`zpress dev`) — the extension connects to it for live preview
+
+See the [Quick Start](/getting-started/quick-start) guide for initial setup.
 
 ## References
 

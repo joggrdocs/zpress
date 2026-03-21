@@ -124,7 +124,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   }).catch((error: unknown) => {
     const message = match(error)
       .with(P.instanceOf(Error), (e) => e.message)
-      .otherwise((e) => String(e))
+      .otherwise(String)
     console.warn(`[zpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
     return null
   })
@@ -297,14 +297,14 @@ function buildOperationPage(
     '',
     `export const markdown = ${JSON.stringify(markdown)}`,
     '',
-    `<CopyMarkdownButton markdown={${JSON.stringify(markdown)}} />`,
+    '<CopyMarkdownButton markdown={markdown} />',
     '',
     '<OpenAPIOperation',
     '  spec={spec}',
     `  method={${JSON.stringify(op.method)}}`,
     `  path={${JSON.stringify(op.path)}}`,
     `  operationId={${JSON.stringify(op.operationId)}}`,
-    `  markdown={${JSON.stringify(markdown)}}`,
+    '  markdown={markdown}',
     '/>',
     '',
   ].join('\n')
@@ -342,9 +342,9 @@ function buildIndexPage(title: string, prefix: string, spec: Record<string, unkn
     '',
     `export const markdown = ${JSON.stringify(markdown)}`,
     '',
-    `<CopyMarkdownButton markdown={${JSON.stringify(markdown)}} />`,
+    '<CopyMarkdownButton markdown={markdown} />',
     '',
-    `<OpenAPIOverview spec={spec} markdown={${JSON.stringify(markdown)}} />`,
+    '<OpenAPIOverview spec={spec} markdown={markdown} />',
     '',
   ].join('\n')
 

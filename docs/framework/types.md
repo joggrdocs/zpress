@@ -42,7 +42,7 @@ Step-by-step instructions for completing a specific task.
 
 **Rules:**
 
-- Title starts with an action verb (Add, Configure, Deploy, Setup)
+- Title starts with an action verb (Add, Configure, Deploy, Set Up)
 - Steps are numbered
 - Include verification — how to confirm it worked
 - Link to reference docs for detailed options
@@ -56,6 +56,7 @@ Step-by-step instructions for completing a specific task.
 | Verification     | Yes      |
 | Next Steps       | No       |
 | Troubleshooting  | No       |
+| References       | Yes      |
 
 **Example title:** "Configure Custom Themes"
 
@@ -135,7 +136,7 @@ Technical descriptions of APIs, configuration, CLI commands, or data models.
 
 ## Standard
 
-Rules and conventions that contributors must follow.
+Rules and conventions that your team must follow.
 
 **Reader:** Someone who needs to know the rules for a specific domain.
 
@@ -215,7 +216,7 @@ Use this decision tree:
 4. Is the reader **looking up** a specific detail? → **Reference**
 5. Is the reader **fixing** something broken? → **Troubleshooting**
 6. Is the reader performing a **sensitive operation**? → **Runbook**
-7. Is this defining **rules** for contributors? → **Standard**
+7. Is this defining **rules** for your team? → **Standard**
 
 ## References
 

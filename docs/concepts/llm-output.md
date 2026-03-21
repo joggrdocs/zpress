@@ -124,5 +124,5 @@ OpenAPI-generated pages replace the standard raw markdown button with a "Copy Ma
 ## References
 
 - [llms.txt specification](https://llmstxt.org/)
-- [Content](/concepts/content) — how pages and sections define your information architecture
+- [Content](/concepts/content) — how pages and sections define your site structure
 - [Configuration reference](/reference/configuration) — full config field reference

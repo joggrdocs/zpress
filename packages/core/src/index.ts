@@ -17,7 +17,7 @@ export type {
 } from './types.ts'
 
 export type { IconConfig, IconColor, ResolvedIcon } from './icon.ts'
-export { resolveIcon, resolveOptionalIcon, ICON_COLORS } from './icon.ts'
+export { resolveIcon, resolveOptionalIcon, serializeIcon, ICON_COLORS } from './icon.ts'
 export type { IconId, IconPrefix } from './icons.generated.ts'
 export { ICON_PREFIXES } from './icons.generated.ts'
 
@@ -52,4 +52,4 @@ export type { AssetConfig, AssetError, AssetResult, GeneratedAsset } from './ban
 export { createPaths } from './paths.ts'
 export type { Paths } from './paths.ts'
 
-export { hasGlobChars } from './glob.ts'
+export { hasGlobChars, normalizeInclude, isSingleFileInclude, hasAnyGlobInclude } from './glob.ts'

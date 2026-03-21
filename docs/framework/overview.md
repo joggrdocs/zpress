@@ -13,7 +13,7 @@ Bad docs aren't usually a writing problem — they're an organization problem. A
 
 A framework gives you two things:
 
-1. **A place for everything** — contributors know where to put new docs without asking
+1. **A place for everything** — your team knows where to put new docs without asking
 2. **Reader expectations** — users know what kind of content they'll find in each section
 
 ## Our take on Diataxis
@@ -51,7 +51,7 @@ sections: [
   { title: 'Guides' /* task-oriented how-tos */ },
   { title: 'Concepts' /* explanations */ },
   { title: 'Reference' /* API, config, CLI */ },
-  { title: 'Standards' /* coding conventions */ },
+  { title: 'Standards' /* rules and conventions */ },
   { title: 'Troubleshooting' /* common issues and fixes */ },
 ]
 ```

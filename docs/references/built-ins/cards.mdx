@@ -158,6 +158,27 @@ import { WorkspaceCard, WorkspaceGrid } from '@theme'
 </WorkspaceGrid>
 ```
 
+**Output**
+
+<WorkspaceGrid heading="Packages" description="Shared libraries and utilities.">
+  <WorkspaceCard
+    title="@acme/core"
+    href="/packages/core"
+    scope="packages/"
+    icon={{ id: 'pixelarticons:cpu', color: 'blue' }}
+    description="Core business logic and domain types."
+    tags={['typescript', 'node']}
+  />
+  <WorkspaceCard
+    title="@acme/ui"
+    href="/packages/ui"
+    scope="packages/"
+    icon={{ id: 'pixelarticons:paint-bucket', color: 'pink' }}
+    description="Shared React component library."
+    tags={['typescript', 'react']}
+  />
+</WorkspaceGrid>
+
 ### WorkspaceCard props
 
 | Prop               | Type                                      | Required | Default | Description                                               |

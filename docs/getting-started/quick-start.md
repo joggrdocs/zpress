@@ -13,7 +13,7 @@ pnpm add @zpress/kit
 
 ## Initialize
 
-Run `zpress setup` or create a `zpress.config.ts` at your repo root:
+Run `zpress setup` for an interactive walkthrough, or create a `zpress.config.ts` manually at your repo root:
 
 ```ts
 import { defineConfig } from '@zpress/kit'
@@ -31,9 +31,10 @@ export default defineConfig({
 })
 ```
 
-Add a section that auto-discovers pages from a directory:
+Add another section to the `sections` array that auto-discovers pages from a directory:
 
 ```ts
+// inside the sections array
 {
   title: 'Guides',
   path: '/guides',
@@ -50,21 +51,21 @@ Every `.md` file matching the glob becomes a page under `/guides/`.
 zpress dev
 ```
 
-This runs `sync` to copy and process your source files, starts a file watcher for live reload, and launches the dev server. Open the URL printed in the terminal to see your site.
+This copies and processes your source markdown into the `.zpress/content/` build directory, starts a file watcher for live reload, and launches the dev server. Open the URL printed in the terminal to see your site.
 
 ## Commands
 
 | Command           | Purpose                                           |
 | ----------------- | ------------------------------------------------- |
 | `zpress setup`    | Create a starter config and generate SVG assets   |
-| `zpress sync`     | Sync source files into the content dir            |
+| `zpress sync`     | Sync source files into `.zpress/content/`         |
 | `zpress dev`      | Start the dev server with live reload             |
 | `zpress build`    | Build the static site for production              |
 | `zpress serve`    | Preview the production build locally              |
 | `zpress check`    | Validate config and check for broken links        |
 | `zpress draft`    | Scaffold a new documentation file from a template |
 | `zpress clean`    | Remove build artifacts, synced content, and cache |
-| `zpress dump`     | Print the resolved entry tree as JSON             |
+| `zpress dump`     | Print the resolved site structure as JSON          |
 | `zpress generate` | Generate banner, logo, and icon SVG assets        |
 
 ## Project structure
@@ -76,8 +77,8 @@ your-repo/
 ├── docs/                       # Your source markdown
 │   ├── intro.md
 │   └── guides/
-├── zpress.config.ts         # Information architecture
-└── .zpress/                 # Generated (gitignore this)
+├── zpress.config.ts         # Site configuration
+└── .zpress/                 # Generated — add to .gitignore
     ├── content/                # Synced pages
     │   └── .generated/         # sidebar.json, nav.json
     ├── public/                 # Static assets
@@ -89,5 +90,5 @@ Add `.zpress/` to your `.gitignore`.
 
 ## Next steps
 
-- [Content](/concepts/content) — understand the building blocks of your information architecture
+- [Content](/concepts/content) — learn how sections, pages, and navigation work
 - [Configuration reference](/reference/configuration) — complete field reference for `zpress.config.ts`

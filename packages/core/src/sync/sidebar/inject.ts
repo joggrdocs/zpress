@@ -1,6 +1,6 @@
 import { match, P } from 'ts-pattern'
 
-import { ICON_COLORS, resolveOptionalIcon } from '../../icon.ts'
+import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '../../icon.ts'
 import type { IconColor } from '../../icon.ts'
 import type { Section, Workspace } from '../../types.ts'
 import { linkToOutputPath } from '../resolve/path.ts'
@@ -119,15 +119,7 @@ function generateWorkspaceLandingPage(
     return buildWorkspaceCardJsx({
       link: item.path,
       title: titleStr,
-      icon: match(resolved)
-        .with(P.nonNullable, (r): string | { readonly id: string; readonly color: string } =>
-          match(r.color)
-            .with('purple', () => r.id)
-            .otherwise(() => ({ id: r.id, color: r.color }))
-        )
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
+      icon: serializeIcon(resolved),
       scope: scopePrefix,
       description: item.description,
       tags,

@@ -118,6 +118,7 @@ export function activate(context: ExtensionContext): void {
   })
 
   /* Server panel — shows status, start/stop, and open-in-browser as tree items */
+  // oxlint-disable-next-line unicorn/prefer-event-target -- VS Code API requires EventEmitter
   const serverEmitter = new EventEmitter<void>()
   const serverTreeView = window.createTreeView('zpress.server', {
     treeDataProvider: {
@@ -292,6 +293,21 @@ export function activate(context: ExtensionContext): void {
     Range,
   })
 
+  async function openSourceFile(urlPath: string): Promise<void> {
+    const sourcePath = manifestReader.getSourceByUrlPath(urlPath)
+    if (!sourcePath) {
+      window.showErrorMessage(`No source file found for path: ${urlPath}`)
+      return
+    }
+    try {
+      const doc = await workspace.openTextDocument(Uri.file(sourcePath))
+      await window.showTextDocument(doc, { preview: false, preserveFocus: false })
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      window.showErrorMessage(`Failed to open source file: ${message}`)
+    }
+  }
+
   function resolveTargetUrl(arg?: string | Uri): string | undefined {
     if (typeof arg === 'string') {
       return arg
@@ -324,37 +340,13 @@ export function activate(context: ExtensionContext): void {
       }
     }),
     previewPanel.onNavigate(revealSidebarNode),
-    previewPanel.onEdit(async (urlPath: string) => {
-      const sourcePath = manifestReader.getSourceByUrlPath(urlPath)
-      if (!sourcePath) {
-        window.showErrorMessage(`No source file found for path: ${urlPath}`)
-        return
-      }
-      try {
-        const doc = await workspace.openTextDocument(Uri.file(sourcePath))
-        await window.showTextDocument(doc, { preview: false, preserveFocus: false })
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : String(error)
-        window.showErrorMessage(`Failed to open source file: ${message}`)
-      }
-    }),
+    previewPanel.onEdit((urlPath: string) => openSourceFile(urlPath)),
     ...sectionTreeViews,
-    commands.registerCommand('zpress.editSource', async (node: { readonly link?: string }) => {
+    commands.registerCommand('zpress.editSource', (node: { readonly link?: string }) => {
       if (!node || !node.link) {
         return
       }
-      const sourcePath = manifestReader.getSourceByUrlPath(node.link)
-      if (!sourcePath) {
-        window.showErrorMessage(`No source file found for path: ${node.link}`)
-        return
-      }
-      try {
-        const doc = await workspace.openTextDocument(Uri.file(sourcePath))
-        await window.showTextDocument(doc, { preview: false, preserveFocus: false })
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : String(error)
-        window.showErrorMessage(`Failed to open source file: ${message}`)
-      }
+      openSourceFile(node.link)
     }),
     commands.registerCommand('zpress.start', () => {
       server.start()

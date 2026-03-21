@@ -181,7 +181,7 @@ function warnMdxExports(content: string, outputPath: string): void {
   // Filter out exports inside fenced code blocks
   const fenceRanges = lines.reduce<readonly (readonly [number, number])[]>((acc, line, index) => {
     const isFence = line.trimStart().startsWith('```')
-    const lastRange = acc[acc.length - 1]
+    const lastRange = acc.at(-1)
     if (isFence && lastRange && lastRange[1] === -1) {
       return [...acc.slice(0, -1), [lastRange[0], index + 1] as const]
     }
@@ -192,7 +192,8 @@ function warnMdxExports(content: string, outputPath: string): void {
   }, [])
 
   const outsideFence = exportLines.filter(
-    (lineNum) => !fenceRanges.some(([start, end]) => lineNum >= start && (end === -1 || lineNum <= end))
+    (lineNum) =>
+      !fenceRanges.some(([start, end]) => lineNum >= start && (end === -1 || lineNum <= end))
   )
 
   if (outsideFence.length > 0) {

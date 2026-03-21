@@ -148,19 +148,13 @@ Templates use `{{title}}` as the placeholder, which is replaced when rendering.
 ```markdown
 # {{title}}
 
-## Architecture
+## Overview
 
-## Key Concepts
+## Key Terms
 
-### Concept 1
+## How It Works
 
-### Concept 2
-
-## Usage
-
-### Basic Usage
-
-### Advanced Usage
+## Design Decisions
 
 ## References
 ```

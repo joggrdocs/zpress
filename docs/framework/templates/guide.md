@@ -9,7 +9,7 @@ Template for how-to guides — task-oriented documentation that walks the reader
 
 ## Rules
 
-- H1 starts with a verb (Add, Create, Setup, Run, Debug, Write, Configure, Deploy)
+- H1 starts with a verb (Add, Create, Set Up, Run, Debug, Write, Configure, Deploy)
 - One-liner immediately after H1 — what the reader will accomplish
 - One goal per guide — if you're covering two tasks, split into two docs
 - Steps are numbered H3 headings under a `## Steps` parent
