@@ -1,5 +1,11 @@
 # @zpress/core
 
+## 0.7.3
+
+### Patch Changes
+
+- 71af7e9: Include `public/` directory in published package so default seed assets (logo, icon, banner) are available at runtime
+
 ## 0.7.2
 
 ### Patch Changes
