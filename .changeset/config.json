@@ -7,9 +7,9 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["example-kitchen-sink", "example-simple"],
+  "ignore": ["example-kitchen-sink", "example-simple", "zpress-vscode"],
   "privatePackages": {
-    "version": true,
-    "tag": true
+    "version": false,
+    "tag": false
   }
 }
