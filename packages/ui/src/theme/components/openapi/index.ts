@@ -1,3 +1,5 @@
+export { CopyMarkdownButton } from './copy-markdown-button'
+export type { CopyMarkdownButtonProps } from './copy-markdown-button'
 export { OpenAPIOperation } from './operation'
 export type { OpenAPIOperationProps } from './operation'
 export { OpenAPIOverview } from './overview'

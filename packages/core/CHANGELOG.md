@@ -400,9 +400,9 @@
   ## Documentation
 
   See updated guides:
-  - [Workspaces](/guides/workspaces) - New `prefix` and `discovery` fields
-  - [Auto-Discovery](/guides/auto-discovery) - New `'auto'` titleFrom mode and `TitleConfig`
-  - [Configuration Reference](/reference/configuration) - Full field reference
+  - Workspaces - New `prefix` and `discovery` fields
+  - Auto-Discovery - New `'auto'` titleFrom mode and `TitleConfig`
+  - Configuration Reference - Full field reference
 
 ### Patch Changes
 

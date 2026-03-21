@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import matter from 'gray-matter'
 import { match, P } from 'ts-pattern'
 
-import { resolveOptionalIcon } from '../../icon.ts'
+import { resolveOptionalIcon, serializeIcon } from '../../icon.ts'
 import type { IconColor } from '../../icon.ts'
 import type { ResolvedEntry } from '../types.ts'
 
@@ -20,13 +20,9 @@ export interface WorkspaceCardData {
    */
   readonly title: string
   /**
-   * Iconify identifier for the card icon (e.g. 'devicon:hono').
+   * Icon config — Iconify identifier string or `{ id, color }` object.
    */
-  readonly icon?: string
-  /**
-   * CSS class suffix for the icon color.
-   */
-  readonly iconColor?: string
+  readonly icon?: string | { readonly id: string; readonly color: string }
   /**
    * Scope label shown above the name (e.g. 'apps/').
    */
@@ -100,18 +96,15 @@ export async function generateLandingContent(
  * @returns JSX string for a single WorkspaceCard component
  */
 export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
-  const icon =
-    data.icon ??
-    match(data.hasChildren === true)
-      .with(true, () => 'pixelarticons:folder')
-      .otherwise(() => 'pixelarticons:file')
-  const iconColor = data.iconColor ?? 'purple'
+  const defaultIcon = match(data.hasChildren === true)
+    .with(true, () => 'pixelarticons:folder')
+    .otherwise(() => 'pixelarticons:file')
+  const icon = data.icon ?? defaultIcon
 
   const props: readonly string[] = [
     `title="${escapeJsxProp(data.title)}"`,
     `href="${data.link}"`,
-    `icon="${icon}"`,
-    `iconColor="${iconColor}"`,
+    ...serializeIconProp(icon),
     ...maybeScopeProp(data.scope),
     ...maybeDescriptionProp(data.description),
     ...maybeTagsProp(data.tags),
@@ -140,16 +133,7 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
   return buildWorkspaceCardJsx({
     link: entry.link ?? '',
     title: entry.title,
-    icon: match(resolved)
-      .with(P.nonNullable, (r) => r.id)
-      // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-      .with(P.nullish, (): undefined => undefined)
-      .exhaustive(),
-    iconColor: match(resolved)
-      .with(P.nonNullable, (r) => r.color)
-      // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-      .with(P.nullish, (): undefined => undefined)
-      .exhaustive(),
+    icon: serializeIcon(resolved),
     scope: card.scope,
     description,
     tags: card.tags,
@@ -168,22 +152,25 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
  */
 async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Promise<string> {
   const hasChildren = entry.items && entry.items.length > 0
-  const icon = match(hasChildren)
+  const iconId = match(hasChildren)
     .with(true, () => 'pixelarticons:folder')
     .otherwise(() => 'pixelarticons:file')
+  const icon: string | { readonly id: string; readonly color: string } = match(iconColor)
+    .with('purple', () => iconId)
+    .otherwise(() => ({ id: iconId, color: iconColor }))
   const description = await resolveDescription(entry)
 
-  const props = [
+  const baseProps = [
     `href="${entry.link}"`,
     `title="${escapeJsxProp(entry.title)}"`,
-    `icon="${icon}"`,
-    `iconColor="${iconColor}"`,
+    ...serializeIconProp(icon),
   ]
-  if (description) {
-    props.push(`description="${escapeJsxProp(description)}"`)
-  }
+  const descriptionProps = match(description)
+    .with(P.string, (d) => [`description="${escapeJsxProp(d)}"`])
+    .otherwise(() => [] as string[])
+  const allProps = [...baseProps, ...descriptionProps]
 
-  return `  <SectionCard ${props.join(' ')} />`
+  return `  <SectionCard ${allProps.join(' ')} />`
 }
 
 /**
@@ -195,12 +182,7 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
  * @returns Description string, or undefined if none found
  */
 async function resolveDescription(entry: ResolvedEntry): Promise<string | undefined> {
-  // Explicit card description wins
-  if (entry.card !== null && entry.card !== undefined && entry.card.description) {
-    return entry.card.description
-  }
-
-  // Try to extract from source file
+  // 1. Source file frontmatter is the primary source of truth
   if (entry.page !== null && entry.page !== undefined && entry.page.source) {
     try {
       const desc = await extractDescription(entry.page.source)
@@ -212,15 +194,9 @@ async function resolveDescription(entry: ResolvedEntry): Promise<string | undefi
     }
   }
 
-  // Fallback to page frontmatter
-  if (
-    entry.page !== null &&
-    entry.page !== undefined &&
-    entry.page.frontmatter !== null &&
-    entry.page.frontmatter !== undefined &&
-    entry.page.frontmatter.description
-  ) {
-    return String(entry.page.frontmatter.description)
+  // 2. Config-level description as fallback (no file, or file has no description)
+  if (entry.description) {
+    return entry.description
   }
 
   return undefined
@@ -303,6 +279,25 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
       },
       { done: false, result: [] }
     ).result
+}
+
+/**
+ * Serialize a unified icon config into JSX prop strings.
+ *
+ * - String → `icon="prefix:name"`
+ * - Object → `icon={{ id: "prefix:name", color: "blue" }}`
+ *
+ * @private
+ * @param icon - Icon config value (string or object)
+ * @returns Array with the icon JSX prop string
+ */
+function serializeIconProp(
+  icon: string | { readonly id: string; readonly color: string }
+): readonly string[] {
+  if (typeof icon === 'string') {
+    return [`icon="${icon}"`]
+  }
+  return [`icon={{ id: "${icon.id}", color: "${icon.color}" }}`]
 }
 
 /**

@@ -169,42 +169,6 @@ export interface CardConfig {
 }
 
 /**
- * Content discovery configuration for auto-generating pages from files.
- *
- * Schema: `discoverySchema` in schema.ts validates this shape.
- */
-export interface DiscoveryConfig {
-  readonly from?: string
-  readonly title?: TitleConfig
-  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
-  readonly exclude?: readonly string[]
-  readonly frontmatter?: Frontmatter
-  readonly recursive?: boolean
-  readonly indexFile?: string
-}
-
-/**
- * Recursive directory-based discovery configuration.
- * Type-enforces that `indexFile` only exists when `recursive: true`.
- */
-export interface RecursiveDiscoveryConfig extends DiscoveryConfig {
-  readonly recursive: true
-  readonly indexFile?: string
-}
-
-/**
- * Flat (non-recursive) discovery configuration.
- */
-export interface FlatDiscoveryConfig extends DiscoveryConfig {
-  readonly recursive?: false
-}
-
-/**
- * Unified discovery configuration with properly typed recursion dependency.
- */
-export type Discovery = FlatDiscoveryConfig | RecursiveDiscoveryConfig
-
-/**
  * A single call-to-action button on the home page hero.
  *
  * Schema: `heroActionSchema` in schema.ts validates this shape.
@@ -252,19 +216,6 @@ export interface SidebarConfig {
 }
 
 /**
- * SEO meta tag configuration.
- * No schema — this is a type-only definition used for future extension.
- */
-export interface SeoConfig {
-  readonly title?: string
-  readonly description?: string
-  readonly image?: string
-  readonly siteName?: string
-  readonly locale?: string
-  readonly twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player'
-}
-
-/**
  * A single node in the information architecture (sidebar/nav tree).
  *
  * Schema: `entrySchema` in schema.ts validates this shape.
@@ -272,12 +223,12 @@ export interface SeoConfig {
  *
  * **Page — explicit file**:
  * ```ts
- * { title: 'Architecture', link: '/architecture', from: 'docs/architecture.md' }
+ * { title: 'Architecture', path: '/architecture', include: 'docs/architecture.md' }
  * ```
  *
  * **Page — inline/generated content**:
  * ```ts
- * { title: 'Overview', link: '/api/overview', content: '# API Overview\n...' }
+ * { title: 'Overview', path: '/api/overview', content: '# API Overview\n...' }
  * ```
  *
  * **Section — explicit children**:
@@ -287,35 +238,27 @@ export interface SeoConfig {
  *
  * **Section — auto-discovered from glob**:
  * ```ts
- * { title: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' }
+ * { title: 'Guides', path: '/guides', include: 'docs/guides/*.md' }
  * ```
  */
 export interface Section {
   readonly title: TitleConfig
-  readonly link?: string
-  readonly from?: string
-  readonly prefix?: string
+  readonly description?: string
+  readonly path?: string
+  readonly include?: string | readonly string[]
   readonly content?: string | (() => string | Promise<string>)
   readonly items?: readonly Section[]
-  readonly landing?: 'auto' | 'cards' | 'overview' | false
+  readonly landing?: boolean
   readonly collapsible?: boolean
   readonly exclude?: readonly string[]
   readonly hidden?: boolean
   readonly frontmatter?: Frontmatter
   readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly recursive?: boolean
-  readonly indexFile?: string
+  readonly entryFile?: string
   readonly icon?: IconConfig
   readonly card?: CardConfig
-  readonly isolated?: boolean
-  /**
-   * @deprecated Use `title: { from: 'auto' }` instead
-   */
-  readonly titleFrom?: 'filename' | 'heading' | 'frontmatter' | 'auto'
-  /**
-   * @deprecated Use `title: { from: 'auto', transform: ... }` instead
-   */
-  readonly titleTransform?: (title: string, slug: string) => string
+  readonly standalone?: boolean
 }
 
 /**
@@ -330,8 +273,9 @@ export interface Section {
  *   icon: 'devicon:hono',
  *   description: 'Hono REST API serving all client applications',
  *   tags: ['hono', 'react', 'vercel'],
- *   prefix: '/apps/api',
- *   discovery: { from: 'docs/*.md', title: { from: 'auto' } },
+ *   path: '/apps/api',
+ *   include: 'docs/*.md',
+ *   sort: 'alpha',
  * }
  * ```
  */
@@ -341,9 +285,14 @@ export interface Workspace {
   readonly description: string
   readonly tags?: readonly string[]
   readonly badge?: { readonly src: string; readonly alt: string }
-  readonly prefix: string
-  readonly discovery?: Discovery
+  readonly path: string
+  readonly include?: string | readonly string[]
   readonly items?: readonly Section[]
+  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly exclude?: readonly string[]
+  readonly recursive?: boolean
+  readonly entryFile?: string
+  readonly frontmatter?: Frontmatter
   readonly openapi?: OpenAPIConfig
 }
 
@@ -359,14 +308,14 @@ export interface Workspace {
  *   description: 'Third-party service connectors',
  *   icon: 'mdi:puzzle',
  *   items: [
- *     { title: 'Stripe', description: 'Payment processing', prefix: '/integrations/stripe' },
+ *     { title: 'Stripe', description: 'Payment processing', path: '/integrations/stripe' },
  *   ],
  * }
  * ```
  */
 export interface WorkspaceCategory {
   readonly title: TitleConfig
-  readonly description: string
+  readonly description?: string
   readonly icon: IconId
   readonly items: readonly Workspace[]
   readonly link?: string
@@ -401,9 +350,9 @@ export interface OpenAPIConfig {
    */
   readonly spec: FilePath
   /**
-   * URL prefix for API operation pages (e.g., '/api').
+   * URL path for API operation pages (e.g., '/api').
    */
-  readonly prefix: UrlPath
+  readonly path: UrlPath
   /**
    * Sidebar group title.
    * @default 'API Reference'
@@ -439,7 +388,7 @@ export interface Feature {
   readonly title: TitleConfig
   readonly description: string
   readonly link?: string
-  readonly icon?: IconId
+  readonly icon?: IconConfig
 }
 
 /**
@@ -557,9 +506,6 @@ export interface ZpressConfig {
   readonly icon?: IconId
   readonly tagline?: string
   readonly actions?: readonly HeroAction[]
-  readonly seo?: SeoConfig
-  readonly apps?: readonly Workspace[]
-  readonly packages?: readonly Workspace[]
   readonly workspaces?: readonly WorkspaceCategory[]
   readonly features?: readonly Feature[]
   readonly sidebar?: SidebarConfig

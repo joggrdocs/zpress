@@ -98,12 +98,11 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     return { pagesWritten: 0, pagesSkipped: 0, pagesRemoved: 0, elapsed: performance.now() - start }
   }
 
-  // 1.25 Enrich sections with workspace card metadata from top-level apps/packages
+  // 1.25 Enrich sections with workspace card metadata from workspaces config
   const resolved = enrichWorkspaceCards(rawResolved, config)
 
-  // 1.5 Inject auto-generated landing pages for sections with link but no page
-  const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const workspaces = [...(config.apps ?? []), ...(config.packages ?? []), ...workspaceCategoryItems]
+  // 1.5 Inject auto-generated landing pages for sections with path but no page
+  const workspaces = (config.workspaces ?? []).flatMap((g) => g.items)
   injectLandingPages(resolved, allSections, workspaces)
 
   // 2. Collect all pages from the tree
@@ -240,12 +239,12 @@ async function writeZpressReadme(outputRoot: string): Promise<void> {
 This directory is managed by zpress. It contains the
 materialized documentation site — synced content, build artifacts, and static assets.
 
-| Directory   | Description                                    | Tracked |
-| ----------- | ---------------------------------------------- | ------- |
-| \`content/\`  | Synced markdown pages and generated config     | No      |
-| \`public/\`   | Static assets (logos, icons, banners)           | Yes     |
-| \`dist/\`     | Build output                                   | No      |
-| \`cache/\`    | Build cache                                    | No      |
+| Directory   | Description                                    |
+| ----------- | ---------------------------------------------- |
+| \`content/\`  | Synced markdown pages and generated config     |
+| \`public/\`   | Static assets (logos, icons, banners)           |
+| \`dist/\`     | Build output                                   |
+| \`cache/\`    | Build cache                                    |
 
 ## Commands
 

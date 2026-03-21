@@ -27,6 +27,7 @@ import './styles/overrides/home.css'
 import './styles/overrides/home-card.css'
 import './styles/overrides/section-card.css'
 import './styles/overrides/vscode.css'
+import './styles/overrides/badge.css'
 // OpenAPI component styles
 import './components/openapi/openapi.css'
 
@@ -39,7 +40,7 @@ export { Layout } from './components/nav/layout'
 
 // zpress components
 export { FeatureCard, FeatureGrid } from './components/home/feature-card'
-export type { FeatureCardProps, FeatureItem, IconColor } from './components/home/feature-card'
+export type { FeatureCardProps, FeatureItem } from './components/home/feature-card'
 export { WorkspaceCard } from './components/workspaces/card'
 export type { WorkspaceCardProps } from './components/workspaces/card'
 export { WorkspaceGrid } from './components/workspaces/grid'
@@ -54,9 +55,24 @@ export type { TechTagProps } from './components/shared/tech-tag'
 export { TechIconTable } from './components/shared/tech-icon-table'
 export type { TechIconEntry, TechIconTableProps } from './components/shared/tech-icon-table'
 export { Icon } from './components/shared/icon'
-export { BrowserWindow } from './components/shared/browser-window'
-export type { BrowserWindowProps } from './components/shared/browser-window'
+export { DesktopWindow } from './components/shared/desktop-window'
+export type { DesktopWindowProps, WindowTab } from './components/shared/desktop-window'
+export { BrowserWindow } from './components/shared/desktop-window'
+export type { BrowserWindowProps, BrowserTab } from './components/shared/desktop-window'
+export { IDEWindow } from './components/shared/desktop-window'
+export type { IDEWindowProps, IDEFileTab } from './components/shared/desktop-window'
+export { TerminalWindow, Command, Output, Line } from './components/shared/desktop-window'
+export type {
+  TerminalWindowProps,
+  TerminalColor,
+  TerminalLineConfig,
+  CommandProps,
+  OutputProps,
+  LineProps,
+} from './components/shared/desktop-window'
 
+export { CopyMarkdownButton } from './components/openapi'
+export type { CopyMarkdownButtonProps } from './components/openapi'
 export { OpenAPIOperation } from './components/openapi'
 export type { OpenAPIOperationProps } from './components/openapi'
 export { OpenAPIOverview } from './components/openapi'

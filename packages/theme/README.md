@@ -19,7 +19,7 @@ This package provides theme-related types, built-in theme definitions, and Zod s
 This package is typically installed as a dependency of `@zpress/config`:
 
 ```bash
-pnpm add @zpress/theme
+npm install @zpress/theme
 ```
 
 ## Usage

@@ -7,6 +7,10 @@
   "categories": [
     "Other"
   ],
+  "homepage": "https://zpress.dev",
+  "bugs": {
+    "url": "https://github.com/joggrdocs/zpress/issues"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -34,17 +38,17 @@
     "commands": [
       {
         "command": "zpress.start",
-        "title": "zpress: Start Dev Server",
+        "title": "zpress: Start Server",
         "icon": "$(debug-start)"
       },
       {
         "command": "zpress.stop",
-        "title": "zpress: Stop Dev Server",
+        "title": "zpress: Stop Server",
         "icon": "$(debug-stop)"
       },
       {
         "command": "zpress.toggle",
-        "title": "zpress: Toggle Dev Server"
+        "title": "zpress: Toggle Server"
       },
       {
         "command": "zpress.preview",
@@ -57,12 +61,22 @@
       },
       {
         "command": "zpress.restart",
-        "title": "zpress: Restart Dev Server"
+        "title": "zpress: Restart Server"
       },
       {
         "command": "zpress.openInBrowser",
         "title": "zpress: Open in Browser",
         "icon": "$(link-external)"
+      },
+      {
+        "command": "zpress.collapseAll",
+        "title": "Collapse All",
+        "icon": "$(collapse-all)"
+      },
+      {
+        "command": "zpress.editSource",
+        "title": "Edit Source",
+        "icon": "$(edit)"
       }
     ],
     "menus": {
@@ -73,20 +87,17 @@
           "group": "navigation"
         }
       ],
+      "view/item/context": [
+        {
+          "command": "zpress.editSource",
+          "when": "viewItem == zpressLeaf",
+          "group": "inline"
+        }
+      ],
       "view/title": [
         {
-          "command": "zpress.start",
-          "when": "view =~ /^zpress\\.(loading|section)/ && !zpress:serverReady && !zpress:serverStarting",
-          "group": "navigation"
-        },
-        {
-          "command": "zpress.stop",
-          "when": "view =~ /^zpress\\.(loading|section)/ && (zpress:serverReady || zpress:serverStarting)",
-          "group": "navigation"
-        },
-        {
-          "command": "zpress.openInBrowser",
-          "when": "view =~ /^zpress\\.(loading|section)/ && zpress:serverReady",
+          "command": "zpress.collapseAll",
+          "when": "view == zpress.server && zpress:serverReady",
           "group": "navigation"
         }
       ]
@@ -103,15 +114,55 @@
     "viewsWelcome": [
       {
         "view": "zpress.loading",
-        "contents": "$(sync~spin) Starting zpress dev server...",
+        "contents": "$(sync~spin) Building docs site...",
         "when": "zpress:serverStarting"
       },
       {
         "view": "zpress.loading",
-        "contents": "zpress dev server is stopped.\n[Start Server](command:zpress.start)",
+        "contents": "$(book) Preview your docs site right here.\n[Start Server](command:zpress.start)",
         "when": "zpress:serverStopped"
       }
     ],
+    "configuration": {
+      "title": "zpress",
+      "properties": {
+        "zpress.server.autoOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open the docs site in the browser when the dev server starts."
+        },
+        "zpress.server.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the dev server when the zpress sidebar is opened."
+        },
+        "zpress.server.port": {
+          "type": "number",
+          "default": 6174,
+          "description": "Port for the dev server."
+        },
+        "zpress.theme": {
+          "type": "string",
+          "enum": [
+            "base",
+            "midnight",
+            "arcade"
+          ],
+          "default": null,
+          "markdownDescription": "Override the theme used for the docs preview. When set, this overrides the `theme.name` in your `zpress.config` without modifying the config file."
+        },
+        "zpress.theme.mode": {
+          "type": "string",
+          "enum": [
+            "dark",
+            "light",
+            "toggle"
+          ],
+          "default": null,
+          "markdownDescription": "Override the color mode for the docs preview. When set, this overrides the `theme.colorMode` in your `zpress.config` without modifying the config file."
+        }
+      }
+    },
     "views": {
       "zpress": [
         {
@@ -120,52 +171,34 @@
           "when": "zpress:isProject && !zpress:serverReady"
         },
         {
-          "id": "zpress.section.0",
-          "name": "Section",
-          "when": "zpress:section.0 && zpress:serverReady",
+          "id": "zpress.pages",
+          "name": "Pages",
+          "when": "zpress:section.pages && zpress:serverReady",
           "visibility": "visible"
         },
         {
-          "id": "zpress.section.1",
-          "name": "Section",
-          "when": "zpress:section.1 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.apps",
+          "name": "Apps",
+          "when": "zpress:section.apps && zpress:serverReady",
+          "visibility": "visible"
         },
         {
-          "id": "zpress.section.2",
-          "name": "Section",
-          "when": "zpress:section.2 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.packages",
+          "name": "Packages",
+          "when": "zpress:section.packages && zpress:serverReady",
+          "visibility": "visible"
         },
         {
-          "id": "zpress.section.3",
-          "name": "Section",
-          "when": "zpress:section.3 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.workspaces",
+          "name": "Workspaces",
+          "when": "zpress:section.workspaces && zpress:serverReady",
+          "visibility": "visible"
         },
         {
-          "id": "zpress.section.4",
-          "name": "Section",
-          "when": "zpress:section.4 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.5",
-          "name": "Section",
-          "when": "zpress:section.5 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.6",
-          "name": "Section",
-          "when": "zpress:section.6 && zpress:serverReady",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "zpress.section.7",
-          "name": "Section",
-          "when": "zpress:section.7 && zpress:serverReady",
-          "visibility": "collapsed"
+          "id": "zpress.server",
+          "name": "Server",
+          "when": "zpress:isProject && zpress:serverReady",
+          "visibility": "visible"
         }
       ]
     }
@@ -181,6 +214,10 @@
     "workspace"
   ],
   "icon": "resources/icon.png",
+  "galleryBanner": {
+    "color": "#0a0a0a",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.110.0"
   }

@@ -23,6 +23,56 @@ html[data-zpress-env='vscode'] .rp-doc-layout__doc {
   margin: 0 auto;
 }
 
+/* ── Hide Copy Markdown in VS Code — replaced by Edit button ── */
+html[data-zpress-env='vscode'] .rp-llms-copy-button {
+  display: none;
+}
+
+/* ── Edit source button (inside .rp-llms-container) ────── */
+/* Matches Rspress .rp-llms-button styles exactly */
+.zp-edit-source-btn {
+  border: 1px solid var(--rp-c-divider-light);
+  background: var(--rp-c-bg);
+  height: 36px;
+  color: var(--rp-c-text-2);
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--rp-font-family-base, system-ui, sans-serif);
+  line-height: normal;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+  display: inline-flex;
+}
+
+.zp-edit-source-btn:hover {
+  background: var(--rp-c-bg-soft);
+  border-color: var(--rp-c-divider);
+  color: var(--rp-c-text-1);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
+}
+
+.zp-edit-source-btn:active {
+  background: var(--rp-c-bg-soft);
+  box-shadow: none;
+}
+
+.zp-edit-source-btn svg {
+  flex-shrink: 0;
+}
+
 /* Hide nav items, social links, hamburger, mobile nav, appearance toggle */
 html[data-zpress-env='vscode'] .rp-nav-menu__item,
 html[data-zpress-env='vscode'] .rp-social-links,
@@ -32,6 +82,7 @@ html[data-zpress-env='vscode'] .rp-nav-screen-menu,
 html[data-zpress-env='vscode'] .rp-local-nav,
 html[data-zpress-env='vscode'] .rp-switch-appearance,
 html[data-zpress-env='vscode'] .rp-nav-screen-appearance,
-html[data-zpress-env='vscode'] .rp-doc-layout__menu {
+html[data-zpress-env='vscode'] .rp-doc-layout__menu,
+html[data-zpress-env='vscode'] .zp-site-footer {
   display: none;
 }

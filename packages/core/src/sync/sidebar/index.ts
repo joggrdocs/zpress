@@ -43,13 +43,15 @@ export function generateNav(
     return config.nav.map(mapNavItem)
   }
 
-  // Auto: first 3 non-isolated sections (matching home page features),
-  // plus all isolated sections (workspace dropdowns).
+  // Auto: first 3 non-standalone sections (matching home page features),
+  // plus all standalone sections (workspace dropdowns).
   const visible = resolved.filter((e) => !e.hidden)
-  const nonIsolated = visible.filter((e) => !e.isolated).slice(0, 3)
-  const isolated = visible.filter((e) => e.isolated)
+  const nonStandalone = visible.filter((e) => !e.standalone).slice(0, 3)
+  const standalone = visible.filter((e) => e.standalone)
 
-  return [...nonIsolated, ...isolated].map(buildNavEntry).filter((item) => item.link !== undefined)
+  return [...nonStandalone, ...standalone]
+    .map(buildNavEntry)
+    .filter((item) => item.link !== undefined)
 }
 
 // ---------------------------------------------------------------------------
@@ -65,9 +67,10 @@ export function generateNav(
  */
 function buildSidebarEntry(entry: ResolvedEntry): SidebarItem | undefined {
   if (entry.items && entry.items.length > 0) {
+    const dedupedItems = filterDuplicateChildLink(entry.items, entry.link)
     return {
       text: entry.title,
-      items: generateSidebar(entry.items),
+      items: generateSidebar(dedupedItems),
       ...maybeCollapsed(entry.collapsible),
       ...maybeLink(entry.link),
     }
@@ -163,16 +166,16 @@ function resolveLink(entry: ResolvedEntry): string | undefined {
 }
 
 /**
- * Resolve children for isolated nav dropdowns (one level deep).
- * Only isolated sections produce dropdown children — nested sub-items
+ * Resolve children for standalone nav dropdowns (one level deep).
+ * Only standalone sections produce dropdown children — nested sub-items
  * within those children are intentionally flattened to { text, link }.
  *
  * @private
- * @param entry - Resolved entry to check for isolated children
+ * @param entry - Resolved entry to check for standalone children
  * @returns Array of nav items for dropdown, or undefined
  */
 function resolveChildren(entry: ResolvedEntry): readonly RspressNavItem[] | undefined {
-  if (entry.isolated && entry.items && entry.items.length > 0) {
+  if (entry.standalone && entry.items && entry.items.length > 0) {
     return entry.items
       .filter((child) => !child.hidden)
       .map(
@@ -258,4 +261,26 @@ function mapNavItem(item: NavItem): RspressNavItem {
     ...maybeActiveMatch(item),
     ...maybeItems(item),
   }
+}
+
+/**
+ * Remove any direct child whose link duplicates the parent section link.
+ *
+ * When a child (e.g. "Overview") has the same link as its parent group,
+ * it is redundant in the sidebar — the group header already navigates there.
+ * Keeping both causes double-highlighting of the active state.
+ *
+ * @private
+ * @param items - Direct child entries
+ * @param parentLink - Parent section link to check against
+ * @returns Filtered child entries with duplicates removed
+ */
+function filterDuplicateChildLink(
+  items: readonly ResolvedEntry[],
+  parentLink: string | undefined
+): readonly ResolvedEntry[] {
+  if (!parentLink) {
+    return items
+  }
+  return items.filter((item) => item.link !== parentLink)
 }

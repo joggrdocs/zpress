@@ -1,0 +1,199 @@
+/* ── Container ──────────────────────────────────────────────────────── */
+
+.zpress-mermaid {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--rp-c-divider);
+  border-radius: 12px;
+  background: var(--rp-c-bg-soft);
+  margin: 16px 0;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.zpress-mermaid:active {
+  cursor: grabbing;
+}
+
+/* No pan/grab cursor when in code view */
+.zpress-mermaid-no-pan {
+  cursor: default;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.zpress-mermaid-no-pan:active {
+  cursor: default;
+}
+
+/* ── Fullscreen ─────────────────────────────────────────────────────── */
+
+.zpress-mermaid-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  background: var(--rp-c-bg);
+}
+
+/* ── Diagram area ───────────────────────────────────────────────────── */
+
+.zpress-mermaid-inner {
+  flex: 1 1 auto;
+  transform-origin: 0 0;
+  transition: none;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.zpress-mermaid-inner svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Code view ──────────────────────────────────────────────────────── */
+
+.zpress-mermaid-code {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 16px 20px;
+  min-height: 120px;
+}
+
+.zpress-mermaid-code pre {
+  margin: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.zpress-mermaid-code code {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--rp-c-text-2);
+  white-space: pre;
+  font-family: var(--rp-font-family-mono);
+}
+
+/* ── Syntax highlighting tokens ─────────────────────────────────────── */
+
+.zm-keyword {
+  color: var(--rp-c-brand);
+  font-weight: 600;
+}
+
+.zm-comment {
+  color: var(--rp-c-text-4, var(--rp-c-text-3));
+  font-style: italic;
+}
+
+.zm-string {
+  color: var(--rp-c-green-1, #16a34a);
+}
+
+.zm-arrow {
+  color: var(--rp-c-yellow-1, #ca8a04);
+}
+
+/* ── Top controls (zoom, reset, fullscreen) ─────────────────────────── */
+
+.zpress-mermaid-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.zpress-mermaid:hover .zpress-mermaid-controls {
+  opacity: 1;
+}
+
+.zpress-mermaid-fullscreen .zpress-mermaid-controls {
+  opacity: 1;
+}
+
+.zpress-mermaid-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--rp-c-divider);
+  border-radius: 6px;
+  background: var(--rp-c-bg);
+  color: var(--rp-c-text-2);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.zpress-mermaid-btn:hover {
+  color: var(--rp-c-text-1);
+  border-color: var(--rp-c-text-3);
+}
+
+/* ── Footer (type label + tab bar) ──────────────────────────────────── */
+
+.zpress-mermaid-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--rp-c-divider);
+  padding: 0 0 0 12px;
+}
+
+.zpress-mermaid-type {
+  font-size: 11px;
+  font-family: var(--rp-font-family-mono);
+  color: var(--rp-c-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.zpress-mermaid-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.zpress-mermaid-tab {
+  padding: 4px 12px;
+  border: none;
+  border-left: 1px solid var(--rp-c-divider);
+  background: transparent;
+  color: var(--rp-c-text-3);
+  font-size: 11px;
+  font-family: var(--rp-font-family-mono);
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.zpress-mermaid-tab:hover {
+  color: var(--rp-c-text-2);
+  background: var(--rp-c-bg-soft);
+}
+
+.zpress-mermaid-tab-active {
+  color: var(--rp-c-text-1);
+  background: var(--rp-c-bg-soft);
+}

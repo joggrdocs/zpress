@@ -1,3 +1,4 @@
+// oxlint-disable no-ternary
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -8,6 +9,7 @@ import {
   languages,
   Range,
   RelativePattern,
+  ThemeColor,
   ThemeIcon,
   Uri,
   window,
@@ -91,8 +93,13 @@ export function activate(context: ExtensionContext): void {
       window.createWebviewPanel(viewType, title, showOptions, options),
     asExternalUri: (uri) => env.asExternalUri(uri),
     parseUri: (value) => Uri.parse(value),
+    iconPath: Uri.joinPath(context.extensionUri, 'resources', 'icon.svg'),
+    EventEmitter,
     onError: (message) => {
       outputChannel.appendLine(`[zpress] ${message}`)
+    },
+    onStart: () => {
+      commands.executeCommand('zpress.start')
     },
   })
 
@@ -101,6 +108,7 @@ export function activate(context: ExtensionContext): void {
     createWatcher: (pattern) => workspace.createFileSystemWatcher(pattern),
     EventEmitter,
     ThemeIcon,
+    ThemeColor,
     RelativePattern,
   })
 
@@ -109,21 +117,108 @@ export function activate(context: ExtensionContext): void {
     treeDataProvider: { getTreeItem: () => ({ label: '' }), getChildren: () => [] },
   })
 
+  /* Server panel — shows status, start/stop, and open-in-browser as tree items */
+  // oxlint-disable-next-line unicorn/prefer-event-target -- VS Code API requires EventEmitter
+  const serverEmitter = new EventEmitter<void>()
+  const serverTreeView = window.createTreeView('zpress.server', {
+    treeDataProvider: {
+      onDidChangeTreeData: serverEmitter.event,
+      getTreeItem: (item: { readonly id: string }) => {
+        if (item.id === 'status') {
+          const status = server.isRunning() ? 'Running' : 'Stopped'
+          const icon = server.isRunning() ? 'circle-large-filled' : 'circle-large-outline'
+          const color = server.isRunning() ? 'charts.green' : 'descriptionForeground'
+          const port = (() => {
+            const baseUrl = server.getBaseUrl()
+            if (baseUrl) {
+              try {
+                return new URL(baseUrl).port
+              } catch {
+                return null
+              }
+            }
+            return null
+          })()
+          const description = port ? `port ${port}` : undefined
+          return {
+            label: status,
+            description,
+            iconPath: new ThemeIcon(icon, new ThemeColor(color)),
+            collapsibleState: 0,
+          }
+        }
+        if (item.id === 'toggle') {
+          const label = server.isRunning() ? 'Stop Server' : 'Start Server'
+          const icon = server.isRunning() ? 'debug-stop' : 'debug-start'
+          const command = server.isRunning() ? 'zpress.stop' : 'zpress.start'
+          return {
+            label,
+            iconPath: new ThemeIcon(icon),
+            collapsibleState: 0,
+            command: { title: label, command },
+          }
+        }
+        if (item.id === 'restart') {
+          return {
+            label: 'Restart Server',
+            iconPath: new ThemeIcon('debug-restart'),
+            collapsibleState: 0,
+            command: { title: 'Restart Server', command: 'zpress.restart' },
+          }
+        }
+        if (item.id === 'browser') {
+          return {
+            label: 'Open in Browser',
+            iconPath: new ThemeIcon('link-external'),
+            collapsibleState: 0,
+            command: { title: 'Open in Browser', command: 'zpress.openInBrowser' },
+          }
+        }
+        return { label: '' }
+      },
+      getChildren: () => {
+        const items: { readonly id: string }[] = [{ id: 'status' }, { id: 'toggle' }]
+        if (server.isRunning()) {
+          return [...items, { id: 'restart' }, { id: 'browser' }]
+        }
+        return items
+      },
+    },
+  })
+
   const sectionTreeViews = sidebar.sections.map((section) =>
     window.createTreeView(section.viewId, {
       treeDataProvider: section.treeDataProvider,
-      showCollapseAll: true,
+      showCollapseAll: false,
     })
   )
 
+  /**
+   * Reveal the sidebar node matching the given URL path, expanding its
+   * parent group and selecting it in the correct section tree view.
+   */
+  function revealSidebarNode(urlPath: string): void {
+    const match = sidebar.findNodeByPath(urlPath)
+    if (!match) {
+      return
+    }
+    const treeView = sectionTreeViews[match.sectionIndex]
+    if (!treeView) {
+      return
+    }
+    sidebar.refreshSections(match.sectionIndex)
+    treeView.reveal(match.node, { select: true, focus: false, expand: true })
+  }
+
+  /** Context key names matching the `when` clauses in package.json views */
+  const SECTION_CONTEXT_KEYS = ['pages', 'apps', 'packages', 'workspaces'] as const
+
   function refreshSectionViews(): void {
-    const activeCount = sidebar.activeSectionCount()
     // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (setting context on each section)
     sidebar.sections.map((section, i) => {
-      commands.executeCommand('setContext', `zpress:section.${String(i)}`, i < activeCount)
-      const treeView = sectionTreeViews[i]
-      if (treeView && i < activeCount) {
-        treeView.title = section.title
+      const contextKey = SECTION_CONTEXT_KEYS[i]
+      if (contextKey) {
+        commands.executeCommand('setContext', `zpress:section.${contextKey}`, section.hasItems)
       }
       return null
     })
@@ -149,11 +244,16 @@ export function activate(context: ExtensionContext): void {
     onStatusChange: (status) => {
       setServerStatus(status)
       previewPanel.updateStatus(status)
+      serverEmitter.fire()
     },
     onReady: (baseUrl) => {
       manifestReader.reload(baseUrl)
       sidebar.setBaseUrl(baseUrl)
       refreshSectionViews()
+      const autoOpen = workspace.getConfiguration('zpress.server').get<boolean>('autoOpen', true)
+      if (autoOpen) {
+        previewPanel.open(baseUrl)
+      }
     },
     onStopped: () => {
       manifestReader.reload(null)
@@ -193,6 +293,21 @@ export function activate(context: ExtensionContext): void {
     Range,
   })
 
+  async function openSourceFile(urlPath: string): Promise<void> {
+    const sourcePath = manifestReader.getSourceByUrlPath(urlPath)
+    if (!sourcePath) {
+      window.showErrorMessage(`No source file found for path: ${urlPath}`)
+      return
+    }
+    try {
+      const doc = await workspace.openTextDocument(Uri.file(sourcePath))
+      await window.showTextDocument(doc, { preview: false, preserveFocus: false })
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      window.showErrorMessage(`Failed to open source file: ${message}`)
+    }
+  }
+
   function resolveTargetUrl(arg?: string | Uri): string | undefined {
     if (typeof arg === 'string') {
       return arg
@@ -216,7 +331,23 @@ export function activate(context: ExtensionContext): void {
     sidebar,
     codeLensProvider,
     loadingView,
+    serverTreeView,
+    serverEmitter,
+    loadingView.onDidChangeVisibility((e) => {
+      const autoStart = workspace.getConfiguration('zpress.server').get<boolean>('autoStart', true)
+      if (e.visible && autoStart && !server.isRunning()) {
+        server.start()
+      }
+    }),
+    previewPanel.onNavigate(revealSidebarNode),
+    previewPanel.onEdit((urlPath: string) => openSourceFile(urlPath)),
     ...sectionTreeViews,
+    commands.registerCommand('zpress.editSource', (node: { readonly link?: string }) => {
+      if (!node || !node.link) {
+        return
+      }
+      openSourceFile(node.link)
+    }),
     commands.registerCommand('zpress.start', () => {
       server.start()
     }),
@@ -232,6 +363,15 @@ export function activate(context: ExtensionContext): void {
     }),
     commands.registerCommand('zpress.restart', () => {
       server.restart()
+    }),
+    commands.registerCommand('zpress.collapseAll', () => {
+      // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (collapsing all sections)
+      sidebar.sections.map((section) => {
+        if (section.hasItems) {
+          commands.executeCommand(`workbench.actions.treeView.${section.viewId}.collapseAll`)
+        }
+        return null
+      })
     }),
     commands.registerCommand('zpress.openInBrowser', () => {
       const baseUrl = server.getBaseUrl()
@@ -265,7 +405,16 @@ export function activate(context: ExtensionContext): void {
       previewPanel.open(targetUrl)
     }),
     languages.registerCodeLensProvider({ language: 'markdown', scheme: 'file' }, codeLensProvider),
-    window.onDidChangeActiveTextEditor(updateTrackedContext)
+    window.onDidChangeActiveTextEditor(updateTrackedContext),
+    workspace.onDidChangeConfiguration((e) => {
+      const affected =
+        e.affectsConfiguration('zpress.theme') ||
+        e.affectsConfiguration('zpress.theme.mode') ||
+        e.affectsConfiguration('zpress.server.port')
+      if (affected && server.isRunning()) {
+        server.restart()
+      }
+    })
   )
 
   updateTrackedContext(window.activeTextEditor)

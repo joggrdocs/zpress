@@ -19,6 +19,9 @@ export function zpressPlugin(): RspressPlugin {
 
   return {
     name: 'zpress',
-    globalUIComponents: [path.resolve(componentsDir, 'theme-provider.tsx')],
+    globalUIComponents: [
+      path.resolve(componentsDir, 'theme-provider.tsx'),
+      path.resolve(componentsDir, 'edit-source-button.tsx'),
+    ],
   }
 }

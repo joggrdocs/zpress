@@ -2,10 +2,7 @@ import type React from 'react'
 import { useMemo } from 'react'
 import { match, P } from 'ts-pattern'
 
-import { CopyMarkdownButton } from './copy-markdown-button'
 import { LockIcon } from './icons'
-import { generateOverviewMarkdown } from './markdown'
-import { MethodBadge } from './method-badge'
 import { HTTP_METHODS } from './spec-utils'
 
 export interface OpenAPIOverviewProps {
@@ -13,20 +10,18 @@ export interface OpenAPIOverviewProps {
    * Parsed OpenAPI spec object.
    */
   readonly spec: Record<string, unknown>
+  /**
+   * Pre-rendered markdown for the SSG-MD pass.
+   * When provided and `import.meta.env.SSG_MD` is true, this string
+   * is rendered instead of the interactive UI.
+   */
+  readonly markdown?: string
 }
 
 interface TagInfo {
   readonly name: string
   readonly description: string
   readonly operationCount: number
-  readonly firstOperationPath: string
-  readonly firstOperationMethod: string
-}
-
-interface TagAccEntry {
-  readonly count: number
-  readonly firstPath: string
-  readonly firstMethod: string
 }
 
 /**
@@ -38,11 +33,12 @@ interface TagAccEntry {
  * @param props - Overview props with parsed spec
  * @returns React element with full API overview
  */
-export function OpenAPIOverview({ spec }: OpenAPIOverviewProps): React.ReactElement {
-  const markdown = useMemo(() => generateOverviewMarkdown({ spec }), [spec])
+export function OpenAPIOverview({ spec, markdown }: OpenAPIOverviewProps): React.ReactElement {
+  if (import.meta.env.SSG_MD && markdown) {
+    return <>{markdown}</>
+  }
+
   const info = (spec['info'] ?? {}) as Record<string, unknown>
-  const title = String(info['title'] ?? 'API Reference')
-  const version = String(info['version'] ?? '')
   const description = info['description'] as string | undefined
   const servers = (spec['servers'] ?? []) as readonly Record<string, unknown>[]
   const components = (spec['components'] ?? {}) as Record<string, unknown>
@@ -56,25 +52,9 @@ export function OpenAPIOverview({ spec }: OpenAPIOverviewProps): React.ReactElem
     .with(P.nonNullable, (d) => <div className="zp-oas-overview__description">{d}</div>)
     .otherwise(() => null)
 
-  const versionEl = match(version)
-    .with(
-      P.when((v): v is string => v.length > 0),
-      (v) => <span className="zp-oas-overview__version">{v}</span>
-    )
-    .otherwise(() => null)
-
   return (
     <div className="zp-oas-overview">
-      <div className="zp-oas-overview__copy">
-        <CopyMarkdownButton markdown={markdown} />
-      </div>
-      <div className="zp-oas-overview__header">
-        <h1 className="zp-oas-overview__title">
-          {title}
-          {versionEl}
-        </h1>
-        {descEl}
-      </div>
+      {descEl}
       <ServerList servers={servers} />
       <AuthSchemes schemes={securitySchemes} />
       <TagGroups tags={tags} />
@@ -96,25 +76,17 @@ export function OpenAPIOverview({ spec }: OpenAPIOverviewProps): React.ReactElem
 function collectTags(spec: Record<string, unknown>): readonly TagInfo[] {
   const paths = (spec['paths'] ?? {}) as Record<string, Record<string, unknown>>
 
-  const tagMap = Object.entries(paths).reduce<Record<string, TagAccEntry>>(
-    (pathAcc, [pathStr, pathItem]) =>
+  const tagMap = Object.entries(paths).reduce<Record<string, number>>(
+    (pathAcc, [_pathStr, pathItem]) =>
       HTTP_METHODS.filter((method) => pathItem[method] !== undefined).reduce<
-        Record<string, TagAccEntry>
+        Record<string, number>
       >((methodAcc, method) => {
         const operation = pathItem[method] as Record<string, unknown>
         const tags = (operation['tags'] ?? ['default']) as readonly string[]
-        return tags.reduce<Record<string, TagAccEntry>>((tagAcc, tag) => {
-          const existing = tagAcc[tag]
-          return match(existing)
-            .with(P.nonNullable, (e) => ({
-              ...tagAcc,
-              [tag]: { ...e, count: e.count + 1 },
-            }))
-            .otherwise(() => ({
-              ...tagAcc,
-              [tag]: { count: 1, firstPath: pathStr, firstMethod: method },
-            }))
-        }, methodAcc)
+        return tags.reduce<Record<string, number>>(
+          (tagAcc, tag) => Object.assign(tagAcc, { [tag]: (tagAcc[tag] ?? 0) + 1 }),
+          methodAcc
+        )
       }, pathAcc),
     {}
   )
@@ -124,12 +96,10 @@ function collectTags(spec: Record<string, unknown>): readonly TagInfo[] {
     specTags.map((t) => [String(t['name'] ?? ''), String(t['description'] ?? '')])
   )
 
-  return Object.entries(tagMap).map(([name, data]) => ({
+  return Object.entries(tagMap).map(([name, count]) => ({
     name,
     description: specTagMap[name] ?? '',
-    operationCount: data.count,
-    firstOperationPath: data.firstPath,
-    firstOperationMethod: data.firstMethod,
+    operationCount: count,
   }))
 }
 
@@ -234,19 +204,6 @@ function TagGroups({ tags }: { readonly tags: readonly TagInfo[] }): React.React
                   </span>
                 </div>
                 {descEl}
-                <div style={{ marginTop: '0.375rem' }}>
-                  <MethodBadge method={tag.firstOperationMethod} />
-                  <span
-                    style={{
-                      fontFamily: 'var(--zp-font-family-mono, monospace)',
-                      fontSize: '0.8125rem',
-                      color: 'var(--zp-c-text-2)',
-                      marginLeft: '0.5rem',
-                    }}
-                  >
-                    {tag.firstOperationPath}
-                  </span>
-                </div>
               </div>
             )
           })}

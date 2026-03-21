@@ -1,12 +1,14 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/joggrdocs/zpress/main/assets/banner.svg" alt="zpress" width="90%" />
-  <p><strong>An opinionated documentation framework for monorepos. Just point it at your code.</strong></p>
+# @zpress/kit
 
-<a href="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml"><img src="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-<a href="https://www.npmjs.com/package/@zpress/kit"><img src="https://img.shields.io/npm/v/@zpress/kit" alt="npm version" /></a>
-<a href="https://github.com/joggrdocs/zpress/blob/main/LICENSE"><img src="https://img.shields.io/github/license/joggrdocs/zpress" alt="License" /></a>
+An opinionated documentation framework for monorepos. Just point it at your code.
 
-</div>
+<span class="zp-badge">
+
+[![CI](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@zpress/kit)](https://www.npmjs.com/package/@zpress/kit)
+[![License](https://img.shields.io/github/license/joggrdocs/zpress)](https://github.com/joggrdocs/zpress/blob/main/LICENSE)
+
+</span>
 
 ## Features
 
@@ -32,7 +34,7 @@ import { defineConfig } from '@zpress/kit'
 
 export default defineConfig({
   title: 'my-project',
-  description: 'Internal developer docs',
+  description: 'Documentation for my-project',
   sections: [
     {
       text: 'Getting Started',

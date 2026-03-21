@@ -8,12 +8,12 @@ All diagrams use **Mermaid** with the **Catppuccin Mocha** color theme. This cre
 
 Both Mermaid diagrams and file trees are rendered by Rspress plugins registered in `packages/ui/src/config.ts`:
 
-| Plugin                       | Syntax | Purpose                              |
-| ---------------------------- | ------ | ------------------------------------ |
-| `rspress-plugin-mermaid`     | ` ```mermaid ` | Renders Mermaid diagrams (flowcharts, sequence, ER) |
-| `rspress-plugin-file-tree`   | ` ```tree `    | Renders interactive collapsible file trees           |
-| `rspress-plugin-supersub`    | `^superscript^` / `~subscript~` | Superscript and subscript text      |
-| `rspress-plugin-katex`       | `$inline$` / `$$block$$`        | Renders math formulas with KaTeX    |
+| Plugin                     | Syntax                          | Purpose                                             |
+| -------------------------- | ------------------------------- | --------------------------------------------------- |
+| `rspress-plugin-mermaid`   | ` ```mermaid `                  | Renders Mermaid diagrams (flowcharts, sequence, ER) |
+| `rspress-plugin-file-tree` | ` ```tree `                     | Renders interactive collapsible file trees          |
+| `rspress-plugin-supersub`  | `^superscript^` / `~subscript~` | Superscript and subscript text                      |
+| `rspress-plugin-katex`     | `$inline$` / `$$block$$`        | Renders math formulas with KaTeX                    |
 
 Mermaid and tree blocks also render natively on GitHub — GitHub supports ` ```mermaid ` blocks, and ` ```tree ` blocks display as readable plain text.
 
@@ -21,11 +21,11 @@ Mermaid and tree blocks also render natively on GitHub — GitHub supports ` ```
 
 ### Choose the Right Diagram Type
 
-| Concept                                      | Diagram Type      | Example                                 |
-| -------------------------------------------- | ----------------- | --------------------------------------- |
-| System architecture, data pipelines, routing | Flowchart         | Webhook routing, dependency chains      |
-| Request/response flows, multi-step protocols | Sequence diagram  | OAuth handshakes, API request lifecycle |
-| Database models, entity relationships        | ER diagram        | Data model, authorization schema        |
+| Concept                                      | Diagram Type           | Example                                 |
+| -------------------------------------------- | ---------------------- | --------------------------------------- |
+| System architecture, data pipelines, routing | Flowchart              | Webhook routing, dependency chains      |
+| Request/response flows, multi-step protocols | Sequence diagram       | OAuth handshakes, API request lifecycle |
+| Database models, entity relationships        | ER diagram             | Data model, authorization schema        |
 | Directory layouts                            | File tree (Tree block) | Repository structure                    |
 
 Rule of thumb:

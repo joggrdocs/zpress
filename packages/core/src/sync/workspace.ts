@@ -1,25 +1,28 @@
-import { isNil, isString, isUndefined, omitBy } from 'es-toolkit'
+import { isNil, isString, isUndefined, kebabCase, omitBy } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
-import { resolveOptionalIcon } from '../icon.ts'
-import type { Section, ZpressConfig, Workspace } from '../types.ts'
+import { resolveOptionalIcon, serializeIcon } from '../icon.ts'
+import type { Section, TitleConfig, ZpressConfig, Workspace } from '../types.ts'
 import { buildWorkspaceCardJsx } from './sidebar/landing.ts'
 import type { ResolvedEntry } from './types.ts'
 
-interface WorkspaceArrays {
-  readonly apps: readonly Workspace[]
-  readonly packages: readonly Workspace[]
+/**
+ * Default descriptions for well-known workspace category titles.
+ */
+const DEFAULT_CATEGORY_DESCRIPTIONS: Readonly<Record<string, string>> = {
+  packages: 'Internal packages and shared libraries',
+  apps: 'Deployable applications and services',
 }
 
 /**
  * Enrich resolved entries with card metadata derived from workspace items.
  *
  * Walks the resolved entry tree and, for each entry whose link starts with
- * a `WorkspaceItem.path`, produces a new tree with `CardConfig` metadata
+ * a `Workspace.path`, produces a new tree with `CardConfig` metadata
  * added — without mutating the original entries.
  *
  * @param entries - Resolved entry tree from `resolveEntries()`
- * @param config - zpress config containing `apps` and `packages` arrays
+ * @param config - zpress config containing `workspaces` categories
  * @returns New entry tree with card metadata enriched
  */
 export function enrichWorkspaceCards(
@@ -27,24 +30,23 @@ export function enrichWorkspaceCards(
   config: ZpressConfig
 ): ResolvedEntry[] {
   const workspaceGroupItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const items = [...(config.apps ?? []), ...(config.packages ?? []), ...workspaceGroupItems]
-  if (items.length === 0) {
+  if (workspaceGroupItems.length === 0) {
     return [...entries]
   }
 
-  return enrichEntries(entries, items)
+  return enrichEntries(entries, workspaceGroupItems)
 }
 
 /**
  * Generate the home page markdown from workspace items.
  *
- * Produces Rspress frontmatter (hero, features) plus workspace grid blocks
- * for apps and packages. Tags render as SVG icons (when available) or text labels.
+ * Produces Rspress frontmatter (hero, features) plus workspace grid blocks.
+ * Tags render as SVG icons (when available) or text labels.
  *
- * @param workspaces - Apps and packages arrays from config
+ * @param workspaces - Workspace categories from config
  * @returns Full home page markdown string
  */
-export function generateHomePage(workspaces: WorkspaceArrays): string {
+export function generateHomePage(workspaces: readonly Workspace[]): string {
   const frontmatter = [
     '---',
     'layout: home',
@@ -86,18 +88,11 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
     '---',
   ].join('\n')
 
-  const appsSection = buildWorkspaceSection(
-    'Apps',
-    'Deployable applications that make up the platform — each runs as an independent service.',
-    workspaces.apps,
-    'apps/'
-  )
-
-  const packagesSection = buildWorkspaceSection(
-    'Packages',
-    'Shared libraries and utilities consumed across apps and services.',
-    workspaces.packages,
-    'packages/'
+  const workspaceSection = buildWorkspaceSection(
+    'Workspaces',
+    'Apps and packages that make up the platform.',
+    workspaces,
+    ''
   )
 
   return [
@@ -105,9 +100,7 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
     '',
     '<div class="zp-workspace-section">',
     '',
-    appsSection,
-    '',
-    packagesSection,
+    workspaceSection,
     '',
     '</div>',
   ].join('\n')
@@ -117,14 +110,13 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
  * Generate the introduction page markdown from workspace items.
  *
  * Produces a "What's inside" section with dynamic bullet lists derived
- * from the apps and packages arrays.
+ * from workspace items.
  *
- * @param workspaces - Apps and packages arrays from config
+ * @param workspaces - Workspace items from config
  * @returns Full introduction page markdown string
  */
-export function generateIntroPage(workspaces: WorkspaceArrays): string {
-  const appsList = workspaces.apps.map((a) => `${a.title} (${a.description})`).join(', ')
-  const packagesList = workspaces.packages.map((p) => `${p.title} (${p.description})`).join(', ')
+export function generateIntroPage(workspaces: readonly Workspace[]): string {
+  const itemsList = workspaces.map((a) => `${a.title} (${a.description})`).join(', ')
 
   return [
     '# Introduction',
@@ -135,98 +127,56 @@ export function generateIntroPage(workspaces: WorkspaceArrays): string {
     '',
     "## What's inside",
     '',
-    `- **Apps** — Deployable services: ${appsList}`,
-    `- **Packages** — Shared libraries: ${packagesList}`,
+    `- **Workspaces**: ${itemsList}`,
     '- **Tooling** — Internal developer tools including this documentation site',
   ].join('\n')
 }
 
 /**
- * Synthesize Section entries from workspace config (apps, packages, custom categories).
+ * Synthesize Section entries from workspace config (categories).
  *
- * Produces isolated parent sections with workspace item children,
+ * Produces standalone parent sections with workspace item children,
  * ready to merge into `config.sections` before resolution.
  * Skips any category whose link already exists in `config.sections`.
  *
- * @param config - zpress config containing apps, packages, and workspaces
+ * @param config - zpress config containing workspaces
  * @returns Section array of synthesized workspace sections
  */
 export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
   const existingLinks = collectAllLinks(config.sections)
-
-  const apps = config.apps ?? []
-  const packages = config.packages ?? []
   const categories = config.workspaces ?? []
-
-  const appsSection = match(apps.length > 0 && !existingLinks.has('/apps'))
-    .with(
-      true,
-      (): Section => ({
-        title: 'Apps',
-        link: '/apps',
-        isolated: true,
-        frontmatter: {
-          description: 'Deployable applications that make up the platform.',
-        },
-        items: apps
-          .filter((item) => !existingLinks.has(item.prefix))
-          .map((item) => workspaceToSection(item)),
-      })
-    )
-    .otherwise(() => null)
-
-  const packagesSection = match(packages.length > 0 && !existingLinks.has('/packages'))
-    .with(
-      true,
-      (): Section => ({
-        title: 'Packages',
-        link: '/packages',
-        isolated: true,
-        frontmatter: {
-          description: 'Shared libraries and utilities consumed across apps and services.',
-        },
-        items: packages
-          .filter((item) => !existingLinks.has(item.prefix))
-          .map((item) => workspaceToSection(item)),
-      })
-    )
-    .otherwise(() => null)
 
   const categoryEntries = categories.map((category): Section | null => {
     const link = category.link ?? `/${slugify(String(category.title))}`
     if (existingLinks.has(link)) {
       return null
     }
+    const description = category.description ?? resolveDefaultCategoryDescription(category.title)
     return {
       title: category.title,
-      link,
-      isolated: true,
+      path: link,
+      standalone: true,
       frontmatter: {
-        description: category.description,
+        description,
       },
       items: category.items
-        .filter((item) => !existingLinks.has(item.prefix))
+        .filter((item) => !existingLinks.has(item.path))
         .map((item) => workspaceToSection(item)),
     }
   })
 
-  return [appsSection, packagesSection, ...categoryEntries].filter(
-    (section): section is Section => section !== null
-  )
+  return categoryEntries.filter((section): section is Section => section !== null)
 }
 
 /**
  * Convert display text to a URL-safe slug.
- * E.g. "Getting Started" → "getting-started"
+ * E.g. "Getting Started" → "getting-started", "updatePet" → "update-pet"
  *
  * @param text - Display text to slugify
  * @returns URL-safe lowercase slug
  */
 export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, '-')
-    .replaceAll(/^-+|-+$/g, '')
+  return kebabCase(text)
 }
 
 // ---------------------------------------------------------------------------
@@ -244,7 +194,7 @@ export function slugify(text: string): string {
 function collectAllLinks(sections: readonly Section[]): Set<string> {
   return new Set(
     sections.flatMap((section): string[] => {
-      const self = collectSelfLinks(section.link)
+      const self = collectSelfLinks(section.path)
       const nested = collectNestedLinks(section.items)
       return [...self, ...nested]
     })
@@ -268,9 +218,9 @@ function enrichEntries(
 
     if (entry.link && !entry.card) {
       const entryLink = entry.link
-      const matched = items.find((item) => entryLink === item.prefix)
+      const matched = items.find((item) => entryLink === item.path)
       if (matched) {
-        const scope = deriveScope(matched.prefix)
+        const scope = deriveScope(matched.path)
         const tags = resolveTags(matched.tags)
         const badge = resolveBadge(matched.badge)
 
@@ -333,18 +283,9 @@ function buildWorkspaceSection(
       .with(P.string, (t) => t)
       .otherwise(String)
     return buildWorkspaceCardJsx({
-      link: item.prefix,
+      link: item.path,
       title: titleStr,
-      icon: match(resolved)
-        .with(P.nonNullable, (r) => r.id)
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
-      iconColor: match(resolved)
-        .with(P.nonNullable, (r) => r.color)
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
+      icon: serializeIcon(resolved),
       scope: scopePrefix,
       description: item.description,
       tags: item.tags,
@@ -364,15 +305,13 @@ function buildWorkspaceSection(
 }
 
 /**
- * Convert a Workspace to a Section, extracting discovery config and applying defaults.
+ * Convert a Workspace to a Section, extracting discovery fields and applying defaults.
  *
- * Uses `prefix` as both `link` (clickable section header) and `prefix`
- * (URL prefix for glob-discovered children).
+ * Uses `path` as both the section URL and URL prefix for glob-discovered children.
+ * The `include` field is resolved relative to the workspace item's base path
+ * (derived from `path`). Defaults to `"docs/*.md"` when omitted.
  *
- * The `discovery.from` field is resolved relative to the workspace item's base path
- * (derived from `prefix`). Defaults to `"docs/*.md"` when omitted.
- *
- * For example, `prefix: "/apps/api"` + `discovery.from: "docs/*.md"` resolves to `"apps/api/docs/*.md"`.
+ * For example, `path: "/apps/api"` + `include: "docs/*.md"` resolves to `"apps/api/docs/*.md"`.
  *
  * @private
  * @param item - Workspace item to convert
@@ -382,7 +321,7 @@ function workspaceToSection(item: Workspace): Section {
   const base: Section = {
     title: item.title,
     icon: item.icon,
-    link: item.prefix,
+    path: item.path,
   }
 
   return applyOptionalFields(base, item)
@@ -392,79 +331,37 @@ function workspaceToSection(item: Workspace): Section {
  * Apply optional discovery fields to a base section from a workspace item.
  *
  * @private
- * @param base - Base section with title, icon, and link
- * @param item - Workspace item with optional discovery config
+ * @param base - Base section with title, icon, and path
+ * @param item - Workspace item with optional discovery fields
  * @returns Complete section with all discovery fields resolved
  */
 function applyOptionalFields(base: Section, item: Workspace): Section {
-  // Extract discovery config or use defaults
-  const { discovery } = item
-  const fromPattern = match(discovery)
-    .with(P.nonNullable, (d) => d.from ?? 'docs/*.md')
-    .otherwise(() => 'docs/*.md')
-  const basePath = item.prefix.replace(/^\//, '')
-  const resolvedFrom = `${basePath}/${fromPattern}`
+  const fromPattern = item.include ?? 'docs/*.md'
+  const basePath = item.path.replace(/^\//, '')
+  const resolvedInclude = normalizeAndResolveInclude(fromPattern, basePath)
 
-  // Extract title config from discovery (deprecated path)
-  // If discovery.title is a TitleConfig object, pass it through
-  // Otherwise use default 'auto' strategy
-  const titleConfig = match(discovery)
-    .with(P.nonNullable, (d) => d.title)
-    .otherwise(() => null)
-  const titleFrom = match(titleConfig)
-    .when(
-      (tc) => !isNil(tc) && !isString(tc),
-      (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).from
-    )
-    .otherwise(() => null)
-  const titleTransform = match(titleConfig)
-    .when(
-      (tc) => !isNil(tc) && !isString(tc),
-      (tc) => (tc as { from: string; transform?: (text: string, slug: string) => string }).transform
-    )
+  const sort = item.sort ?? null
+
+  const recursive = item.recursive ?? null
+
+  const entryFile = match(recursive)
+    .with(true, () => item.entryFile)
     .otherwise(() => null)
 
-  const sort = match(discovery)
-    .with(P.nonNullable, (d) => d.sort)
+  const exclude = match(item.exclude)
+    .with(P.nonNullable, (ex) => [...ex])
     .otherwise(() => null)
 
-  const recursive = match(discovery)
-    .when(
-      (d): d is { recursive: boolean } => !isNil(d) && 'recursive' in d,
-      (d) => d.recursive
-    )
-    .otherwise(() => null)
-
-  const indexFile = match(discovery)
-    .when(
-      (d) => !isNil(d) && 'recursive' in d && d.recursive === true,
-      (d) => (d as { recursive: true; indexFile?: string }).indexFile
-    )
-    .otherwise(() => null)
-
-  const exclude = match(discovery)
-    .with(P.nonNullable, (d) =>
-      match(d.exclude)
-        .with(P.nonNullable, (ex) => [...ex])
-        .otherwise(() => null)
-    )
-    .otherwise(() => null)
-
-  const frontmatter = match(discovery)
-    .with(P.nonNullable, (d) => d.frontmatter)
-    .otherwise(() => null)
+  const frontmatter = item.frontmatter ?? null
 
   return omitBy(
     {
       ...base,
-      from: resolvedFrom,
-      prefix: item.prefix,
+      include: resolvedInclude,
       items: item.items,
       sort,
-      titleFrom,
-      titleTransform,
       recursive,
-      indexFile,
+      entryFile,
       exclude,
       frontmatter,
     },
@@ -546,4 +443,34 @@ function resolveBadge(
     return { src: badge.src, alt: badge.alt }
   }
   return undefined
+}
+
+/**
+ * Normalize include (string | string[]) and resolve relative to base path.
+ *
+ * @private
+ * @param include - Include pattern(s) from workspace
+ * @param basePath - Base directory path to resolve relative to
+ * @returns Resolved include pattern(s) as string or string[]
+ */
+function normalizeAndResolveInclude(
+  include: string | readonly string[],
+  basePath: string
+): string | readonly string[] {
+  if (isString(include)) {
+    return `${basePath}/${include}`
+  }
+  return include.map((pattern) => `${basePath}/${pattern}`)
+}
+
+/**
+ * Resolve a default description for well-known workspace category titles.
+ *
+ * @private
+ * @param title - Category title config
+ * @returns Default description string, or empty string for unknown titles
+ */
+function resolveDefaultCategoryDescription(title: TitleConfig): string {
+  const key = String(title).toLowerCase()
+  return DEFAULT_CATEGORY_DESCRIPTIONS[key] ?? ''
 }

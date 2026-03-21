@@ -1,0 +1,27 @@
+# {{ title }}
+{%- if version %} (v{{ version }}){% endif %}
+{%- if description %}
+
+{{ description }}
+{%- endif %}
+{%- if hasServers %}
+
+## Servers
+{%- for server in servers %}
+- `{{ server.url }}`{% if server.description %} — {{ server.description }}{% endif %}
+{%- endfor %}
+{%- endif %}
+{%- if hasAuthSchemes %}
+
+## Authentication
+{%- for scheme in authSchemes %}
+- **{{ scheme.name }}** — {{ scheme.type }}
+{%- endfor %}
+{%- endif %}
+{%- if hasTagGroups %}
+
+## Operations
+{%- for group in tagGroups %}
+- **{{ group.name }}** — {{ group.count }} operations
+{%- endfor %}
+{%- endif %}

@@ -1,9 +1,9 @@
-import type { IconColor } from '@zpress/config'
 import type React from 'react'
 import { match, P } from 'ts-pattern'
 
 import { Card } from '../shared/card'
 import { Icon } from '../shared/icon'
+import { resolveCardIcon } from '../shared/resolve-card-icon'
 import { TechTag } from '../shared/tech-tag'
 
 export interface WorkspaceCardProps {
@@ -16,13 +16,9 @@ export interface WorkspaceCardProps {
    */
   readonly href: string
   /**
-   * Iconify identifier (e.g. "simple-icons:typescript").
+   * Icon config — Iconify identifier string or `{ id, color }` object.
    */
-  readonly icon?: string
-  /**
-   * CSS class suffix for icon background color.
-   */
-  readonly iconColor?: IconColor
+  readonly icon?: string | { readonly id: string; readonly color: string }
   /**
    * Scope prefix shown above the name (e.g. "apps/").
    */
@@ -53,14 +49,13 @@ export interface WorkspaceCardProps {
  * Workspace card — renders a clickable link card with icon, name,
  * description, tech tags, and optional deploy badge.
  *
- * @param props - Props with title, href, and optional icon, iconColor, scope, description, tags, badge, titleLines, descriptionLines
+ * @param props - Props with title, href, and optional icon, scope, description, tags, badge, titleLines, descriptionLines
  * @returns React element with a workspace link card
  */
 export function WorkspaceCard({
   title,
   href,
   icon,
-  iconColor = 'purple',
   scope,
   description,
   tags,
@@ -69,10 +64,15 @@ export function WorkspaceCard({
   descriptionLines,
 }: WorkspaceCardProps): React.ReactElement {
   const name = title.toLowerCase()
+  const resolved = resolveCardIcon(icon)
 
-  const iconEl = match(icon)
-    .with(P.nonNullable, (id) => <Icon icon={id} />)
+  const iconEl = match(resolved)
+    .with(P.nonNullable, (r) => <Icon icon={r.id} />)
     .otherwise(() => null)
+
+  const iconColor = match(resolved)
+    .with(P.nonNullable, (r) => r.color)
+    .otherwise(() => 'purple')
 
   const scopeEl = match(scope)
     .with(

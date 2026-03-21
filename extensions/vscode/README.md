@@ -1,32 +1,63 @@
-# zpress for VS Code
+<!-- markdownlint-disable MD033 MD041 -->
+<div align="center">
 
-Run the [zpress](https://zpress.dev) dev server and preview documentation without leaving your editor.
+<img src="resources/logo.png" alt="zpress" width="420" />
+
+<br />
+<br />
+
+**Browse your project docs and API references directly in VS Code.**
+
+</div>
+
+---
+
+## What is zpress?
+
+[zpress](https://zpress.dev) is a config-driven documentation framework for monorepos — it turns your markdown files and OpenAPI specs into a full documentation site with sidebar navigation, search, theming, and interactive API references.
+
+## What does this extension do?
+
+This extension brings your zpress docs into VS Code so you can browse them without leaving your editor.
+
+<div align="center">
+<img src="resources/screenshot-base.png" alt="zpress in VS Code" width="100%" />
+</div>
 
 ## Features
 
-- **Dev server management** — Start, stop, restart, and toggle the zpress dev server from the command palette or status bar.
-- **In-editor preview** — Preview any tracked markdown page in a webview panel alongside your code.
-- **Sidebar navigation** — Browse your documentation structure in the activity bar, organized by section.
-- **CodeLens** — Click "Preview in zpress" above any tracked markdown file to open the preview.
+- **In-editor preview** — browse your docs in a webview panel alongside your code
+- **Sidebar navigation** — explore your documentation structure from the activity bar
+- **OpenAPI references** — view auto-generated API docs with parameters, schemas, and code samples in 6 languages
+- **CodeLens** — click "Preview in zpress" above any tracked markdown file
+- **Live reload** — preview updates instantly as you edit
+
+### OpenAPI
+
+<div align="center">
+<img src="resources/screenshot-openapi.png" alt="zpress OpenAPI reference" width="100%" />
+</div>
 
 ## Getting Started
 
-1. Open a workspace that contains a `zpress.config.ts` (or `.js`, `.mjs`, `.mts`, `.json`) file.
-2. The extension activates automatically and starts the dev server.
-3. Use the sidebar to browse pages, or open a markdown file and click the globe icon in the editor title bar to preview.
+1. Install [zpress](https://zpress.dev/getting-started/quick-start) in your project.
+2. Open a workspace that contains a `zpress.config.ts` (or `.js`, `.mjs`, `.mts`, `.json`).
+3. The extension activates automatically and starts the dev server.
+4. Use the sidebar to browse pages, or open a markdown file and click the globe icon to preview.
 
-## Commands
+## Configuration
 
-| Command                      | Description                       |
-| ---------------------------- | --------------------------------- |
-| `zpress: Start Dev Server`   | Start the dev server              |
-| `zpress: Stop Dev Server`    | Stop the dev server               |
-| `zpress: Toggle Dev Server`  | Toggle the dev server on/off      |
-| `zpress: Restart Dev Server` | Restart the dev server            |
-| `zpress: Preview Page`       | Preview the current markdown file |
+| Setting                   | Type      | Default | Description                                                    |
+| ------------------------- | --------- | ------- | -------------------------------------------------------------- |
+| `zpress.server.autoStart` | `boolean` | `true`  | Automatically start the dev server when the sidebar is opened. |
+| `zpress.server.port`      | `number`  | `6174`  | Port for the dev server.                                       |
+| `zpress.theme`            | `string`  | —       | Override the theme (`base`, `midnight`, or `arcade`).          |
+| `zpress.theme.mode`       | `string`  | —       | Override the color mode (`dark`, `light`, or `toggle`).        |
 
-> `zpress: Open Page` is an internal command used by the sidebar tree view and is not intended to be invoked directly.
+## Known Issues
 
-## Requirements
+None at this time. If you encounter a bug, please [open an issue](https://github.com/joggrdocs/zpress/issues).
 
-- [zpress](https://zpress.dev) installed in your project (`npx zpress` or `pnpm add @zpress/kit`)
+## Release Notes
+
+See [CHANGELOG](CHANGELOG.md) for a full list of changes.

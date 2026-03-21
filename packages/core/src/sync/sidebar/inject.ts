@@ -1,16 +1,11 @@
 import { match, P } from 'ts-pattern'
 
-import { ICON_COLORS, resolveOptionalIcon } from '../../icon.ts'
+import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '../../icon.ts'
 import type { IconColor } from '../../icon.ts'
 import type { Section, Workspace } from '../../types.ts'
-import { linkToOutputPath, sourceExt } from '../resolve/path.ts'
+import { linkToOutputPath } from '../resolve/path.ts'
 import type { ResolvedEntry } from '../types.ts'
 import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
-
-/**
- * Slug priority for overview files that should be promoted to section headers.
- */
-const OVERVIEW_SLUGS: readonly string[] = ['overview', 'index', 'readme']
 
 /**
  * Walk the resolved tree and inject virtual landing pages
@@ -32,9 +27,7 @@ export function injectLandingPages(
   colorIndex: { value: number } = { value: 0 }
 ): void {
   entries.reduce<void>((_, entry) => {
-    promoteOverviewChild(entry)
-
-    if (entry.link && !entry.page) {
+    if (entry.link && !entry.page && entry.landing !== false) {
       const configSection = findConfigSection(configSections, entry.link)
       const description: string | undefined = resolveDescription(configSection)
 
@@ -53,7 +46,7 @@ export function injectLandingPages(
         }
       } else if (!entry.items || entry.items.length === 0) {
         // Check for workspace items matching this section's link prefix
-        const matching = workspaces.filter((item) => item.prefix.startsWith(`${entry.link}/`))
+        const matching = workspaces.filter((item) => item.path.startsWith(`${entry.link}/`))
 
         if (matching.length > 0) {
           const segments = entry.link.split('/')
@@ -68,7 +61,7 @@ export function injectLandingPages(
 
         if (matching.length === 0) {
           const entryLink = entry.link
-          const exact = workspaces.find((item) => item.prefix === entryLink)
+          const exact = workspaces.find((item) => item.path === entryLink)
           if (exact) {
             const titleStr = match(exact.title)
               .with(P.string, (t) => t)
@@ -100,50 +93,6 @@ export function injectLandingPages(
 // ---------------------------------------------------------------------------
 
 /**
- * Promote an overview/index/readme child to section header page.
- *
- * When a section entry has children and one matches an overview slug,
- * the child's content becomes the section's landing page and the child
- * is removed from `items`.
- *
- * @private
- * @param entry - Resolved entry to check for overview children
- * @returns Void; mutates entry in-place
- */
-function promoteOverviewChild(entry: ResolvedEntry): void {
-  if (!entry.link || entry.autoLink || !entry.items || entry.items.length === 0 || entry.page) {
-    return
-  }
-
-  const entryLink = entry.link
-  const { items } = entry
-  const promoted = OVERVIEW_SLUGS.map((slug) =>
-    items.find((item) => {
-      if (!item.link || !item.page) {
-        return false
-      }
-      const lastSegment = item.link.split('/').at(-1)
-      return lastSegment === slug
-    })
-  ).find((item) => item !== undefined)
-
-  if (!promoted || !promoted.page) {
-    return
-  }
-
-  const childPage = promoted.page
-  const ext = resolveExt(childPage.source)
-
-  entry.page = {
-    source: childPage.source,
-    content: childPage.content,
-    outputPath: linkToOutputPath(entryLink, ext),
-    frontmatter: childPage.frontmatter,
-  }
-  entry.items = items.filter((item) => item !== promoted)
-}
-
-/**
  * Generate a workspace-style landing page MDX from workspace items.
  *
  * @private
@@ -168,18 +117,9 @@ function generateWorkspaceLandingPage(
       .with(P.string, (t) => t)
       .otherwise(String)
     return buildWorkspaceCardJsx({
-      link: item.prefix,
+      link: item.path,
       title: titleStr,
-      icon: match(resolved)
-        .with(P.nonNullable, (r) => r.id)
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
-      iconColor: match(resolved)
-        .with(P.nonNullable, (r) => r.color)
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- explicit undefined required for correct type narrowing
-        .with(P.nullish, (): undefined => undefined)
-        .exhaustive(),
+      icon: serializeIcon(resolved),
       scope: scopePrefix,
       description: item.description,
       tags,
@@ -203,7 +143,7 @@ function generateWorkspaceLandingPage(
  * @returns Matching section, or undefined
  */
 function findConfigSection(sections: readonly Section[], link: string): Section | undefined {
-  const direct = sections.find((section) => section.link === link)
+  const direct = sections.find((section) => section.path === link)
   if (direct) {
     return direct
   }
@@ -215,35 +155,21 @@ function findConfigSection(sections: readonly Section[], link: string): Section 
 }
 
 /**
- * Resolve file extension from source path, defaulting to '.md'.
- *
- * @private
- * @param source - Optional source file path
- * @returns File extension string
- */
-function resolveExt(source: string | undefined): string {
-  if (source) {
-    return sourceExt(source)
-  }
-  return '.md'
-}
-
-/**
- * Extract description from a config section's frontmatter.
+ * Extract description from a config section.
  *
  * @private
  * @param configSection - Optional config section
  * @returns Description string, or undefined
  */
 function resolveDescription(configSection: Section | undefined): string | undefined {
-  if (
-    configSection !== null &&
-    configSection !== undefined &&
-    configSection.frontmatter !== null &&
-    configSection.frontmatter !== undefined
-  ) {
-    return configSection.frontmatter.description as string | undefined
+  if (configSection === null || configSection === undefined) {
+    return undefined
   }
+
+  if (configSection.description) {
+    return configSection.description
+  }
+
   return undefined
 }
 

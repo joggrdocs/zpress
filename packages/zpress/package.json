@@ -40,7 +40,7 @@
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch --no-clean",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@zpress/cli": "workspace:*",

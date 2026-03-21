@@ -58,3 +58,25 @@ export function resolveOptionalIcon(icon: ConfigIconConfig | undefined): Resolve
   }
   return resolveIcon(icon)
 }
+
+/**
+ * Serialize a `ResolvedIcon` into the JSX-friendly format.
+ *
+ * When the color is `'purple'` (the default), returns just the icon id string.
+ * Otherwise returns `{ id, color }` for explicit color rendering.
+ * Returns `undefined` for nullish input.
+ *
+ * @param resolved - Resolved icon, or undefined
+ * @returns String icon id, `{ id, color }` object, or `undefined`
+ */
+export function serializeIcon(
+  resolved: ResolvedIcon | undefined
+): string | { readonly id: string; readonly color: string } | undefined {
+  if (resolved === undefined) {
+    return undefined
+  }
+  if (resolved.color === 'purple') {
+    return resolved.id
+  }
+  return { id: resolved.id, color: resolved.color }
+}

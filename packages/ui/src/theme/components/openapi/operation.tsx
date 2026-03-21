@@ -1,10 +1,7 @@
 import type React from 'react'
-import { useMemo } from 'react'
 import { match, P } from 'ts-pattern'
 
 import { CodeSample } from './code-sample'
-import { CopyMarkdownButton } from './copy-markdown-button'
-import { generateOperationMarkdown } from './markdown'
 import { MethodBadge } from './method-badge'
 import { ParametersTable } from './parameters-table'
 import { RequestBody } from './request-body'
@@ -29,6 +26,12 @@ export interface OpenAPIOperationProps {
    * Operation ID for identification.
    */
   readonly operationId: string
+  /**
+   * Pre-rendered markdown for the SSG-MD pass.
+   * When provided and `import.meta.env.SSG_MD` is true, this string
+   * is rendered instead of the interactive UI.
+   */
+  readonly markdown?: string
 }
 
 /**
@@ -46,12 +49,13 @@ export function OpenAPIOperation({
   method,
   path,
   operationId,
+  markdown,
 }: OpenAPIOperationProps): React.ReactElement {
+  if (import.meta.env.SSG_MD && markdown) {
+    return <>{markdown}</>
+  }
+
   const operation = resolveOperation({ spec, path, method })
-  const markdown = useMemo(
-    () => generateOperationMarkdown({ spec, method, path, operationId }),
-    [spec, method, path, operationId]
-  )
 
   return match(operation)
     .with(P.nonNullable, (op) => {
@@ -99,9 +103,6 @@ export function OpenAPIOperation({
 
       return (
         <div className="zp-oas-operation">
-          <div className="zp-oas-operation__copy">
-            <CopyMarkdownButton markdown={markdown} />
-          </div>
           <div className="zp-oas-operation-spec">
             <OperationHeader
               method={method}

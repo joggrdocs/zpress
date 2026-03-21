@@ -75,17 +75,7 @@ const titleConfigSchema = z.union([
     .strict(),
 ])
 
-const discoverySchema = z
-  .object({
-    from: z.string().optional(),
-    title: titleConfigSchema.optional(),
-    sort: z.union([z.enum(['default', 'alpha', 'filename']), sortFnSchema]).optional(),
-    exclude: z.array(z.string()).optional(),
-    frontmatter: frontmatterSchema.optional(),
-    recursive: z.boolean().optional(),
-    indexFile: z.string().optional(),
-  })
-  .strict()
+const includeSchema = z.union([z.string(), z.array(z.string())])
 
 const iconIdSchema: z.ZodType<IconId> = z
   .string()
@@ -110,25 +100,22 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
   z
     .object({
       title: titleConfigSchema,
-      link: z.string().optional(),
-      from: z.string().optional(),
-      prefix: z.string().optional(),
+      description: z.string().optional(),
+      path: z.string().optional(),
+      include: includeSchema.optional(),
       content: z.union([z.string(), contentFnSchema]).optional(),
       items: z.array(entrySchema).optional(),
-      landing: z.union([z.enum(['auto', 'cards', 'overview']), z.literal(false)]).optional(),
+      landing: z.boolean().optional(),
       collapsible: z.boolean().optional(),
       exclude: z.array(z.string()).optional(),
       hidden: z.boolean().optional(),
       frontmatter: frontmatterSchema.optional(),
       sort: z.union([z.enum(['default', 'alpha', 'filename']), sortFnSchema]).optional(),
       recursive: z.boolean().optional(),
-      indexFile: z.string().optional(),
+      entryFile: z.string().optional(),
       icon: iconConfigSchema.optional(),
       card: cardConfigSchema.optional(),
-      isolated: z.boolean().optional(),
-      // Deprecated fields for backward compatibility
-      titleFrom: z.enum(['filename', 'heading', 'frontmatter', 'auto']).optional(),
-      titleTransform: titleTransformSchema.optional(),
+      standalone: z.boolean().optional(),
     })
     .strict()
 )
@@ -136,7 +123,7 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
 const openapiConfigSchema = z
   .object({
     spec: z.string(),
-    prefix: z.string(),
+    path: z.string(),
     title: z.string().optional(),
     sidebarLayout: z.enum(['method-path', 'title']).optional(),
   })
@@ -149,9 +136,14 @@ const workspaceItemSchema = z
     description: z.string(),
     tags: z.array(z.string()).optional(),
     badge: z.object({ src: z.string(), alt: z.string() }).strict().optional(),
-    prefix: z.string(),
-    discovery: discoverySchema.optional(),
+    path: z.string(),
+    include: includeSchema.optional(),
     items: z.array(entrySchema).optional(),
+    sort: z.union([z.enum(['default', 'alpha', 'filename']), sortFnSchema]).optional(),
+    exclude: z.array(z.string()).optional(),
+    recursive: z.boolean().optional(),
+    entryFile: z.string().optional(),
+    frontmatter: frontmatterSchema.optional(),
     openapi: openapiConfigSchema.optional(),
   })
   .strict()
@@ -159,7 +151,7 @@ const workspaceItemSchema = z
 const workspaceGroupSchema = z
   .object({
     title: titleConfigSchema,
-    description: z.string(),
+    description: z.string().optional(),
     icon: iconIdSchema,
     items: z.array(workspaceItemSchema).min(1),
     link: z.string().optional(),
@@ -171,7 +163,7 @@ const featureSchema = z
     title: titleConfigSchema,
     description: z.string(),
     link: z.string().optional(),
-    icon: iconIdSchema.optional(),
+    icon: iconConfigSchema.optional(),
   })
   .strict()
 
@@ -296,8 +288,6 @@ export const zpressConfigSchema = z
     theme: themeConfigSchema.optional(),
     icon: iconIdSchema.optional(),
     tagline: z.string().optional(),
-    apps: z.array(workspaceItemSchema).optional(),
-    packages: z.array(workspaceItemSchema).optional(),
     workspaces: z.array(workspaceGroupSchema).optional(),
     features: z.array(featureSchema).optional(),
     actions: z.array(heroActionSchema).optional(),
@@ -308,6 +298,7 @@ export const zpressConfigSchema = z
     home: homeConfigSchema.optional(),
     socialLinks: z.array(socialLinkSchema).optional(),
     footer: footerConfigSchema.optional(),
+    openapi: openapiConfigSchema.optional(),
   })
   .strict()
 

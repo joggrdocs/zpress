@@ -7,8 +7,8 @@ description: Set up the Acme Platform monorepo for local development.
 
 ## Prerequisites
 
-- Node.js 20+
-- pnpm 9+
+- Node.js 24+
+- pnpm 10+
 - PostgreSQL 16+
 - Docker (optional, for local services)
 

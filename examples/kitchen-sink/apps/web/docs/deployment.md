@@ -16,7 +16,7 @@ The web app deploys to **Vercel** with automatic deployments on push to `main`.
 | Framework preset | Next.js                   |
 | Build command    | `pnpm --filter web build` |
 | Output directory | `apps/web/.next`          |
-| Node.js version  | 20.x                      |
+| Node.js version  | 24.x                      |
 
 ## Environment variables
 

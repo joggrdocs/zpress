@@ -1,13 +1,19 @@
 ---
 title: Themes
-description: Customize the look and feel of your documentation with built-in themes and color overrides.
+description: How built-in themes, color modes, and color token overrides control the visual identity of your documentation site.
 ---
+
+import { BrowserWindow } from '@theme'
 
 # Themes
 
-zpress ships with three built-in themes. Each theme provides a complete set of color tokens for both light and dark modes, and can be further customized with color overrides.
+How the visual identity of your documentation site is controlled through built-in themes, color modes, and token overrides.
 
-## Built-in themes
+## Overview
+
+A theme in zpress is a complete set of color tokens for both light and dark modes. zpress ships with three built-in themes — Base, Midnight, and Arcade — each with its own default color mode. You can override individual color tokens without creating a custom theme, and optionally enable a runtime theme switcher for your readers.
+
+## Built-in Themes
 
 ### Base
 
@@ -15,17 +21,29 @@ The default theme. A clean purple/violet palette with full dark/light mode toggl
 
 **Default color mode:** `toggle` (users can switch between light and dark)
 
+<BrowserWindow url="https://docs.example.com">
+  ![Base theme](../.assets/theme-base.png)
+</BrowserWindow>
+
 ### Midnight
 
 A super-dark, high-contrast theme with blue-tinted brand colors. Both light and dark variants use very dark backgrounds — light mode is "less dark" and dark mode is near-black.
 
 **Default color mode:** `dark`
 
+<BrowserWindow url="https://docs.example.com">
+  ![Midnight theme](../.assets/theme-midnight.png)
+</BrowserWindow>
+
 ### Arcade
 
 A retro neon theme inspired by arcade cabinets and CRT monitors. Vibrant neon green brand color with deep indigo backgrounds. Includes custom hover animations: border tracing on cards, CRT scanlines on code blocks, neon pulse on buttons, and glow effects on sidebar items.
 
 **Default color mode:** `dark`
+
+<BrowserWindow url="https://docs.example.com">
+  ![Arcade theme](../.assets/theme-arcade.png)
+</BrowserWindow>
 
 ## Configuration
 
@@ -62,7 +80,7 @@ Each theme has a default color mode. You can override it:
 ```ts
 theme: {
   name: 'base',
-  colorMode: 'dark', // force dark mode even though base defaults to toggle
+  colorMode: 'dark',
 }
 ```
 
@@ -84,7 +102,7 @@ theme: {
 
 The switcher appears as a paint bucket icon in the navigation bar. Theme selection persists across page loads via `localStorage`.
 
-## Color overrides
+## Color Overrides
 
 Override individual color tokens without creating a full custom theme. Overrides are applied as inline CSS custom properties and take precedence over the theme defaults.
 
@@ -122,6 +140,20 @@ theme: {
 
 Color values must be valid CSS hex (`#xxx` or `#xxxxxx`) or `rgba()` values.
 
-## Accessibility
+## Comparing Approaches
 
-The arcade theme respects the `prefers-reduced-motion` media query. When reduced motion is enabled, all continuous animations (border tracing, CRT scanlines, neon pulse, glow bar) are disabled.
+| Theme    | Best For                          | Color Mode Default |
+| -------- | --------------------------------- | ------------------ |
+| Base     | General-purpose docs              | `toggle`           |
+| Midnight | Developer tools, dark-first sites | `dark`             |
+| Arcade   | Playful branding, creative tools  | `dark`             |
+
+## Design Decisions
+
+- **Three opinionated themes, not a theme builder** — providing complete themes rather than a raw token system reduces decision fatigue. Color overrides provide the escape hatch for brand customization.
+- **CSS custom properties** — overrides are injected as inline CSS variables, making them debuggable in browser devtools and compatible with any CSS-in-JS approach.
+- **Reduced motion support** — the Arcade theme's animations respect `prefers-reduced-motion`, disabling all continuous animations (border tracing, CRT scanlines, neon pulse, glow bar) automatically.
+
+## References
+
+- [Configuration reference](/reference/configuration#top-level-fields) — `theme` field in the top-level config

@@ -1,0 +1,43 @@
+name: VS Code Extension Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extensions/vscode/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: extensions/vscode
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - run: pnpm install
+        working-directory: .
+
+      - run: pnpm typecheck
+
+      - run: pnpm build
+
+      - run: pnpm package
+
+      - name: Publish to VS Code Marketplace
+        run: npx @vscode/vsce publish --pat "$VSCE_PAT" --no-git-tag-version
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

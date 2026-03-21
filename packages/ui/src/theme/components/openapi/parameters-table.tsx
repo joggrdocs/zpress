@@ -74,14 +74,14 @@ function renderRequired(param: Record<string, unknown>): React.ReactElement | nu
  * @returns Default value element or null
  */
 function renderDefault(param: Record<string, unknown>): React.ReactElement | null {
-  return match(param['schema'])
-    .with(P.nonNullable, (schema) =>
-      match((schema as Record<string, unknown>)['default'])
-        .with(P.nonNullable, (def) => (
-          <span className="zp-oas-parameters__default">{String(def)}</span>
-        ))
-        .otherwise(() => null)
-    )
+  // OpenAPI 3.x: param.schema.default | Swagger 2.0: param.default
+  const schemaDefault = match(param['schema'])
+    .with(P.nonNullable, (schema) => (schema as Record<string, unknown>)['default'])
+    .otherwise(() => null)
+  const defaultValue = schemaDefault ?? param['default']
+
+  return match(defaultValue)
+    .with(P.nonNullable, (def) => <span className="zp-oas-parameters__default">{String(def)}</span>)
     .otherwise(() => null)
 }
 
@@ -93,9 +93,16 @@ function renderDefault(param: Record<string, unknown>): React.ReactElement | nul
  * @returns Type string or dash placeholder
  */
 function extractType(param: Record<string, unknown>): string {
-  return match(param['schema'])
-    .with(P.nonNullable, (schema) => String((schema as Record<string, unknown>)['type'] ?? '—'))
-    .otherwise(() => '—')
+  // OpenAPI 3.x: param.schema.type
+  const schemaType = match(param['schema'])
+    .with(
+      P.nonNullable,
+      (schema) => (schema as Record<string, unknown>)['type'] as string | undefined
+    )
+    .otherwise(() => null)
+
+  // Swagger 2.0: param.type (directly on parameter)
+  return String(schemaType ?? param['type'] ?? '—')
 }
 
 /**

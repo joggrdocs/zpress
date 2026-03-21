@@ -4,7 +4,6 @@ import type React from 'react'
 import { match, P } from 'ts-pattern'
 
 import { useZpress } from '../../hooks/use-zpress'
-import { Icon } from '../shared/icon'
 import { FeatureCard, FeatureGrid } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
@@ -53,10 +52,6 @@ function renderFeature(
   index: number,
   gridConfig: HomeGridConfig | undefined
 ): React.ReactElement {
-  const iconEl = match(feature.icon)
-    .with(P.nonNullable, (iconId) => <Icon icon={iconId} />)
-    .otherwise(() => null)
-
   const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
   const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description
 
@@ -66,8 +61,7 @@ function renderFeature(
       title={feature.title}
       description={feature.details}
       href={feature.link}
-      icon={iconEl}
-      iconColor={feature.iconColor}
+      icon={feature.icon}
       titleLines={titleLines}
       descriptionLines={descLines}
     />

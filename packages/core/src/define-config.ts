@@ -1,7 +1,7 @@
 import { THEME_NAMES, COLOR_MODES } from '@zpress/theme'
 import { match, P } from 'ts-pattern'
 
-import { hasGlobChars } from './glob.ts'
+import { hasAnyGlobInclude, isSingleFileInclude } from './glob.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
 import type {
@@ -48,21 +48,12 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
   }
 
   const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const [wsErr] = validateWorkspaces([
-    ...(config.apps ?? []),
-    ...(config.packages ?? []),
-    ...workspaceCategoryItems,
-  ])
+  const [wsErr] = validateWorkspaces(workspaceCategoryItems)
   if (wsErr) {
     return [wsErr, null]
   }
 
-  const workspaceItems = [
-    ...(config.apps ?? []),
-    ...(config.packages ?? []),
-    ...workspaceCategoryItems,
-  ]
-  const [openapiErr] = validateAllOpenAPI(config.openapi, workspaceItems)
+  const [openapiErr] = validateAllOpenAPI(config.openapi, workspaceCategoryItems)
   if (openapiErr) {
     return [openapiErr, null]
   }
@@ -100,21 +91,36 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
 // ---------------------------------------------------------------------------
 
 /**
- * Validate workspaces (apps and packages).
+ * Check if include contains a recursive glob pattern ('**').
+ *
+ * @private
+ * @param include - Include value from section config
+ * @returns True if include contains '**'
+ */
+function includeHasRecursive(include: Section['include']): boolean {
+  if (include === null || include === undefined) {
+    return false
+  }
+  if (typeof include === 'string') {
+    return include.includes('**')
+  }
+  return include.some((p) => p.includes('**'))
+}
+
+/**
+ * Validate workspaces.
  *
  * @private
  * @param items - Workspace items to validate
  * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
-  const prefixError = items.reduce<{ error: ConfigError | null; seen: ReadonlySet<string> }>(
+  const pathError = items.reduce<{ error: ConfigError | null; seen: ReadonlySet<string> }>(
     (acc, item) => {
       if (acc.error) {
         return acc
       }
 
-      // title can be string | TitleConfig
-      // For workspace items, it should be a string
       if (!item.title) {
         return {
           error: configError('missing_field', 'Workspace: "title" is required'),
@@ -142,18 +148,18 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
         }
       }
 
-      if (!item.prefix) {
+      if (!item.path) {
         return {
-          error: configError('missing_field', `Workspace "${item.title}": "prefix" is required`),
+          error: configError('missing_field', `Workspace "${item.title}": "path" is required`),
           seen: acc.seen,
         }
       }
 
-      if (acc.seen.has(item.prefix)) {
+      if (acc.seen.has(item.path)) {
         return {
           error: configError(
             'duplicate_prefix',
-            `Workspace "${item.title}": duplicate prefix "${item.prefix}"`
+            `Workspace "${item.title}": duplicate path "${item.path}"`
           ),
           seen: acc.seen,
         }
@@ -164,13 +170,13 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
         return { error: iconErr, seen: acc.seen }
       }
 
-      return { error: null, seen: new Set([...acc.seen, item.prefix]) }
+      return { error: null, seen: new Set([...acc.seen, item.path]) }
     },
     { error: null, seen: new Set<string>() }
   )
 
-  if (prefixError.error) {
-    return [prefixError.error, null]
+  if (pathError.error) {
+    return [pathError.error, null]
   }
   return [null, true]
 }
@@ -188,7 +194,6 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
       return acc
     }
 
-    // title can be string | TitleConfig
     if (!category.title) {
       return configError('missing_field', 'WorkspaceCategory: "title" is required')
     }
@@ -197,13 +202,6 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
       return configError(
         'invalid_field',
         `WorkspaceCategory: "title" must be a string (TitleConfig not supported on WorkspaceCategory)`
-      )
-    }
-
-    if (!category.description) {
-      return configError(
-        'missing_field',
-        `WorkspaceCategory "${category.title}": "description" is required`
       )
     }
 
@@ -238,46 +236,48 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
  * @returns A `ConfigResult` tuple with `true` on success or `ConfigError` on failure
  */
 function validateSection(section: Section): ConfigResult<true> {
-  // Get the title string for error messages
   const titleStr = match(section.title)
     .with(P.string, (t) => t)
     .otherwise(() => 'Section')
 
-  if (section.from && section.content) {
+  if (section.include && section.content) {
     return [
       configError(
         'invalid_section',
-        `Section "${titleStr}": 'from' and 'content' are mutually exclusive`
+        `Section "${titleStr}": 'include' and 'content' are mutually exclusive`
       ),
       null,
     ]
   }
 
-  if (section.link && !section.from && !section.content && !section.items) {
+  if (section.path && !section.include && !section.content && !section.items) {
     return [
       configError(
         'invalid_section',
-        `Section "${titleStr}": page with 'link' must have 'from', 'content', or 'items'`
+        `Section "${titleStr}": page with 'path' must have 'include', 'content', or 'items'`
       ),
       null,
     ]
   }
 
-  if (section.from && !hasGlobChars(section.from) && !section.items && !section.link) {
+  if (isSingleFileInclude(section.include) && !section.items && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": single-file 'from' requires 'link'`),
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": single-file 'include' requires 'path'`
+      ),
       null,
     ]
   }
 
-  if (section.from && hasGlobChars(section.from) && !section.prefix) {
+  if (hasAnyGlobInclude(section.include) && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": glob 'from' requires 'prefix'`),
+      configError('invalid_section', `Section "${titleStr}": glob 'include' requires 'path'`),
       null,
     ]
   }
 
-  if (section.recursive && (!section.from || !section.from.includes('**'))) {
+  if (section.recursive && !includeHasRecursive(section.include)) {
     return [
       configError(
         'invalid_section',
@@ -287,9 +287,9 @@ function validateSection(section: Section): ConfigResult<true> {
     ]
   }
 
-  if (section.recursive && !section.prefix) {
+  if (section.recursive && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": 'recursive' requires 'prefix'`),
+      configError('invalid_section', `Section "${titleStr}": 'recursive' requires 'path'`),
       null,
     ]
   }
@@ -305,18 +305,21 @@ function validateSection(section: Section): ConfigResult<true> {
     ]
   }
 
-  // Validate landing requires link
-  if (section.landing !== undefined && section.landing !== false && !section.link) {
+  // Validate landing requires path
+  if (section.landing === true && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": 'landing' requires 'link' to be set`),
+      configError('invalid_section', `Section "${titleStr}": 'landing' requires 'path' to be set`),
       null,
     ]
   }
 
-  // Validate isolated requires link
-  if (section.isolated && !section.link) {
+  // Validate standalone requires path
+  if (section.standalone && !section.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": 'isolated' requires 'link' to be set`),
+      configError(
+        'invalid_section',
+        `Section "${titleStr}": 'standalone' requires 'path' to be set`
+      ),
       null,
     ]
   }
@@ -375,7 +378,6 @@ function validateFeatures(features: ZpressConfig['features']): ConfigResult<true
  * @returns `ConfigError` on failure or `null` on success
  */
 function validateFeature(feature: Feature): ConfigError | null {
-  // title is inherited from Entry base
   if (!feature.title) {
     return configError('missing_field', 'Feature: "title" is required')
   }
@@ -473,8 +475,8 @@ function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<
     ]
   }
 
-  if (!openapi.prefix || !openapi.prefix.startsWith('/')) {
-    return [configError('invalid_openapi', `${context}: "prefix" must start with "/"`), null]
+  if (!openapi.path || !openapi.path.startsWith('/')) {
+    return [configError('invalid_openapi', `${context}: "path" must start with "/"`), null]
   }
 
   return [null, true]
@@ -482,7 +484,7 @@ function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<
 
 /**
  * Validate all OpenAPI configs from root and workspace items.
- * Ensures no duplicate prefixes and workspace-level prefixes are scoped correctly.
+ * Ensures no duplicate paths and workspace-level paths are scoped correctly.
  *
  * @private
  * @param rootOpenapi - Root-level OpenAPI config (if any)
@@ -506,7 +508,7 @@ function validateAllOpenAPI(
     .map((ws) => ({
       config: ws.openapi,
       context: `Workspace "${String(ws.title)}".openapi`,
-      workspacePrefix: ws.prefix,
+      workspacePath: ws.path,
     }))
 
   const allConfigs = [...rootConfigs, ...workspaceConfigs]
@@ -527,18 +529,18 @@ function validateAllOpenAPI(
     return [individualError, null]
   }
 
-  // Validate workspace-level prefixes are scoped under the workspace prefix
+  // Validate workspace-level paths are scoped under the workspace path
   const scopeError = workspaceConfigs.reduce<ConfigError | null>((acc, entry) => {
     if (acc) {
       return acc
     }
-    const workspaceRoot = match(entry.workspacePrefix.endsWith('/'))
-      .with(true, () => entry.workspacePrefix)
-      .otherwise(() => `${entry.workspacePrefix}/`)
-    if (!entry.config.prefix.startsWith(workspaceRoot)) {
+    const workspaceRoot = match(entry.workspacePath.endsWith('/'))
+      .with(true, () => entry.workspacePath)
+      .otherwise(() => `${entry.workspacePath}/`)
+    if (!entry.config.path.startsWith(workspaceRoot)) {
       return configError(
         'invalid_openapi',
-        `${entry.context}: "prefix" ("${entry.config.prefix}") must be nested under "${workspaceRoot}"`
+        `${entry.context}: "path" ("${entry.config.path}") must be nested under "${workspaceRoot}"`
       )
     }
     return null
@@ -548,7 +550,7 @@ function validateAllOpenAPI(
     return [scopeError, null]
   }
 
-  // Check for duplicate prefixes
+  // Check for duplicate paths
   const duplicateError = allConfigs.reduce<{
     readonly error: ConfigError | null
     readonly seen: ReadonlySet<string>
@@ -557,16 +559,16 @@ function validateAllOpenAPI(
       if (acc.error) {
         return acc
       }
-      if (acc.seen.has(entry.config.prefix)) {
+      if (acc.seen.has(entry.config.path)) {
         return {
           error: configError(
             'invalid_openapi',
-            `${entry.context}: duplicate OpenAPI prefix "${entry.config.prefix}"`
+            `${entry.context}: duplicate OpenAPI path "${entry.config.path}"`
           ),
           seen: acc.seen,
         }
       }
-      return { error: null, seen: new Set([...acc.seen, entry.config.prefix]) }
+      return { error: null, seen: new Set([...acc.seen, entry.config.path]) }
     },
     { error: null, seen: new Set<string>() }
   )

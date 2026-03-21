@@ -1,5 +1,5 @@
 import { useSite } from '@rspress/core/runtime'
-import type { FooterConfig, HomeConfig, IconColor } from '@zpress/config'
+import type { FooterConfig, HomeConfig } from '@zpress/config'
 
 export interface ZpressSidebarItem {
   readonly text?: string
@@ -19,8 +19,7 @@ export interface ZpressSidebarLink {
 export interface WorkspaceCardData {
   readonly title: string
   readonly href: string
-  readonly icon: string | undefined
-  readonly iconColor: IconColor | undefined
+  readonly icon: string | { readonly id: string; readonly color: string } | undefined
   readonly scope: string | undefined
   readonly description: string | undefined
   readonly tags: readonly string[]

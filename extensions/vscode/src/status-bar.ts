@@ -9,19 +9,19 @@ type StatusBarConfig = Readonly<
 const STATUS_CONFIG: StatusBarConfig = {
   stopped: {
     text: '$(book) zpress',
-    tooltip: 'zpress: Click to start dev server',
+    tooltip: 'Start docs preview server',
   },
   starting: {
     text: '$(sync~spin) zpress',
-    tooltip: 'zpress: Starting dev server...',
+    tooltip: 'Building docs site...',
   },
   running: {
     text: '$(check) zpress',
-    tooltip: 'zpress: Dev server running — click to stop',
+    tooltip: 'Docs server running — click to stop',
   },
   stopping: {
     text: '$(sync~spin) zpress',
-    tooltip: 'zpress: Stopping dev server...',
+    tooltip: 'Stopping server...',
   },
 }
 

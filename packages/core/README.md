@@ -1,12 +1,14 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/joggrdocs/zpress/main/assets/banner.svg" alt="zpress" width="90%" />
-  <p><strong>Sync engine, asset generation, and core utilities for zpress.</strong></p>
+# @zpress/core
 
-<a href="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml"><img src="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-<a href="https://www.npmjs.com/package/@zpress/core"><img src="https://img.shields.io/npm/v/@zpress/core" alt="npm version" /></a>
-<a href="https://github.com/joggrdocs/zpress/blob/main/LICENSE"><img src="https://img.shields.io/github/license/joggrdocs/zpress" alt="License" /></a>
+Sync engine, asset generation, and core utilities for zpress.
 
-</div>
+<span class="zp-badge">
+
+[![CI](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@zpress/core)](https://www.npmjs.com/package/@zpress/core)
+[![License](https://img.shields.io/github/license/joggrdocs/zpress)](https://github.com/joggrdocs/zpress/blob/main/LICENSE)
+
+</span>
 
 ## Install
 

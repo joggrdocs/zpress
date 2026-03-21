@@ -5,7 +5,7 @@ import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'ts-pattern'
 
-import { hasGlobChars } from '../../glob.ts'
+import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '../../glob.ts'
 import type { Section, Frontmatter } from '../../types.ts'
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
@@ -71,12 +71,12 @@ function resolveSection(
   const mergedFm = { ...inheritedFrontmatter, ...section.frontmatter }
 
   // Leaf page from single file
-  if (section.from && !hasGlobChars(section.from) && !section.items) {
+  if (isSingleFileInclude(section.include) && !section.items) {
     return Promise.resolve(resolveFilePage(section, ctx, mergedFm))
   }
 
   // Virtual page (inline/generated content)
-  if (section.content !== undefined && section.content !== null && section.link) {
+  if (section.content !== undefined && section.content !== null && section.path) {
     return Promise.resolve(resolveVirtualPage(section, mergedFm))
   }
 
@@ -88,7 +88,7 @@ function resolveSection(
  * Resolve a leaf page backed by a single source file.
  *
  * @private
- * @param section - Section config with `from` pointing to a file
+ * @param section - Section config with `include` pointing to a file
  * @param ctx - Sync context
  * @param frontmatter - Merged frontmatter for the page
  * @returns Sync outcome with resolved entry or error
@@ -98,34 +98,39 @@ function resolveFilePage(
   ctx: SyncContext,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
-  if (section.from === null || section.from === undefined) {
-    return [syncError('missing_from', 'resolveFilePage called without section.from'), null]
-  }
-
-  const sourcePath = path.resolve(ctx.repoRoot, section.from)
-  if (!fs.existsSync(sourcePath)) {
-    return [syncError('file_not_found', `Source file not found: ${section.from}`), null]
-  }
-
-  if (section.link === null || section.link === undefined) {
+  const { include } = section
+  if (include === null || include === undefined || typeof include !== 'string') {
     return [
-      syncError('missing_link', `resolveFilePage called without section.link for: ${section.from}`),
+      syncError('missing_from', 'resolveFilePage called without single-file section.include'),
       null,
     ]
   }
 
-  const ext = sourceExt(section.from)
+  const sourcePath = path.resolve(ctx.repoRoot, include)
+  if (!fs.existsSync(sourcePath)) {
+    return [syncError('file_not_found', `Source file not found: ${include}`), null]
+  }
+
+  if (section.path === null || section.path === undefined) {
+    return [
+      syncError('missing_link', `resolveFilePage called without section.path for: ${include}`),
+      null,
+    ]
+  }
+
+  const ext = sourceExt(include)
 
   return [
     null,
     {
       title: resolveSectionTitle(section),
-      link: section.link,
+      description: section.description,
+      link: section.path,
       hidden: section.hidden,
       card: section.card,
       page: {
         source: sourcePath,
-        outputPath: linkToOutputPath(section.link, ext),
+        outputPath: linkToOutputPath(section.path, ext),
         frontmatter,
       },
     },
@@ -144,20 +149,21 @@ function resolveVirtualPage(
   section: Section,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
-  if (section.link === undefined || section.link === null) {
-    return [syncError('missing_link', 'resolveVirtualPage called without section.link'), null]
+  if (section.path === undefined || section.path === null) {
+    return [syncError('missing_link', 'resolveVirtualPage called without section.path'), null]
   }
 
   return [
     null,
     {
       title: resolveSectionTitle(section),
-      link: section.link,
+      description: section.description,
+      link: section.path,
       hidden: section.hidden,
       card: section.card,
       page: {
         content: section.content,
-        outputPath: linkToOutputPath(section.link),
+        outputPath: linkToOutputPath(section.path),
         frontmatter,
       },
     },
@@ -183,7 +189,7 @@ async function resolveNestedSection(
 ): Promise<SyncOutcome<ResolvedEntry>> {
   // 1. Auto-discover from glob
   const globbed = await (() => {
-    if (section.from && hasGlobChars(section.from)) {
+    if (hasAnyGlobInclude(section.include)) {
       if (section.recursive) {
         return resolveRecursiveGlob(section, ctx, mergedFm, depth + 1)
       }
@@ -210,7 +216,7 @@ async function resolveNestedSection(
   const deduped = deduplicateByLink(children)
   const sorted = sortEntries(deduped, section.sort)
 
-  // Section header can also be a page (has link + non-glob from)
+  // Section header can also be a page (has path + single-file include)
   const sectionPage = resolveSectionPage(section, ctx, mergedFm)
 
   // Collapsible: explicit value wins, otherwise auto-collapse below top level
@@ -222,20 +228,22 @@ async function resolveNestedSection(
   const collapsible = section.collapsible ?? autoCollapsible
 
   // Auto-derive link so the group is navigable and gets a landing page.
-  // Priority: explicit link > prefix > common prefix of children's links
-  const derivedLink = section.prefix ?? deriveCommonPrefix(sorted)
-  const link = section.link ?? derivedLink
-  const autoLink = !section.link && link !== undefined
+  // Priority: explicit path > common prefix of children's links
+  const derivedLink = deriveCommonPrefix(sorted)
+  const link = section.path ?? derivedLink
+  const autoLink = !section.path && link !== undefined
 
   return [
     null,
     {
       title: resolveSectionTitle(section),
+      description: section.description,
       link,
       collapsible,
       hidden: section.hidden,
       card: section.card,
-      isolated: section.isolated,
+      landing: section.landing,
+      standalone: section.standalone,
       autoLink,
       items: sorted,
       page: sectionPage,
@@ -244,7 +252,7 @@ async function resolveNestedSection(
 }
 
 /**
- * Resolve the section header page (if the section has a `link` and a non-glob `from`).
+ * Resolve the section header page (if the section has a `path` and a single-file `include`).
  *
  * @private
  * @param section - Section config
@@ -257,22 +265,24 @@ function resolveSectionPage(
   ctx: SyncContext,
   mergedFm: Frontmatter
 ): ResolvedEntry['page'] | undefined {
-  if (section.link && section.from && !hasGlobChars(section.from)) {
-    const sourcePath = path.resolve(ctx.repoRoot, section.from)
+  if (section.path && isSingleFileInclude(section.include)) {
+    const include = section.include as string
+    const sourcePath = path.resolve(ctx.repoRoot, include)
     if (fs.existsSync(sourcePath)) {
-      const ext = sourceExt(section.from)
+      const ext = sourceExt(include)
       return {
         source: sourcePath,
-        outputPath: linkToOutputPath(section.link, ext),
+        outputPath: linkToOutputPath(section.path, ext),
         frontmatter: mergedFm,
       }
     }
-  } else if (section.link && section.recursive && section.from) {
-    // Recursive mode: find the root-level index file from the glob base (.md or .mdx)
-    const baseDir = extractBaseDir(section.from)
-    const indexFile = section.indexFile ?? 'overview'
-    const mdPath = path.join(baseDir, `${indexFile}.md`)
-    const mdxPath = path.join(baseDir, `${indexFile}.mdx`)
+  } else if (section.path && section.recursive && section.include) {
+    // Recursive mode: find the root-level entry file from the glob base (.md or .mdx)
+    const patterns = normalizeInclude(section.include)
+    const baseDir = extractBaseDir(patterns[0])
+    const entryFile = section.entryFile ?? 'overview'
+    const mdPath = path.join(baseDir, `${entryFile}.md`)
+    const mdxPath = path.join(baseDir, `${entryFile}.mdx`)
     const mdxExists = fs.existsSync(path.resolve(ctx.repoRoot, mdxPath))
     const indexPath = match(mdxExists)
       .with(true, () => mdxPath)
@@ -282,7 +292,7 @@ function resolveSectionPage(
       const ext = sourceExt(indexPath)
       return {
         source: sourcePath,
-        outputPath: linkToOutputPath(section.link, ext),
+        outputPath: linkToOutputPath(section.path, ext),
         frontmatter: mergedFm,
       }
     }
@@ -293,7 +303,7 @@ function resolveSectionPage(
  * Resolve a non-recursive glob pattern into leaf page entries.
  *
  * @private
- * @param section - Section config with glob `from` pattern
+ * @param section - Section config with glob `include` pattern(s)
  * @param ctx - Sync context
  * @param frontmatter - Frontmatter to apply to discovered pages
  * @returns Array of resolved entries for each matching file
@@ -305,12 +315,13 @@ async function resolveGlob(
 ): Promise<ResolvedEntry[]> {
   const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
 
-  if (section.from === null || section.from === undefined) {
-    log.error('[zpress] resolveGlob called without section.from')
+  if (section.include === null || section.include === undefined) {
+    log.error('[zpress] resolveGlob called without section.include')
     return []
   }
 
-  const files = await fg(section.from, {
+  const patterns = normalizeInclude(section.include)
+  const files = await fg(patterns as string[], {
     cwd: ctx.repoRoot,
     ignore,
     absolute: false,
@@ -321,14 +332,14 @@ async function resolveGlob(
 
   if (files.length === 0) {
     if (!ctx.quiet) {
-      log.warn(`Glob "${section.from}" matched 0 files for "${titleStr}"`)
+      log.warn(`Glob "${String(section.include)}" matched 0 files for "${titleStr}"`)
     }
     return []
   }
 
-  const prefix = section.prefix ?? ''
+  const prefix = section.path ?? ''
 
-  // Extract titleFrom and titleTransform, preferring new title object API over deprecated fields
+  // Extract titleFrom and titleTransform from title object config
   const titleConfig = match(section.title)
     .when(
       (
@@ -342,10 +353,10 @@ async function resolveGlob(
     .otherwise(() => null)
   const titleFrom = match(titleConfig)
     .with(P.nonNullable, (tc) => tc.from)
-    .otherwise(() => section.titleFrom ?? ('auto' as const))
+    .otherwise(() => 'auto' as const)
   const titleTransform = match(titleConfig)
-    .with(P.nonNullable, (tc) => tc.transform)
-    .otherwise(() => section.titleTransform)
+    .with(P.nonNullable, (tc) => tc.transform ?? null)
+    .otherwise(() => null)
 
   return Promise.all(
     files.map(async (file) => {
@@ -429,6 +440,7 @@ function deduplicateByLink(entries: readonly ResolvedEntry[]): ResolvedEntry[] {
       }
       const existing = acc.seen.get(entry.link)
       if (existing === undefined) {
+        // intentional mutation: seen Map is mutated in-place for O(1) dedup lookups
         acc.seen.set(entry.link, acc.result.length)
         return {
           seen: acc.seen,

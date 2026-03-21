@@ -37,7 +37,7 @@
     "build": "rslib build",
     "dev": "node ./dist/index.mjs dev --cwd ../..",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@kidd-cli/core": "^0.10.0",
@@ -46,6 +46,7 @@
     "@zpress/templates": "workspace:*",
     "@zpress/ui": "workspace:*",
     "es-toolkit": "catalog:",
+    "get-port": "^7.1.0",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
