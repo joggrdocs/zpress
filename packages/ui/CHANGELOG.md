@@ -1,5 +1,12 @@
 # @zpress/ui
 
+## 0.8.2
+
+### Patch Changes
+
+- Updated dependencies [3f36be0]
+  - @zpress/core@0.7.2
+
 ## 0.8.1
 
 ### Patch Changes
