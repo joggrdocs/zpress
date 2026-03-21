@@ -1,5 +1,21 @@
 # @zpress/ui
 
+## 0.8.0
+
+### Minor Changes
+
+- d8cf9b2: Add Rspress rendering plugins for mermaid diagrams, file trees, superscript/subscript, and KaTeX math formulas
+- 179ae48: Add sidebar button variants (style/shape), site footer with social links toggle, client-side navigation via Link, typed IconId, and ESM compatibility patches for rspress plugins
+
+### Patch Changes
+
+- 8a125b8: Fix all lint errors and warnings: replace ternaries with ts-pattern match, add curly braces to single-line ifs, convert arrow function components to declarations, use replaceAll over replace with global flag, fix single-line JSDoc blocks, eliminate let/accumulating-spread, and suppress intentional lint exceptions
+- Updated dependencies [62248ba]
+- Updated dependencies [8a125b8]
+- Updated dependencies [179ae48]
+  - @zpress/config@0.4.0
+  - @zpress/core@0.7.1
+
 ## 0.7.0
 
 ### Minor Changes

@@ -20,21 +20,21 @@ See the [Content](/concepts/content#frontmatter) concept for injection and inher
 
 ## Standard fields
 
-| Field           | Type                                  | Default | Description                                    |
-| --------------- | ------------------------------------- | ------- | ---------------------------------------------- |
-| `title`         | `string`                              | —       | Page title (used in sidebar, browser tab, SEO) |
-| `titleTemplate` | `string \| boolean`                   | —       | Title template override (`%s` is page title)   |
-| `description`   | `string`                              | —       | Meta description for SEO and card previews     |
-| `layout`        | `'doc' \| 'page' \| 'home'`           | `'doc'` | Page layout mode                               |
-| `sidebar`       | `boolean`                             | `true`  | Show or hide the sidebar                       |
-| `aside`         | `boolean \| 'left'`                   | `true`  | Table of contents position                     |
-| `outline`       | `false \| number \| [min, max] \| 'deep'` | —       | Outline heading depth                          |
-| `navbar`        | `boolean`                             | `true`  | Show or hide the top navigation bar            |
-| `editLink`      | `boolean`                             | `true`  | Show or hide the "Edit this page" link         |
-| `lastUpdated`   | `boolean`                             | `true`  | Show or hide the last updated timestamp        |
-| `footer`        | `boolean`                             | `true`  | Show or hide the page footer                   |
-| `pageClass`     | `string`                              | —       | Custom CSS class added to the page container   |
-| `head`          | `[string, Record<string, string>][]`  | —       | Extra elements injected into `<head>` (see below) |
+| Field           | Type                                      | Default | Description                                       |
+| --------------- | ----------------------------------------- | ------- | ------------------------------------------------- |
+| `title`         | `string`                                  | —       | Page title (used in sidebar, browser tab, SEO)    |
+| `titleTemplate` | `string \| boolean`                       | —       | Title template override (`%s` is page title)      |
+| `description`   | `string`                                  | —       | Meta description for SEO and card previews        |
+| `layout`        | `'doc' \| 'page' \| 'home'`               | `'doc'` | Page layout mode                                  |
+| `sidebar`       | `boolean`                                 | `true`  | Show or hide the sidebar                          |
+| `aside`         | `boolean \| 'left'`                       | `true`  | Table of contents position                        |
+| `outline`       | `false \| number \| [min, max] \| 'deep'` | —       | Outline heading depth                             |
+| `navbar`        | `boolean`                                 | `true`  | Show or hide the top navigation bar               |
+| `editLink`      | `boolean`                                 | `true`  | Show or hide the "Edit this page" link            |
+| `lastUpdated`   | `boolean`                                 | `true`  | Show or hide the last updated timestamp           |
+| `footer`        | `boolean`                                 | `true`  | Show or hide the page footer                      |
+| `pageClass`     | `string`                                  | —       | Custom CSS class added to the page container      |
+| `head`          | `[string, Record<string, string>][]`      | —       | Extra elements injected into `<head>` (see below) |
 
 ## Layout values
 

@@ -1,5 +1,15 @@
 # @zpress/config
 
+## 0.4.0
+
+### Minor Changes
+
+- 179ae48: Add sidebar button variants (style/shape), site footer with social links toggle, client-side navigation via Link, typed IconId, and ESM compatibility patches for rspress plugins
+
+### Patch Changes
+
+- 62248ba: Align `icon` fields on `Section`, `CardConfig`, and `Workspace` with the `IconConfig` union type and remove stale `iconColor` properties
+
 ## 0.3.0
 
 ### Minor Changes

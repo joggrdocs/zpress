@@ -276,7 +276,7 @@ export default defineConfig({
 
 Wrap code blocks in switchable tabs using Rspress's built-in components. Requires an `.mdx` file:
 
-`````mdx
+````mdx
 import { Tab, Tabs } from 'rspress/theme'
 
 <Tabs>
@@ -295,7 +295,7 @@ const { foo } = require('./foo')
 
 </Tab>
 </Tabs>
-`````
+````
 
 | Prop           | Component | Description                                           |
 | -------------- | --------- | ----------------------------------------------------- |

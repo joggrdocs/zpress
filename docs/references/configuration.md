@@ -231,12 +231,12 @@ features: [
 
 Configuration for OpenAPI spec integration.
 
-| Field           | Type                       | Default           | Description                           |
-| --------------- | -------------------------- | ----------------- | ------------------------------------- |
+| Field           | Type                       | Default           | Description                                              |
+| --------------- | -------------------------- | ----------------- | -------------------------------------------------------- |
 | `spec`          | `string`                   | (required)        | Path to OpenAPI JSON or YAML file, relative to repo root |
-| `path`          | `string`                   | (required)        | URL prefix for API operation pages    |
-| `title`         | `string`                   | `'API Reference'` | Sidebar group title                   |
-| `sidebarLayout` | `'method-path' \| 'title'` | `'method-path'`   | How operations appear in the sidebar  |
+| `path`          | `string`                   | (required)        | URL prefix for API operation pages                       |
+| `title`         | `string`                   | `'API Reference'` | Sidebar group title                                      |
+| `sidebarLayout` | `'method-path' \| 'title'` | `'method-path'`   | How operations appear in the sidebar                     |
 
 `sidebarLayout` controls how API operations are displayed in the sidebar:
 
@@ -282,13 +282,13 @@ sidebar: {
 
 Each `SidebarLink` has:
 
-| Field  | Type         | Required | Description             |
-| ------ | ------------ | -------- | ----------------------- |
-| `text`  | `string`                                   | yes      | Link display text                            |
-| `link`  | `string`                                   | yes      | Target URL                                   |
-| `icon`  | `IconConfig`                               | no       | Iconify icon identifier                      |
-| `style` | `'brand' \| 'alt' \| 'ghost'`              | no       | Visual style variant                         |
-| `shape` | `'square' \| 'rounded' \| 'circle'`        | no       | Icon shape                                   |
+| Field   | Type                                | Required | Description             |
+| ------- | ----------------------------------- | -------- | ----------------------- |
+| `text`  | `string`                            | yes      | Link display text       |
+| `link`  | `string`                            | yes      | Target URL              |
+| `icon`  | `IconConfig`                        | no       | Iconify icon identifier |
+| `style` | `'brand' \| 'alt' \| 'ghost'`       | no       | Visual style variant    |
+| `shape` | `'square' \| 'rounded' \| 'circle'` | no       | Icon shape              |
 
 ## HomeConfig
 
@@ -301,17 +301,17 @@ home: {
 }
 ```
 
-| Field        | Type             | Description                         |
-| ------------ | ---------------- | ----------------------------------- |
-| `features`   | `HomeGridConfig` | Layout options for feature cards    |
-| `workspaces` | `HomeGridConfig` | Layout options for workspace cards  |
+| Field        | Type             | Description                        |
+| ------------ | ---------------- | ---------------------------------- |
+| `features`   | `HomeGridConfig` | Layout options for feature cards   |
+| `workspaces` | `HomeGridConfig` | Layout options for workspace cards |
 
 Each `HomeGridConfig` has:
 
-| Field      | Type                 | Description                                      |
-| ---------- | -------------------- | ------------------------------------------------ |
-| `columns`  | `1 \| 2 \| 3 \| 4`  | Number of grid columns                           |
-| `truncate` | `TruncateConfig`     | Max visible lines before clipping with ellipsis  |
+| Field      | Type               | Description                                     |
+| ---------- | ------------------ | ----------------------------------------------- |
+| `columns`  | `1 \| 2 \| 3 \| 4` | Number of grid columns                          |
+| `truncate` | `TruncateConfig`   | Max visible lines before clipping with ellipsis |
 
 `TruncateConfig` accepts `title?: number` and `description?: number` for line-clamp values.
 
@@ -326,11 +326,11 @@ socialLinks: [
 ]
 ```
 
-| Field     | Type                                | Required | Description                                                  |
-| --------- | ----------------------------------- | -------- | ------------------------------------------------------------ |
-| `icon`    | `SocialLinkIcon \| { svg: string }` | yes      | Built-in icon name or custom SVG                             |
-| `mode`    | `'link' \| 'text' \| 'img' \| 'dom'` | yes    | How the content is rendered                                  |
-| `content` | `string`                            | yes      | URL, text, image source, or HTML depending on `mode`         |
+| Field     | Type                                 | Required | Description                                          |
+| --------- | ------------------------------------ | -------- | ---------------------------------------------------- |
+| `icon`    | `SocialLinkIcon \| { svg: string }`  | yes      | Built-in icon name or custom SVG                     |
+| `mode`    | `'link' \| 'text' \| 'img' \| 'dom'` | yes      | How the content is rendered                          |
+| `content` | `string`                             | yes      | URL, text, image source, or HTML depending on `mode` |
 
 Built-in icon names: `github`, `discord`, `x`, `slack`, `linkedin`, `youtube`, `npm`, `gitlab`, `bluesky`, `facebook`, `instagram`.
 
@@ -346,8 +346,8 @@ footer: {
 }
 ```
 
-| Field       | Type      | Description                                       |
-| ----------- | --------- | ------------------------------------------------- |
-| `message`   | `string`  | Footer message text                               |
-| `copyright` | `string`  | Copyright notice                                  |
+| Field       | Type      | Description                                        |
+| ----------- | --------- | -------------------------------------------------- |
+| `message`   | `string`  | Footer message text                                |
+| `copyright` | `string`  | Copyright notice                                   |
 | `socials`   | `boolean` | Show social links from `socialLinks` in the footer |
