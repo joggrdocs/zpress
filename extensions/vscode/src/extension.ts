@@ -1,3 +1,4 @@
+// oxlint-disable no-ternary
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -251,19 +252,19 @@ export function activate(context: ExtensionContext): void {
       }
     }),
     previewPanel.onNavigate(revealSidebarNode),
-    previewPanel.onEdit((urlPath: string) => {
+    previewPanel.onEdit(async (urlPath: string) => {
       const sourcePath = manifestReader.getSourceByUrlPath(urlPath)
       if (!sourcePath) {
         window.showErrorMessage(`No source file found for path: ${urlPath}`)
         return
       }
-      workspace.openTextDocument(Uri.file(sourcePath)).then(
-        (doc) => window.showTextDocument(doc, { preview: false, preserveFocus: false }),
-        (error: unknown) => {
-          const message = error instanceof Error ? error.message : String(error)
-          window.showErrorMessage(`Failed to open source file: ${message}`)
-        }
-      )
+      try {
+        const doc = await workspace.openTextDocument(Uri.file(sourcePath))
+        await window.showTextDocument(doc, { preview: false, preserveFocus: false })
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error)
+        window.showErrorMessage(`Failed to open source file: ${message}`)
+      }
     }),
     ...sectionTreeViews,
     commands.registerCommand('zpress.start', () => {

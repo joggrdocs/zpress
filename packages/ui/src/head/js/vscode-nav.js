@@ -35,10 +35,28 @@
 
   window.addEventListener('popstate', notify)
 
-  /* Watch <title> changes so the tab title updates after React renders */
-  new MutationObserver(function () {
-    send(location.pathname, document.title)
-  }).observe(document.querySelector('title'), { childList: true })
+  /* Watch <title> changes so the tab title updates after React renders.
+     The script may run before <title> exists in the DOM (prepended in <head>),
+     so observe <head> for the <title> to appear, then switch to watching it. */
+  function observeTitle(el) {
+    new MutationObserver(function () {
+      send(location.pathname, document.title)
+    }).observe(el, { childList: true })
+  }
+
+  var titleEl = document.querySelector('title')
+  if (titleEl) {
+    observeTitle(titleEl)
+  } else {
+    new MutationObserver(function (_, headObs) {
+      var t = document.querySelector('title')
+      if (t) {
+        headObs.disconnect()
+        observeTitle(t)
+        send(location.pathname, document.title)
+      }
+    }).observe(document.head || document.documentElement, { childList: true })
+  }
 
   notify()
 })()

@@ -195,7 +195,7 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
         return
       }
 
-      state.panel = deps.createPanel('zpressPreview', 'zpress Preview', 1 /* ViewColumn.One */, {
+      state.panel = deps.createPanel('zpressPreview', 'zpress', 1 /* ViewColumn.One */, {
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [],
@@ -204,7 +204,11 @@ function createPreviewPanel(deps: PreviewPanelDeps): PreviewPanel {
       state.panel.iconPath = deps.iconPath
 
       state.panel.webview.onDidReceiveMessage(
-        (message: { readonly command: string; readonly path?: string; readonly title?: string }) => {
+        (message: {
+          readonly command: string
+          readonly path?: string
+          readonly title?: string
+        }) => {
           if (message.command === 'start') {
             deps.onStart()
           }

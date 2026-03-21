@@ -251,9 +251,8 @@ function resolveColorMode(params: {
   readonly themeName: ThemeName
   readonly override?: string
 }): string {
-  const requested = params.override
-    ?? (params.config.theme && params.config.theme.colorMode)
-    ?? null
+  const requested =
+    params.override ?? (params.config.theme && params.config.theme.colorMode) ?? null
 
   if (isBuiltInTheme(params.themeName)) {
     const supported = resolveThemeModes(params.themeName as BuiltInThemeName)
@@ -278,10 +277,7 @@ function resolveColorMode(params: {
  * @param supported - Modes the theme supports
  * @returns True if the mode is valid for the theme
  */
-function isColorModeSupported(
-  mode: string,
-  supported: readonly ('dark' | 'light')[]
-): boolean {
+function isColorModeSupported(mode: string, supported: readonly ('dark' | 'light')[]): boolean {
   if (mode === 'toggle') {
     return supported.includes('dark') && supported.includes('light')
   }
@@ -409,6 +405,11 @@ function buildColorModeJs(colorMode: string): string {
 function buildHeadScriptBody(options: HeadScriptOptions): string {
   const colorModeJs = buildColorModeJs(options.colorMode)
   const themeAttrJs = `document.documentElement.dataset.zpTheme=function(){try{var t=localStorage.getItem('zpress-theme');if(t)return t}catch(_){}return ${JSON.stringify(options.themeName)}}();`
-  const vscodeJs = options.vscode ? [VSCODE_SET_JS, VSCODE_NAV_JS].join(';') : ''
+  const vscodeJs: string = (() => {
+    if (options.vscode) {
+      return [VSCODE_SET_JS, VSCODE_NAV_JS].join(';')
+    }
+    return ''
+  })()
   return [colorModeJs, themeAttrJs, vscodeJs, LOADER_DOTS_JS].filter(Boolean).join(';')
 }

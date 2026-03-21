@@ -67,7 +67,13 @@ export async function startDevServer(
   let serverInstance: ServerInstance | null = null
 
   async function startServer(config: ZpressConfig): Promise<boolean> {
-    const rspressConfig = createRspressConfig({ config, paths, vscode: options.vscode, themeOverride: options.theme, colorModeOverride: options.colorMode })
+    const rspressConfig = createRspressConfig({
+      config,
+      paths,
+      vscode: options.vscode,
+      themeOverride: options.theme,
+      colorModeOverride: options.colorMode,
+    })
     try {
       serverInstance = await dev({
         appDirectory: paths.repoRoot,
@@ -174,7 +180,13 @@ export async function buildSiteForCheck(options: ServerOptions): Promise<void> {
  * @returns The port the server is listening on
  */
 export async function serveSite(options: ServerOptions): Promise<number> {
-  const rspressConfig = createRspressConfig({ config: options.config, paths: options.paths, vscode: options.vscode, themeOverride: options.theme, colorModeOverride: options.colorMode })
+  const rspressConfig = createRspressConfig({
+    config: options.config,
+    paths: options.paths,
+    vscode: options.vscode,
+    themeOverride: options.theme,
+    colorModeOverride: options.colorMode,
+  })
   const port = options.port ?? SERVE_PORT
   await serve({
     config: rspressConfig,

@@ -31,7 +31,14 @@ export const serveCommand = command({
       process.exit(1)
     }
 
-    const port = await serveSite({ config, paths, port: ctx.args.port, theme: ctx.args.theme, colorMode: ctx.args.colorMode, vscode: ctx.args.vscode })
+    const port = await serveSite({
+      config,
+      paths,
+      port: ctx.args.port,
+      theme: ctx.args.theme,
+      colorMode: ctx.args.colorMode,
+      vscode: ctx.args.vscode,
+    })
 
     if (ctx.args.open) {
       openBrowser(`http://localhost:${port}`)

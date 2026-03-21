@@ -1,3 +1,4 @@
+// oxlint-disable no-ternary
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -72,7 +73,6 @@ const MAX_SECTIONS = 8
 
 const SIDEBAR_RELATIVE = path.join('.zpress', 'content', '.generated', 'sidebar.json')
 
-
 const HTTP_METHODS: ReadonlySet<string> = new Set([
   'GET',
   'POST',
@@ -132,7 +132,9 @@ function stripHtmlLabel(html: string): string {
  * @param html - HTML sidebar label
  * @returns Parsed method and path, or null if not recognized
  */
-function parseOpenApiLabel(html: string): { readonly method: string; readonly path: string } | null {
+function parseOpenApiLabel(
+  html: string
+): { readonly method: string; readonly path: string } | null {
   const text = stripHtmlLabel(html)
   const spaceIndex = text.indexOf(' ')
   if (spaceIndex === -1) {
@@ -387,9 +389,11 @@ function createSidebar(deps: SidebarDeps): Sidebar {
           return new deps.ThemeIcon(getIconId(node))
         })()
 
+        const description = openApiParsed ? openApiParsed.method : undefined
+
         const item: TreeItem = {
           label,
-          description: openApiParsed ? openApiParsed.method : undefined,
+          description,
           collapsibleState,
           iconPath,
         }
@@ -416,9 +420,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
         return item
       },
 
-      getParent: (node: SidebarNode): SidebarNode | undefined => {
-        return state.parentMap.get(node)
-      },
+      getParent: (node: SidebarNode): SidebarNode | undefined => state.parentMap.get(node),
 
       getChildren: (node?: SidebarNode): SidebarNode[] => {
         if (node) {

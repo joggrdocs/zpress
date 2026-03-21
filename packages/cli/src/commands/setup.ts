@@ -166,7 +166,7 @@ const NESTED_GITIGNORE_CONTENT = `# managed by zpress — ignore everything by d
  */
 async function ensureGitignore(
   paths: Paths,
-  logger: { success: (msg: string) => void },
+  logger: { success: (msg: string) => void }
 ): Promise<void> {
   const rootGitignore = path.join(paths.repoRoot, '.gitignore')
 
@@ -174,20 +174,33 @@ async function ensureGitignore(
     const content = fs.readFileSync(rootGitignore, 'utf8')
     const lines = content.split('\n')
     const alreadyIgnored = lines.some(
-      (line) => line.trim() === ZPRESS_GITIGNORE_ENTRY || line.trim() === '.zpress',
+      (line) => line.trim() === ZPRESS_GITIGNORE_ENTRY || line.trim() === '.zpress'
     )
 
     if (alreadyIgnored) {
       return
     }
 
-    const suffix = content.endsWith('\n') ? '' : '\n'
-    fs.writeFileSync(rootGitignore, `${content}${suffix}\n# zpress\n${ZPRESS_GITIGNORE_ENTRY}\n`, 'utf8')
+    const suffix: string = (() => {
+      if (content.endsWith('\n')) {
+        return ''
+      }
+      return '\n'
+    })()
+    fs.writeFileSync(
+      rootGitignore,
+      `${content}${suffix}\n# zpress\n${ZPRESS_GITIGNORE_ENTRY}\n`,
+      'utf8'
+    )
     logger.success('Added .zpress/ to .gitignore')
     return
   }
 
   await fsPromises.mkdir(paths.outputRoot, { recursive: true })
-  await fsPromises.writeFile(path.join(paths.outputRoot, '.gitignore'), NESTED_GITIGNORE_CONTENT, 'utf8')
+  await fsPromises.writeFile(
+    path.join(paths.outputRoot, '.gitignore'),
+    NESTED_GITIGNORE_CONTENT,
+    'utf8'
+  )
   logger.success('Created .zpress/.gitignore')
 }

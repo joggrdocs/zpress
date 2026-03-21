@@ -1,3 +1,4 @@
+// oxlint-disable no-ternary
 import fs from 'node:fs'
 import path from 'node:path'
 

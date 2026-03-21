@@ -67,7 +67,11 @@ export default defineConfig({
           path: '/packages/zpress',
           items: [
             { title: 'Overview', path: '/packages/zpress', include: 'packages/zpress/README.md' },
-            { title: 'Changelog', path: '/packages/zpress/changelog', include: 'packages/zpress/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/zpress/changelog',
+              include: 'packages/zpress/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -78,7 +82,11 @@ export default defineConfig({
           path: '/packages/cli',
           items: [
             { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
-            { title: 'Changelog', path: '/packages/cli/changelog', include: 'packages/cli/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/cli/changelog',
+              include: 'packages/cli/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -89,7 +97,11 @@ export default defineConfig({
           path: '/packages/core',
           items: [
             { title: 'Overview', path: '/packages/core', include: 'packages/core/README.md' },
-            { title: 'Changelog', path: '/packages/core/changelog', include: 'packages/core/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/core/changelog',
+              include: 'packages/core/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -100,7 +112,11 @@ export default defineConfig({
           path: '/packages/config',
           items: [
             { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
-            { title: 'Changelog', path: '/packages/config/changelog', include: 'packages/config/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/config/changelog',
+              include: 'packages/config/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -111,7 +127,11 @@ export default defineConfig({
           path: '/packages/ui',
           items: [
             { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
-            { title: 'Changelog', path: '/packages/ui/changelog', include: 'packages/ui/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/ui/changelog',
+              include: 'packages/ui/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -122,7 +142,11 @@ export default defineConfig({
           path: '/packages/theme',
           items: [
             { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
-            { title: 'Changelog', path: '/packages/theme/changelog', include: 'packages/theme/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/theme/changelog',
+              include: 'packages/theme/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -461,7 +485,11 @@ export default defineConfig({
           path: '/packages/zpress',
           items: [
             { title: 'Overview', path: '/packages/zpress', include: 'packages/zpress/README.md' },
-            { title: 'Changelog', path: '/packages/zpress/changelog', include: 'packages/zpress/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/zpress/changelog',
+              include: 'packages/zpress/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -469,7 +497,11 @@ export default defineConfig({
           path: '/packages/cli',
           items: [
             { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
-            { title: 'Changelog', path: '/packages/cli/changelog', include: 'packages/cli/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/cli/changelog',
+              include: 'packages/cli/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -477,7 +509,11 @@ export default defineConfig({
           path: '/packages/core',
           items: [
             { title: 'Overview', path: '/packages/core', include: 'packages/core/README.md' },
-            { title: 'Changelog', path: '/packages/core/changelog', include: 'packages/core/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/core/changelog',
+              include: 'packages/core/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -485,7 +521,11 @@ export default defineConfig({
           path: '/packages/config',
           items: [
             { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
-            { title: 'Changelog', path: '/packages/config/changelog', include: 'packages/config/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/config/changelog',
+              include: 'packages/config/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -493,7 +533,11 @@ export default defineConfig({
           path: '/packages/ui',
           items: [
             { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
-            { title: 'Changelog', path: '/packages/ui/changelog', include: 'packages/ui/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/ui/changelog',
+              include: 'packages/ui/CHANGELOG.md',
+            },
           ],
         },
         {
@@ -501,7 +545,11 @@ export default defineConfig({
           path: '/packages/theme',
           items: [
             { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
-            { title: 'Changelog', path: '/packages/theme/changelog', include: 'packages/theme/CHANGELOG.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/theme/changelog',
+              include: 'packages/theme/CHANGELOG.md',
+            },
           ],
         },
       ],

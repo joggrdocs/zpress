@@ -4,6 +4,8 @@
 // workspace dependencies here — they will cause "factory is undefined" runtime
 // errors. See packages/ui/AGENTS.md for details.
 
+// oxlint-disable no-ternary
+
 import mermaid from 'mermaid'
 import type { MermaidConfig } from 'mermaid'
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
@@ -452,18 +454,10 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
         <div className="zpress-mermaid-footer">
           <span className="zpress-mermaid-type">{detectDiagramType(code)}</span>
           <div className="zpress-mermaid-tabs">
-            <button
-              type="button"
-              className={previewTabClass}
-              onClick={() => setTab('preview')}
-            >
+            <button type="button" className={previewTabClass} onClick={() => setTab('preview')}>
               Preview
             </button>
-            <button
-              type="button"
-              className={codeTabClass}
-              onClick={() => setTab('code')}
-            >
+            <button type="button" className={codeTabClass} onClick={() => setTab('code')}>
               Code
             </button>
           </div>

@@ -65,12 +65,13 @@ function EditSourceButtonInner(): React.ReactElement | null {
       ].join('')
 
       btn.addEventListener('click', () => {
-        window.parent.postMessage(
-          { type: 'zpress:edit', path: window.location.pathname },
+        globalThis.parent.postMessage(
+          { type: 'zpress:edit', path: globalThis.location.pathname },
           '*'
         )
       })
 
+      // oxlint-disable-next-line prefer-modern-dom-apis -- container.firstChild may be null; insertBefore(x, null) appends safely, but firstChild.before() would throw
       container.insertBefore(btn, container.firstChild)
       buttonRef.current = btn
     }

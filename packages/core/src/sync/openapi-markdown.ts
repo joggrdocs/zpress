@@ -238,9 +238,7 @@ function flattenRequestBody(requestBody: Record<string, unknown> | undefined):
  * @param responses - OpenAPI responses object keyed by status code
  * @returns Array of response objects with code, description, and optional schema
  */
-function flattenResponses(
-  responses: Record<string, unknown>
-): readonly {
+function flattenResponses(responses: Record<string, unknown>): readonly {
   readonly code: string
   readonly description: string
   readonly schema: string | null

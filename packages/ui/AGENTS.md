@@ -18,12 +18,12 @@ component. Currently:
 Because Rspress's webpack compiles these files independently, they can **only
 import packages that Rspress's webpack can resolve**:
 
-| Allowed               | Forbidden                                      |
-| --------------------- | ---------------------------------------------- |
-| `react`, `react-dom`  | `ts-pattern`                                   |
-| `mermaid`             | `es-toolkit`                                   |
-| Relative CSS imports  | Any `@zpress/*` workspace package              |
-| Other Rspress deps    | Any dependency not in Rspress's resolve context |
+| Allowed              | Forbidden                                       |
+| -------------------- | ----------------------------------------------- |
+| `react`, `react-dom` | `ts-pattern`                                    |
+| `mermaid`            | `es-toolkit`                                    |
+| Relative CSS imports | Any `@zpress/*` workspace package               |
+| Other Rspress deps   | Any dependency not in Rspress's resolve context |
 
 ### Style rules relaxed
 

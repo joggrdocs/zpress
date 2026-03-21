@@ -29,11 +29,11 @@ Run the [zpress](https://zpress.dev) dev server and preview documentation withou
 
 ## Configuration
 
-| Setting                   | Type      | Default | Description                                                                                                     |
-| ------------------------- | --------- | ------- | --------------------------------------------------------------------------------------------------------------- |
-| `zpress.server.autoOpen`  | `boolean` | `true`  | Automatically open the docs site in the browser when the server starts.                                         |
-| `zpress.server.autoStart` | `boolean` | `true`  | Automatically start the dev server when the zpress sidebar is opened.                                           |
-| `zpress.server.port`      | `number`  | `6174`  | Port for the dev server.                                                                                        |
+| Setting                   | Type      | Default | Description                                                                                                      |
+| ------------------------- | --------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `zpress.server.autoOpen`  | `boolean` | `true`  | Automatically open the docs site in the browser when the server starts.                                          |
+| `zpress.server.autoStart` | `boolean` | `true`  | Automatically start the dev server when the zpress sidebar is opened.                                            |
+| `zpress.server.port`      | `number`  | `6174`  | Port for the dev server.                                                                                         |
 | `zpress.theme`            | `string`  | —       | Override the theme for the docs preview (`base`, `midnight`, or `arcade`). Does not modify your `zpress.config`. |
 | `zpress.theme.mode`       | `string`  | —       | Override the color mode (`dark`, `light`, or `toggle`). Does not modify your `zpress.config`.                    |
 

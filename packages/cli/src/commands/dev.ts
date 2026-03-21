@@ -47,7 +47,14 @@ export const devCommand = command({
     await sync(config, { paths, quiet })
 
     // Start Rspress dev server and get config reload callback
-    const onConfigReload = await startDevServer({ config, paths, port: ctx.args.port, theme: ctx.args.theme, colorMode: ctx.args.colorMode, vscode: ctx.args.vscode })
+    const onConfigReload = await startDevServer({
+      config,
+      paths,
+      port: ctx.args.port,
+      theme: ctx.args.theme,
+      colorMode: ctx.args.colorMode,
+      vscode: ctx.args.vscode,
+    })
 
     // Start watcher with config reload callback
     const { createWatcher } = await import('../lib/watcher.ts')
