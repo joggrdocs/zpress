@@ -16,30 +16,7 @@ Rspress plugin, theme components, and styles for zpress.
 npm install @zpress/ui
 ```
 
-## Exports
-
-| Path               | Description                       |
-| ------------------ | --------------------------------- |
-| `@zpress/ui`       | Rspress plugin and config builder |
-| `@zpress/ui/theme` | Theme components (React)          |
-| `@zpress/ui/icons` | Icon components                   |
-
-## API
-
-| Export                | Description                                |
-| --------------------- | ------------------------------------------ |
-| `createRspressConfig` | Build an Rspress config from zpress config |
-| `zpressPlugin`        | Rspress plugin for zpress integration      |
-
-## Usage
-
-```ts
-import { createRspressConfig, zpressPlugin } from '@zpress/ui'
-```
-
-## Raw Source Exports
-
-The `./theme` and `./icons` exports ship raw `.tsx`/`.ts` source files (not compiled output). Rspress requires theme components to be bundled by the consuming build pipeline.
+> Most users should install [`@zpress/kit`](https://www.npmjs.com/package/@zpress/kit) instead.
 
 ## License
 
