@@ -12,11 +12,10 @@ An opinionated documentation framework for monorepos. Just point it at your code
 
 ## Features
 
-- :gear: **Config over convention** — Define sections, pages, and nav in one declarative config.
-- :zap: **Zero-config defaults** — Smart conventions for sidebars, nav, icons, and landing pages.
-- :package: **Monorepo-native** — Workspace metadata with auto-generated package cards.
-- :mag: **Auto-discovery** — Glob patterns to find and organize markdown files.
-- :art: **Beautiful out of the box** — Catppuccin-themed UI with responsive layouts.
+- **Your docs, your structure** — Conforms to your repo, not the other way around.
+- **Great defaults** — Sidebars, nav, landing pages, and icons from one config.
+- **Beautiful themes out of the box** — Dark mode, generated banners, and polished defaults.
+- **Monorepo-first** — Built for internal docs with first-class workspace support.
 
 ## Install
 
