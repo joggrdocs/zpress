@@ -1,13 +1,21 @@
 /**
- * FIGlet text renderer using the ANSI Shadow character set.
+ * FIGlet text renderers.
  *
- * Converts a plain-text string into block-art lines suitable
- * for embedding in an SVG `<text>` element.
+ * Two renderers:
+ * 1. `renderFigletText` — ANSI Shadow (primary zpress brand font)
+ * 2. `renderPixelText` — compact pixel-art (retro fallback for long titles)
  */
 
 import { range } from 'es-toolkit'
 
-import { FIGLET_CHARS, FIGLET_CHAR_GAP, FIGLET_ROWS } from './figlet-data.ts'
+import {
+  FIGLET_CHARS,
+  FIGLET_CHAR_GAP,
+  FIGLET_ROWS,
+  PIXEL_CHARS,
+  PIXEL_CHAR_GAP,
+  PIXEL_ROWS,
+} from './figlet-data.ts'
 
 /**
  * Result of rendering a FIGlet text block.
@@ -21,48 +29,82 @@ export interface FigletResult {
    * Width of the widest row in monospace character columns.
    */
   readonly width: number
+  /**
+   * Number of rows in the rendered block.
+   */
+  readonly rows: number
 }
 
-const SPACE_GLYPH = FIGLET_CHARS[' ']
-
 /**
- * Render a plain-text string as FIGlet block art.
+ * Render a plain-text string as ANSI Shadow FIGlet block art.
  *
  * Uppercases the input, maps each character to its ANSI Shadow glyph,
  * and joins rows horizontally.
  *
  * @param text - The text to render (A-Z, 0-9, space, hyphen, dot, underscore)
- * @returns Rendered lines and width in monospace columns
+ * @returns Rendered lines, width in monospace columns, and row count
  */
 export function renderFigletText(text: string): FigletResult {
-  const chars = [...text.toUpperCase()]
-  const glyphs = chars.map(lookupGlyph)
+  return renderGlyphs({
+    text,
+    chars: FIGLET_CHARS,
+    gap: FIGLET_CHAR_GAP,
+    rows: FIGLET_ROWS,
+  })
+}
 
-  const lines = range(FIGLET_ROWS).map((row) =>
-    glyphs.map((glyph) => glyph[row]).join(FIGLET_CHAR_GAP)
-  )
-
-  const width = Math.max(...lines.map((line) => line.length))
-
-  return { lines, width }
+/**
+ * Render a plain-text string as pixel block art.
+ *
+ * Uppercases the input, maps each character to its pixel glyph,
+ * and joins rows horizontally. Compact retro-gaming style for long titles.
+ *
+ * @param text - The text to render (A-Z, 0-9, space, hyphen, dot, underscore)
+ * @returns Rendered lines, width in monospace columns, and row count
+ */
+export function renderPixelText(text: string): FigletResult {
+  return renderGlyphs({
+    text,
+    chars: PIXEL_CHARS,
+    gap: PIXEL_CHAR_GAP,
+    rows: PIXEL_ROWS,
+  })
 }
 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
 
+interface RenderGlyphsParams {
+  readonly text: string
+  readonly chars: Readonly<Record<string, readonly string[]>>
+  readonly gap: string
+  readonly rows: number
+}
+
 /**
- * Look up the FIGlet glyph for a single character.
- * Falls back to the space glyph for unknown characters.
+ * Generic glyph renderer shared by both font styles.
  *
  * @private
- * @param c - Single character to look up
- * @returns Six-row tuple of glyph strings
+ * @param params - Text, character map, gap string, and row count
+ * @returns Rendered lines, width, and row count
  */
-function lookupGlyph(c: string): readonly [string, string, string, string, string, string] {
-  const glyph = FIGLET_CHARS[c]
-  if (glyph) {
-    return glyph
-  }
-  return SPACE_GLYPH
+function renderGlyphs(params: RenderGlyphsParams): FigletResult {
+  const upperChars = [...params.text.toUpperCase()]
+  const spaceGlyph = params.chars[' ']
+  const glyphs = upperChars.map((c) => {
+    const glyph = params.chars[c]
+    if (glyph) {
+      return glyph
+    }
+    return spaceGlyph
+  })
+
+  const lines = range(params.rows).map((row) =>
+    glyphs.map((glyph) => glyph[row]).join(params.gap)
+  )
+
+  const width = Math.max(...lines.map((line) => line.length))
+
+  return { lines, width, rows: params.rows }
 }

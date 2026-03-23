@@ -13,6 +13,7 @@ import { capitalize } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
 import type { OpenAPIConfig, Workspace, ZpressConfig } from '../types.ts'
+import { collectAllWorkspaceItems } from './collect-workspaces.ts'
 import { renderOperationMarkdown, renderOverviewMarkdown } from './openapi-markdown.ts'
 import { HTTP_METHODS } from './openapi-spec.ts'
 import type { PageData, SidebarItem, SyncContext } from './types.ts'
@@ -202,7 +203,7 @@ function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
  * @returns Array of config entries from workspace items
  */
 function collectWorkspaceConfigs(config: ZpressConfig): readonly ConfigEntry[] {
-  const allWorkspaces: readonly Workspace[] = (config.workspaces ?? []).flatMap((g) => g.items)
+  const allWorkspaces = collectAllWorkspaceItems(config)
 
   return allWorkspaces
     .filter(

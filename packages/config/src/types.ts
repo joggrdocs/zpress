@@ -506,6 +506,25 @@ export interface ZpressConfig {
   readonly icon?: IconId
   readonly tagline?: string
   readonly actions?: readonly HeroAction[]
+  /**
+   * Workspace apps — standalone applications and runnable services (APIs,
+   * workers, web apps, and anything that deploys independently).
+   * Single source of truth for app metadata used on the home page,
+   * landing pages, and introduction page.
+   */
+  readonly apps?: readonly Workspace[]
+  /**
+   * Workspace packages — reusable modules shared across the codebase
+   * (libraries, utilities, configs, SDKs, and internal tooling).
+   * Single source of truth for package metadata used on the home page,
+   * landing pages, and introduction page.
+   */
+  readonly packages?: readonly Workspace[]
+  /**
+   * Custom workspace groups — arbitrary named groups of workspace items.
+   * Each group receives the same card/landing-page treatment as apps and packages.
+   * Rendered after apps and packages, in array order.
+   */
   readonly workspaces?: readonly WorkspaceCategory[]
   readonly features?: readonly Feature[]
   readonly sidebar?: SidebarConfig

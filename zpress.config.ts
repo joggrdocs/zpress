@@ -52,112 +52,105 @@ export default defineConfig({
       icon: 'simple-icons:openapiinitiative',
     },
   ],
-  workspaces: [
+  packages: [
     {
-      title: 'Packages',
-      description: 'Internal packages that power the zpress documentation framework',
-      icon: 'pixelarticons:archive',
+      title: '@zpress/kit',
+      icon: { id: 'pixelarticons:archive', color: 'purple' },
+      description:
+        'Documentation framework powered by Rspress with a config-driven information architecture',
+      tags: ['typescript', 'node'],
+      path: '/packages/zpress',
       items: [
+        { title: 'Overview', path: '/packages/zpress', include: 'packages/zpress/README.md' },
         {
-          title: '@zpress/kit',
-          icon: { id: 'pixelarticons:archive', color: 'purple' },
-          description:
-            'Documentation framework powered by Rspress with a config-driven information architecture',
-          tags: ['typescript', 'node'],
-          path: '/packages/zpress',
-          items: [
-            { title: 'Overview', path: '/packages/zpress', include: 'packages/zpress/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/zpress/changelog',
-              include: 'packages/zpress/CHANGELOG.md',
-            },
-          ],
-        },
-        {
-          title: '@zpress/cli',
-          icon: { id: 'pixelarticons:terminal', color: 'green' },
-          description: 'CLI for building and serving zpress documentation sites',
-          tags: ['typescript', 'node'],
-          path: '/packages/cli',
-          items: [
-            { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/cli/changelog',
-              include: 'packages/cli/CHANGELOG.md',
-            },
-          ],
-        },
-        {
-          title: '@zpress/core',
-          icon: { id: 'pixelarticons:cpu', color: 'blue' },
-          description: 'Sync engine and asset utilities for zpress',
-          tags: ['typescript', 'node'],
-          path: '/packages/core',
-          items: [
-            { title: 'Overview', path: '/packages/core', include: 'packages/core/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/core/changelog',
-              include: 'packages/core/CHANGELOG.md',
-            },
-          ],
-        },
-        {
-          title: '@zpress/config',
-          icon: { id: 'pixelarticons:sliders', color: 'amber' },
-          description: 'Configuration loading and validation for zpress',
-          tags: ['typescript', 'zod'],
-          path: '/packages/config',
-          items: [
-            { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/config/changelog',
-              include: 'packages/config/CHANGELOG.md',
-            },
-          ],
-        },
-        {
-          title: '@zpress/ui',
-          icon: { id: 'pixelarticons:paint-bucket', color: 'pink' },
-          description: 'Rspress plugin, theme components, and styles for zpress',
-          tags: ['typescript', 'react'],
-          path: '/packages/ui',
-          items: [
-            { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/ui/changelog',
-              include: 'packages/ui/CHANGELOG.md',
-            },
-          ],
-        },
-        {
-          title: '@zpress/theme',
-          icon: { id: 'pixelarticons:mood-happy', color: 'cyan' },
-          description: 'Theme types and definitions for zpress',
-          tags: ['typescript'],
-          path: '/packages/theme',
-          items: [
-            { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/theme/changelog',
-              include: 'packages/theme/CHANGELOG.md',
-            },
-          ],
-        },
-        {
-          title: '@zpress/templates',
-          icon: { id: 'pixelarticons:note', color: 'slate' },
-          description:
-            'Documentation templates SDK — built-in templates, extensions, and custom registrations',
-          tags: ['typescript', 'liquid'],
-          path: '/packages/templates',
+          title: 'Changelog',
+          path: '/packages/zpress/changelog',
+          include: 'packages/zpress/CHANGELOG.md',
         },
       ],
+    },
+    {
+      title: '@zpress/cli',
+      icon: { id: 'pixelarticons:terminal', color: 'green' },
+      description: 'CLI for building and serving zpress documentation sites',
+      tags: ['typescript', 'node'],
+      path: '/packages/cli',
+      items: [
+        { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
+        {
+          title: 'Changelog',
+          path: '/packages/cli/changelog',
+          include: 'packages/cli/CHANGELOG.md',
+        },
+      ],
+    },
+    {
+      title: '@zpress/core',
+      icon: { id: 'pixelarticons:cpu', color: 'blue' },
+      description: 'Sync engine and asset utilities for zpress',
+      tags: ['typescript', 'node'],
+      path: '/packages/core',
+      items: [
+        { title: 'Overview', path: '/packages/core', include: 'packages/core/README.md' },
+        {
+          title: 'Changelog',
+          path: '/packages/core/changelog',
+          include: 'packages/core/CHANGELOG.md',
+        },
+      ],
+    },
+    {
+      title: '@zpress/config',
+      icon: { id: 'pixelarticons:sliders', color: 'amber' },
+      description: 'Configuration loading and validation for zpress',
+      tags: ['typescript', 'zod'],
+      path: '/packages/config',
+      items: [
+        { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
+        {
+          title: 'Changelog',
+          path: '/packages/config/changelog',
+          include: 'packages/config/CHANGELOG.md',
+        },
+      ],
+    },
+    {
+      title: '@zpress/ui',
+      icon: { id: 'pixelarticons:paint-bucket', color: 'pink' },
+      description: 'Rspress plugin, theme components, and styles for zpress',
+      tags: ['typescript', 'react'],
+      path: '/packages/ui',
+      items: [
+        { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
+        {
+          title: 'Changelog',
+          path: '/packages/ui/changelog',
+          include: 'packages/ui/CHANGELOG.md',
+        },
+      ],
+    },
+    {
+      title: '@zpress/theme',
+      icon: { id: 'pixelarticons:mood-happy', color: 'cyan' },
+      description: 'Theme types and definitions for zpress',
+      tags: ['typescript'],
+      path: '/packages/theme',
+      items: [
+        { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
+        {
+          title: 'Changelog',
+          path: '/packages/theme/changelog',
+          include: 'packages/theme/CHANGELOG.md',
+        },
+      ],
+    },
+    {
+      title: '@zpress/templates',
+      icon: { id: 'pixelarticons:note', color: 'slate' },
+      description:
+        'Documentation templates SDK — built-in templates, extensions, and custom registrations',
+      tags: ['typescript', 'liquid'],
+      path: '/packages/templates',
     },
   ],
   openapi: {
@@ -558,6 +551,17 @@ export default defineConfig({
               title: 'Changelog',
               path: '/packages/theme/changelog',
               include: 'packages/theme/CHANGELOG.md',
+            },
+          ],
+        },
+        {
+          title: '@zpress/templates',
+          path: '/packages/templates',
+          items: [
+            {
+              title: 'Overview',
+              path: '/packages/templates',
+              include: 'packages/templates/README.md',
             },
           ],
         },

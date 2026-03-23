@@ -57,11 +57,6 @@ export const TITLE_BAR_HEIGHT = 36
 export const FIGLET_MAX_LENGTH = 12
 
 /**
- * Font size for the plain-text fallback when title exceeds FIGLET_MAX_LENGTH.
- */
-export const FALLBACK_FONT_SIZE = 48
-
-/**
  * Minimum banner width in pixels.
  */
 export const MIN_BANNER_WIDTH = 600

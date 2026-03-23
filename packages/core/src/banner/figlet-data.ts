@@ -1,23 +1,41 @@
 /**
- * ANSI Shadow FIGlet font character data.
+ * FIGlet font character data.
  *
- * Each glyph is a 6-row tuple of fixed-width monospace strings.
- * All rows within a glyph have identical character width.
+ * Two glyph sets:
+ * 1. **ANSI Shadow** (6-row) — the primary zpress brand font
+ * 2. **RubiFont** (4-row) — compact pixel-art fallback for long titles
+ *    Source: https://github.com/patorjk/figlet.js (fonts/RubiFont.flf)
+ *    Author: RubixTW — created with patorjk.com figfont editor
  */
 
 /**
- * Number of text rows per FIGlet glyph.
+ * Number of text rows per ANSI Shadow glyph.
  */
 export const FIGLET_ROWS = 6 as const
 
 /**
- * String inserted between adjacent glyphs (empty — glyphs include trailing space).
+ * Number of text rows per RubiFont glyph.
+ */
+export const PIXEL_ROWS = 4 as const
+
+/**
+ * String inserted between adjacent ANSI Shadow glyphs (empty — glyphs include trailing space).
  */
 export const FIGLET_CHAR_GAP = '' as const
 
+/**
+ * String inserted between adjacent RubiFont glyphs.
+ */
+export const PIXEL_CHAR_GAP = ' ' as const
+
 type FigletGlyph = readonly [string, string, string, string, string, string]
+type PixelGlyph = readonly [string, string, string, string]
 
 /* eslint-disable @stylistic/no-multi-spaces */
+
+/**
+ * ANSI Shadow character map — the primary zpress brand font.
+ */
 export const FIGLET_CHARS: Readonly<Record<string, FigletGlyph>> = Object.freeze({
   A: [' █████╗ ', '██╔══██╗', '███████║', '██╔══██║', '██║  ██║', '╚═╝  ╚═╝'],
   B: ['██████╗ ', '██╔══██╗', '██████╔╝', '██╔══██╗', '██████╔╝', '╚═════╝ '],
@@ -59,4 +77,45 @@ export const FIGLET_CHARS: Readonly<Record<string, FigletGlyph>> = Object.freeze
   '-': ['        ', '        ', '███████╗', '╚══════╝', '        ', '        '],
   '.': ['   ', '   ', '   ', '   ', '██╗', '╚═╝'],
   _: ['        ', '        ', '        ', '        ', '███████╗', '╚══════╝'],
+})
+
+/**
+ * RubiFont character map — compact pixel-art fallback for long titles.
+ *
+ * Uses quarter-block Unicode characters for a retro-gaming aesthetic.
+ * Only A–Z are defined; missing characters fall back to the space glyph.
+ *
+ * @see https://github.com/patorjk/figlet.js — fonts/RubiFont.flf
+ */
+export const PIXEL_CHARS: Readonly<Record<string, PixelGlyph>> = Object.freeze({
+  A: [' ▗▄▖ ', '▐▌ ▐▌', '▐▛▀▜▌', '▐▌ ▐▌'],
+  B: ['▗▄▄▖ ', '▐▌ ▐▌', '▐▛▀▚▖', '▐▙▄▞▘'],
+  C: [' ▗▄▄▖', '▐▌   ', '▐▌   ', '▝▚▄▄▖'],
+  D: ['▗▄▄▄ ', '▐▌  █', '▐▌  █', '▐▙▄▄▀'],
+  E: ['▗▄▄▄▖', '▐▌   ', '▐▛▀▀▘', '▐▙▄▄▖'],
+  F: ['▗▄▄▄▖', '▐▌   ', '▐▛▀▀▘', '▐▌   '],
+  G: [' ▗▄▄▖', '▐▌   ', '▐▌▝▜▌', '▝▚▄▞▘'],
+  H: ['▗▖ ▗▖', '▐▌ ▐▌', '▐▛▀▜▌', '▐▌ ▐▌'],
+  I: ['▗▄▄▄▖', '  █  ', '  █  ', '▗▄█▄▖'],
+  J: ['   ▗▖', '   ▐▌', '   ▐▌', '▗▄▄▞▘'],
+  K: ['▗▖ ▗▖', '▐▌▗▞▘', '▐▛▚▖ ', '▐▌ ▐▌'],
+  L: ['▗▖   ', '▐▌   ', '▐▌   ', '▐▙▄▄▖'],
+  M: ['▗▖  ▗▖', '▐▛▚▞▜▌', '▐▌  ▐▌', '▐▌  ▐▌'],
+  N: ['▗▖  ▗▖', '▐▛▚▖▐▌', '▐▌ ▝▜▌', '▐▌  ▐▌'],
+  O: [' ▗▄▖ ', '▐▌ ▐▌', '▐▌ ▐▌', '▝▚▄▞▘'],
+  P: ['▗▄▄▖ ', '▐▌ ▐▌', '▐▛▀▘ ', '▐▌   '],
+  Q: ['▗▄▄▄▖ ', '▐▌ ▐▌ ', '▐▌ ▐▌ ', '▐▙▄▟▙▖'],
+  R: ['▗▄▄▖ ', '▐▌ ▐▌', '▐▛▀▚▖', '▐▌ ▐▌'],
+  S: [' ▗▄▄▖', '▐▌   ', ' ▝▀▚▖', '▗▄▄▞▘'],
+  T: ['▗▄▄▄▖', '  █  ', '  █  ', '  █  '],
+  U: ['▗▖ ▗▖', '▐▌ ▐▌', '▐▌ ▐▌', '▝▚▄▞▘'],
+  V: ['▗▖  ▗▖', '▐▌  ▐▌', '▐▌  ▐▌', ' ▝▚▞▘ '],
+  W: ['▗▖ ▗▖', '▐▌ ▐▌', '▐▌ ▐▌', '▐▙█▟▌'],
+  X: ['▗▖  ▗▖', ' ▝▚▞▘ ', '  ▐▌  ', '▗▞▘▝▚▖'],
+  Y: ['▗▖  ▗▖', ' ▝▚▞▘ ', '  ▐▌  ', '  ▐▌  '],
+  Z: ['▗▄▄▄▄▖', '   ▗▞▘', ' ▗▞▘  ', '▐▙▄▄▄▖'],
+  ' ': ['     ', '     ', '     ', '     '],
+  '-': ['     ', '     ', '▗▄▄▄▖', '     '],
+  '.': ['  ', '  ', '  ', '▗▖'],
+  _: ['     ', '     ', '     ', '▗▄▄▄▖'],
 })
