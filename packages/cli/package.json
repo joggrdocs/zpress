@@ -46,7 +46,7 @@
     "@zpress/templates": "workspace:*",
     "@zpress/ui": "workspace:*",
     "es-toolkit": "catalog:",
-    "get-port": "^7.2.0",
+    "get-port": "^7.1.0",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },

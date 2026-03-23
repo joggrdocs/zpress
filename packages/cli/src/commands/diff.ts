@@ -26,10 +26,9 @@ export const diffCommand = command({
   description: 'Show changed files in configured source directories',
   options: z.object({
     pretty: z.boolean().optional().default(false),
-    ref: z.string().optional(),
   }),
   handler: async (ctx) => {
-    const { pretty, ref } = ctx.args
+    const { pretty } = ctx.args
     const paths = createPaths(process.cwd())
 
     const [configErr, config] = await loadConfig(paths.repoRoot)
@@ -59,9 +58,7 @@ export const diffCommand = command({
       return
     }
 
-    const [gitErr, changed] = ref
-      ? gitDiffFiles({ repoRoot: paths.repoRoot, dirs, ref })
-      : gitChangedFiles({ repoRoot: paths.repoRoot, dirs })
+    const [gitErr, changed] = gitChangedFiles({ repoRoot: paths.repoRoot, dirs })
 
     if (gitErr) {
       if (pretty) {
@@ -86,15 +83,10 @@ export const diffCommand = command({
       ctx.logger.step(`Watching ${dirs.length} path(s)`)
       ctx.logger.note(changed.join('\n'), `${changed.length} changed file(s)`)
       ctx.logger.outro('Done')
-    } else {
-      process.stdout.write(`${changed.join(' ')}\n`)
+      return
     }
 
-    // When --ref is used (e.g. as a Vercel ignoreCommand), exit 1 signals
-    // "changes detected, proceed with build". Exit 0 (no changes) means skip.
-    if (ref) {
-      process.exit(1)
-    }
+    process.stdout.write(`${changed.join(' ')}\n`)
   },
 })
 
@@ -257,42 +249,6 @@ function stripQuotes(value: string): string {
     return trimmed.slice(1, -1)
   }
   return trimmed
-}
-
-/**
- * Run `git diff --name-only <ref> HEAD` scoped to the given directories and return changed file paths.
- *
- * Use this instead of `gitChangedFiles` when comparing between commits (e.g. for
- * CI ignore commands like Vercel's `ignoreCommand`), since `git status` only
- * detects uncommitted changes and always returns empty on clean checkouts.
- *
- * @private
- * @param params - Parameters for the git diff query
- * @param params.repoRoot - Absolute path to the repo root
- * @param params.dirs - Directories to scope the git diff to
- * @param params.ref - Git ref to compare against HEAD (e.g. `HEAD^`, `main`)
- * @returns Result tuple with changed file paths (repo-relative) or an error
- */
-function gitDiffFiles(params: {
-  readonly repoRoot: string
-  readonly dirs: readonly string[]
-  readonly ref: string
-}): Result<readonly string[]> {
-  const [err, output] = execSilent({
-    file: 'git',
-    args: ['diff', '--name-only', params.ref, 'HEAD', '--', ...params.dirs],
-    cwd: params.repoRoot,
-  })
-  if (err) {
-    return [err, null]
-  }
-  if (!output) {
-    return [null, []]
-  }
-  const files = output
-    .split('\n')
-    .filter((line) => line.length > 0)
-  return [null, files]
 }
 
 /**

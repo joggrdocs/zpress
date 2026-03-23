@@ -6,10 +6,10 @@ packages:
 catalog:
   '@rslib/core': ^0.20.0
   '@rspress/core': ^2.0.6
-  '@typescript/native-preview': 7.0.0-dev.20260323.1
   es-toolkit: ^1.45.1
   ts-pattern: ^5.9.0
   type-fest: ^5.5.0
-  typescript: ^6.0.2
-  vitest: ^4.1.1
+  '@typescript/native-preview': ^7.0.0-dev.20260320.1
+  typescript: ^5.9.3
+  vitest: ^4.1.0
   zod: ^4.3.6
