@@ -288,6 +288,8 @@ export const zpressConfigSchema = z
     theme: themeConfigSchema.optional(),
     icon: iconIdSchema.optional(),
     tagline: z.string().optional(),
+    apps: z.array(workspaceItemSchema).optional(),
+    packages: z.array(workspaceItemSchema).optional(),
     workspaces: z.array(workspaceGroupSchema).optional(),
     features: z.array(featureSchema).optional(),
     actions: z.array(heroActionSchema).optional(),

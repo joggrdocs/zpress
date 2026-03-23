@@ -19,6 +19,7 @@ import { generateNav } from './sidebar/index.ts'
 import { injectLandingPages } from './sidebar/inject.ts'
 import { buildMultiSidebar } from './sidebar/multi.ts'
 import type { PageData, ResolvedEntry, SyncContext } from './types.ts'
+import { collectAllWorkspaceItems } from './collect-workspaces.ts'
 import { enrichWorkspaceCards, synthesizeWorkspaceSections } from './workspace.ts'
 
 /**
@@ -95,7 +96,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   const resolved = enrichWorkspaceCards(rawResolved, config)
 
   // 1.5 Inject auto-generated landing pages for sections with path but no page
-  const workspaces = (config.workspaces ?? []).flatMap((g) => g.items)
+  const workspaces = collectAllWorkspaceItems(config)
   injectLandingPages(resolved, allSections, workspaces)
 
   // 2. Collect all pages from the tree

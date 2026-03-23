@@ -3,15 +3,24 @@ import { match, P } from 'ts-pattern'
 
 import { resolveOptionalIcon, serializeIcon } from '../icon.ts'
 import type { Section, TitleConfig, ZpressConfig, Workspace } from '../types.ts'
+import { collectAllWorkspaceItems } from './collect-workspaces.ts'
 import { buildWorkspaceCardJsx } from './sidebar/landing.ts'
 import type { ResolvedEntry } from './types.ts'
+
+/**
+ * Apps and packages arrays extracted from config.
+ */
+interface WorkspaceArrays {
+  readonly apps: readonly Workspace[]
+  readonly packages: readonly Workspace[]
+}
 
 /**
  * Default descriptions for well-known workspace category titles.
  */
 const DEFAULT_CATEGORY_DESCRIPTIONS: Readonly<Record<string, string>> = {
-  packages: 'Internal packages and shared libraries',
-  apps: 'Deployable applications and services',
+  packages: 'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
+  apps: 'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
 }
 
 /**
@@ -29,12 +38,12 @@ export function enrichWorkspaceCards(
   entries: readonly ResolvedEntry[],
   config: ZpressConfig
 ): ResolvedEntry[] {
-  const workspaceGroupItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  if (workspaceGroupItems.length === 0) {
+  const items = collectAllWorkspaceItems(config)
+  if (items.length === 0) {
     return [...entries]
   }
 
-  return enrichEntries(entries, workspaceGroupItems)
+  return enrichEntries(entries, items)
 }
 
 /**
@@ -46,7 +55,7 @@ export function enrichWorkspaceCards(
  * @param workspaces - Workspace categories from config
  * @returns Full home page markdown string
  */
-export function generateHomePage(workspaces: readonly Workspace[]): string {
+export function generateHomePage(workspaces: WorkspaceArrays): string {
   const frontmatter = [
     '---',
     'layout: home',
@@ -88,11 +97,18 @@ export function generateHomePage(workspaces: readonly Workspace[]): string {
     '---',
   ].join('\n')
 
-  const workspaceSection = buildWorkspaceSection(
-    'Workspaces',
-    'Apps and packages that make up the platform.',
-    workspaces,
-    ''
+  const appsSection = buildWorkspaceSection(
+    'Apps',
+    'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
+    workspaces.apps,
+    'apps/'
+  )
+
+  const packagesSection = buildWorkspaceSection(
+    'Packages',
+    'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
+    workspaces.packages,
+    'packages/'
   )
 
   return [
@@ -100,7 +116,9 @@ export function generateHomePage(workspaces: readonly Workspace[]): string {
     '',
     '<div class="zp-workspace-section">',
     '',
-    workspaceSection,
+    appsSection,
+    '',
+    packagesSection,
     '',
     '</div>',
   ].join('\n')
@@ -115,8 +133,9 @@ export function generateHomePage(workspaces: readonly Workspace[]): string {
  * @param workspaces - Workspace items from config
  * @returns Full introduction page markdown string
  */
-export function generateIntroPage(workspaces: readonly Workspace[]): string {
-  const itemsList = workspaces.map((a) => `${a.title} (${a.description})`).join(', ')
+export function generateIntroPage(workspaces: WorkspaceArrays): string {
+  const appsList = workspaces.apps.map((a) => `${a.title} (${a.description})`).join(', ')
+  const packagesList = workspaces.packages.map((a) => `${a.title} (${a.description})`).join(', ')
 
   return [
     '# Introduction',
@@ -127,8 +146,9 @@ export function generateIntroPage(workspaces: readonly Workspace[]): string {
     '',
     "## What's inside",
     '',
-    `- **Workspaces**: ${itemsList}`,
-    '- **Tooling** — Internal developer tools including this documentation site',
+    `- **Apps** \u2014 Standalone applications and runnable services: ${appsList}`,
+    `- **Packages** \u2014 Reusable modules and shared code: ${packagesList}`,
+    '- **Tooling** \u2014 Internal developer tools including this documentation site',
   ].join('\n')
 }
 
@@ -144,7 +164,46 @@ export function generateIntroPage(workspaces: readonly Workspace[]): string {
  */
 export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
   const existingLinks = collectAllLinks(config.sections)
+
+  const apps = config.apps ?? []
+  const packages = config.packages ?? []
   const categories = config.workspaces ?? []
+
+  const appsSection = match(apps.length > 0 && !existingLinks.has('/apps'))
+    .with(
+      true,
+      (): Section => ({
+        title: 'Apps',
+        path: '/apps',
+        standalone: true,
+        frontmatter: {
+          description:
+            'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
+        },
+        items: apps
+          .filter((item) => !existingLinks.has(item.path))
+          .map((item) => workspaceToSection(item)),
+      })
+    )
+    .otherwise(() => null)
+
+  const packagesSection = match(packages.length > 0 && !existingLinks.has('/packages'))
+    .with(
+      true,
+      (): Section => ({
+        title: 'Packages',
+        path: '/packages',
+        standalone: true,
+        frontmatter: {
+          description:
+            'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
+        },
+        items: packages
+          .filter((item) => !existingLinks.has(item.path))
+          .map((item) => workspaceToSection(item)),
+      })
+    )
+    .otherwise(() => null)
 
   const categoryEntries = categories.map((category): Section | null => {
     const link = category.link ?? `/${slugify(String(category.title))}`
@@ -165,7 +224,9 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
     }
   })
 
-  return categoryEntries.filter((section): section is Section => section !== null)
+  return [appsSection, packagesSection, ...categoryEntries].filter(
+    (section): section is Section => section !== null
+  )
 }
 
 /**

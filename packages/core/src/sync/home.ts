@@ -131,11 +131,39 @@ export async function generateDefaultHomePage(
  * @returns Workspace data result containing all groups
  */
 export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
+  const apps = config.apps ?? []
+  const packages = config.packages ?? []
   const workspaceGroups = config.workspaces ?? []
 
-  if (workspaceGroups.length === 0) {
+  const hasWorkspaceItems = apps.length > 0 || packages.length > 0 || workspaceGroups.length > 0
+
+  if (!hasWorkspaceItems) {
     return { data: [] }
   }
+
+  const appsResult = match(apps.length > 0)
+    .with(true, () =>
+      buildGroupData(
+        'apps',
+        'Apps',
+        'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
+        apps,
+        'apps/'
+      )
+    )
+    .otherwise(() => null)
+
+  const packagesResult = match(packages.length > 0)
+    .with(true, () =>
+      buildGroupData(
+        'packages',
+        'Packages',
+        'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
+        packages,
+        'packages/'
+      )
+    )
+    .otherwise(() => null)
 
   const groupResults = workspaceGroups.map((g) => {
     const titleStr = match(g.title)
@@ -145,8 +173,12 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
     return buildGroupData('workspaces', titleStr, descStr, g.items, '')
   })
 
+  const allResults = [appsResult, packagesResult, ...groupResults].filter(
+    (r): r is GroupDataResult => r !== null
+  )
+
   return {
-    data: groupResults.map((r) => r.group),
+    data: allResults.map((r) => r.group),
   }
 }
 

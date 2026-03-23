@@ -2,6 +2,7 @@ import { THEME_NAMES, COLOR_MODES } from '@zpress/theme'
 import { match, P } from 'ts-pattern'
 
 import { hasAnyGlobInclude, isSingleFileInclude } from './glob.ts'
+import { collectAllWorkspaceItems } from './sync/collect-workspaces.ts'
 import { configError } from './sync/errors.ts'
 import type { ConfigError, ConfigResult } from './sync/errors.ts'
 import type {
@@ -42,18 +43,28 @@ export function validateConfig(config: ZpressConfig): ConfigResult<ZpressConfig>
     return [configError('empty_sections', 'config.sections must have at least one section'), null]
   }
 
+  const [appsErr] = validateWorkspaces(config.apps ?? [])
+  if (appsErr) {
+    return [appsErr, null]
+  }
+
+  const [pkgsErr] = validateWorkspaces(config.packages ?? [])
+  if (pkgsErr) {
+    return [pkgsErr, null]
+  }
+
   const [groupErr] = validateWorkspaceCategories(config.workspaces ?? [])
   if (groupErr) {
     return [groupErr, null]
   }
 
-  const workspaceCategoryItems = (config.workspaces ?? []).flatMap((g) => g.items)
-  const [wsErr] = validateWorkspaces(workspaceCategoryItems)
+  const allWorkspaceItems = collectAllWorkspaceItems(config)
+  const [wsErr] = validateWorkspaces(allWorkspaceItems)
   if (wsErr) {
     return [wsErr, null]
   }
 
-  const [openapiErr] = validateAllOpenAPI(config.openapi, workspaceCategoryItems)
+  const [openapiErr] = validateAllOpenAPI(config.openapi, allWorkspaceItems)
   if (openapiErr) {
     return [openapiErr, null]
   }
