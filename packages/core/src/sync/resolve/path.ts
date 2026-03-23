@@ -1,4 +1,4 @@
-import { basename, dirname, extname } from 'node:path'
+import { dirname, extname } from 'node:path'
 
 import { match } from 'ts-pattern'
 
@@ -27,7 +27,7 @@ export function isEntrySlug(link: string): boolean {
 /**
  * Return the priority index of an entry slug, or -1 if not an entry slug.
  *
- * Lower values indicate higher priority (overview > introduction > intro > index > readme).
+ * Lower values indicate higher priority (introduction > intro > overview > index > readme).
  *
  * @param slug - Bare filename stem (e.g. "overview", "readme")
  * @returns Index in ENTRY_SLUGS, or -1

@@ -165,7 +165,7 @@ function maybeLink(link: string | undefined): { link?: string } {
  */
 function findEntryPageLink(items: readonly ResolvedEntry[]): string | undefined {
   const entryChildren = items
-    .filter((c) => c.link)
+    .filter((c) => !c.hidden && c.link)
     .filter((c) => isEntrySlug(c.link as string))
   if (entryChildren.length === 0) {
     return undefined
