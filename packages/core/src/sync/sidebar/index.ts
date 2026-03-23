@@ -152,13 +152,54 @@ function maybeLink(link: string | undefined): { link?: string } {
 }
 
 /**
- * Resolve the link for a nav entry, falling back to the first child link.
+ * Known slugs for entry/overview pages, checked in priority order.
+ *
+ * @private
+ */
+const ENTRY_PAGE_SLUGS = ['overview', 'introduction', 'index', 'readme'] as const
+
+/**
+ * Find a child entry whose link ends with a known entry-page slug.
+ *
+ * Checks children (one level) against `ENTRY_PAGE_SLUGS` in priority order,
+ * returning the first match. Returns `undefined` when no child matches.
+ *
+ * @private
+ * @param items - Direct children of a section
+ * @returns Link of the first matching entry page, or undefined
+ */
+function findEntryPageLink(items: readonly ResolvedEntry[]): string | undefined {
+  const childLinks = items.filter((c) => c.link).map((c) => c.link as string)
+  return ENTRY_PAGE_SLUGS.reduce<string | undefined>((found, slug) => {
+    if (found) {
+      return found
+    }
+    return childLinks.find((link) => {
+      const last = link.split('/').pop()
+      return last === slug
+    })
+  }, undefined)
+}
+
+/**
+ * Resolve the link for a nav entry.
+ *
+ * For sections with children, prefers a child whose slug matches a known
+ * entry-page name (overview, introduction, index, readme) so the nav
+ * points to an actual content page rather than a generated landing page.
+ * Falls back to the section's own link, then the first child link.
  *
  * @private
  * @param entry - Resolved entry to extract link from
  * @returns Link string or undefined
  */
 function resolveLink(entry: ResolvedEntry): string | undefined {
+  if (entry.items && entry.items.length > 0) {
+    const entryPage = findEntryPageLink(entry.items)
+    if (entryPage) {
+      return entryPage
+    }
+  }
   if (entry.link) {
     return entry.link
   }
