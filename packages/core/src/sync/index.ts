@@ -5,7 +5,6 @@ import { log } from '@clack/prompts'
 import { match, P } from 'ts-pattern'
 
 import { generateAssets } from '../banner/index.ts'
-import { GENERATED_MARKER } from '../banner/svg-shared.ts'
 import type { AssetConfig } from '../banner/types.ts'
 import type { Paths } from '../paths.ts'
 import type { Section, ZpressConfig } from '../types.ts'
@@ -62,15 +61,9 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   await fs.mkdir(outDir, { recursive: true })
   await fs.mkdir(path.resolve(outDir, '.generated'), { recursive: true })
 
-  // Seed .zpress/public/ with default assets from the package (skip files that already exist)
-  await seedDefaultAssets(options.paths.publicDir)
-
-  // Fallback: generate banner/logo if not already present in .zpress/public/
-  // (Primary generation path is `zpress generate` or `zpress setup`)
+  // Generate banner/logo/icon SVGs (skips user-customized files automatically)
   const assetConfig = buildAssetConfig(config)
-  if (assetConfig) {
-    await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
-  }
+  await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
 
   // Copy public assets into content/public/ so Rspress can resolve them
   // (Rspress looks for public/ inside the root directory, which is .zpress/content/)
@@ -261,75 +254,6 @@ zpress build   # Build static site
 }
 
 /**
- * Seed .zpress/public/ with default assets from the core package's public/ directory.
- * Only copies files that don't already exist — user customizations are preserved.
- *
- * @private
- * @param publicDir - Absolute path to the .zpress/public/ directory
- * @returns Promise that resolves when seeding is complete
- */
-async function seedDefaultAssets(publicDir: string): Promise<void> {
-  // Resolve from the bundled dist/ directory up to the package root's public/ dir
-  const defaultsDir = path.resolve(import.meta.dirname, '..', 'public')
-  const exists = await fs.stat(defaultsDir).catch(() => null)
-  if (!exists) {
-    return
-  }
-
-  await copySeeded(defaultsDir, publicDir)
-}
-
-/**
- * Recursively copy files from src to dest.
- *
- * Overwrites a destination file only when it was auto-generated
- * (first line matches the zpress-generated marker). User-customized
- * files (no marker) are never touched.
- *
- * @private
- * @param src - Source directory path
- * @param dest - Destination directory path
- * @returns Promise that resolves when all files are copied
- */
-async function copySeeded(src: string, dest: string): Promise<void> {
-  await fs.mkdir(dest, { recursive: true })
-  const entries = await fs.readdir(src, { withFileTypes: true })
-  await entries.reduce(async (prevPromise, entry) => {
-    await prevPromise
-    const srcPath = path.resolve(src, entry.name)
-    const destPath = path.resolve(dest, entry.name)
-    if (entry.isDirectory()) {
-      await copySeeded(srcPath, destPath)
-      return
-    }
-    const shouldCopy = await isReplaceable(destPath)
-    if (shouldCopy) {
-      await fs.copyFile(srcPath, destPath)
-    }
-  }, Promise.resolve())
-}
-
-/**
- * Check whether a destination file can be replaced by a seeded default.
- *
- * Returns `true` when the file does not exist or was auto-generated
- * (has the zpress-generated marker). Returns `false` for user-customized files.
- *
- * @private
- * @param filePath - Absolute path to the destination file
- * @returns Whether the file can be safely replaced
- */
-async function isReplaceable(filePath: string): Promise<boolean> {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + directory entries
-  const content = await fs.readFile(filePath, 'utf8').catch(() => null)
-  if (content === null) {
-    return true
-  }
-  const [firstLine] = content.split('\n')
-  return firstLine === GENERATED_MARKER
-}
-
-/**
  * Recursively copy all files from src to dest, overwriting existing files.
  *
  * @private
@@ -387,15 +311,12 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
 
 /**
  * Extract an `AssetConfig` from the zpress config.
- * Returns `null` when no title is set (falls back to default ZPRESS assets).
+ * Falls back to 'Documentation' when no title is set.
  *
  * @private
  * @param config - Zpress config object
- * @returns Asset config or null when no title is configured
+ * @returns Asset config with title and optional tagline
  */
-function buildAssetConfig(config: ZpressConfig): AssetConfig | null {
-  if (!config.title) {
-    return null
-  }
-  return { title: config.title, tagline: config.tagline }
+function buildAssetConfig(config: ZpressConfig): AssetConfig {
+  return { title: config.title ?? 'Documentation', tagline: config.tagline }
 }
