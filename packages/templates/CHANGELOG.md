@@ -1,5 +1,11 @@
 # @zpress/templates
 
+## 0.1.2
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+
 ## 0.1.1
 
 ### Patch Changes

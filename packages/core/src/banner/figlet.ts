@@ -100,9 +100,7 @@ function renderGlyphs(params: RenderGlyphsParams): FigletResult {
     return spaceGlyph
   })
 
-  const lines = range(params.rows).map((row) =>
-    glyphs.map((glyph) => glyph[row]).join(params.gap)
-  )
+  const lines = range(params.rows).map((row) => glyphs.map((glyph) => glyph[row]).join(params.gap))
 
   const width = Math.max(...lines.map((line) => line.length))
 

@@ -1,5 +1,11 @@
 # @zpress/theme
 
+## 0.3.2
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+
 ## 0.3.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @zpress/kit
 
+## 0.2.12
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+- Updated dependencies [9b5099b]
+- Updated dependencies [9b5099b]
+- Updated dependencies [b912b2d]
+  - @zpress/core@0.8.0
+  - @zpress/cli@0.5.3
+  - @zpress/ui@0.8.7
+
 ## 0.2.11
 
 ### Patch Changes
