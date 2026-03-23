@@ -4,15 +4,14 @@ import { match, P } from 'ts-pattern'
 
 import type { ResolvedPage } from '../../types.ts'
 import type { ResolvedEntry } from '../types.ts'
-
-const PINNED_STEMS = ['introduction', 'intro', 'overview', 'readme'] as const
+import { entrySlugRank } from './path.ts'
 
 /**
  * Sort resolved entries using the specified strategy.
  *
  * Sections (entries with children) always sort before leaf pages.
- * When no sort strategy is provided, entries are sorted with pinned intro-style
- * files first (introduction, intro, overview, readme), then alpha by title.
+ * When no sort strategy is provided, entries are sorted with pinned entry-style
+ * files first (see `ENTRY_SLUGS`), then alpha by title.
  *
  * @param entries - Entries to sort
  * @param sort - Sort strategy: `"default"` (pinned + alpha), `"alpha"` by text, `"filename"` by output path, or custom comparator
@@ -98,7 +97,7 @@ function sectionFirst(a: ResolvedEntry, b: ResolvedEntry): number {
  *
  * @private
  * @param entry - Entry to rank
- * @returns Index in PINNED_STEMS, or -1 if not a pinned file
+ * @returns Index in ENTRY_SLUGS, or -1 if not a pinned file
  */
 function pinnedRank(entry: ResolvedEntry): number {
   if (!entry.page) {
@@ -108,12 +107,12 @@ function pinnedRank(entry: ResolvedEntry): number {
   if (!source) {
     return -1
   }
-  const stem = basename(source, extname(source)).toLowerCase()
-  return (PINNED_STEMS as readonly string[]).indexOf(stem)
+  const stem = basename(source, extname(source))
+  return entrySlugRank(stem)
 }
 
 /**
- * Sort pinned intro-style files before all others, preserving their relative order.
+ * Sort pinned entry-style files before all others, preserving their relative order.
  *
  * @private
  * @param a - First entry to compare

@@ -1,6 +1,7 @@
 import { log } from '@clack/prompts'
 
 import type { NavItem, ZpressConfig } from '../../types.ts'
+import { isEntrySlug } from '../resolve/path.ts'
 import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
 
 /**
@@ -152,33 +153,24 @@ function maybeLink(link: string | undefined): { link?: string } {
 }
 
 /**
- * Known slugs for entry/overview pages, checked in priority order.
- *
- * @private
- */
-const ENTRY_PAGE_SLUGS = ['overview', 'introduction', 'index', 'readme'] as const
-
-/**
  * Find a child entry whose link ends with a known entry-page slug.
  *
- * Checks children (one level) against `ENTRY_PAGE_SLUGS` in priority order,
- * returning the first match. Returns `undefined` when no child matches.
+ * Checks children (one level) for links matching entry slugs (overview,
+ * introduction, intro, index, readme). Returns the first match found,
+ * preferring earlier slugs in priority order.
  *
  * @private
  * @param items - Direct children of a section
  * @returns Link of the first matching entry page, or undefined
  */
 function findEntryPageLink(items: readonly ResolvedEntry[]): string | undefined {
-  const childLinks = items.filter((c) => c.link).map((c) => c.link as string)
-  return ENTRY_PAGE_SLUGS.reduce<string | undefined>((found, slug) => {
-    if (found) {
-      return found
-    }
-    return childLinks.find((link) => {
-      const last = link.split('/').pop()
-      return last === slug
-    })
-  }, undefined)
+  const entryChildren = items
+    .filter((c) => c.link)
+    .filter((c) => isEntrySlug(c.link as string))
+  if (entryChildren.length === 0) {
+    return undefined
+  }
+  return entryChildren[0].link
 }
 
 /**
