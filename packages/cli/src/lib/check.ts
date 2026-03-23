@@ -54,6 +54,7 @@ interface PresentResultsParams {
 interface RunBuildCheckParams {
   readonly config: ZpressConfig
   readonly paths: Paths
+  readonly verbose?: boolean
 }
 
 interface RunConfigCheckParams {
@@ -94,6 +95,10 @@ export function runConfigCheck(params: RunConfigCheckParams): ConfigCheckResult 
  * @returns A `BuildCheckResult` with pass/fail status and any deadlinks found
  */
 export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildCheckResult> {
+  if (params.verbose) {
+    return runBuildCheckVerbose(params)
+  }
+
   const { error, captured } = await captureOutput(() =>
     buildSiteForCheck({ config: params.config, paths: params.paths })
   )
@@ -156,6 +161,23 @@ export function presentResults(params: PresentResultsParams): boolean {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Run the build check without capturing output, letting Rspress/Rspack
+ * write directly to stdout/stderr so the full error details are visible.
+ *
+ * @private
+ * @param params - Config and paths for the build
+ * @returns A `BuildCheckResult` with pass/fail status
+ */
+async function runBuildCheckVerbose(params: RunBuildCheckParams): Promise<BuildCheckResult> {
+  try {
+    await buildSiteForCheck({ config: params.config, paths: params.paths })
+    return { status: 'passed' }
+  } catch (error) {
+    return { status: 'error', message: toError(error).message }
+  }
+}
 
 /**
  * Strip ANSI escape codes from a string.

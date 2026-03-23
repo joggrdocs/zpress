@@ -19,9 +19,10 @@ export const buildCommand = command({
     quiet: z.boolean().optional().default(false),
     clean: z.boolean().optional().default(false),
     check: z.boolean().optional().default(true),
+    verbose: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {
-    const { quiet, check } = ctx.args
+    const { quiet, check, verbose } = ctx.args
     const paths = createPaths(process.cwd())
     ctx.logger.intro('zpress build')
 
@@ -53,7 +54,7 @@ export const buildCommand = command({
       await sync(config, { paths, quiet: true })
 
       ctx.logger.step('Building & checking for broken links...')
-      const buildResult = await runBuildCheck({ config, paths })
+      const buildResult = await runBuildCheck({ config, paths, verbose })
 
       const passed = presentResults({ configResult, buildResult, logger: ctx.logger })
       if (!passed) {
