@@ -113,7 +113,8 @@
     {
       "files": ["**/MermaidRenderer.tsx"],
       "rules": {
-        "unicorn/filename-case": "off"
+        "unicorn/filename-case": "off",
+        "prefer-destructuring": "off"
       }
     }
   ],

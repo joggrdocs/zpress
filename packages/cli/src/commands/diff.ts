@@ -4,6 +4,7 @@ import { command } from '@kidd-cli/core'
 import type { Section, ZpressConfig, Result } from '@zpress/core'
 import { createPaths, hasGlobChars, loadConfig, normalizeInclude } from '@zpress/core'
 import { uniq } from 'es-toolkit'
+import { match } from 'ts-pattern'
 import { z } from 'zod'
 
 const CONFIG_GLOBS = [
@@ -19,16 +20,42 @@ const CONFIG_GLOBS = [
 /**
  * Registers the `diff` CLI command to show changed files in watched directories.
  *
- * By default outputs a space-separated file list to stdout (suitable for
- * lefthook, scripts, and piping). Use `--pretty` for human-readable output.
+ * By default uses `git status` to detect uncommitted changes and outputs a
+ * space-separated file list to stdout (suitable for lefthook, scripts, and piping).
+ *
+ * Use `--ref <ref>` to compare between commits instead of checking working tree
+ * status. This uses `git diff --name-only <ref> HEAD` under the hood and exits
+ * with code 1 when changes are detected — matching the Vercel `ignoreCommand`
+ * convention (exit 1 = proceed with build, exit 0 = skip).
+ *
+ * @example
+ * ```bash
+ * # Detect uncommitted changes (default, uses git status)
+ * zpress diff
+ *
+ * # Compare against parent commit (CI / Vercel ignoreCommand)
+ * zpress diff --ref HEAD^
+ *
+ * # Compare against main branch (PR context)
+ * zpress diff --ref main
+ *
+ * # Human-readable output
+ * zpress diff --ref main --pretty
+ * ```
  */
 export const diffCommand = command({
   description: 'Show changed files in configured source directories',
   options: z.object({
     pretty: z.boolean().optional().default(false),
+    ref: z
+      .string()
+      .optional()
+      .describe(
+        'Git ref to compare against HEAD (e.g. HEAD^, main). Exits 1 when changes are detected.'
+      ),
   }),
   handler: async (ctx) => {
-    const { pretty } = ctx.args
+    const { pretty, ref } = ctx.args
     const paths = createPaths(process.cwd())
 
     const [configErr, config] = await loadConfig(paths.repoRoot)
@@ -58,7 +85,12 @@ export const diffCommand = command({
       return
     }
 
-    const [gitErr, changed] = gitChangedFiles({ repoRoot: paths.repoRoot, dirs })
+    const [gitErr, changed] = match(ref)
+      .when(
+        (r): r is string => r !== undefined,
+        (r) => gitDiffFiles({ repoRoot: paths.repoRoot, dirs, ref: r })
+      )
+      .otherwise(() => gitChangedFiles({ repoRoot: paths.repoRoot, dirs }))
 
     if (gitErr) {
       if (pretty) {
@@ -83,10 +115,15 @@ export const diffCommand = command({
       ctx.logger.step(`Watching ${dirs.length} path(s)`)
       ctx.logger.note(changed.join('\n'), `${changed.length} changed file(s)`)
       ctx.logger.outro('Done')
-      return
+    } else {
+      process.stdout.write(`${changed.join(' ')}\n`)
     }
 
-    process.stdout.write(`${changed.join(' ')}\n`)
+    // When --ref is used (e.g. as a Vercel ignoreCommand), exit 1 signals
+    // "changes detected, proceed with build". Exit 0 (no changes) means skip.
+    if (ref) {
+      process.exit(1)
+    }
   },
 })
 
@@ -249,6 +286,40 @@ function stripQuotes(value: string): string {
     return trimmed.slice(1, -1)
   }
   return trimmed
+}
+
+/**
+ * Run `git diff --name-only <ref> HEAD` scoped to the given directories and return changed file paths.
+ *
+ * Use this instead of `gitChangedFiles` when comparing between commits (e.g. for
+ * CI ignore commands like Vercel's `ignoreCommand`), since `git status` only
+ * detects uncommitted changes and always returns empty on clean checkouts.
+ *
+ * @private
+ * @param params - Parameters for the git diff query
+ * @param params.repoRoot - Absolute path to the repo root
+ * @param params.dirs - Directories to scope the git diff to
+ * @param params.ref - Git ref to compare against HEAD (e.g. `HEAD^`, `main`)
+ * @returns Result tuple with changed file paths (repo-relative) or an error
+ */
+function gitDiffFiles(params: {
+  readonly repoRoot: string
+  readonly dirs: readonly string[]
+  readonly ref: string
+}): Result<readonly string[]> {
+  const [err, output] = execSilent({
+    file: 'git',
+    args: ['diff', '--name-only', params.ref, 'HEAD', '--', ...params.dirs],
+    cwd: params.repoRoot,
+  })
+  if (err) {
+    return [err, null]
+  }
+  if (!output) {
+    return [null, []]
+  }
+  const files = output.split('\n').filter((line) => line.length > 0)
+  return [null, files]
 }
 
 /**
