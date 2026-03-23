@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=https://www.coderabbit.ai/integrations/schema.v2.json
+
+language: en-US
+early_access: true
+
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  high_level_summary_in_walkthrough: false
+  review_status: true
+  commit_status: true
+  fail_commit_status: false
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+  suggested_labels: false
+  suggested_reviewers: false
+  poem: false
+  in_progress_fortune: false
+  enable_prompt_for_ai_agents: true
+
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+    ignore_title_keywords:
+      - WIP
+      - DO NOT MERGE
+
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+
+  path_filters:
+    - "!**/dist/**"
+    - "!**/node_modules/**"
+    - "!pnpm-lock.yaml"
+    - "!**/*.snap"
+
+  path_instructions:
+    - path: "packages/**/*.{ts,tsx}"
+      instructions: |
+        This project enforces strict functional TypeScript. Flag violations of:
+        - No `let` — only `const`. No reassignment, no mutation.
+        - No loops (`for`, `while`, `do...while`, `for...in`, `for...of`) — use `map`, `filter`, `reduce`, `flatMap`, or `es-toolkit`.
+        - No classes — use plain objects, closures, and factory functions.
+        - No `this` — never reference `this`.
+        - No `throw` — return errors as `Result<T, E> = readonly [E, null] | readonly [null, T]` tuples.
+        - No expression statements — every expression must be used (assigned, returned, or passed).
+        - No `any` — use `unknown`, generics, or proper types.
+        - No non-null assertions (`!`) — use explicit null checks.
+        - No optional chaining (`?.`) — use explicit `if`/`else` or pattern matching.
+        - No ternaries (`?:`) — use `if`/`else` or `ts-pattern` `match` expressions. `??` (nullish coalescing) IS allowed.
+        - Immutable data — no mutating objects or arrays after creation.
+        - All public properties must be `readonly`.
+        - Prefer `node:` protocol for Node.js builtins.
+        - Use `es-toolkit` over hand-rolling utility functions.
+        - Every exported function needs explicit return types and full JSDoc.
+    - path: "packages/**/src/**/*.ts"
+      instructions: |
+        Error handling uses Result tuples, never exceptions:
+        - `type Result<T, E> = readonly [E, null] | readonly [null, T]`
+        - Success: `[null, value]`, Failure: `[error, null]`
+        - Always check the error element before accessing the value.
+        - Use `ts-pattern` `match` for exhaustive error variant handling.
+    - path: "**/*.md"
+      instructions: |
+        Documentation in this repo is for external consumers of the zpress documentation framework.
+        Ensure clarity, accuracy, and consistency with the existing docs tone.
+
+  tools:
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    languagetool:
+      enabled: true
+      level: picky
+    biome:
+      enabled: true
+    github-checks:
+      enabled: true
+      timeout_ms: 90000
+
+chat:
+  auto_reply: true
