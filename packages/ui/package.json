@@ -78,7 +78,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "rspress-plugin-devkit": "^1.0.0",
-    "rspress-plugin-file-tree": "1.0.3",
+    "rspress-plugin-file-tree": "^1.0.4",
     "rspress-plugin-katex": "^1.0.0",
     "rspress-plugin-supersub": "^1.0.0",
     "typescript": "catalog:",
