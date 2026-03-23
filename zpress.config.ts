@@ -306,6 +306,15 @@ export default defineConfig({
       icon: 'pixelarticons:list-box',
       path: '/reference',
       landing: true,
+      sort: (a, b) => {
+        if (a.title === 'Configuration') {
+          return -1
+        }
+        if (b.title === 'Configuration') {
+          return 1
+        }
+        return a.title.localeCompare(b.title)
+      },
       items: [
         {
           title: 'Configuration',
