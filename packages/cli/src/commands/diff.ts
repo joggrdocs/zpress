@@ -19,14 +19,37 @@ const CONFIG_GLOBS = [
 /**
  * Registers the `diff` CLI command to show changed files in watched directories.
  *
- * By default outputs a space-separated file list to stdout (suitable for
- * lefthook, scripts, and piping). Use `--pretty` for human-readable output.
+ * By default uses `git status` to detect uncommitted changes and outputs a
+ * space-separated file list to stdout (suitable for lefthook, scripts, and piping).
+ *
+ * Use `--ref <ref>` to compare between commits instead of checking working tree
+ * status. This uses `git diff --name-only <ref> HEAD` under the hood and exits
+ * with code 1 when changes are detected — matching the Vercel `ignoreCommand`
+ * convention (exit 1 = proceed with build, exit 0 = skip).
+ *
+ * @example
+ * ```bash
+ * # Detect uncommitted changes (default, uses git status)
+ * zpress diff
+ *
+ * # Compare against parent commit (CI / Vercel ignoreCommand)
+ * zpress diff --ref HEAD^
+ *
+ * # Compare against main branch (PR context)
+ * zpress diff --ref main
+ *
+ * # Human-readable output
+ * zpress diff --ref main --pretty
+ * ```
  */
 export const diffCommand = command({
   description: 'Show changed files in configured source directories',
   options: z.object({
     pretty: z.boolean().optional().default(false),
-    ref: z.string().optional(),
+    ref: z
+      .string()
+      .optional()
+      .describe('Git ref to compare against HEAD (e.g. HEAD^, main). Exits 1 when changes are detected.'),
   }),
   handler: async (ctx) => {
     const { pretty, ref } = ctx.args
