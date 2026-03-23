@@ -1,5 +1,16 @@
 # @zpress/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- 56862d1: Add `--ref` option to `zpress diff` for comparing between commits, enabling use as a Vercel `ignoreCommand`
+
+### Patch Changes
+
+- Updated dependencies [56862d1]
+  - @zpress/ui@0.8.4
+
 ## 0.4.3
 
 ### Patch Changes
