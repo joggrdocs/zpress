@@ -11,7 +11,7 @@
 
 import { match, P } from 'ts-pattern'
 
-import { renderFigletText } from './figlet.ts'
+import { renderFigletText, renderPixelText } from './figlet.ts'
 import {
   ART_FONT_SIZE,
   ART_LINE_HEIGHT,
@@ -19,7 +19,6 @@ import {
   CODE_FONT_SIZE,
   COLORS,
   CONTENT_PADDING,
-  FALLBACK_FONT_SIZE,
   FIGLET_MAX_LENGTH,
   FONT_STACK,
   GENERATED_MARKER,
@@ -216,25 +215,33 @@ function buildFigletArt(params: {
 }
 
 /**
- * Build a large monospace text fallback when FIGlet art is unavailable.
+ * Build pixel-art text as SVG elements for long titles.
  *
  * @private
- * @param params - Fallback art configuration
- * @param params.title - Plain text title to render
- * @param params.centerX - Horizontal center position
- * @param params.y - Vertical position
- * @returns SVG text element with centered fallback title
+ * @param params - Pixel art configuration
+ * @param params.lines - Rendered pixel text rows
+ * @param params.translateX - Horizontal offset for centering
+ * @param params.startY - Vertical start position
+ * @returns SVG group element containing the pixel art text lines
  */
-function buildFallbackArt(params: {
-  readonly title: string
-  readonly centerX: number
-  readonly y: number
+function buildPixelArt(params: {
+  readonly lines: readonly string[]
+  readonly translateX: number
+  readonly startY: number
 }): string {
-  const escaped = escapeXml(params.title)
+  const textLines = params.lines
+    .map((line, i) => {
+      const y = params.startY + i * ART_LINE_HEIGHT
+      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
+    })
+    .join('\n')
+
   return [
     '',
-    '  <!-- Title (fallback) -->',
-    `  <text class="text brand" font-size="${FALLBACK_FONT_SIZE}" x="${params.centerX}" y="${params.y}" text-anchor="middle">${escaped}</text>`,
+    '  <!-- Pixel art (fallback) -->',
+    `  <g transform="translate(${params.translateX}, 0)">`,
+    textLines,
+    '  </g>',
   ].join('\n')
 }
 
@@ -348,17 +355,18 @@ function computeArtLayout(params: {
     return { width, height: 0, artSection, artEndY }
   }
 
-  const textPixelWidth = params.title.length * FALLBACK_FONT_SIZE * 0.6
-  const contentWidth = Math.ceil(textPixelWidth + CONTENT_PADDING * 2)
+  const pixel = renderPixelText(params.title)
+  const artPixelWidth = pixel.width * CHAR_WIDTH_PX
+  const contentWidth = Math.ceil(artPixelWidth + CONTENT_PADDING * 2)
   const width = Math.max(params.minWidth, contentWidth)
-  const centerX = Math.round(width / 2)
-  const artCenterY = TITLE_BAR_HEIGHT + ART_TOP_PAD + 40
-  const artEndY = artCenterY + 12
+  const artStartY = TITLE_BAR_HEIGHT + ART_TOP_PAD
+  const translateX = Math.round((width - artPixelWidth) / 2)
+  const artEndY = artStartY + (pixel.rows - 1) * ART_LINE_HEIGHT
 
-  const artSection = buildFallbackArt({
-    title: params.title,
-    centerX,
-    y: artCenterY,
+  const artSection = buildPixelArt({
+    lines: pixel.lines,
+    translateX,
+    startY: artStartY,
   })
 
   return { width, height: 0, artSection, artEndY }

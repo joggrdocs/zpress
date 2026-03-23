@@ -1,23 +1,39 @@
 /**
- * ANSI Shadow FIGlet font character data.
+ * FIGlet font character data.
  *
- * Each glyph is a 6-row tuple of fixed-width monospace strings.
- * All rows within a glyph have identical character width.
+ * Two glyph sets:
+ * 1. **ANSI Shadow** (6-row) — the primary zpress brand font
+ * 2. **Pixel** (5-row) — compact retro fallback for long titles
  */
 
 /**
- * Number of text rows per FIGlet glyph.
+ * Number of text rows per ANSI Shadow glyph.
  */
 export const FIGLET_ROWS = 6 as const
 
 /**
- * String inserted between adjacent glyphs (empty — glyphs include trailing space).
+ * Number of text rows per pixel glyph.
+ */
+export const PIXEL_ROWS = 5 as const
+
+/**
+ * String inserted between adjacent ANSI Shadow glyphs (empty — glyphs include trailing space).
  */
 export const FIGLET_CHAR_GAP = '' as const
 
+/**
+ * String inserted between adjacent pixel glyphs.
+ */
+export const PIXEL_CHAR_GAP = ' ' as const
+
 type FigletGlyph = readonly [string, string, string, string, string, string]
+type PixelGlyph = readonly [string, string, string, string, string]
 
 /* eslint-disable @stylistic/no-multi-spaces */
+
+/**
+ * ANSI Shadow character map — the primary zpress brand font.
+ */
 export const FIGLET_CHARS: Readonly<Record<string, FigletGlyph>> = Object.freeze({
   A: [' █████╗ ', '██╔══██╗', '███████║', '██╔══██║', '██║  ██║', '╚═╝  ╚═╝'],
   B: ['██████╗ ', '██╔══██╗', '██████╔╝', '██╔══██╗', '██████╔╝', '╚═════╝ '],
@@ -59,4 +75,50 @@ export const FIGLET_CHARS: Readonly<Record<string, FigletGlyph>> = Object.freeze
   '-': ['        ', '        ', '███████╗', '╚══════╝', '        ', '        '],
   '.': ['   ', '   ', '   ', '   ', '██╗', '╚═╝'],
   _: ['        ', '        ', '        ', '        ', '███████╗', '╚══════╝'],
+})
+
+/**
+ * Pixel character map — compact retro-gaming fallback for long titles.
+ */
+export const PIXEL_CHARS: Readonly<Record<string, PixelGlyph>> = Object.freeze({
+  A: ['█▀▀█', '█▄▄█', '█  █', '█  █', '    '],
+  B: ['█▀▀▄', '█▀▀▄', '█▄▄▀', '    ', '    '],
+  C: ['█▀▀▀', '█   ', '█   ', '▀▀▀▀', '    '],
+  D: ['█▀▀▄', '█  █', '█  █', '█▄▄▀', '    '],
+  E: ['█▀▀▀', '█▀▀ ', '█   ', '▀▀▀▀', '    '],
+  F: ['█▀▀▀', '█▀▀ ', '█   ', '█   ', '    '],
+  G: ['█▀▀▀', '█ ▀█', '█  █', '▀▀▀▀', '    '],
+  H: ['█  █', '████', '█  █', '█  █', '    '],
+  I: ['████', ' ██ ', ' ██ ', '████', '    '],
+  J: ['  ██', '  ██', '█ ██', '▀██▀', '    '],
+  K: ['█ █ ', '██  ', '██  ', '█ █ ', '    '],
+  L: ['█   ', '█   ', '█   ', '▀▀▀▀', '    '],
+  M: ['█   █', '██ ██', '█ █ █', '█   █', '     '],
+  N: ['█   █', '██  █', '█ █ █', '█  ██', '     '],
+  O: ['▄▀▀▄', '█  █', '█  █', '▀▄▄▀', '    '],
+  P: ['█▀▀▄', '█▄▄▀', '█   ', '█   ', '    '],
+  Q: ['▄▀▀▄', '█  █', '█ █▀', '▀▄▄▀', '    '],
+  R: ['█▀▀▄', '█▄▄▀', '█ █ ', '█  █', '    '],
+  S: ['▄▀▀▄', '▀▀▀▄', '▄  █', '▀▄▄▀', '    '],
+  T: ['████', ' ██ ', ' ██ ', ' ██ ', '    '],
+  U: ['█  █', '█  █', '█  █', '▀▄▄▀', '    '],
+  V: ['█  █', '█  █', '▀▄▄▀', ' ██ ', '    '],
+  W: ['█   █', '█   █', '█ █ █', '▀▄ ▄▀', '     '],
+  X: ['█  █', '▀▄▄▀', '▄▀▀▄', '█  █', '    '],
+  Y: ['█  █', '▀▄▄▀', ' ██ ', ' ██ ', '    '],
+  Z: ['████', '  █ ', ' █  ', '████', '    '],
+  '0': ['▄▀▀▄', '█ ▄█', '██ █', '▀▄▄▀', '    '],
+  '1': [' ▄█ ', '  █ ', '  █ ', ' ▀▀▀', '    '],
+  '2': ['▄▀▀▄', '  ▄▀', ' ▄▀ ', '▀▀▀▀', '    '],
+  '3': ['▀▀▀▄', '  █ ', '▄▄▄█', '▀▀▀▀', '    '],
+  '4': ['█  █', '█▄▄█', '   █', '   █', '    '],
+  '5': ['████', '█▄▄ ', '   █', '▀▀▀▀', '    '],
+  '6': ['▄▀▀ ', '█▄▄ ', '█  █', '▀▄▄▀', '    '],
+  '7': ['▀▀▀█', '  █ ', ' █  ', ' █  ', '    '],
+  '8': ['▄▀▀▄', '▄▀▀▄', '█  █', '▀▄▄▀', '    '],
+  '9': ['▄▀▀▄', '█  █', ' ▀▀█', '▀▀▀ ', '    '],
+  ' ': ['   ', '   ', '   ', '   ', '   '],
+  '-': ['    ', '▀▀▀▀', '    ', '    ', '    '],
+  '.': ['  ', '  ', '  ', '▀▀', '  '],
+  _: ['    ', '    ', '    ', '▀▀▀▀', '    '],
 })
