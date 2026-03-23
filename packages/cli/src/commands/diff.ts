@@ -4,6 +4,7 @@ import { command } from '@kidd-cli/core'
 import type { Section, ZpressConfig, Result } from '@zpress/core'
 import { createPaths, hasGlobChars, loadConfig, normalizeInclude } from '@zpress/core'
 import { uniq } from 'es-toolkit'
+import { match } from 'ts-pattern'
 import { z } from 'zod'
 
 const CONFIG_GLOBS = [
@@ -49,7 +50,9 @@ export const diffCommand = command({
     ref: z
       .string()
       .optional()
-      .describe('Git ref to compare against HEAD (e.g. HEAD^, main). Exits 1 when changes are detected.'),
+      .describe(
+        'Git ref to compare against HEAD (e.g. HEAD^, main). Exits 1 when changes are detected.'
+      ),
   }),
   handler: async (ctx) => {
     const { pretty, ref } = ctx.args
@@ -82,9 +85,12 @@ export const diffCommand = command({
       return
     }
 
-    const [gitErr, changed] = ref
-      ? gitDiffFiles({ repoRoot: paths.repoRoot, dirs, ref })
-      : gitChangedFiles({ repoRoot: paths.repoRoot, dirs })
+    const [gitErr, changed] = match(ref)
+      .when(
+        (r): r is string => r !== undefined,
+        (r) => gitDiffFiles({ repoRoot: paths.repoRoot, dirs, ref: r })
+      )
+      .otherwise(() => gitChangedFiles({ repoRoot: paths.repoRoot, dirs }))
 
     if (gitErr) {
       if (pretty) {
@@ -312,9 +318,7 @@ function gitDiffFiles(params: {
   if (!output) {
     return [null, []]
   }
-  const files = output
-    .split('\n')
-    .filter((line) => line.length > 0)
+  const files = output.split('\n').filter((line) => line.length > 0)
   return [null, files]
 }
 
