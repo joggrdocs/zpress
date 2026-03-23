@@ -1,5 +1,27 @@
 # @zpress/core
 
+## 0.8.0
+
+### Minor Changes
+
+- 9b5099b: Add pixel-art retro font as fallback for long titles in generated SVG assets
+
+  Titles within the 12-character limit continue to use the original ANSI Shadow FIGlet font. Titles exceeding the limit now render in a compact pixel-art style instead of plain monospace text. Adds `renderPixelText` alongside `renderFigletText` with a separate glyph set.
+
+- 9b5099b: Restore `apps` and `packages` as first-class root config fields
+
+  Re-adds `apps` and `packages` to `ZpressConfig` alongside the existing generic `workspaces` field. The home page renders groups in fixed order: Apps, Packages, then custom workspace categories. Each group gets its own heading, auto-generated description, and scope prefix on cards.
+
+  Also adds `collectAllWorkspaceItems()` utility to merge all three sources consistently across the sync engine, validation, landing page injection, and OpenAPI collection.
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+- Updated dependencies [9b5099b]
+- Updated dependencies [b912b2d]
+  - @zpress/config@0.5.0
+  - @zpress/theme@0.3.2
+
 ## 0.7.5
 
 ### Patch Changes

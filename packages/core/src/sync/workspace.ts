@@ -19,7 +19,8 @@ interface WorkspaceArrays {
  * Default descriptions for well-known workspace category titles.
  */
 const DEFAULT_CATEGORY_DESCRIPTIONS: Readonly<Record<string, string>> = {
-  packages: 'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
+  packages:
+    'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
   apps: 'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
 }
 

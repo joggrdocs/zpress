@@ -1,5 +1,17 @@
 # @zpress/ui
 
+## 0.8.7
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+- Updated dependencies [9b5099b]
+- Updated dependencies [9b5099b]
+- Updated dependencies [b912b2d]
+  - @zpress/core@0.8.0
+  - @zpress/config@0.5.0
+  - @zpress/theme@0.3.2
+
 ## 0.8.6
 
 ### Patch Changes
