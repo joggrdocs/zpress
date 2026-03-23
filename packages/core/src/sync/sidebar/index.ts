@@ -1,6 +1,7 @@
 import { log } from '@clack/prompts'
 
 import type { NavItem, ZpressConfig } from '../../types.ts'
+import { isEntrySlug } from '../resolve/path.ts'
 import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
 
 /**
@@ -152,13 +153,45 @@ function maybeLink(link: string | undefined): { link?: string } {
 }
 
 /**
- * Resolve the link for a nav entry, falling back to the first child link.
+ * Find a child entry whose link ends with a known entry-page slug.
+ *
+ * Checks children (one level) for links matching entry slugs (overview,
+ * introduction, intro, index, readme). Returns the first match found,
+ * preferring earlier slugs in priority order.
+ *
+ * @private
+ * @param items - Direct children of a section
+ * @returns Link of the first matching entry page, or undefined
+ */
+function findEntryPageLink(items: readonly ResolvedEntry[]): string | undefined {
+  const entryChildren = items
+    .filter((c) => !c.hidden && c.link)
+    .filter((c) => isEntrySlug(c.link as string))
+  if (entryChildren.length === 0) {
+    return undefined
+  }
+  return entryChildren[0].link
+}
+
+/**
+ * Resolve the link for a nav entry.
+ *
+ * For sections with children, prefers a child whose slug matches a known
+ * entry-page name (overview, introduction, index, readme) so the nav
+ * points to an actual content page rather than a generated landing page.
+ * Falls back to the section's own link, then the first child link.
  *
  * @private
  * @param entry - Resolved entry to extract link from
  * @returns Link string or undefined
  */
 function resolveLink(entry: ResolvedEntry): string | undefined {
+  if (entry.items && entry.items.length > 0) {
+    const entryPage = findEntryPageLink(entry.items)
+    if (entryPage) {
+      return entryPage
+    }
+  }
   if (entry.link) {
     return entry.link
   }

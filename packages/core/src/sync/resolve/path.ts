@@ -1,6 +1,40 @@
-import path from 'node:path'
+import { dirname, extname } from 'node:path'
 
 import { match } from 'ts-pattern'
+
+/**
+ * Slugs that identify entry/overview pages, in priority order.
+ *
+ * Used by the sort comparator (pinned-first) and by auto-nav resolution
+ * to prefer a real content page over a generated landing page.
+ */
+export const ENTRY_SLUGS = ['introduction', 'intro', 'overview', 'index', 'readme'] as const
+
+/**
+ * Check whether a URL-style link ends with a known entry-page slug.
+ *
+ * @param link - URL path (e.g. "/guides/overview")
+ * @returns True when the last segment matches an entry slug
+ */
+export function isEntrySlug(link: string): boolean {
+  const last = link.split('/').pop()
+  if (!last) {
+    return false
+  }
+  return (ENTRY_SLUGS as readonly string[]).includes(last.toLowerCase())
+}
+
+/**
+ * Return the priority index of an entry slug, or -1 if not an entry slug.
+ *
+ * Lower values indicate higher priority (introduction > intro > overview > index > readme).
+ *
+ * @param slug - Bare filename stem (e.g. "overview", "readme")
+ * @returns Index in ENTRY_SLUGS, or -1
+ */
+export function entrySlugRank(slug: string): number {
+  return (ENTRY_SLUGS as readonly string[]).indexOf(slug.toLowerCase())
+}
 
 /**
  * Convert "/guides/add-api-route" → "guides/add-api-route.md"
@@ -32,7 +66,7 @@ export function linkToOutputPath(link: string, ext = '.md'): string {
  * @returns ".mdx" for MDX files, ".md" for everything else
  */
 export function sourceExt(filePath: string): string {
-  return match(path.extname(filePath))
+  return match(extname(filePath))
     .with('.mdx', () => '.mdx')
     .otherwise(() => '.md')
 }
@@ -46,10 +80,10 @@ export function sourceExt(filePath: string): string {
 export function extractBaseDir(globPattern: string): string {
   const firstGlobChar = globPattern.search(/[*?{}[\]]/)
   if (firstGlobChar === -1) {
-    return path.dirname(globPattern)
+    return dirname(globPattern)
   }
   const beforeGlob = globPattern.slice(0, firstGlobChar)
   return match(beforeGlob.endsWith('/'))
     .with(true, () => beforeGlob.slice(0, -1))
-    .otherwise(() => path.dirname(beforeGlob))
+    .otherwise(() => dirname(beforeGlob))
 }

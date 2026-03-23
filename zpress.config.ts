@@ -604,11 +604,11 @@ export default defineConfig({
     },
   ],
   nav: [
-    { title: 'Getting Started', link: '/getting-started' },
-    { title: 'Concepts', link: '/concepts' },
-    { title: 'Guides', link: '/guides' },
-    { title: 'Framework', link: '/framework' },
-    { title: 'Reference', link: '/reference' },
+    { title: 'Getting Started', link: '/getting-started/introduction' },
+    { title: 'Concepts', link: '/concepts/content' },
+    { title: 'Guides', link: '/guides/deploying-to-vercel' },
+    { title: 'Framework', link: '/framework/overview' },
+    { title: 'Reference', link: '/reference/configuration' },
   ],
   socialLinks: [
     { icon: 'github', mode: 'link', content: 'https://github.com/joggrdocs/zpress' },
