@@ -1,5 +1,11 @@
 # @zpress/ui
 
+## 0.8.4
+
+### Patch Changes
+
+- 56862d1: Fix missing FileTree component by pinning rspress-plugin-file-tree to 1.0.3 and copying its component files into the published dist
+
 ## 0.8.3
 
 ### Patch Changes
