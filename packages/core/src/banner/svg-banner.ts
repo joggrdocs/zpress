@@ -184,19 +184,21 @@ function buildTitleBar(params: { readonly width: number; readonly name: string }
 }
 
 /**
- * Build FIGlet ASCII art as SVG text elements within a positioned group.
+ * Build text art (FIGlet or pixel) as SVG text elements within a positioned group.
  *
  * @private
- * @param params - FIGlet art configuration
- * @param params.lines - Rendered FIGlet text rows
+ * @param params - Art configuration
+ * @param params.lines - Rendered text rows
  * @param params.translateX - Horizontal offset for centering
  * @param params.startY - Vertical start position
- * @returns SVG group element containing the ASCII art text lines
+ * @param params.label - Comment label for the SVG group
+ * @returns SVG group element containing the art text lines
  */
-function buildFigletArt(params: {
+function buildArtGroup(params: {
   readonly lines: readonly string[]
   readonly translateX: number
   readonly startY: number
+  readonly label: string
 }): string {
   const textLines = params.lines
     .map((line, i) => {
@@ -207,38 +209,7 @@ function buildFigletArt(params: {
 
   return [
     '',
-    '  <!-- ASCII art -->',
-    `  <g transform="translate(${params.translateX}, 0)">`,
-    textLines,
-    '  </g>',
-  ].join('\n')
-}
-
-/**
- * Build pixel-art text as SVG elements for long titles.
- *
- * @private
- * @param params - Pixel art configuration
- * @param params.lines - Rendered pixel text rows
- * @param params.translateX - Horizontal offset for centering
- * @param params.startY - Vertical start position
- * @returns SVG group element containing the pixel art text lines
- */
-function buildPixelArt(params: {
-  readonly lines: readonly string[]
-  readonly translateX: number
-  readonly startY: number
-}): string {
-  const textLines = params.lines
-    .map((line, i) => {
-      const y = params.startY + i * ART_LINE_HEIGHT
-      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
-    })
-    .join('\n')
-
-  return [
-    '',
-    '  <!-- Pixel art (fallback) -->',
+    `  <!-- ${params.label} -->`,
     `  <g transform="translate(${params.translateX}, 0)">`,
     textLines,
     '  </g>',
@@ -346,10 +317,11 @@ function computeArtLayout(params: {
     const translateX = Math.round((width - artPixelWidth) / 2)
     const artEndY = artStartY + (FIGLET_ROWS - 1) * ART_LINE_HEIGHT
 
-    const artSection = buildFigletArt({
+    const artSection = buildArtGroup({
       lines: figlet.lines,
       translateX,
       startY: artStartY,
+      label: 'ASCII art',
     })
 
     return { width, height: 0, artSection, artEndY }
@@ -363,10 +335,11 @@ function computeArtLayout(params: {
   const translateX = Math.round((width - artPixelWidth) / 2)
   const artEndY = artStartY + (pixel.rows - 1) * ART_LINE_HEIGHT
 
-  const artSection = buildPixelArt({
+  const artSection = buildArtGroup({
     lines: pixel.lines,
     translateX,
     startY: artStartY,
+    label: 'Pixel art (fallback)',
   })
 
   return { width, height: 0, artSection, artEndY }

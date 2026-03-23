@@ -554,6 +554,17 @@ export default defineConfig({
             },
           ],
         },
+        {
+          title: '@zpress/templates',
+          path: '/packages/templates',
+          items: [
+            {
+              title: 'Overview',
+              path: '/packages/templates',
+              include: 'packages/templates/README.md',
+            },
+          ],
+        },
       ],
     },
     {

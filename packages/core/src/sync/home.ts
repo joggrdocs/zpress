@@ -143,25 +143,27 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
 
   const appsResult = match(apps.length > 0)
     .with(true, () =>
-      buildGroupData(
-        'apps',
-        'Apps',
-        'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
-        apps,
-        'apps/'
-      )
+      buildGroupData({
+        type: 'apps',
+        heading: 'Apps',
+        description:
+          'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
+        items: apps,
+        scopePrefix: 'apps/',
+      })
     )
     .otherwise(() => null)
 
   const packagesResult = match(packages.length > 0)
     .with(true, () =>
-      buildGroupData(
-        'packages',
-        'Packages',
-        'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
-        packages,
-        'packages/'
-      )
+      buildGroupData({
+        type: 'packages',
+        heading: 'Packages',
+        description:
+          'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
+        items: packages,
+        scopePrefix: 'packages/',
+      })
     )
     .otherwise(() => null)
 
@@ -170,7 +172,13 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
       .with(P.string, (t) => t)
       .otherwise(String)
     const descStr = g.description ?? ''
-    return buildGroupData('workspaces', titleStr, descStr, g.items, '')
+    return buildGroupData({
+      type: 'workspaces',
+      heading: titleStr,
+      description: descStr,
+      items: g.items,
+      scopePrefix: '',
+    })
   })
 
   const allResults = [appsResult, packagesResult, ...groupResults].filter(
@@ -278,23 +286,27 @@ function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly R
 }
 
 /**
+ * Parameters for building a single workspace group.
+ *
+ * @private
+ */
+interface BuildGroupDataParams {
+  readonly type: 'apps' | 'packages' | 'workspaces'
+  readonly heading: string
+  readonly description: string
+  readonly items: readonly Workspace[]
+  readonly scopePrefix: string
+}
+
+/**
  * Build a single workspace group with card data.
  *
  * @private
- * @param type - Group type identifier
- * @param heading - Display heading for the group
- * @param description - Group description text
- * @param items - Workspace items in the group
- * @param scopePrefix - Prefix for scoping workspace items
+ * @param params - Group configuration
  * @returns Group data result containing the workspace group
  */
-function buildGroupData(
-  type: 'apps' | 'packages' | 'workspaces',
-  heading: string,
-  description: string,
-  items: readonly Workspace[],
-  scopePrefix: string
-): GroupDataResult {
+function buildGroupData(params: BuildGroupDataParams): GroupDataResult {
+  const { type, heading, description, items, scopePrefix } = params
   const cards: readonly HomeWorkspaceCardData[] = items.map((item) => {
     const resolved = resolveOptionalIcon(item.icon)
     const titleStr = match(item.title)

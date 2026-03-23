@@ -38,7 +38,7 @@ export function composeLogo(params: { readonly title: string }): string {
     const artPixelWidth = figlet.width * CHAR_WIDTH_PX
     const width = Math.ceil(artPixelWidth + CONTENT_PADDING * 2)
     const height = LOGO_TOP_PAD + (FIGLET_ROWS - 1) * ART_LINE_HEIGHT + LOGO_BOTTOM_PAD
-    const artLines = buildFigletArt({ lines: figlet.lines, startY: 0 })
+    const artLines = buildArtLines({ lines: figlet.lines, startY: 0 })
 
     return [
       GENERATED_MARKER,
@@ -61,7 +61,7 @@ export function composeLogo(params: { readonly title: string }): string {
   const artPixelWidth = pixel.width * CHAR_WIDTH_PX
   const width = Math.ceil(artPixelWidth + CONTENT_PADDING * 2)
   const height = LOGO_TOP_PAD + (pixel.rows - 1) * ART_LINE_HEIGHT + LOGO_BOTTOM_PAD
-  const artLines = buildPixelArt({ lines: pixel.lines, startY: 0 })
+  const artLines = buildArtLines({ lines: pixel.lines, startY: 0 })
 
   return [
     GENERATED_MARKER,
@@ -85,36 +85,15 @@ export function composeLogo(params: { readonly title: string }): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Build FIGlet ASCII art as SVG text elements for the logo.
+ * Build text art (FIGlet or pixel) as SVG text elements for the logo.
  *
  * @private
- * @param params - FIGlet art configuration
- * @param params.lines - Rendered FIGlet text rows
+ * @param params - Art configuration
+ * @param params.lines - Rendered text rows
  * @param params.startY - Vertical start position for the first line
  * @returns SVG text elements joined as a single string
  */
-function buildFigletArt(params: {
-  readonly lines: readonly string[]
-  readonly startY: number
-}): string {
-  return params.lines
-    .map((line, i) => {
-      const y = params.startY + i * ART_LINE_HEIGHT
-      return `    <text class="text brand" font-size="${ART_FONT_SIZE}" y="${y}" xml:space="preserve">${line}</text>`
-    })
-    .join('\n')
-}
-
-/**
- * Build pixel-art text as SVG elements for long titles.
- *
- * @private
- * @param params - Pixel art configuration
- * @param params.lines - Rendered pixel text rows
- * @param params.startY - Vertical start position for the first line
- * @returns SVG text elements joined as a single string
- */
-function buildPixelArt(params: {
+function buildArtLines(params: {
   readonly lines: readonly string[]
   readonly startY: number
 }): string {

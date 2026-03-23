@@ -170,9 +170,14 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
   const categories = config.workspaces ?? []
 
   const appsSection = match(apps.length > 0 && !existingLinks.has('/apps'))
-    .with(
-      true,
-      (): Section => ({
+    .with(true, (): Section | null => {
+      const filteredItems = apps
+        .filter((item) => !existingLinks.has(item.path))
+        .map(workspaceToSection)
+      if (filteredItems.length === 0) {
+        return null
+      }
+      return {
         title: 'Apps',
         path: '/apps',
         standalone: true,
@@ -180,17 +185,20 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
           description:
             'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
         },
-        items: apps
-          .filter((item) => !existingLinks.has(item.path))
-          .map((item) => workspaceToSection(item)),
-      })
-    )
+        items: filteredItems,
+      }
+    })
     .otherwise(() => null)
 
   const packagesSection = match(packages.length > 0 && !existingLinks.has('/packages'))
-    .with(
-      true,
-      (): Section => ({
+    .with(true, (): Section | null => {
+      const filteredItems = packages
+        .filter((item) => !existingLinks.has(item.path))
+        .map(workspaceToSection)
+      if (filteredItems.length === 0) {
+        return null
+      }
+      return {
         title: 'Packages',
         path: '/packages',
         standalone: true,
@@ -198,16 +206,20 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
           description:
             'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
         },
-        items: packages
-          .filter((item) => !existingLinks.has(item.path))
-          .map((item) => workspaceToSection(item)),
-      })
-    )
+        items: filteredItems,
+      }
+    })
     .otherwise(() => null)
 
   const categoryEntries = categories.map((category): Section | null => {
     const link = category.link ?? `/${slugify(String(category.title))}`
     if (existingLinks.has(link)) {
+      return null
+    }
+    const filteredItems = category.items
+      .filter((item) => !existingLinks.has(item.path))
+      .map(workspaceToSection)
+    if (filteredItems.length === 0) {
       return null
     }
     const description = category.description ?? resolveDefaultCategoryDescription(category.title)
@@ -218,9 +230,7 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
       frontmatter: {
         description,
       },
-      items: category.items
-        .filter((item) => !existingLinks.has(item.path))
-        .map((item) => workspaceToSection(item)),
+      items: filteredItems,
     }
   })
 
