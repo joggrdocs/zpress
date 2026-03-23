@@ -1,5 +1,11 @@
 # @zpress/core
 
+## 0.7.4
+
+### Patch Changes
+
+- 4179cee: Auto-nav now links to entry pages (overview, introduction, index, readme) instead of generated landing pages
+
 ## 0.7.3
 
 ### Patch Changes
