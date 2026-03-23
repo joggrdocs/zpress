@@ -38,6 +38,10 @@ export default defineConfig({
         from: './src/plugins/mermaid/mermaid.css',
         to: 'plugins/mermaid/mermaid.css',
       },
+      {
+        from: './node_modules/rspress-plugin-file-tree/dist/components',
+        to: 'components',
+      },
     ],
   },
 })
