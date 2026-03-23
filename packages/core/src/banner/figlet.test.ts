@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 
 import { renderFigletText, renderPixelText } from './figlet'
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const DIGITS = '0123456789'
-const SPECIALS = ' -._'
+const ALPHABET = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
+const DIGITS = [...'0123456789']
+const SPECIALS = [...' -._']
 const SEP = '────────────────────────────────'
 
 /**
@@ -18,31 +18,19 @@ function bordered(lines: readonly string[]): string {
 }
 
 describe('renderFigletText (ANSI Shadow)', () => {
-  const letters = [...ALPHABET]
-
-  letters.forEach((letter) => {
-    it(`should render letter ${letter}`, () => {
-      const result = renderFigletText(letter)
-      expect(bordered(result.lines)).toMatchSnapshot()
-    })
+  it.each(ALPHABET)('should render letter %s', (letter) => {
+    const result = renderFigletText(letter)
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
-  const digits = [...DIGITS]
-
-  digits.forEach((digit) => {
-    it(`should render digit ${digit}`, () => {
-      const result = renderFigletText(digit)
-      expect(bordered(result.lines)).toMatchSnapshot()
-    })
+  it.each(DIGITS)('should render digit %s', (digit) => {
+    const result = renderFigletText(digit)
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
-  const specials = [...SPECIALS]
-
-  specials.forEach((char) => {
-    it(`should render special char ${JSON.stringify(char)}`, () => {
-      const result = renderFigletText(char)
-      expect(bordered(result.lines)).toMatchSnapshot()
-    })
+  it.each(SPECIALS)('should render special char %j', (char) => {
+    const result = renderFigletText(char)
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
   it('should render full word "zpress"', () => {
@@ -57,13 +45,9 @@ describe('renderFigletText (ANSI Shadow)', () => {
 })
 
 describe('renderPixelText (RubiFont)', () => {
-  const letters = [...ALPHABET]
-
-  letters.forEach((letter) => {
-    it(`should render letter ${letter}`, () => {
-      const result = renderPixelText(letter)
-      expect(bordered(result.lines)).toMatchSnapshot()
-    })
+  it.each(ALPHABET)('should render letter %s', (letter) => {
+    const result = renderPixelText(letter)
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
   it('should render full word "zpress"', () => {
