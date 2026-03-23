@@ -5,6 +5,17 @@ import { renderFigletText, renderPixelText } from './figlet'
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const DIGITS = '0123456789'
 const SPECIALS = ' -._'
+const SEP = '────────────────────────────────'
+
+/**
+ * Wrap rendered lines with separator borders for readable snapshots.
+ *
+ * @param lines - Rendered glyph rows
+ * @returns Bordered string for snapshot comparison
+ */
+function bordered(lines: readonly string[]): string {
+  return [SEP, ...lines, SEP].join('\n')
+}
 
 describe('renderFigletText (ANSI Shadow)', () => {
   const letters = [...ALPHABET]
@@ -12,7 +23,7 @@ describe('renderFigletText (ANSI Shadow)', () => {
   letters.forEach((letter) => {
     it(`should render letter ${letter}`, () => {
       const result = renderFigletText(letter)
-      expect(result.lines.join('\n')).toMatchSnapshot()
+      expect(bordered(result.lines)).toMatchSnapshot()
     })
   })
 
@@ -21,7 +32,7 @@ describe('renderFigletText (ANSI Shadow)', () => {
   digits.forEach((digit) => {
     it(`should render digit ${digit}`, () => {
       const result = renderFigletText(digit)
-      expect(result.lines.join('\n')).toMatchSnapshot()
+      expect(bordered(result.lines)).toMatchSnapshot()
     })
   })
 
@@ -30,13 +41,13 @@ describe('renderFigletText (ANSI Shadow)', () => {
   specials.forEach((char) => {
     it(`should render special char ${JSON.stringify(char)}`, () => {
       const result = renderFigletText(char)
-      expect(result.lines.join('\n')).toMatchSnapshot()
+      expect(bordered(result.lines)).toMatchSnapshot()
     })
   })
 
   it('should render full word "zpress"', () => {
     const result = renderFigletText('zpress')
-    expect(result.lines.join('\n')).toMatchSnapshot()
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
   it('should return 6 rows', () => {
@@ -51,18 +62,18 @@ describe('renderPixelText (RubiFont)', () => {
   letters.forEach((letter) => {
     it(`should render letter ${letter}`, () => {
       const result = renderPixelText(letter)
-      expect(result.lines.join('\n')).toMatchSnapshot()
+      expect(bordered(result.lines)).toMatchSnapshot()
     })
   })
 
   it('should render full word "zpress"', () => {
     const result = renderPixelText('zpress')
-    expect(result.lines.join('\n')).toMatchSnapshot()
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
   it('should render a long title', () => {
     const result = renderPixelText('my-long-project')
-    expect(result.lines.join('\n')).toMatchSnapshot()
+    expect(bordered(result.lines)).toMatchSnapshot()
   })
 
   it('should return 4 rows', () => {
