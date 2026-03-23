@@ -1,0 +1,566 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 0 1`] = `
+" ██████╗ 
+██╔═████╗
+██║██╔██║
+████╔╝██║
+╚██████╔╝
+ ╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 1 1`] = `
+" ██╗
+███║
+╚██║
+ ██║
+ ██║
+ ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 2 1`] = `
+"██████╗ 
+╚════██╗
+ █████╔╝
+██╔═══╝ 
+███████╗
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 3 1`] = `
+"██████╗ 
+╚════██╗
+ █████╔╝
+ ╚═══██╗
+██████╔╝
+╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 4 1`] = `
+"██╗  ██╗
+██║  ██║
+███████║
+╚════██║
+     ██║
+     ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 5 1`] = `
+"███████╗
+██╔════╝
+███████╗
+╚════██║
+███████║
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 6 1`] = `
+" ██████╗
+██╔════╝
+██████╗ 
+██╔══██╗
+╚█████╔╝
+ ╚════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 7 1`] = `
+"███████╗
+╚════██║
+    ██╔╝
+   ██╔╝ 
+   ██║  
+   ╚═╝  "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 8 1`] = `
+" █████╗ 
+██╔══██╗
+╚█████╔╝
+██╔══██╗
+╚█████╔╝
+ ╚════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render digit 9 1`] = `
+" █████╗ 
+██╔══██╗
+╚██████║
+ ╚═══██║
+ █████╔╝
+ ╚════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render full word "zpress" 1`] = `
+"███████╗██████╗ ██████╗ ███████╗███████╗███████╗
+╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝
+  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗
+ ███╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║
+███████╗██║     ██║  ██║███████╗███████║███████║
+╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter A 1`] = `
+" █████╗ 
+██╔══██╗
+███████║
+██╔══██║
+██║  ██║
+╚═╝  ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter B 1`] = `
+"██████╗ 
+██╔══██╗
+██████╔╝
+██╔══██╗
+██████╔╝
+╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter C 1`] = `
+" ██████╗
+██╔════╝
+██║     
+██║     
+╚██████╗
+ ╚═════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter D 1`] = `
+"██████╗ 
+██╔══██╗
+██║  ██║
+██║  ██║
+██████╔╝
+╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter E 1`] = `
+"███████╗
+██╔════╝
+█████╗  
+██╔══╝  
+███████╗
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter F 1`] = `
+"███████╗
+██╔════╝
+█████╗  
+██╔══╝  
+██║     
+╚═╝     "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter G 1`] = `
+" ██████╗ 
+██╔════╝ 
+██║  ███╗
+██║   ██║
+╚██████╔╝
+ ╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter H 1`] = `
+"██╗  ██╗
+██║  ██║
+███████║
+██╔══██║
+██║  ██║
+╚═╝  ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter I 1`] = `
+"██╗
+██║
+██║
+██║
+██║
+╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter J 1`] = `
+"     ██╗
+     ██║
+     ██║
+██   ██║
+╚█████╔╝
+ ╚════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter K 1`] = `
+"██╗  ██╗
+██║ ██╔╝
+█████╔╝ 
+██╔═██╗ 
+██║  ██╗
+╚═╝  ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter L 1`] = `
+"██╗     
+██║     
+██║     
+██║     
+███████╗
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter M 1`] = `
+"███╗   ███╗
+████╗ ████║
+██╔████╔██║
+██║╚██╔╝██║
+██║ ╚═╝ ██║
+╚═╝     ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter N 1`] = `
+"███╗   ██╗
+████╗  ██║
+██╔██╗ ██║
+██║╚██╗██║
+██║ ╚████║
+╚═╝  ╚═══╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter O 1`] = `
+" ██████╗ 
+██╔═══██╗
+██║   ██║
+██║   ██║
+╚██████╔╝
+ ╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter P 1`] = `
+"██████╗ 
+██╔══██╗
+██████╔╝
+██╔═══╝ 
+██║     
+╚═╝     "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter Q 1`] = `
+" ██████╗ 
+██╔═══██╗
+██║   ██║
+██║▄▄ ██║
+╚██████╔╝
+ ╚══▀▀═╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter R 1`] = `
+"██████╗ 
+██╔══██╗
+██████╔╝
+██╔══██╗
+██║  ██║
+╚═╝  ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter S 1`] = `
+"███████╗
+██╔════╝
+███████╗
+╚════██║
+███████║
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter T 1`] = `
+"████████╗
+╚══██╔══╝
+   ██║   
+   ██║   
+   ██║   
+   ╚═╝   "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter U 1`] = `
+"██╗   ██╗
+██║   ██║
+██║   ██║
+██║   ██║
+╚██████╔╝
+ ╚═════╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter V 1`] = `
+"██╗   ██╗
+██║   ██║
+██║   ██║
+╚██╗ ██╔╝
+ ╚████╔╝ 
+  ╚═══╝  "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter W 1`] = `
+"██╗    ██╗
+██║    ██║
+██║ █╗ ██║
+██║███╗██║
+╚███╔███╔╝
+ ╚══╝╚══╝ "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter X 1`] = `
+"██╗  ██╗
+╚██╗██╔╝
+ ╚███╔╝ 
+ ██╔██╗ 
+██╔╝ ██╗
+╚═╝  ╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter Y 1`] = `
+"██╗   ██╗
+╚██╗ ██╔╝
+ ╚████╔╝ 
+  ╚██╔╝  
+   ██║   
+   ╚═╝   "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render letter Z 1`] = `
+"███████╗
+╚══███╔╝
+  ███╔╝ 
+ ███╔╝  
+███████╗
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render special char " " 1`] = `
+"     
+     
+     
+     
+     
+     "
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render special char "." 1`] = `
+"   
+   
+   
+   
+██╗
+╚═╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render special char "_" 1`] = `
+"        
+        
+        
+        
+███████╗
+╚══════╝"
+`;
+
+exports[`renderFigletText (ANSI Shadow) > should render special char "-" 1`] = `
+"        
+        
+███████╗
+╚══════╝
+        
+        "
+`;
+
+exports[`renderPixelText (RubiFont) > should render a long title 1`] = `
+"▗▖  ▗▖ ▗▖  ▗▖       ▗▖     ▗▄▖  ▗▖  ▗▖  ▗▄▄▖       ▗▄▄▖  ▗▄▄▖   ▗▄▖     ▗▖ ▗▄▄▄▖  ▗▄▄▖ ▗▄▄▄▖
+▐▛▚▞▜▌  ▝▚▞▘        ▐▌    ▐▌ ▐▌ ▐▛▚▖▐▌ ▐▌          ▐▌ ▐▌ ▐▌ ▐▌ ▐▌ ▐▌    ▐▌ ▐▌    ▐▌      █  
+▐▌  ▐▌   ▐▌   ▗▄▄▄▖ ▐▌    ▐▌ ▐▌ ▐▌ ▝▜▌ ▐▌▝▜▌ ▗▄▄▄▖ ▐▛▀▘  ▐▛▀▚▖ ▐▌ ▐▌    ▐▌ ▐▛▀▀▘ ▐▌      █  
+▐▌  ▐▌   ▐▌         ▐▙▄▄▖ ▝▚▄▞▘ ▐▌  ▐▌ ▝▚▄▞▘       ▐▌    ▐▌ ▐▌ ▝▚▄▞▘ ▗▄▄▞▘ ▐▙▄▄▖ ▝▚▄▄▖   █  "
+`;
+
+exports[`renderPixelText (RubiFont) > should render full word "zpress" 1`] = `
+"▗▄▄▄▄▖ ▗▄▄▖  ▗▄▄▖  ▗▄▄▄▖  ▗▄▄▖  ▗▄▄▖
+   ▗▞▘ ▐▌ ▐▌ ▐▌ ▐▌ ▐▌    ▐▌    ▐▌   
+ ▗▞▘   ▐▛▀▘  ▐▛▀▚▖ ▐▛▀▀▘  ▝▀▚▖  ▝▀▚▖
+▐▙▄▄▄▖ ▐▌    ▐▌ ▐▌ ▐▙▄▄▖ ▗▄▄▞▘ ▗▄▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter A 1`] = `
+" ▗▄▖ 
+▐▌ ▐▌
+▐▛▀▜▌
+▐▌ ▐▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter B 1`] = `
+"▗▄▄▖ 
+▐▌ ▐▌
+▐▛▀▚▖
+▐▙▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter C 1`] = `
+" ▗▄▄▖
+▐▌   
+▐▌   
+▝▚▄▄▖"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter D 1`] = `
+"▗▄▄▄ 
+▐▌  █
+▐▌  █
+▐▙▄▄▀"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter E 1`] = `
+"▗▄▄▄▖
+▐▌   
+▐▛▀▀▘
+▐▙▄▄▖"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter F 1`] = `
+"▗▄▄▄▖
+▐▌   
+▐▛▀▀▘
+▐▌   "
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter G 1`] = `
+" ▗▄▄▖
+▐▌   
+▐▌▝▜▌
+▝▚▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter H 1`] = `
+"▗▖ ▗▖
+▐▌ ▐▌
+▐▛▀▜▌
+▐▌ ▐▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter I 1`] = `
+"▗▄▄▄▖
+  █  
+  █  
+▗▄█▄▖"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter J 1`] = `
+"   ▗▖
+   ▐▌
+   ▐▌
+▗▄▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter K 1`] = `
+"▗▖ ▗▖
+▐▌▗▞▘
+▐▛▚▖ 
+▐▌ ▐▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter L 1`] = `
+"▗▖   
+▐▌   
+▐▌   
+▐▙▄▄▖"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter M 1`] = `
+"▗▖  ▗▖
+▐▛▚▞▜▌
+▐▌  ▐▌
+▐▌  ▐▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter N 1`] = `
+"▗▖  ▗▖
+▐▛▚▖▐▌
+▐▌ ▝▜▌
+▐▌  ▐▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter O 1`] = `
+" ▗▄▖ 
+▐▌ ▐▌
+▐▌ ▐▌
+▝▚▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter P 1`] = `
+"▗▄▄▖ 
+▐▌ ▐▌
+▐▛▀▘ 
+▐▌   "
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter Q 1`] = `
+"▗▄▄▄▖ 
+▐▌ ▐▌ 
+▐▌ ▐▌ 
+▐▙▄▟▙▖"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter R 1`] = `
+"▗▄▄▖ 
+▐▌ ▐▌
+▐▛▀▚▖
+▐▌ ▐▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter S 1`] = `
+" ▗▄▄▖
+▐▌   
+ ▝▀▚▖
+▗▄▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter T 1`] = `
+"▗▄▄▄▖
+  █  
+  █  
+  █  "
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter U 1`] = `
+"▗▖ ▗▖
+▐▌ ▐▌
+▐▌ ▐▌
+▝▚▄▞▘"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter V 1`] = `
+"▗▖  ▗▖
+▐▌  ▐▌
+▐▌  ▐▌
+ ▝▚▞▘ "
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter W 1`] = `
+"▗▖ ▗▖
+▐▌ ▐▌
+▐▌ ▐▌
+▐▙█▟▌"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter X 1`] = `
+"▗▖  ▗▖
+ ▝▚▞▘ 
+  ▐▌  
+▗▞▘▝▚▖"
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter Y 1`] = `
+"▗▖  ▗▖
+ ▝▚▞▘ 
+  ▐▌  
+  ▐▌  "
+`;
+
+exports[`renderPixelText (RubiFont) > should render letter Z 1`] = `
+"▗▄▄▄▄▖
+   ▗▞▘
+ ▗▞▘  
+▐▙▄▄▄▖"
+`;
