@@ -1,5 +1,21 @@
 # @zpress/config
 
+## 0.5.0
+
+### Minor Changes
+
+- 9b5099b: Restore `apps` and `packages` as first-class root config fields
+
+  Re-adds `apps` and `packages` to `ZpressConfig` alongside the existing generic `workspaces` field. The home page renders groups in fixed order: Apps, Packages, then custom workspace categories. Each group gets its own heading, auto-generated description, and scope prefix on cards.
+
+  Also adds `collectAllWorkspaceItems()` utility to merge all three sources consistently across the sync engine, validation, landing page injection, and OpenAPI collection.
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+- Updated dependencies [b912b2d]
+  - @zpress/theme@0.3.2
+
 ## 0.4.0
 
 ### Minor Changes

@@ -38,13 +38,13 @@ reviews:
       enabled: false
 
   path_filters:
-    - "!**/dist/**"
-    - "!**/node_modules/**"
-    - "!pnpm-lock.yaml"
-    - "!**/*.snap"
+    - '!**/dist/**'
+    - '!**/node_modules/**'
+    - '!pnpm-lock.yaml'
+    - '!**/*.snap'
 
   path_instructions:
-    - path: "packages/**/*.{ts,tsx}"
+    - path: 'packages/**/*.{ts,tsx}'
       instructions: |
         This project enforces strict functional TypeScript. Flag violations of:
         - No `let` — only `const`. No reassignment, no mutation.
@@ -62,14 +62,14 @@ reviews:
         - Prefer `node:` protocol for Node.js builtins.
         - Use `es-toolkit` over hand-rolling utility functions.
         - Every exported function needs explicit return types and full JSDoc.
-    - path: "packages/**/src/**/*.ts"
+    - path: 'packages/**/src/**/*.ts'
       instructions: |
         Error handling uses Result tuples, never exceptions:
         - `type Result<T, E> = readonly [E, null] | readonly [null, T]`
         - Success: `[null, value]`, Failure: `[error, null]`
         - Always check the error element before accessing the value.
         - Use `ts-pattern` `match` for exhaustive error variant handling.
-    - path: "**/*.md"
+    - path: '**/*.md'
       instructions: |
         Documentation in this repo is for external consumers of the zpress documentation framework.
         Ensure clarity, accuracy, and consistency with the existing docs tone.

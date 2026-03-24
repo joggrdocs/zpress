@@ -1,5 +1,17 @@
 # @zpress/cli
 
+## 0.5.3
+
+### Patch Changes
+
+- b912b2d: Update and add READMEs
+- Updated dependencies [9b5099b]
+- Updated dependencies [9b5099b]
+- Updated dependencies [b912b2d]
+  - @zpress/core@0.8.0
+  - @zpress/ui@0.8.7
+  - @zpress/templates@0.1.2
+
 ## 0.5.2
 
 ### Patch Changes
