@@ -1,5 +1,13 @@
 # @zpress/cli
 
+## 0.5.4
+
+### Patch Changes
+
+- f88d0f7: Fix config changes not propagating during dev
+
+  Disable Rspress's persistent build cache on config-reload restarts. The cache's digest only tracks sidebar/nav structure, so changes to title, theme, colors, and other `source.define` values were invisible to it, causing stale output to be served after a restart.
+
 ## 0.5.3
 
 ### Patch Changes
