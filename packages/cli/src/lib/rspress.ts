@@ -42,6 +42,14 @@ interface ServerInstance {
 }
 
 /**
+ * Internal options for `startServer` that control rebuild behaviour.
+ */
+interface StartServerOptions {
+  /** When true, disables the persistent build cache for this invocation. */
+  readonly skipBuildCache: boolean
+}
+
+/**
  * Callback invoked when the dev server should restart due to config changes.
  */
 export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
@@ -66,7 +74,10 @@ export async function startDevServer(
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
-  async function startServer(config: ZpressConfig): Promise<boolean> {
+  async function startServer(
+    config: ZpressConfig,
+    internalOptions: StartServerOptions
+  ): Promise<boolean> {
     const rspressConfig = createRspressConfig({
       config,
       paths,
@@ -85,6 +96,11 @@ export async function startDevServer(
             port,
             strictPort: true,
           },
+          // Disable persistent build cache on config-reload restarts.
+          // Rspress's cacheDigest only covers sidebar/nav structure,
+          // so changes to title, theme, colors, source.define values
+          // etc. would serve stale cached output without this.
+          ...buildCacheOverride(internalOptions),
         },
       })
       return true
@@ -95,7 +111,7 @@ export async function startDevServer(
   }
 
   // Start initial server — exit if it fails on first boot
-  const started = await startServer(options.config)
+  const started = await startServer(options.config, { skipBuildCache: false })
   if (!started) {
     process.exit(1)
   }
@@ -128,8 +144,8 @@ export async function startDevServer(
       serverInstance = null
     }
 
-    // Start new server with fresh config
-    const restarted = await startServer(newConfig)
+    // Start new server with fresh config (bypass persistent cache)
+    const restarted = await startServer(newConfig, { skipBuildCache: true })
     if (restarted) {
       process.stdout.write('✅ Dev server restarted\n\n')
     } else {
@@ -231,6 +247,26 @@ function createCloseEvent(httpServer: Server | null): Promise<unknown[]> | null 
     return null
   }
   return once(httpServer, 'close')
+}
+
+/**
+ * Return a performance config override that disables persistent build cache
+ * on config-reload restarts.
+ *
+ * Rspress's persistent cache (`buildCache.cacheDigest`) only tracks sidebar/nav
+ * structure. Changes to title, theme, colors, and `source.define` values are
+ * invisible to it, causing stale cached output. Disabling the cache on restart
+ * forces a fresh Rsbuild compilation with the updated config values.
+ *
+ * @private
+ * @param options - Internal server options
+ * @returns Partial Rsbuild config with cache override, or empty object
+ */
+function buildCacheOverride(options: StartServerOptions): Record<string, unknown> {
+  if (options.skipBuildCache) {
+    return { performance: { buildCache: false } }
+  }
+  return {}
 }
 
 /**
