@@ -346,6 +346,7 @@ function execSilent(params: {
     }).trimEnd()
     return [null, output]
   } catch (error) {
+    // TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
     if (error instanceof Error) {
       return [error, null]
     }

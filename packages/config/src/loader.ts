@@ -114,6 +114,7 @@ function resolveOptions(dirOrOptions: string | LoadConfigOptions): LoadConfigOpt
  * @param error - Unknown error to extract message from
  * @returns Error message string
  */
+// TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message

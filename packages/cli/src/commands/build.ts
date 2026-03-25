@@ -6,6 +6,7 @@ import type { AssetConfig } from '@zpress/core'
 import { z } from 'zod'
 
 import { presentResults, runBuildCheck, runConfigCheck } from '../lib/check.ts'
+import { toError } from '../lib/error.ts'
 import { buildSite } from '../lib/rspress.ts'
 import { clean } from './clean.ts'
 
@@ -128,7 +129,7 @@ async function runAssetGeneration(params: RunAssetGenerationParams): Promise<voi
   const mkdirResult = await fs
     .mkdir(params.paths.publicDir, { recursive: true })
     .then(() => [null] as const)
-    .catch((error: unknown) => [error instanceof Error ? error : new Error(String(error))] as const)
+    .catch((error: unknown) => [toError(error)] as const)
 
   const [mkdirErr] = mkdirResult
   if (mkdirErr) {
