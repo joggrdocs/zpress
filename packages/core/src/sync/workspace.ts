@@ -427,7 +427,8 @@ function buildWorkspaceSection(
  *
  * Uses `path` as both the section URL and URL prefix for glob-discovered children.
  * The `include` field is resolved relative to the workspace item's base path
- * (derived from `path`). Defaults to `"docs/*.md"` when omitted.
+ * (derived from `path`). Defaults to `"docs/**/*.md"` when `recursive: true`,
+ * otherwise `"docs/*.md"`.
  *
  * For example, `path: "/apps/api"` + `include: "docs/*.md"` resolves to `"apps/api/docs/*.md"`.
  *
