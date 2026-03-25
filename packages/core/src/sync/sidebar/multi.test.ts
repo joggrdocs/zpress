@@ -167,7 +167,7 @@ describe('buildMultiSidebar()', () => {
 
     // Keys should be sorted by length descending
     const lengths = keys.map((k) => k.length)
-    const sorted = [...lengths].sort((a, b) => b - a)
+    const sorted = lengths.toSorted((a, b) => b - a)
     expect(lengths).toEqual(sorted)
   })
 
@@ -184,7 +184,7 @@ describe('buildMultiSidebar()', () => {
     ]
 
     const result = buildMultiSidebar(entries, [])
-    const sidebar = result['/libs/ai/'] as Array<{ text: string; link: string }>
+    const sidebar = result['/libs/ai/'] as { text: string; link: string }[]
 
     // First item should be the parent landing link
     expect(sidebar[0]).toMatchObject({ text: 'Packages', link: '/packages' })
