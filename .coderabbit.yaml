@@ -11,8 +11,9 @@ reviews:
   review_status: true
   commit_status: true
   fail_commit_status: false
-  collapse_walkthrough: false
-  changed_files_summary: true
+  walkthrough: false
+  collapse_walkthrough: true
+  changed_files_summary: false
   sequence_diagrams: true
   assess_linked_issues: true
   related_issues: true
