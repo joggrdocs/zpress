@@ -7,15 +7,15 @@ declare const __ZPRESS_GIT_BRANCH__: string | undefined
 
 /**
  * Git branch tag — pill-shaped badge rendered via the `beforeNavMenu`
- * layout slot. Hidden when on `main` (production).
+ * layout slot. Hidden when on default branches (`main` or `master`).
  * Uses the pixelarticons:git-branch icon.
  *
- * @returns React element or null when on main branch
+ * @returns React element or null when on a default branch
  */
 export function BranchTag(): React.ReactElement | null {
   const branch = resolveBranch()
 
-  if (!branch || branch === 'main') {
+  if (!branch || branch === 'main' || branch === 'master') {
     return null
   }
 
