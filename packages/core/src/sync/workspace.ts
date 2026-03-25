@@ -1,3 +1,4 @@
+import { log } from '@clack/prompts'
 import { isNil, isString, isUndefined, kebabCase, omitBy } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
@@ -533,27 +534,33 @@ function normalizeAndResolveInclude(
   basePath: string
 ): string | readonly string[] {
   if (isString(include)) {
-    return resolvePattern(include, basePath)
+    warnDuplicatePrefix(include, basePath)
+    return `${basePath}/${include}`
   }
-  return include.map((pattern) => resolvePattern(pattern, basePath))
+  return include.map((pattern) => {
+    warnDuplicatePrefix(pattern, basePath)
+    return `${basePath}/${pattern}`
+  })
 }
 
 /**
- * Resolve a single include pattern relative to basePath.
+ * Warn when an include pattern already starts with the basePath.
  *
- * Skips prepending when the pattern is already repo-relative
- * (i.e. starts with the basePath).
+ * This usually means the user provided a repo-relative path instead of
+ * a path relative to the workspace item. The resolved glob will be
+ * double-prefixed and likely match zero files.
  *
  * @private
- * @param pattern - Glob pattern to resolve
- * @param basePath - Base directory path to prepend
- * @returns Resolved pattern string
+ * @param pattern - Include glob pattern to check
+ * @param basePath - Base directory derived from workspace `path`
  */
-function resolvePattern(pattern: string, basePath: string): string {
+function warnDuplicatePrefix(pattern: string, basePath: string): void {
   if (pattern.startsWith(basePath)) {
-    return pattern
+    log.warn(
+      `Include "${pattern}" already starts with "${basePath}" — this will resolve to "${basePath}/${pattern}". ` +
+        `Did you mean "${pattern.slice(basePath.length + 1)}"? (include is relative to path)`
+    )
   }
-  return `${basePath}/${pattern}`
 }
 
 /**
