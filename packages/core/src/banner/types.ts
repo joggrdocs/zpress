@@ -9,7 +9,7 @@ import type { Result } from '../types.ts'
  */
 export interface AssetError {
   readonly _tag: 'AssetError'
-  readonly type: 'empty_title' | 'write_failed'
+  readonly type: 'empty_title' | 'write_failed' | 'mkdir_failed'
   readonly message: string
 }
 

@@ -8,6 +8,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import { toError } from '../types.ts'
 import { composeBanner } from './svg-banner.ts'
 import { composeIcon } from './svg-icon.ts'
 import { composeLogo } from './svg-logo.ts'
@@ -96,7 +97,14 @@ export async function generateAssets(
   params: GenerateAssetsParams
 ): Promise<AssetResult<readonly string[]>> {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- publicDir comes from trusted Paths config
-  await fs.mkdir(params.publicDir, { recursive: true })
+  const mkdirResult = await fs
+    .mkdir(params.publicDir, { recursive: true })
+    .then(() => null)
+    .catch(toError)
+
+  if (mkdirResult) {
+    return [assetError('mkdir_failed', `Failed to create public dir: ${mkdirResult.message}`), null]
+  }
 
   const generators: readonly (() => AssetResult<GeneratedAsset>)[] = [
     () => generateBannerSvg(params.config),
@@ -177,21 +185,17 @@ interface WriteAssetParams {
 async function writeAsset(params: WriteAssetParams): Promise<AssetResult<string>> {
   const filePath = path.resolve(params.publicDir, params.asset.filename)
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
-  const result = await fs
+  const writeResult = await fs
     .writeFile(filePath, params.asset.content, 'utf8')
-    .catch((error: unknown) => error)
-  if (result !== undefined) {
-    // TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
-    if (result instanceof Error) {
-      return [
-        assetError('write_failed', `Failed to write ${params.asset.filename}: ${result.message}`),
-        null,
-      ]
-    }
+    .then(() => null)
+    .catch(toError)
+
+  if (writeResult) {
     return [
-      assetError('write_failed', `Failed to write ${params.asset.filename}: ${String(result)}`),
+      assetError('write_failed', `Failed to write ${params.asset.filename}: ${writeResult.message}`),
       null,
     ]
   }
+
   return [null, params.asset.filename]
 }
