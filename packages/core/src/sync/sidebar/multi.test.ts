@@ -82,7 +82,9 @@ describe('buildMultiSidebar()', () => {
     const result = buildMultiSidebar(entries, [])
 
     expect(result['/libs/ai/']).toBe(result['/packages/'])
+    expect(result['/libs/ai']).toBe(result['/packages/'])
     expect(result['/libs/db/']).toBe(result['/packages/'])
+    expect(result['/libs/db']).toBe(result['/packages/'])
   })
 
   it('should not create orphaned keys for children that match the parent prefix', () => {
@@ -185,6 +187,8 @@ describe('buildMultiSidebar()', () => {
 
     const result = buildMultiSidebar(entries, [])
     const sidebar = result['/libs/ai/'] as { text: string; link: string }[]
+
+    expect(sidebar.length).toBeGreaterThan(0)
 
     // First item should be the parent landing link
     expect(sidebar[0]).toMatchObject({ text: 'Packages', link: '/packages' })
