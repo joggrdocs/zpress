@@ -100,9 +100,18 @@ export function buildMultiSidebar(
           return items
         })
 
+      const orphanedKeys = collectOrphanedChildLinks(entry.items, entryLink).flatMap(
+        (childLink) =>
+          [
+            [`${childLink}/`, sidebarItems],
+            [childLink, sidebarItems],
+          ] as const
+      )
+
       return [
         [`${entryLink}/`, sidebarItems],
         [entryLink, sidebarItems],
+        ...orphanedKeys,
       ] as const
     })
   )
@@ -136,6 +145,32 @@ export function buildMultiSidebar(
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Collect child links that do not fall under the parent link prefix.
+ *
+ * When a standalone section at `/packages` has children at `/libs/ai`,
+ * those children are "orphaned" — Rspress prefix matching on `/packages/`
+ * will never reach them. Returns only the links that need extra sidebar keys.
+ *
+ * @private
+ * @param items - Optional child entries of a standalone section
+ * @param parentLink - The standalone parent's link
+ * @returns Array of child links that are outside the parent prefix
+ */
+function collectOrphanedChildLinks(
+  items: readonly ResolvedEntry[] | undefined,
+  parentLink: string
+): readonly string[] {
+  if (!items) {
+    return []
+  }
+  const prefix = `${parentLink}/`
+  return items
+    .filter((child) => child.link !== undefined && child.link !== null)
+    .map((child) => child.link as string)
+    .filter((childLink) => !childLink.startsWith(prefix))
+}
 
 /**
  * Unwrap optional entry items to a concrete array.
