@@ -1,7 +1,9 @@
-import { log } from '@clack/prompts'
+import { configWarning } from '@zpress/config'
+import type { ConfigWarning } from '@zpress/config'
 import { isNil, isString, isUndefined, kebabCase, omitBy } from 'es-toolkit'
 import { match, P } from 'ts-pattern'
 
+import { normalizeInclude } from '../glob.ts'
 import { resolveOptionalIcon, serializeIcon } from '../icon.ts'
 import type { Section, TitleConfig, ZpressConfig, Workspace } from '../types.ts'
 import { collectAllWorkspaceItems } from './collect-workspaces.ts'
@@ -242,6 +244,23 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
 }
 
 /**
+ * Check workspace items for include patterns that will be double-prefixed.
+ *
+ * When a workspace `include` pattern already starts with the basePath
+ * derived from `path`, the resolved glob becomes double-prefixed
+ * (e.g. `apps/api/apps/api/docs/*.md`) and will silently match zero files.
+ * This produces warnings so the user can fix their config before broken
+ * links appear in the build.
+ *
+ * @param config - Validated zpress config
+ * @returns Array of warnings for any workspace items with suspect includes
+ */
+export function checkWorkspaceIncludes(config: ZpressConfig): readonly ConfigWarning[] {
+  const allItems = collectAllWorkspaceItems(config)
+  return allItems.flatMap((item) => checkItemInclude(item))
+}
+
+/**
  * Convert display text to a URL-safe slug.
  * E.g. "Getting Started" → "getting-started", "updatePet" → "update-pet"
  *
@@ -255,6 +274,32 @@ export function slugify(text: string): string {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Check a single workspace item for include patterns that already start
+ * with the basePath derived from `path`.
+ *
+ * @private
+ * @param item - Workspace item to check
+ * @returns Array of warnings (empty if no issues)
+ */
+function checkItemInclude(item: Workspace): readonly ConfigWarning[] {
+  if (item.include === null || item.include === undefined) {
+    return []
+  }
+  const basePath = item.path.replace(/^\//, '')
+  const patterns = normalizeInclude(item.include)
+  return patterns
+    .filter((pattern) => pattern.startsWith(basePath))
+    .map((pattern) =>
+      configWarning(
+        'duplicate_include_prefix',
+        `Workspace "${String(item.title)}" include "${pattern}" already starts with "${basePath}" — ` +
+          `it will resolve to "${basePath}/${pattern}" which likely matches zero files. ` +
+          `Did you mean "${pattern.slice(basePath.length + 1)}"? (include is relative to path)`
+      )
+    )
+}
 
 /**
  * Recursively collect all links from a section tree.
@@ -534,33 +579,9 @@ function normalizeAndResolveInclude(
   basePath: string
 ): string | readonly string[] {
   if (isString(include)) {
-    warnDuplicatePrefix(include, basePath)
     return `${basePath}/${include}`
   }
-  return include.map((pattern) => {
-    warnDuplicatePrefix(pattern, basePath)
-    return `${basePath}/${pattern}`
-  })
-}
-
-/**
- * Warn when an include pattern already starts with the basePath.
- *
- * This usually means the user provided a repo-relative path instead of
- * a path relative to the workspace item. The resolved glob will be
- * double-prefixed and likely match zero files.
- *
- * @private
- * @param pattern - Include glob pattern to check
- * @param basePath - Base directory derived from workspace `path`
- */
-function warnDuplicatePrefix(pattern: string, basePath: string): void {
-  if (pattern.startsWith(basePath)) {
-    log.warn(
-      `Include "${pattern}" already starts with "${basePath}" — this will resolve to "${basePath}/${pattern}". ` +
-        `Did you mean "${pattern.slice(basePath.length + 1)}"? (include is relative to path)`
-    )
-  }
+  return include.map((pattern) => `${basePath}/${pattern}`)
 }
 
 /**
