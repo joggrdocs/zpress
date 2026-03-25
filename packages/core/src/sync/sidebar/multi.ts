@@ -108,11 +108,7 @@ export function buildMultiSidebar(
           ] as const
       )
 
-      return [
-        [`${entryLink}/`, sidebarItems],
-        [entryLink, sidebarItems],
-        ...orphanedKeys,
-      ] as const
+      return [[`${entryLink}/`, sidebarItems], [entryLink, sidebarItems], ...orphanedKeys] as const
     })
   )
 

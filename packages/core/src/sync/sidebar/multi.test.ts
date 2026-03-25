@@ -10,7 +10,11 @@ describe('buildMultiSidebar()', () => {
         title: 'Guides',
         link: '/guides',
         items: [
-          { title: 'Setup', link: '/guides/setup', page: { outputPath: 'guides/setup.md', frontmatter: {} } },
+          {
+            title: 'Setup',
+            link: '/guides/setup',
+            page: { outputPath: 'guides/setup.md', frontmatter: {} },
+          },
         ],
       },
     ]
@@ -179,9 +183,7 @@ describe('buildMultiSidebar()', () => {
         title: 'Packages',
         link: '/packages',
         standalone: true,
-        items: [
-          { title: 'AI', link: '/libs/ai' },
-        ],
+        items: [{ title: 'AI', link: '/libs/ai' }],
       },
     ]
 

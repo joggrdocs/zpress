@@ -1,5 +1,17 @@
 # @zpress/core
 
+## 0.8.1
+
+### Patch Changes
+
+- e3b8c86: Fix multi-sidebar routing for workspace children whose paths live outside the parent prefix. When `packages` items use paths like `/libs/ai` instead of `/packages/ai`, Rspress prefix matching could not find a sidebar key — the sidebar silently disappeared. Extra sidebar keys are now emitted for orphaned child paths so they resolve correctly.
+- 1e966e1: Fix workspace include resolution for `apps` and `packages` items:
+  - Use deep glob pattern (`docs/**/*.md`) as default include when `recursive: true`. Previously the default was always `docs/*.md` regardless of the flag.
+  - Add config check warning when an explicit include pattern already starts with the basePath derived from `path`, which causes double-prefixing and silently matches zero files. Surfaces during `zpress check` before the build step.
+
+- Updated dependencies [1e966e1]
+  - @zpress/config@0.5.1
+
 ## 0.8.0
 
 ### Minor Changes
