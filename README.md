@@ -1,6 +1,6 @@
 <div align="center">
   <img src="assets/banner.svg" alt="zpress" width="90%" />
-  <p><strong>An opinionated documentation framework for monorepos. Just point it at your code.</strong></p>
+  <p><strong>Zero-effort, turnkey documentation sites for monorepos — just point it at your existing docs.</strong></p>
 
 <a href="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml"><img src="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
 <a href="https://www.npmjs.com/package/@zpress/kit"><img src="https://img.shields.io/npm/v/@zpress/kit" alt="npm version" /></a>
