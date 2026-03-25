@@ -81,8 +81,8 @@ describe('buildMultiSidebar()', () => {
 
     const result = buildMultiSidebar(entries, [])
 
-    expect(result['/libs/ai/']).toEqual(result['/packages/'])
-    expect(result['/libs/db/']).toEqual(result['/packages/'])
+    expect(result['/libs/ai/']).toBe(result['/packages/'])
+    expect(result['/libs/db/']).toBe(result['/packages/'])
   })
 
   it('should not create orphaned keys for children that match the parent prefix', () => {
