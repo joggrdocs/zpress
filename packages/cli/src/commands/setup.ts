@@ -23,21 +23,21 @@ export const setupCommand = command({
     const paths = createPaths(cwd)
     const configPath = path.join(paths.repoRoot, CONFIG_FILENAME)
 
-    ctx.logger.intro('zpress setup')
+    ctx.log.intro('zpress setup')
 
     if (fs.existsSync(configPath)) {
-      ctx.logger.warn(`${CONFIG_FILENAME} already exists — skipping`)
-      ctx.logger.outro('Done')
+      ctx.log.warn(`${CONFIG_FILENAME} already exists — skipping`)
+      ctx.log.outro('Done')
       return
     }
 
     const title = deriveTitle(cwd)
 
     fs.writeFileSync(configPath, buildConfigTemplate(title), 'utf8')
-    ctx.logger.success(`Created ${CONFIG_FILENAME} (title: "${title}")`)
+    ctx.log.success(`Created ${CONFIG_FILENAME} (title: "${title}")`)
 
     // Ensure .zpress/ is gitignored
-    await ensureGitignore(paths, ctx.logger)
+    await ensureGitignore(paths, ctx.log)
 
     // Generate initial banner, logo, and icon assets
     await fsPromises.mkdir(paths.publicDir, { recursive: true })
@@ -47,15 +47,15 @@ export const setupCommand = command({
     })
 
     if (assetErr) {
-      ctx.logger.error(`Asset generation failed: ${assetErr.message}`)
+      ctx.log.error(`Asset generation failed: ${assetErr.message}`)
       process.exit(1)
     }
 
     if (written.length > 0) {
-      ctx.logger.success(`Generated ${written.join(', ')}`)
+      ctx.log.success(`Generated ${written.join(', ')}`)
     }
 
-    ctx.logger.outro('Done')
+    ctx.log.outro('Done')
   },
 })
 

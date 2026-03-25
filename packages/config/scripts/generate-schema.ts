@@ -49,6 +49,7 @@ try {
 /**
  * Extract error message from unknown error value.
  */
+// TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message

@@ -23,7 +23,7 @@ export const draftCommand = command({
     out: z.string().optional().default('.'),
   }),
   handler: async (ctx) => {
-    ctx.logger.intro('zpress draft')
+    ctx.log.intro('zpress draft')
 
     const typeArg = ctx.args.type
     const hasValidType = match(typeArg)
@@ -45,7 +45,7 @@ export const draftCommand = command({
 
     const template = registry.get(selectedType)
     if (!template) {
-      ctx.logger.error(`Unknown template type: ${selectedType}`)
+      ctx.log.error(`Unknown template type: ${selectedType}`)
       return
     }
 
@@ -65,7 +65,7 @@ export const draftCommand = command({
 
     const slug = toSlug(title)
     if (slug.length === 0) {
-      ctx.logger.error('Title must include at least one letter or number')
+      ctx.log.error('Title must include at least one letter or number')
       return
     }
 
@@ -80,14 +80,14 @@ export const draftCommand = command({
       .catch(() => false)
 
     if (exists) {
-      ctx.logger.error(`File already exists: ${path.relative(process.cwd(), filePath)}`)
+      ctx.log.error(`File already exists: ${path.relative(process.cwd(), filePath)}`)
       return
     }
 
     await fs.mkdir(outDir, { recursive: true })
     await fs.writeFile(filePath, content, 'utf8')
 
-    ctx.logger.success(`Created ${path.relative(process.cwd(), filePath)}`)
-    ctx.logger.outro('Done')
+    ctx.log.success(`Created ${path.relative(process.cwd(), filePath)}`)
+    ctx.log.outro('Done')
   },
 })

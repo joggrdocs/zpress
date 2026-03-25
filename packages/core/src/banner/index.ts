@@ -181,6 +181,7 @@ async function writeAsset(params: WriteAssetParams): Promise<AssetResult<string>
     .writeFile(filePath, params.asset.content, 'utf8')
     .catch((error: unknown) => error)
   if (result !== undefined) {
+    // TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
     if (result instanceof Error) {
       return [
         assetError('write_failed', `Failed to write ${params.asset.filename}: ${result.message}`),
