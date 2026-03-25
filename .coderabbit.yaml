@@ -6,14 +6,16 @@ early_access: true
 reviews:
   profile: assertive
   request_changes_workflow: true
-  high_level_summary: true
+  high_level_summary: false
   high_level_summary_in_walkthrough: false
   review_status: false
+  review_details: false
   commit_status: true
   fail_commit_status: false
   collapse_walkthrough: true
   changed_files_summary: false
   sequence_diagrams: false
+  estimate_code_review_effort: false
   assess_linked_issues: false
   related_issues: false
   related_prs: false
