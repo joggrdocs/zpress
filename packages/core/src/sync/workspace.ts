@@ -408,7 +408,10 @@ function workspaceToSection(item: Workspace): Section {
  * @returns Complete section with all discovery fields resolved
  */
 function applyOptionalFields(base: Section, item: Workspace): Section {
-  const fromPattern = item.include ?? 'docs/*.md'
+  const defaultPattern = match(item.recursive)
+    .with(true, () => 'docs/**/*.md')
+    .otherwise(() => 'docs/*.md')
+  const fromPattern = item.include ?? defaultPattern
   const basePath = item.path.replace(/^\//, '')
   const resolvedInclude = normalizeAndResolveInclude(fromPattern, basePath)
 
