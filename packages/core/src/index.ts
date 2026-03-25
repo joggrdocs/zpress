@@ -40,6 +40,8 @@ export type {
 } from './sync/types.ts'
 export type { SyncError, SyncOutcome, ConfigError, ConfigResult } from './sync/errors.ts'
 export { syncError, configError } from './sync/errors.ts'
+export type { ConfigWarning, ConfigWarningType } from '@zpress/config'
+export { checkWorkspaceIncludes } from './sync/workspace.ts'
 
 export {
   generateAssets,

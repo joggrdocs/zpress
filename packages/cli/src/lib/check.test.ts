@@ -18,6 +18,7 @@ const loadError = {
 const mockLogger = {
   success: vi.fn(),
   error: vi.fn(),
+  warn: vi.fn(),
   message: vi.fn(),
 }
 
@@ -48,7 +49,7 @@ describe('runConfigCheck()', () => {
 describe('presentResults()', () => {
   it('should return true when both config passed and build passed', () => {
     const result = presentResults({
-      configResult: { passed: true, errors: [] },
+      configResult: { passed: true, errors: [], warnings: [] },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -57,7 +58,7 @@ describe('presentResults()', () => {
 
   it('should return false when config failed', () => {
     const result = presentResults({
-      configResult: { passed: false, errors: [loadError] },
+      configResult: { passed: false, errors: [loadError], warnings: [] },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -66,7 +67,7 @@ describe('presentResults()', () => {
 
   it('should return false when build has deadlinks', () => {
     const result = presentResults({
-      configResult: { passed: true, errors: [] },
+      configResult: { passed: true, errors: [], warnings: [] },
       buildResult: {
         status: 'failed',
         deadlinks: [{ file: 'docs/page.md', links: ['/missing'] }],
@@ -78,7 +79,7 @@ describe('presentResults()', () => {
 
   it('should call logger.success when config is valid', () => {
     presentResults({
-      configResult: { passed: true, errors: [] },
+      configResult: { passed: true, errors: [], warnings: [] },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -87,7 +88,7 @@ describe('presentResults()', () => {
 
   it('should call logger.error when config failed', () => {
     presentResults({
-      configResult: { passed: false, errors: [loadError] },
+      configResult: { passed: false, errors: [loadError], warnings: [] },
       buildResult: { status: 'skipped' },
       logger: mockLogger,
     })

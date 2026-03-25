@@ -39,8 +39,14 @@ export { validateConfig } from './validator.ts'
 
 export { zpressConfigSchema, pathsSchema } from './schema.ts'
 
-export { configError, configErrorFromZod } from './errors.ts'
-export type { ConfigError, ConfigErrorType, ConfigResult } from './errors.ts'
+export { configError, configErrorFromZod, configWarning } from './errors.ts'
+export type {
+  ConfigError,
+  ConfigErrorType,
+  ConfigResult,
+  ConfigWarning,
+  ConfigWarningType,
+} from './errors.ts'
 
 export {
   THEME_NAMES,

@@ -10,8 +10,8 @@
 import path from 'node:path'
 
 import type { CliLogger } from '@kidd-cli/core/logger'
-import { configError } from '@zpress/core'
-import type { ConfigError, Paths, ZpressConfig } from '@zpress/core'
+import { configError, checkWorkspaceIncludes } from '@zpress/core'
+import type { ConfigError, ConfigWarning, Paths, ZpressConfig } from '@zpress/core'
 
 import { toError } from './error.ts'
 import { buildSiteForCheck } from './rspress.ts'
@@ -20,6 +20,7 @@ import { buildSiteForCheck } from './rspress.ts'
 const ANSI_PATTERN = /\u001B\[[0-9;]*m/g
 
 const RED = '\u001B[31m'
+const YELLOW = '\u001B[33m'
 const DIM = '\u001B[2m'
 const RESET = '\u001B[0m'
 
@@ -31,6 +32,7 @@ interface DeadlinkInfo {
 interface ConfigCheckResult {
   readonly passed: boolean
   readonly errors: readonly ConfigError[]
+  readonly warnings: readonly ConfigWarning[]
 }
 
 type BuildCheckResult =
@@ -75,12 +77,13 @@ interface RunConfigCheckParams {
 export function runConfigCheck(params: RunConfigCheckParams): ConfigCheckResult {
   const { config, loadError } = params
   if (loadError) {
-    return { passed: false, errors: [loadError] }
+    return { passed: false, errors: [loadError], warnings: [] }
   }
   if (!config) {
-    return { passed: false, errors: [configError('empty_sections', 'Config is missing')] }
+    return { passed: false, errors: [configError('empty_sections', 'Config is missing')], warnings: [] }
   }
-  return { passed: true, errors: [] }
+  const warnings = checkWorkspaceIncludes(config)
+  return { passed: true, errors: [], warnings }
 }
 
 /**
@@ -138,6 +141,15 @@ export function presentResults(params: PresentResultsParams): boolean {
     // oxlint-disable-next-line no-unused-expressions -- side-effect logging over config errors
     configResult.errors.map((err) => {
       logger.message(`  ${err.message}`)
+      return null
+    })
+  }
+
+  if (configResult.warnings.length > 0) {
+    logger.warn(`${configResult.warnings.length} config warning(s):`)
+    // oxlint-disable-next-line no-unused-expressions -- side-effect logging over config warnings
+    configResult.warnings.map((w) => {
+      logger.message(`  ${YELLOW}⚠${RESET} ${w.message}`)
       return null
     })
   }

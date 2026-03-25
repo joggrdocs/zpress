@@ -1,5 +1,5 @@
 /**
- * Error types for config loading and validation.
+ * Error and warning types for config loading and validation.
  */
 
 import type { ZodError } from 'zod/v3'
@@ -33,6 +33,17 @@ export interface ConfigError {
 
 export type ConfigResult<T> = Result<T, ConfigError>
 
+export type ConfigWarningType = 'duplicate_include_prefix'
+
+/**
+ * Non-fatal config issue that may cause unexpected behavior.
+ */
+export interface ConfigWarning {
+  readonly _tag: 'ConfigWarning'
+  readonly type: ConfigWarningType
+  readonly message: string
+}
+
 /**
  * Create a ConfigError with the given type and message.
  *
@@ -43,6 +54,21 @@ export type ConfigResult<T> = Result<T, ConfigError>
 export function configError(type: ConfigErrorType, message: string): ConfigError {
   return {
     _tag: 'ConfigError',
+    type,
+    message,
+  }
+}
+
+/**
+ * Create a ConfigWarning with the given type and message.
+ *
+ * @param type - The warning type discriminant
+ * @param message - Human-readable warning message
+ * @returns A ConfigWarning object
+ */
+export function configWarning(type: ConfigWarningType, message: string): ConfigWarning {
+  return {
+    _tag: 'ConfigWarning',
     type,
     message,
   }
