@@ -61,13 +61,13 @@ export const diffCommand = command({
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
       if (pretty) {
-        ctx.logger.intro('zpress diff')
-        ctx.logger.error(configErr.message)
+        ctx.log.intro('zpress diff')
+        ctx.log.error(configErr.message)
         if (configErr.errors && configErr.errors.length > 0) {
           // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
           configErr.errors.forEach((err) => {
             const p = err.path.join('.')
-            ctx.logger.error(`  ${p}: ${err.message}`)
+            ctx.log.error(`  ${p}: ${err.message}`)
           })
         }
       }
@@ -78,9 +78,9 @@ export const diffCommand = command({
 
     if (dirs.length === 0) {
       if (pretty) {
-        ctx.logger.intro('zpress diff')
-        ctx.logger.warn('No source directories found in config')
-        ctx.logger.outro('Done')
+        ctx.log.intro('zpress diff')
+        ctx.log.warn('No source directories found in config')
+        ctx.log.outro('Done')
       }
       return
     }
@@ -94,27 +94,27 @@ export const diffCommand = command({
 
     if (gitErr) {
       if (pretty) {
-        ctx.logger.intro('zpress diff')
-        ctx.logger.error(`Git failed: ${gitErr.message}`)
-        ctx.logger.outro('Done')
+        ctx.log.intro('zpress diff')
+        ctx.log.error(`Git failed: ${gitErr.message}`)
+        ctx.log.outro('Done')
       }
       process.exit(1)
     }
 
     if (changed.length === 0) {
       if (pretty) {
-        ctx.logger.intro('zpress diff')
-        ctx.logger.success('No changes detected')
-        ctx.logger.outro('Done')
+        ctx.log.intro('zpress diff')
+        ctx.log.success('No changes detected')
+        ctx.log.outro('Done')
       }
       return
     }
 
     if (pretty) {
-      ctx.logger.intro('zpress diff')
-      ctx.logger.step(`Watching ${dirs.length} path(s)`)
-      ctx.logger.note(changed.join('\n'), `${changed.length} changed file(s)`)
-      ctx.logger.outro('Done')
+      ctx.log.intro('zpress diff')
+      ctx.log.step(`Watching ${dirs.length} path(s)`)
+      ctx.log.note(changed.join('\n'), `${changed.length} changed file(s)`)
+      ctx.log.outro('Done')
     } else {
       process.stdout.write(`${changed.join(' ')}\n`)
     }

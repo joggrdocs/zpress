@@ -20,10 +20,8 @@ import { devCommand } from './commands/dev.ts'
 import { diffCommand } from './commands/diff.ts'
 import { draftCommand } from './commands/draft.ts'
 import { dumpCommand } from './commands/dump.ts'
-import { generateCommand } from './commands/generate.ts'
 import { serveCommand } from './commands/serve.ts'
 import { setupCommand } from './commands/setup.ts'
-import { syncCommand } from './commands/sync.ts'
 
 declare const ZPRESS_VERSION: string
 
@@ -32,16 +30,17 @@ await cli({
   version: ZPRESS_VERSION,
   description: 'CLI for building and serving documentation',
   commands: {
-    sync: syncCommand,
-    dev: devCommand,
-    diff: diffCommand,
-    build: buildCommand,
-    check: checkCommand,
-    draft: draftCommand,
-    serve: serveCommand,
-    clean: cleanCommand,
-    dump: dumpCommand,
-    setup: setupCommand,
-    generate: generateCommand,
+    commands: {
+      setup: setupCommand,
+      dev: devCommand,
+      build: buildCommand,
+      serve: serveCommand,
+      check: checkCommand,
+      diff: diffCommand,
+      draft: draftCommand,
+      clean: cleanCommand,
+      dump: dumpCommand,
+    },
+    order: ['setup', 'dev', 'build', 'serve', 'check', 'diff', 'draft', 'clean', 'dump'],
   },
 })

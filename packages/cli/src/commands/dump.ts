@@ -25,11 +25,11 @@ export const dumpCommand = command({
     const paths = createPaths(process.cwd())
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
-      ctx.logger.error(configErr.message)
+      ctx.log.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
         configErr.errors.map((err) => {
           const path = err.path.join('.')
-          return ctx.logger.error(`  ${path}: ${err.message}`)
+          return ctx.log.error(`  ${path}: ${err.message}`)
         })
       }
       process.exit(1)
@@ -47,7 +47,7 @@ export const dumpCommand = command({
 
     const [resolveErr, resolved] = await resolveEntries(config.sections, syncCtx)
     if (resolveErr) {
-      ctx.logger.error(resolveErr.message)
+      ctx.log.error(resolveErr.message)
       process.exit(1)
     }
     const tree = toTree(resolved)

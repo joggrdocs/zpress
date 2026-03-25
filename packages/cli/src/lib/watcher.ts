@@ -1,7 +1,7 @@
 import { watch } from 'node:fs'
 import path from 'node:path'
 
-import { cliLogger } from '@kidd-cli/core/logger'
+import type { Log } from '@kidd-cli/core'
 import type { ZpressConfig, Paths } from '@zpress/core'
 import { loadConfig, sync } from '@zpress/core'
 import { debounce } from 'es-toolkit'
@@ -33,22 +33,26 @@ interface WatcherHandle {
  * the entire tree. Filtering happens in the callback, not at the
  * OS level, so there are zero EMFILE concerns.
  *
- * @param initialConfig - Initial zpress config to use for syncing
- * @param paths - Resolved project paths
- * @param onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
+ * @param params - Watcher configuration
+ * @param params.initialConfig - Initial zpress config to use for syncing
+ * @param params.paths - Resolved project paths
+ * @param params.log - Logger instance for status output
+ * @param params.onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
  * @returns Closeable watcher handle
  */
-export function createWatcher(
-  initialConfig: ZpressConfig,
-  paths: Paths,
-  onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
-): WatcherHandle {
+export function createWatcher(params: {
+  readonly initialConfig: ZpressConfig
+  readonly paths: Paths
+  readonly log: Log
+  readonly onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
+}): WatcherHandle {
+  const { initialConfig, paths, log, onConfigReload } = params
   const { repoRoot } = paths
   const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `zpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
 
-  cliLogger.info(`Watching ${repoRoot}`)
+  log.info(`Watching ${repoRoot}`)
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
   let syncing = false
@@ -70,18 +74,18 @@ export function createWatcher(
       if (reloadConfig) {
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
         if (configErr) {
-          cliLogger.error(`Config reload failed: ${configErr.message}`)
+          log.error(`Config reload failed: ${configErr.message}`)
           if (configErr.errors && configErr.errors.length > 0) {
             // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
             configErr.errors.forEach((err) => {
               const pathStr = err.path.join('.')
-              cliLogger.error(`  ${pathStr}: ${err.message}`)
+              log.error(`  ${pathStr}: ${err.message}`)
             })
           }
           return
         }
         config = newConfig
-        cliLogger.info('Config reloaded')
+        log.info('Config reloaded')
         didReloadConfig = true
       }
       await sync(config, { paths })
@@ -91,12 +95,12 @@ export function createWatcher(
       }
     } catch (error) {
       consecutiveFailures += 1
-      cliLogger.error(`Sync error: ${toError(error).message}`)
+      log.error(`Sync error: ${toError(error).message}`)
     } finally {
       syncing = false
       if (pendingReloadConfig !== null) {
         if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-          cliLogger.error(
+          log.error(
             `Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`
           )
           pendingReloadConfig = null
@@ -143,7 +147,7 @@ export function createWatcher(
     const basename = path.basename(filename)
 
     if (isConfigFile(basename, filename)) {
-      cliLogger.info(`Config changed: ${basename}`)
+      log.info(`Config changed: ${basename}`)
       debouncedConfigSync()
       return
     }
@@ -152,7 +156,7 @@ export function createWatcher(
       return
     }
 
-    cliLogger.step(`Changed: ${filename}`)
+    log.step(`Changed: ${filename}`)
     debouncedSync()
   })
 
