@@ -533,9 +533,27 @@ function normalizeAndResolveInclude(
   basePath: string
 ): string | readonly string[] {
   if (isString(include)) {
-    return `${basePath}/${include}`
+    return resolvePattern(include, basePath)
   }
-  return include.map((pattern) => `${basePath}/${pattern}`)
+  return include.map((pattern) => resolvePattern(pattern, basePath))
+}
+
+/**
+ * Resolve a single include pattern relative to basePath.
+ *
+ * Skips prepending when the pattern is already repo-relative
+ * (i.e. starts with the basePath).
+ *
+ * @private
+ * @param pattern - Glob pattern to resolve
+ * @param basePath - Base directory path to prepend
+ * @returns Resolved pattern string
+ */
+function resolvePattern(pattern: string, basePath: string): string {
+  if (pattern.startsWith(basePath)) {
+    return pattern
+  }
+  return `${basePath}/${pattern}`
 }
 
 /**
