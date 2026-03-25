@@ -248,9 +248,8 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
  *
  * When a workspace `include` pattern already starts with the basePath
  * derived from `path`, the resolved glob becomes double-prefixed
- * (e.g. `apps/api/apps/api/docs/*.md`) and will silently match zero files.
- * This produces warnings so the user can fix their config before broken
- * links appear in the build.
+ * and will silently match zero files. This produces warnings so the
+ * user can fix their config before broken links appear in the build.
  *
  * @param config - Validated zpress config
  * @returns Array of warnings for any workspace items with suspect includes
@@ -427,10 +426,8 @@ function buildWorkspaceSection(
  *
  * Uses `path` as both the section URL and URL prefix for glob-discovered children.
  * The `include` field is resolved relative to the workspace item's base path
- * (derived from `path`). Defaults to `"docs/**/*.md"` when `recursive: true`,
- * otherwise `"docs/*.md"`.
- *
- * For example, `path: "/apps/api"` + `include: "docs/*.md"` resolves to `"apps/api/docs/*.md"`.
+ * (derived from `path`). When `recursive` is true the default include is a deep
+ * glob matching all nested markdown, otherwise a shallow single-level glob.
  *
  * @private
  * @param item - Workspace item to convert
