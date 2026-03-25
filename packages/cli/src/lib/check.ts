@@ -80,7 +80,11 @@ export function runConfigCheck(params: RunConfigCheckParams): ConfigCheckResult 
     return { passed: false, errors: [loadError], warnings: [] }
   }
   if (!config) {
-    return { passed: false, errors: [configError('empty_sections', 'Config is missing')], warnings: [] }
+    return {
+      passed: false,
+      errors: [configError('empty_sections', 'Config is missing')],
+      warnings: [],
+    }
   }
   const warnings = checkWorkspaceIncludes(config)
   return { passed: true, errors: [], warnings }

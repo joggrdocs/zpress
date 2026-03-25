@@ -1,5 +1,26 @@
 # @zpress/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- 3e5f014: feat(packages/cli): consolidate sync and generate commands into build
+
+  The `build` command now runs content sync and asset generation automatically.
+  The standalone `sync` and `generate` commands have been removed.
+
+### Patch Changes
+
+- 1e966e1: Fix workspace include resolution for `apps` and `packages` items:
+  - Use deep glob pattern (`docs/**/*.md`) as default include when `recursive: true`. Previously the default was always `docs/*.md` regardless of the flag.
+  - Add config check warning when an explicit include pattern already starts with the basePath derived from `path`, which causes double-prefixing and silently matches zero files. Surfaces during `zpress check` before the build step.
+
+- Updated dependencies [e3b8c86]
+- Updated dependencies [1e966e1]
+- Updated dependencies [0113fb1]
+  - @zpress/core@0.8.1
+  - @zpress/ui@0.8.8
+
 ## 0.5.4
 
 ### Patch Changes

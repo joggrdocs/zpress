@@ -1,5 +1,15 @@
 # @zpress/ui
 
+## 0.8.8
+
+### Patch Changes
+
+- 0113fb1: Hide branch tag badge on `master` in addition to `main` so repos using either default branch name don't show the tag in production.
+- Updated dependencies [e3b8c86]
+- Updated dependencies [1e966e1]
+  - @zpress/core@0.8.1
+  - @zpress/config@0.5.1
+
 ## 0.8.7
 
 ### Patch Changes
