@@ -9,7 +9,7 @@
 
 import path from 'node:path'
 
-import type { CliLogger } from '@kidd-cli/core/logger'
+import type { Log } from '@kidd-cli/core'
 import { configError, checkWorkspaceIncludes } from '@zpress/core'
 import type { ConfigError, ConfigWarning, Paths, ZpressConfig } from '@zpress/core'
 
@@ -50,7 +50,7 @@ interface CaptureResult<T> {
 interface PresentResultsParams {
   readonly configResult: ConfigCheckResult
   readonly buildResult: BuildCheckResult
-  readonly logger: CliLogger
+  readonly logger: Log
 }
 
 interface RunBuildCheckParams {

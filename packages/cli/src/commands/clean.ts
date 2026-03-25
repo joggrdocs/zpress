@@ -38,17 +38,17 @@ export const cleanCommand = command({
   description: 'Remove build artifacts, synced content, and build cache',
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())
-    ctx.logger.intro('zpress clean')
+    ctx.log.intro('zpress clean')
 
     const removed = await clean(paths)
 
     if (removed.length > 0) {
-      ctx.logger.success(`Removed: ${removed.join(', ')}`)
+      ctx.log.success(`Removed: ${removed.join(', ')}`)
     } else {
-      ctx.logger.info('Nothing to clean')
+      ctx.log.info('Nothing to clean')
     }
 
-    ctx.logger.outro('Done')
+    ctx.log.outro('Done')
   },
 })
 

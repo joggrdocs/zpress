@@ -21,23 +21,23 @@ export const devCommand = command({
   handler: async (ctx) => {
     const { quiet } = ctx.args
     const paths = createPaths(process.cwd())
-    ctx.logger.intro('zpress dev')
+    ctx.log.intro('zpress dev')
 
     if (ctx.args.clean) {
       const removed = await clean(paths)
       if (removed.length > 0 && !quiet) {
-        ctx.logger.info(`Cleaned: ${removed.join(', ')}`)
+        ctx.log.info(`Cleaned: ${removed.join(', ')}`)
       }
     }
 
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
-      ctx.logger.error(configErr.message)
+      ctx.log.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
         // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
         configErr.errors.forEach((err) => {
           const path = err.path.join('.')
-          ctx.logger.error(`  ${path}: ${err.message}`)
+          ctx.log.error(`  ${path}: ${err.message}`)
         })
       }
       process.exit(1)
@@ -58,7 +58,7 @@ export const devCommand = command({
 
     // Start watcher with config reload callback
     const { createWatcher } = await import('../lib/watcher.ts')
-    const watcher = createWatcher(config, paths, onConfigReload)
+    const watcher = createWatcher({ initialConfig: config, paths, log: ctx.log, onConfigReload })
 
     function cleanup(): void {
       watcher.close()
