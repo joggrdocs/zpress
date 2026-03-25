@@ -42,10 +42,10 @@ export const buildCommand = command({
     if (configErr) {
       ctx.log.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
-        configErr.errors.map((err) => {
-          const path = err.path.join('.')
-          return ctx.log.error(`  ${path}: ${err.message}`)
-        })
+        const details = configErr.errors
+          .map((err) => `  ${err.path.join('.')}: ${err.message}`)
+          .join('\n')
+        ctx.log.error(details)
       }
       process.exit(1)
     }
@@ -125,7 +125,17 @@ async function runAssetGeneration(params: RunAssetGenerationParams): Promise<voi
     params.log.step('Generating assets...')
   }
 
-  await fs.mkdir(params.paths.publicDir, { recursive: true })
+  const mkdirResult = await fs
+    .mkdir(params.paths.publicDir, { recursive: true })
+    .then(() => [null] as const)
+    .catch((error: unknown) => [error instanceof Error ? error : new Error(String(error))] as const)
+
+  const [mkdirErr] = mkdirResult
+  if (mkdirErr) {
+    params.log.info(`Asset generation skipped: ${mkdirErr.message}`)
+    return
+  }
+
   const [assetErr, written] = await generateAssets({
     config: assetConfig,
     publicDir: params.paths.publicDir,
