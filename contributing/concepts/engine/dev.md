@@ -51,7 +51,7 @@ sequenceDiagram
 
 ## Lifecycle
 
-```
+```text
 1. Parse args (@kidd-cli/core)
 2. Resolve paths (.zpress/)
 3. Load config (c12)

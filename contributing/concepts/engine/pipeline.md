@@ -76,16 +76,16 @@ flowchart TB
 
 | # | Step | Phase | What it does |
 | --- | --- | --- | --- |
-| 1 | Create dirs | Setup | Create `.zpress/content/` and `.generated/` directories |
+| 1 | Create dirs | Setup | Create `.zpress/content/`, `.zpress/content/.generated/`, and `.zpress/public/` directories |
 | 2 | Load manifest | Setup | Load previous sync manifest for incremental diffing |
 | 3 | Generate assets | Setup | Generate branded SVG assets (conditional -- skipped when asset config hash unchanged) |
-| 4 | Copy public/ | Setup | Copy `.zpress/public/` into content dir for Rspress |
+| 4 | Copy public/ | Setup | Copy public assets into `.zpress/public/` for Rspress |
 | 5 | Synthesize workspaces | Resolve | Convert `apps`/`packages`/`workspaces` into entry sections |
 | 6 | Resolve entries | Resolve | Walk config tree, resolve globs, derive text, merge frontmatter |
 | 7 | Enrich cards | Resolve | Attach workspace metadata (icon, scope, tags, badge) |
 | 8 | Inject landing pages | Resolve | Generate virtual MDX for sections with children but no page |
 | 9 | Collect pages | Resolve | Flatten the resolved tree into a flat page list |
-| 10 | Write workspace data | Resolve | Serialize workspace metadata to `.generated/workspaces.json` |
+| 10 | Write workspace data | Resolve | Serialize workspace metadata to `.zpress/content/.generated/workspaces.json` |
 | 11 | Generate home | Resolve | Create default home page from config metadata (when no explicit index.md) |
 | 12 | Discover planning pages | Resolve | Resolve pages from `.planning/` directory (included in output, excluded from sidebar/nav) |
 | 13 | OpenAPI sync | Resolve | Dereference specs, generate `.mdx` per operation |
@@ -161,7 +161,7 @@ The entry resolver (`sync/resolve/index.ts`) recursively walks the config tree a
 | Virtual page | Generated content | `content: () => '# Hello'` |
 | Glob section | Pattern that discovers files | `include: 'docs/guides/*.md'` |
 | Recursive glob | Directory-driven nesting | `include: 'docs/**/*.md', recursive: true` |
-| Explicit items | Hand-written child entries | `items: [{ text: '...', include: '...' }]` |
+| Explicit items | Hand-written child entries | `items: [{ title: '...', include: '...' }]` |
 
 ### Text Derivation
 

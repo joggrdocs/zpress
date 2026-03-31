@@ -4,7 +4,7 @@ The single source of truth for the entire documentation site.
 
 ## Overview
 
-The config file (`zpress.config.ts`) defines the information architecture -- content structure, navigation, metadata, and workspaces. It is loaded via [c12](https://github.com/unjs/c12) and validated at the boundary in `defineConfig()`. Validation errors exit immediately with a descriptive message.
+The config file (`zpress.config.ts`) defines the information architecture -- content structure, navigation, metadata, and workspaces. It is loaded via [c12](https://github.com/unjs/c12) and validated at runtime by `loadConfig()`. Validation errors are returned as `Result` tuples; the CLI layer handles reporting and exits.
 
 ## Supported Formats
 
