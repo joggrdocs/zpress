@@ -45,8 +45,9 @@ export function createWatcher(params: {
   readonly paths: Paths
   readonly log: Log
   readonly onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
+  readonly openapiCache?: Map<string, unknown>
 }): WatcherHandle {
-  const { initialConfig, paths, log, onConfigReload } = params
+  const { initialConfig, paths, log, onConfigReload, openapiCache } = params
   const { repoRoot } = paths
   const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `zpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
@@ -87,8 +88,11 @@ export function createWatcher(params: {
         config = newConfig
         log.info('Config reloaded')
         didReloadConfig = true
+        if (openapiCache) {
+          openapiCache.clear()
+        }
       }
-      await sync(config, { paths })
+      await sync(config, { paths, openapiCache })
       consecutiveFailures = 0
       if (didReloadConfig && onConfigReload) {
         await onConfigReload(config)

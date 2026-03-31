@@ -37,6 +37,15 @@ export interface SyncContext {
    * Used by the copy step to rewrite relative markdown links.
    */
   readonly sourceMap?: SourceMap
+  /**
+   * Cache of dereferenced OpenAPI specs keyed by repo-relative spec path.
+   * Shared across sync passes to avoid re-parsing unchanged specs.
+   */
+  readonly openapiCache?: Map<string, unknown>
+  /**
+   * When true, bypass mtime-based skip optimization (e.g. after structural changes).
+   */
+  readonly skipMtimeOptimization?: boolean
 }
 
 /**
@@ -55,6 +64,21 @@ export interface Manifest {
    * Timestamp of last sync.
    */
   readonly timestamp: number
+  /**
+   * SHA-256 hash of the asset config used to generate banner/logo/icon SVGs.
+   * When unchanged, asset generation is skipped entirely.
+   */
+  readonly assetConfigHash?: string
+  /**
+   * Mtime (ms) of each OpenAPI spec file at last sync, keyed by repo-relative path.
+   * Used to skip re-parsing unchanged specs.
+   */
+  readonly openapiMtimes?: Readonly<Record<string, number>>
+  /**
+   * Number of resolved pages in the last sync pass.
+   * A mismatch triggers a full resync (structural change detected).
+   */
+  readonly resolvedCount?: number
 }
 
 /**
@@ -77,6 +101,12 @@ export interface ManifestEntry {
    * Output path relative to .content/.
    */
   readonly outputPath: string
+  /**
+   * MD5 hex of the page's injected frontmatter.
+   * Used with sourceMtime to detect config-driven frontmatter changes
+   * without reading the source file.
+   */
+  readonly frontmatterHash?: string
 }
 
 /**

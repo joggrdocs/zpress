@@ -43,8 +43,11 @@ export const devCommand = command({
       process.exit(1)
     }
 
+    // Shared OpenAPI spec cache — survives across sync passes
+    const openapiCache = new Map<string, unknown>()
+
     // Initial sync
-    await sync(config, { paths, quiet })
+    await sync(config, { paths, quiet, openapiCache })
 
     // Start Rspress dev server and get config reload callback
     const onConfigReload = await startDevServer({
@@ -58,7 +61,13 @@ export const devCommand = command({
 
     // Start watcher with config reload callback
     const { createWatcher } = await import('../lib/watcher.ts')
-    const watcher = createWatcher({ initialConfig: config, paths, log: ctx.log, onConfigReload })
+    const watcher = createWatcher({
+      initialConfig: config,
+      paths,
+      log: ctx.log,
+      onConfigReload,
+      openapiCache,
+    })
 
     function cleanup(): void {
       watcher.close()

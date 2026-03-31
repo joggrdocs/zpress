@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -41,6 +42,11 @@ export interface SyncOptions {
    * When true, suppress all log output during sync.
    */
   readonly quiet?: boolean
+  /**
+   * Shared cache of dereferenced OpenAPI specs.
+   * Persisted across sync passes in dev mode to avoid re-parsing unchanged specs.
+   */
+  readonly openapiCache?: Map<string, unknown>
 }
 
 /**
@@ -64,13 +70,22 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // Generate banner/logo/icon SVGs (skips user-customized files automatically)
   const assetConfig = buildAssetConfig(config)
-  await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
+  const assetConfigHash = createHash('sha256').update(JSON.stringify(assetConfig)).digest('hex')
+
+  const previousManifest = await loadManifest(outDir)
+
+  // Skip asset generation entirely when config hasn't changed
+  const assetConfigChanged =
+    previousManifest === null ||
+    previousManifest === undefined ||
+    previousManifest.assetConfigHash !== assetConfigHash
+  if (assetConfigChanged) {
+    await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
+  }
 
   // Copy public assets into content/public/ so Rspress can resolve them
   // (Rspress looks for public/ inside the root directory, which is .zpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))
-
-  const previousManifest = await loadManifest(outDir)
 
   const ctx: SyncContext = {
     repoRoot,
@@ -79,6 +94,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     previousManifest,
     manifest: { files: {}, timestamp: Date.now() },
     quiet,
+    openapiCache: options.openapiCache,
   }
 
   // 0. Synthesize workspace sections from apps/packages/workspaces config
@@ -136,13 +152,18 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 3. Copy/generate all pages (sections + home + planning + openapi)
   const allPages = [...pages, ...planningPages, ...openapiResult.pages]
 
+  // Detect structural changes — skip mtime optimization when page count changes
+  const skipMtimeOptimization =
+    previousManifest !== null &&
+    previousManifest !== undefined &&
+    allPages.length !== previousManifest.resolvedCount
+
   // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
-  const copyCtx = { ...ctx, sourceMap }
+  const copyCtx: SyncContext = { ...ctx, sourceMap, skipMtimeOptimization }
 
-  const { written, skipped } = await allPages.reduce(
-    async (accPromise, page) => {
-      const counts = await accPromise
+  const pageResults = await Promise.all(
+    allPages.map(async (page) => {
       const entry = await copyPage(page, copyCtx)
       const prevFile = match(previousManifest)
         .with(P.nonNullable, (m) => m.files[entry.outputPath])
@@ -152,14 +173,25 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
         match(prevFile)
           .with(P.nonNullable, (p) => p.contentHash)
           .otherwise(() => {})
-      // oxlint-disable-next-line eslint/no-unused-expressions -- side-effect boundary: manifest is intentionally mutable context accumulated during sync
-      ctx.manifest.files[entry.outputPath] = entry
+      return { entry, isNew }
+    })
+  )
+
+  // Build manifest from collected results
+  const manifestFiles = Object.fromEntries(
+    pageResults.map(({ entry }) => [entry.outputPath, entry])
+  )
+  // oxlint-disable-next-line eslint/no-unused-expressions -- side-effect boundary: manifest is intentionally mutable context accumulated during sync
+  ctx.manifest.files = manifestFiles
+
+  const { written, skipped } = pageResults.reduce(
+    (counts, { isNew }) => {
       if (isNew) {
         return { written: counts.written + 1, skipped: counts.skipped }
       }
       return { written: counts.written, skipped: counts.skipped + 1 }
     },
-    Promise.resolve({ written: 0, skipped: 0 })
+    { written: 0, skipped: 0 }
   )
 
   // 5. Clean stale files
@@ -182,8 +214,14 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     'utf8'
   )
 
-  // 7. Save manifest
-  await saveManifest(outDir, ctx.manifest)
+  // 7. Save manifest with incremental metadata
+  const manifest = {
+    ...ctx.manifest,
+    assetConfigHash,
+    openapiMtimes: openapiResult.specMtimes,
+    resolvedCount: allPages.length,
+  }
+  await saveManifest(outDir, manifest)
 
   // 8. Write bare-bones README in .zpress/ root
   await writeZpressReadme(options.paths.outputRoot)
@@ -269,16 +307,17 @@ async function copyAll(src: string, dest: string): Promise<void> {
   }
   await fs.mkdir(dest, { recursive: true })
   const entries = await fs.readdir(src, { withFileTypes: true })
-  await entries.reduce(async (prevPromise, entry) => {
-    await prevPromise
-    const srcPath = path.resolve(src, entry.name)
-    const destPath = path.resolve(dest, entry.name)
-    if (entry.isDirectory()) {
-      await copyAll(srcPath, destPath)
-    } else {
-      await fs.copyFile(srcPath, destPath)
-    }
-  }, Promise.resolve())
+  await Promise.all(
+    entries.map(async (entry) => {
+      const srcPath = path.resolve(src, entry.name)
+      const destPath = path.resolve(dest, entry.name)
+      if (entry.isDirectory()) {
+        await copyAll(srcPath, destPath)
+      } else {
+        await fs.copyFile(srcPath, destPath)
+      }
+    })
+  )
 }
 
 /**
