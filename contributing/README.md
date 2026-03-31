@@ -6,6 +6,7 @@ Welcome to the zpress contributing docs. This directory contains standards, temp
 
 - **Standards** define the rules -- read the relevant standard before writing code or docs.
 - **Concepts** explain the "what" and "why" behind key architectural decisions.
+- **References** are lookup tables for commands, flags, and APIs.
 - **Guides** are step-by-step walkthroughs for common tasks.
 
 ## Table of Contents
@@ -39,11 +40,19 @@ Welcome to the zpress contributing docs. This directory contains standards, temp
 ### Concepts
 
 - [Architecture](./concepts/architecture.md) -- Package ecosystem, layers, design decisions, data flow
-- [Sync Engine](./concepts/sync-engine.md) -- Pipeline, page transformation, entry resolution, incremental sync
 - [Config](./concepts/config.md) -- Config system, output structure, Rspress integration
-- [CLI](./concepts/cli.md) -- Commands, dev server, file watching, build pipeline
+- [Engine](./concepts/engine/overview.md) -- Sync engine overview, build vs dev, key concepts
+  - [Pipeline](./concepts/engine/pipeline.md) -- Sync pipeline, page transformation, entry resolution
+  - [Incremental Sync](./concepts/engine/incremental.md) -- Mtime skipping, content hashing, structural change detection
+  - [OpenAPI Sync](./concepts/engine/openapi.md) -- Spec dereferencing, MDX generation, caching
+  - [Dev Mode](./concepts/engine/dev.md) -- File watching, debouncing, HMR, config reload
+
+### References
+
+- [CLI](./references/cli.md) -- Command syntax, flags, Rspress integration
 
 ### Guides
 
 - [Getting Started](./guides/getting-started.md) -- Local setup, reading order, Claude Code configuration
 - [Developing a Feature](./guides/developing-a-feature.md) -- Branch, code, test, changeset, PR, merge
+- [Publishing VS Code Extension](./guides/publishing-vscode-extension.md) -- Package and publish the zpress VS Code extension

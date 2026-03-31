@@ -1,18 +1,18 @@
 # Config
 
-The config file (`zpress.config.ts`) is the single source of truth for the entire documentation site.
+The single source of truth for the entire documentation site.
 
-## Loading
+## Overview
 
-Config is loaded via [c12](https://github.com/unjs/c12) and validated at the boundary in `defineConfig()`. Supported formats:
+The config file (`zpress.config.ts`) defines the information architecture -- content structure, navigation, metadata, and workspaces. It is loaded via [c12](https://github.com/unjs/c12) and validated at the boundary in `defineConfig()`. Validation errors exit immediately with a descriptive message.
+
+## Supported Formats
 
 | Format | Files |
 | --- | --- |
 | TypeScript | `zpress.config.ts`, `.mts`, `.cts` |
 | JavaScript | `zpress.config.js`, `.mjs`, `.cjs` |
 | Data | `zpress.config.json`, `.jsonc`, `.yml`, `.yaml` |
-
-Validation errors exit immediately with a descriptive message.
 
 ## Shape
 
@@ -36,22 +36,22 @@ export default defineConfig({
 })
 ```
 
-| Field         | Purpose                                           |
-| ------------- | ------------------------------------------------- |
-| `title`       | Site title, used in hero and metadata             |
-| `description` | Site description for SEO                          |
-| `tagline`     | Hero section subtitle                             |
-| `sections`    | Entry tree defining the information architecture  |
-| `apps`        | Workspace items for application docs              |
-| `packages`    | Workspace items for shared package docs           |
-| `workspaces`  | Custom workspace groups                           |
-| `nav`         | Top-level navigation (`'auto'` or explicit array) |
+| Field | Purpose |
+| --- | --- |
+| `title` | Site title, used in hero and metadata |
+| `description` | Site description for SEO |
+| `tagline` | Hero section subtitle |
+| `sections` | Entry tree defining the information architecture |
+| `apps` | Workspace items for application docs |
+| `packages` | Workspace items for shared package docs |
+| `workspaces` | Custom workspace groups |
+| `nav` | Top-level navigation (`'auto'` or explicit array) |
 
 ## Output Structure
 
 The sync engine writes everything to `.zpress/`:
 
-```
+```tree
 .zpress/
 ├── content/                 # Synced markdown + generated MDX (Rspress root)
 │   ├── index.md             # Home page (auto-generated or from source)
@@ -80,5 +80,5 @@ Rspress's root is set to `.zpress/content/`. It never sees the original repo lay
 ## References
 
 - [Architecture](./architecture.md)
-- [Sync Engine](./sync-engine.md)
-- [CLI](./cli.md)
+- [Engine](./engine/overview.md)
+- [CLI Reference](../references/cli.md)
