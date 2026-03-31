@@ -58,7 +58,8 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
   const configResults = await Promise.all(allConfigs.map((entry) => syncOpenAPI(entry.config, ctx)))
 
   const specMtimes = configResults.reduce<Record<string, number>>(
-    (acc, result) => ({ ...acc, ...result.specMtimes }),
+    // oxlint-disable-next-line unicorn/no-accumulating-spread -- Object.assign avoids O(n^2) copies
+    (acc, result) => Object.assign(acc, result.specMtimes),
     {}
   )
 
