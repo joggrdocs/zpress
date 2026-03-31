@@ -56,9 +56,11 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
      * @private
      * Wraps a state setter so it becomes a no-op after the effect cleanup runs.
      */
-    const guard = <T,>(setter: (value: T) => void) => (value: T) => {
-      if (!cancelled) {
-        setter(value)
+    function guard<T>(setter: (value: T) => void): (value: T) => void {
+      return (value: T) => {
+        if (!cancelled) {
+          setter(value)
+        }
       }
     }
 
