@@ -45,7 +45,9 @@ interface ServerInstance {
  * Internal options for `startServer` that control rebuild behaviour.
  */
 interface StartServerOptions {
-  /** When true, disables the persistent build cache for this invocation. */
+  /**
+   * When true, disables the persistent build cache for this invocation.
+   */
   readonly skipBuildCache: boolean
 }
 
@@ -55,18 +57,24 @@ interface StartServerOptions {
 export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
 
 /**
+ * Result returned by `startDevServer` containing the reload callback and resolved port.
+ */
+export interface DevServerResult {
+  readonly onConfigReload: OnConfigReload
+  readonly port: number
+}
+
+/**
  * Start the Rspress dev server with zpress configuration.
  *
- * Returns a callback that will restart the server when invoked with updated config.
- * The callback closes the current server instance and starts a new one with the
- * fresh configuration values.
+ * Returns the resolved port and a callback that will restart the server when
+ * invoked with updated config. The callback closes the current server instance
+ * and starts a new one with the fresh configuration values.
  *
  * @param options - Dev server configuration including config and paths
- * @returns An async callback to invoke when config changes with new config (restarts server)
+ * @returns The resolved port and an async reload callback
  */
-export async function startDevServer(
-  options: ServerOptions
-): Promise<(newConfig: ZpressConfig) => Promise<void>> {
+export async function startDevServer(options: ServerOptions): Promise<DevServerResult> {
   const { paths } = options
   // Resolve port once so restarts reuse the same port
   const preferred = options.port ?? DEV_PORT
@@ -116,8 +124,8 @@ export async function startDevServer(
     process.exit(1)
   }
 
-  // Return callback that restarts server with new config
-  return async (newConfig: ZpressConfig) => {
+  // Return resolved port and callback that restarts server with new config
+  async function handleConfigReload(newConfig: ZpressConfig): Promise<void> {
     process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
 
     // Close existing server and wait for port release
@@ -152,6 +160,8 @@ export async function startDevServer(
       process.stderr.write('⚠️  Dev server failed to restart — fix the config and save again\n\n')
     }
   }
+
+  return { onConfigReload: handleConfigReload, port }
 }
 
 /**
