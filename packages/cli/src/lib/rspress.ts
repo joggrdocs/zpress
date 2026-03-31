@@ -150,6 +150,14 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
         ])
       }
       serverInstance = null
+
+      // Rspack's file-based storage layer (rspack_storage) holds a transaction
+      // lock on .temp/ inside the cache directory. Rsbuild's close() resolves
+      // before that lock is fully released. Without this settle window the new
+      // dev() call panics with "Transaction already in progress".
+      const RSPACK_SETTLE_MS = 500
+      // oxlint-disable-next-line no-promise-executor-return -- settle delay is intentional
+      await new Promise((resolve) => setTimeout(resolve, RSPACK_SETTLE_MS))
     }
 
     // Start new server with fresh config (bypass persistent cache)
