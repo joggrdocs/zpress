@@ -29,6 +29,17 @@ export default defineConfig({
       },
     },
   ],
+  tools: {
+    swc: {
+      jsc: {
+        transform: {
+          react: {
+            runtime: 'automatic',
+          },
+        },
+      },
+    },
+  },
   output: {
     target: 'node',
     cleanDistPath: true,
