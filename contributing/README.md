@@ -38,7 +38,9 @@ Welcome to the zpress contributing docs. This directory contains standards, temp
 
 ### Concepts
 
-- [Architecture](./concepts/architecture.md) -- Package ecosystem, sync engine, UI theme, data flow
+- [Architecture](./concepts/architecture.md) -- Package ecosystem, layers, design decisions, data flow
+- [Sync Engine](./concepts/sync-engine.md) -- Pipeline, page transformation, entry resolution, incremental sync
+- [Config](./concepts/config.md) -- Config system, output structure, Rspress integration
 - [CLI](./concepts/cli.md) -- Commands, dev server, file watching, build pipeline
 
 ### Guides

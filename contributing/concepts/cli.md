@@ -47,19 +47,22 @@ The `--clean` flag removes cache, content, and dist before starting.
 
 #### File Watching
 
-The watcher (`packages/cli/src/lib/watcher.ts`) monitors:
+The watcher (`packages/cli/src/lib/watcher.ts`) uses Node.js native `fs.watch` with `recursive: true` -- a single FSEvents subscription on macOS, a single inotify recursive watch on Linux (Node 22+). It monitors the entire repo root and filters events in the callback.
 
-- **Glob entries** -- Parent directories of glob patterns (chokidar handles recursion)
-- **Single-file entries** -- Individual source files
-- **Config file** -- `zpress.config.ts` (triggers config reload on next sync)
-- **Planning directory** -- Optional `.planning/` directory
+**Ignored directories:** `node_modules`, `.git`, `.zpress`, `dist`, `.turbo`, `bundle`
 
-Watch behavior:
+| Event | Trigger | What happens |
+| --- | --- | --- |
+| `.md`/`.mdx` change | 150ms debounce | Incremental `sync()` -- unchanged pages skipped via mtime + content hash |
+| `zpress.config.*` change (repo root only) | 150ms debounce | Reload config → full `sync()` → restart Rspress dev server (clears build cache) |
+| Non-markdown file change | -- | Ignored |
+| Files in ignored dirs | -- | Dropped silently |
 
-- Markdown file changes (add, change, remove) trigger a debounced re-sync (150ms)
-- Config file changes reload the config object for the next sync cycle
-- Duplicate watch paths are deduplicated (child paths under a watched parent are skipped)
-- Concurrent syncs are prevented -- if a sync is running, the next change queues a pending resync
+**Concurrency:** If a sync is already running, the next change queues a pending resync. Config reload state is tracked across queued syncs so a content change followed by a config change still triggers a full reload. After 5 consecutive sync failures, pending resyncs are dropped until the next file change.
+
+**Rspress restart:** When a config change triggers a reload, the watcher invokes `onConfigReload` after sync completes. This restarts the Rspress dev server with a fresh config (disabling persistent build cache so title/theme/color changes take effect). Content-only changes do not restart Rspress -- its HMR picks up the updated files directly.
+
+**OpenAPI cache:** A shared `Map<string, unknown>` is created once in the `dev` command and threaded through all sync passes. Dereferenced OpenAPI specs persist in the cache across resyncs. The cache is cleared on config reload to force re-parsing.
 
 ### `build`
 
@@ -135,18 +138,19 @@ All functions receive a Rspress config object built by `createRspressConfig()` f
 2. Create paths (.zpress/)
 3. Load config (c12)
 4. Clean (optional: remove cache/content/dist)
-5. Run initial sync
+5. Create shared OpenAPI cache
+6. Run initial sync (full)
    └── resolve entries → write content → generate sidebar/nav → save manifest
-6. Create file watcher (chokidar)
-   ├── Watch source directories from config
-   ├── Watch config file for reloads
-   └── Watch .planning/ (optional)
 7. Start Rspress dev server (:6174)
-8. On file change:
+8. Create file watcher (fs.watch, recursive: true)
+9. On markdown change:
    ├── Debounce 150ms
-   ├── If config changed → reload config
-   ├── Re-sync (incremental, skips unchanged pages)
+   ├── Incremental sync (skips unchanged pages via mtime + hash)
    └── Rspress HMR picks up content changes
+10. On config change:
+    ├── Debounce 150ms
+    ├── Reload config → clear OpenAPI cache → full sync
+    └── Restart Rspress dev server (clears build cache)
 ```
 
 ### `zpress build` (detailed)
