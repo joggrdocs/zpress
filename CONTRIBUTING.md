@@ -65,7 +65,7 @@ Write clear, concise descriptions in the imperative mood ("add feature" not "add
 
 ## Project Structure
 
-```
+```text
 packages/
 ├── cli/              # @zpress/cli — CLI commands, watcher, Rspress integration
 ├── core/             # @zpress/core — config loading, sync engine, sidebar/nav generation

@@ -75,13 +75,13 @@ flowchart LR
 
 **Build** (`zpress build`) runs a single sync pass:
 
-```
+```text
 loadConfig() --> sync() --> createRspressConfig() --> rspress build() --> .zpress/dist/
 ```
 
 **Dev** (`zpress dev`) runs sync then enters a watch loop:
 
-```
+```text
 loadConfig() --> sync() --> createRspressConfig() --> rspress dev() --> watcher
 ```
 

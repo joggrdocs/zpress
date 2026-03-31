@@ -57,10 +57,10 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
 
   const configResults = await Promise.all(allConfigs.map((entry) => syncOpenAPI(entry.config, ctx)))
 
-  const specMtimes = Object.assign(
-    {},
-    ...configResults.map((result) => result.specMtimes)
-  ) as Record<string, number>
+  const specMtimes = configResults.reduce<Record<string, number>>(
+    (acc, result) => ({ ...acc, ...result.specMtimes }),
+    {}
+  )
 
   return {
     sidebar: configResults.map((result, index) => ({
