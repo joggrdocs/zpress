@@ -53,12 +53,6 @@ const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
   const { config, paths, logLevel, vscode } = options
 
-  const sidebar = loadGenerated({
-    contentDir: paths.contentDir,
-    name: 'sidebar.json',
-    fallback: {},
-  })
-  const nav = loadGenerated({ contentDir: paths.contentDir, name: 'nav.json', fallback: [] })
   const workspaces = loadGenerated({
     contentDir: paths.contentDir,
     name: 'workspaces.json',
@@ -155,8 +149,6 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     },
 
     themeConfig: {
-      sidebar,
-      nav,
       darkMode: colorMode === 'toggle',
       search: true,
       // Custom zpress data injected alongside standard Rspress themeConfig.

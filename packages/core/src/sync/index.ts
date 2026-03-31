@@ -19,8 +19,8 @@ import { resolveEntries } from './resolve/index.ts'
 import { buildSourceMap } from './rewrite-links.ts'
 import { generateNav } from './sidebar/index.ts'
 import { injectLandingPages } from './sidebar/inject.ts'
-import { buildMultiSidebar } from './sidebar/multi.ts'
-import type { PageData, ResolvedEntry, SyncContext } from './types.ts'
+import { writeMetaFiles } from './sidebar/write-meta.ts'
+import type { PageData, ResolvedEntry, SidebarItem, SyncContext } from './types.ts'
 import { enrichWorkspaceCards, synthesizeWorkspaceSections } from './workspace.ts'
 
 /**
@@ -199,20 +199,26 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     .with(P.nonNullable, async (m) => await cleanStaleFiles(outDir, m, ctx.manifest))
     .otherwise(() => Promise.resolve(0))
 
-  // 6. Generate sidebar + nav
-  const sortedSidebar = buildMultiSidebar(resolved, openapiResult.sidebar)
+  // 6. Generate nav + write Rspress-native _meta.json / _nav.json
   const nav = generateNav(config, resolved)
+  await writeMetaFiles({
+    contentDir: outDir,
+    entries: resolved,
+    nav,
+    openapiEntries: openapiResult.sidebar,
+  })
 
-  await fs.writeFile(
-    path.resolve(outDir, '.generated/sidebar.json'),
-    JSON.stringify(sortedSidebar, null, 2),
-    'utf8'
-  )
-  await fs.writeFile(
-    path.resolve(outDir, '.generated/nav.json'),
-    JSON.stringify(nav, null, 2),
-    'utf8'
-  )
+  // 6.1 Write sidebar.json + nav.json snapshots for tooling / debugging.
+  // Rspress no longer reads these (sidebar/nav come from _meta.json/_nav.json),
+  // but they provide a single-file view of the resolved structure.
+  await Promise.all([
+    fs.writeFile(
+      path.resolve(outDir, '.generated/sidebar.json'),
+      JSON.stringify(buildSidebarSnapshot(resolved), null, 2),
+      'utf8'
+    ),
+    fs.writeFile(path.resolve(outDir, '.generated/nav.json'), JSON.stringify(nav, null, 2), 'utf8'),
+  ])
 
   // 7. Save manifest with incremental metadata
   const manifest = {
@@ -359,4 +365,91 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
  */
 function buildAssetConfig(config: ZpressConfig): AssetConfig {
   return { title: config.title ?? 'Documentation', tagline: config.tagline }
+}
+
+/**
+ * Build a flat sidebar snapshot from the resolved entry tree.
+ *
+ * Produces a `Record<string, SidebarItem[]>` keyed by top-level section
+ * link (or `"/"` for non-standalone sections). Used only for the
+ * `.generated/sidebar.json` snapshot — Rspress reads `_meta.json` instead.
+ *
+ * @private
+ * @param entries - Resolved entry tree
+ * @returns Sidebar record suitable for JSON serialization
+ */
+function buildSidebarSnapshot(entries: readonly ResolvedEntry[]): Record<string, unknown[]> {
+  const rootEntries = entries.filter((e) => !e.standalone)
+  const standaloneEntries = entries.filter((e) => e.standalone && e.link)
+
+  const sidebar: Record<string, unknown[]> = {
+    '/': entriesToSidebarItems(rootEntries) as unknown[],
+  }
+
+  standaloneEntries.reduce<Record<string, unknown[]>>((acc, entry) => {
+    const key = entry.link as string
+    // oxlint-disable-next-line functional/immutable-data -- building snapshot record
+    acc[key] = entriesToSidebarItems(entry.items ?? []) as unknown[]
+    return acc
+  }, sidebar)
+
+  return sidebar
+}
+
+/**
+ * Recursively convert resolved entries to sidebar items for the snapshot.
+ *
+ * @private
+ * @param items - Resolved entries to convert
+ * @returns Flat sidebar items array
+ */
+function entriesToSidebarItems(items: readonly ResolvedEntry[]): readonly SidebarItem[] {
+  return items.filter((e) => !e.hidden).map(entryToSidebarItem)
+}
+
+/**
+ * Convert a single resolved entry to a sidebar item.
+ *
+ * @private
+ * @param entry - Resolved entry to convert
+ * @returns Sidebar item with text, optional link, and optional children
+ */
+function entryToSidebarItem(entry: ResolvedEntry): SidebarItem {
+  if (entry.items && entry.items.length > 0) {
+    return {
+      text: entry.title,
+      ...maybeSidebarLink(entry.link),
+      ...maybeSidebarCollapsed(entry.collapsible),
+      items: entriesToSidebarItems(entry.items),
+    }
+  }
+  return { text: entry.title, link: entry.link }
+}
+
+/**
+ * Return a link property if defined.
+ *
+ * @private
+ * @param link - Optional link string
+ * @returns Object with link, or empty object
+ */
+function maybeSidebarLink(link: string | undefined): { readonly link?: string } {
+  if (link) {
+    return { link }
+  }
+  return {}
+}
+
+/**
+ * Return a collapsed property if collapsible is true.
+ *
+ * @private
+ * @param collapsible - Optional collapsible flag
+ * @returns Object with collapsed flag, or empty object
+ */
+function maybeSidebarCollapsed(collapsible: boolean | undefined): { readonly collapsed?: true } {
+  if (collapsible) {
+    return { collapsed: true as const }
+  }
+  return {}
 }

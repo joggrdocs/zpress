@@ -89,6 +89,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
     const rspressConfig = createRspressConfig({
       config,
       paths,
+      logLevel: 'silent',
       vscode: options.vscode,
       themeOverride: options.theme,
       colorModeOverride: options.colorMode,
@@ -103,6 +104,10 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
           server: {
             port,
             strictPort: true,
+          },
+          dev: {
+            // Suppress Rsbuild's progress bar — zpress TUI renders its own status
+            progressBar: false,
           },
           // Disable persistent build cache on config-reload restarts.
           // Rspress's cacheDigest only covers sidebar/nav structure,

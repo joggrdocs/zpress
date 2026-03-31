@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { watch } from 'node:fs'
 import path from 'node:path'
 
@@ -66,6 +67,7 @@ export function createWatcher(params: {
     callbacks.onStatusChange({ _tag: 'syncing', isConfigReload: reloadConfig })
     // oxlint-disable-next-line functional/no-let -- tracks whether this sync included a config reload
     let didReloadConfig = false
+    const previousConfig = config
     try {
       if (reloadConfig) {
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
@@ -82,13 +84,13 @@ export function createWatcher(params: {
           openapiCache.clear()
         }
       }
-      if (didReloadConfig) {
-        callbacks.onStatusChange({ _tag: 'restarting' })
-      }
       const result = await sync(config, { paths, quiet: true, openapiCache })
       consecutiveFailures = 0
       callbacks.onSyncComplete(result)
-      if (didReloadConfig && onConfigReload) {
+      // Only restart the dev server when restart-relevant fields changed.
+      // Sidebar/nav changes are picked up by Rspress via _meta.json/_nav.json HMR.
+      if (didReloadConfig && onConfigReload && needsServerRestart(previousConfig, config)) {
+        callbacks.onStatusChange({ _tag: 'restarting' })
         await onConfigReload(config)
         callbacks.onConfigReloaded()
       }
@@ -197,4 +199,46 @@ function isMarkdownFile(filePath: string): boolean {
  */
 function isIgnored(filePath: string): boolean {
   return filePath.split(path.sep).some((segment) => IGNORED_DIRS.has(segment))
+}
+
+/**
+ * Check whether a config change requires a full dev server restart.
+ *
+ * Sidebar/nav structure changes are handled by Rspress HMR via `_meta.json`
+ * and `_nav.json` files. Only changes to fields that affect `source.define`,
+ * theme CSS, or other Rsbuild-level config require a restart.
+ *
+ * @private
+ * @param prev - Previous zpress config
+ * @param next - New zpress config after reload
+ * @returns True if the server must restart
+ */
+function needsServerRestart(prev: ZpressConfig, next: ZpressConfig): boolean {
+  return restartRelevantHash(prev) !== restartRelevantHash(next)
+}
+
+/**
+ * Hash the config fields that require a server restart when changed.
+ *
+ * Excludes `sections`, `nav`, `apps`, `packages`, and `workspaces` since
+ * those only affect sidebar/nav structure handled by `_meta.json`/`_nav.json`.
+ *
+ * @private
+ * @param config - Zpress config to hash
+ * @returns SHA-256 hex digest of restart-relevant fields
+ */
+function restartRelevantHash(config: ZpressConfig): string {
+  const relevant = {
+    title: config.title,
+    description: config.description,
+    tagline: config.tagline,
+    icon: config.icon,
+    theme: config.theme,
+    sidebar: config.sidebar,
+    socialLinks: config.socialLinks,
+    footer: config.footer,
+    home: config.home,
+    openapi: config.openapi,
+  }
+  return createHash('sha256').update(JSON.stringify(relevant)).digest('hex')
 }
