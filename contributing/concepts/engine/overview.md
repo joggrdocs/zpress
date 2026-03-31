@@ -68,7 +68,7 @@ flowchart LR
 - **Config-driven** -- The config defines the entire information architecture. No separate sidebar or nav config files.
 - **Glob-driven discovery** -- Patterns auto-discover files without manual entry per page.
 - **Virtual pages** -- Landing pages and home pages are generated as MDX at sync time.
-- **Multi-sidebar** -- Root entries share `/`, isolated sections get their own namespace (e.g., `/apps/api/`).
+- **Multi-sidebar** -- Root entries share `/`, isolated sections use distinct namespaces (e.g., `/apps/api/`).
 - **Incremental** -- Mtime checks, content hashes, and config hashes skip unchanged work between syncs.
 
 ## Build vs Dev

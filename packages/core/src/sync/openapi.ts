@@ -58,8 +58,7 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
   const configResults = await Promise.all(allConfigs.map((entry) => syncOpenAPI(entry.config, ctx)))
 
   const specMtimes = configResults.reduce<Record<string, number>>(
-    // oxlint-disable-next-line functional/immutable-data -- mutating accumulator is idiomatic for reduce
-    (acc, result) => Object.assign(acc, result.specMtimes),
+    (acc, result) => ({ ...acc, ...result.specMtimes }),
     {}
   )
 
@@ -157,8 +156,15 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
       console.warn(`[zpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
       return null
     })
+    if (parsed === null) {
+      // Evict stale cache entry so the next pass retries instead of serving stale output
+      if (ctx.openapiCache) {
+        ctx.openapiCache.delete(specRelPath)
+      }
+      return null
+    }
     // Populate cache on successful parse
-    if (parsed !== null && ctx.openapiCache) {
+    if (ctx.openapiCache) {
       ctx.openapiCache.set(specRelPath, parsed)
     }
     return parsed

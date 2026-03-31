@@ -47,18 +47,16 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   const watcherRef = useRef<WatcherHandle | null>(null)
   const openapiCacheRef = useRef(new Map<string, unknown>())
+  const cancelledRef = useRef(false)
 
   useEffect(() => {
-    // oxlint-disable-next-line functional/no-let -- mutable flag to prevent state updates after cleanup
-    let cancelled = false
-
     /**
      * @private
      * Wraps a state setter so it becomes a no-op after the effect cleanup runs.
      */
     function guard<T>(setter: (value: T) => void): (value: T) => void {
       return (value: T) => {
-        if (!cancelled) {
+        if (!cancelledRef.current) {
           setter(value)
         }
       }
@@ -81,8 +79,8 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
       const openapiCache = openapiCacheRef.current
 
       try {
-        const initialResult = await sync(config, { paths, quiet: true, openapiCache })
-        if (cancelled) {
+        const initialResult = await sync(config, { paths, quiet: props.quiet ?? true, openapiCache })
+        if (cancelledRef.current) {
           return
         }
         guard(setLastSync)(initialResult)
@@ -102,7 +100,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           vscode: props.vscode,
         })
 
-        if (cancelled) {
+        if (cancelledRef.current) {
           return
         }
 
@@ -136,7 +134,8 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     init()
 
     return () => {
-      cancelled = true
+      // oxlint-disable-next-line functional/immutable-data -- ref mutation for unmount guard
+      cancelledRef.current = true
       if (watcherRef.current) {
         watcherRef.current.close()
       }
