@@ -81,3 +81,6 @@ export type { OpenAPIOverviewProps } from './components/openapi'
 // Home page overrides — shadow the wildcard re-exports from theme-original
 export { HomeFeature } from './components/home/feature'
 export { HomeLayout } from './components/home/layout'
+
+// Sidebar override — multi-scope filtering for standalone sections
+export { Sidebar } from './components/sidebar/sidebar-scope'

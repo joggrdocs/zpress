@@ -120,11 +120,19 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // 2.1 Write workspace data (always — independent of home page strategy)
   const workspaceResult = buildWorkspaceData(config)
-  await fs.writeFile(
-    path.resolve(outDir, '.generated/workspaces.json'),
-    JSON.stringify(workspaceResult.data, null, 2),
-    'utf8'
-  )
+  const standaloneScopePaths = collectStandaloneScopePaths(resolved)
+  await Promise.all([
+    fs.writeFile(
+      path.resolve(outDir, '.generated/workspaces.json'),
+      JSON.stringify(workspaceResult.data, null, 2),
+      'utf8'
+    ),
+    fs.writeFile(
+      path.resolve(outDir, '.generated/scopes.json'),
+      JSON.stringify(standaloneScopePaths, null, 2),
+      'utf8'
+    ),
+  ])
 
   // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
@@ -353,6 +361,22 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
     return [...pages, page]
   }
   return [...pages]
+}
+
+/**
+ * Collect standalone sidebar scope paths from resolved entries.
+ *
+ * Returns an array of link paths (e.g. `["/packages", "/contributing"]`)
+ * for sections that have `standalone: true`. These paths are written to
+ * `.generated/scopes.json` and consumed at runtime by the custom Sidebar
+ * component to isolate standalone sections into their own sidebar scope.
+ *
+ * @private
+ * @param entries - Top-level resolved entries
+ * @returns Array of standalone scope path strings
+ */
+function collectStandaloneScopePaths(entries: readonly ResolvedEntry[]): readonly string[] {
+  return entries.filter((e) => e.standalone && e.link).map((e) => e.link as string)
 }
 
 /**

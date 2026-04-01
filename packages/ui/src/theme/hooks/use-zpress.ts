@@ -38,6 +38,7 @@ interface ZpressThemeConfig {
   readonly sidebarAbove: readonly ZpressSidebarLink[] | undefined
   readonly sidebarBelow: readonly ZpressSidebarLink[] | undefined
   readonly workspaces: readonly WorkspaceGroupData[] | undefined
+  readonly standaloneScopePaths: readonly string[] | undefined
   readonly home: HomeConfig | undefined
   readonly zpressFooter: FooterConfig | undefined
 }

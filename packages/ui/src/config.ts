@@ -58,6 +58,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     name: 'workspaces.json',
     fallback: [],
   })
+  const standaloneScopePaths = loadGenerated<readonly string[]>({
+    contentDir: paths.contentDir,
+    name: 'scopes.json',
+    fallback: [],
+  })
   const gitBranch = detectGitBranch()
 
   const themeName = resolveThemeName(config, options.themeOverride)
@@ -153,7 +158,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       search: true,
       // Custom zpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
-      ...({ workspaces } as Record<string, unknown>),
+      ...({ workspaces, standaloneScopePaths } as Record<string, unknown>),
       ...({
         socialLinks: config.socialLinks,
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
