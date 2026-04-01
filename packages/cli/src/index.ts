@@ -41,6 +41,8 @@ await cli({
       clean: cleanCommand,
       dump: dumpCommand,
     },
+  },
+  help: {
     order: ['setup', 'dev', 'build', 'serve', 'check', 'diff', 'draft', 'clean', 'dump'],
   },
 })

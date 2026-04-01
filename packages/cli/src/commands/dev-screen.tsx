@@ -1,5 +1,15 @@
-import { Spinner } from '@inkjs/ui'
-import { Box, Newline, Spacer, Text, useApp, useInput } from '@kidd-cli/core/ui'
+import {
+  Alert,
+  Box,
+  Spacer,
+  Spinner,
+  StatusMessage,
+  Text,
+  useApp,
+  useFullScreen,
+  useHotkey,
+  useInput,
+} from '@kidd-cli/core/ui'
 import type { SyncResult } from '@zpress/core'
 import { createPaths, loadConfig, sync } from '@zpress/core'
 import { useEffect, useRef, useState } from 'react'
@@ -29,7 +39,7 @@ interface DevScreenProps {
 /**
  * React/Ink TUI for the `zpress dev` command.
  *
- * Renders a live status display with watcher state, sync results,
+ * Renders a fullscreen status display with watcher state, sync results,
  * and hotkey bar. Falls back to plain text in non-TTY environments.
  *
  * @param props - Parsed CLI options
@@ -37,6 +47,7 @@ interface DevScreenProps {
  */
 export function DevScreen(props: DevScreenProps): React.ReactElement {
   const { exit } = useApp()
+  const { columns } = useFullScreen()
 
   const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading')
   const [errorMessage, setErrorMessage] = useState('')
@@ -79,7 +90,11 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
       const openapiCache = openapiCacheRef.current
 
       try {
-        const initialResult = await sync(config, { paths, quiet: props.quiet ?? true, openapiCache })
+        const initialResult = await sync(config, {
+          paths,
+          quiet: props.quiet ?? true,
+          openapiCache,
+        })
         if (cancelledRef.current) {
           return
         }
@@ -142,26 +157,35 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     }
   }, [])
 
+  useHotkey({
+    keys: ['r'],
+    action: () => {
+      if (watcherRef.current) {
+        watcherRef.current.resync()
+      }
+    },
+    active: phase === 'ready' && isTTY,
+  })
+
+  useHotkey({
+    keys: ['c'],
+    action: () => {
+      process.stdout.write('\u001B[2J\u001B[H')
+    },
+    active: phase === 'ready' && isTTY,
+  })
+
+  useHotkey({
+    keys: ['o'],
+    action: () => {
+      openBrowser(`http://localhost:${port}`)
+    },
+    active: phase === 'ready' && isTTY,
+  })
+
   useInput(
     (input, key) => {
       if (phase !== 'ready') {
-        return
-      }
-
-      if (input === 'r') {
-        if (watcherRef.current) {
-          watcherRef.current.resync()
-        }
-        return
-      }
-
-      if (input === 'c') {
-        process.stdout.write('\u001B[2J\u001B[H')
-        return
-      }
-
-      if (input === 'o') {
-        openBrowser(`http://localhost:${port}`)
         return
       }
 
@@ -177,63 +201,110 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   if (phase === 'error') {
     return (
-      <Box flexDirection="column">
-        <Text bold color="red">
-          zpress dev failed
-        </Text>
-        <Text color="red">{errorMessage}</Text>
+      <Box flexDirection="column" padding={1}>
+        <Alert variant="error" title="Dev Server Error" width={Math.min(columns, 80)}>
+          {errorMessage}
+        </Alert>
       </Box>
     )
   }
 
   if (phase === 'loading') {
     return (
-      <Box>
-        <Spinner label="Starting zpress dev..." />
+      <Box flexDirection="column" padding={1}>
+        <Box flexDirection="column" gap={1}>
+          <Text bold color="cyan">
+            zpress dev
+          </Text>
+          <Spinner label="Starting dev server..." type="dots" />
+        </Box>
       </Box>
     )
   }
 
   return (
-    <Box flexDirection="column">
+    <Box flexDirection="column" padding={1}>
+      {/* Header */}
       <Box>
-        <Text bold> zpress dev</Text>
+        <Text bold color="cyan">
+          zpress dev
+        </Text>
         <Spacer />
-        <Text dimColor>:{port}</Text>
+        <Text dimColor>
+          http://localhost:<Text color="cyan">{port}</Text>
+        </Text>
       </Box>
 
-      <Box>
+      <Box marginTop={1} flexDirection="column" gap={0}>
+        {/* Watcher status */}
         {match(watcherStatus)
-          .with({ _tag: 'idle' }, () => <Text dimColor>Watching</Text>)
-          .with({ _tag: 'syncing' }, () => <Spinner label="Syncing..." />)
-          .with({ _tag: 'restarting' }, () => <Spinner label="Restarting..." />)
-          .with({ _tag: 'error' }, (s) => <Text color="red">{s.message}</Text>)
+          .with({ _tag: 'idle' }, () => (
+            <StatusMessage variant="success">Watching for changes</StatusMessage>
+          ))
+          .with({ _tag: 'syncing' }, () => <Spinner label="Syncing..." type="dots" />)
+          .with({ _tag: 'restarting' }, () => <Spinner label="Restarting server..." type="dots" />)
+          .with({ _tag: 'error' }, (s) => (
+            <StatusMessage variant="error">{s.message}</StatusMessage>
+          ))
           .exhaustive()}
+
+        {/* Last changed file */}
+        {lastFile !== null && (
+          <Box>
+            <Text dimColor> changed </Text>
+            <Text>{lastFile}</Text>
+          </Box>
+        )}
+
+        {/* Sync stats */}
+        {lastSync !== null && (
+          <Box>
+            <Text dimColor>
+              {'  '}
+              {lastSync.pagesWritten} written · {lastSync.pagesSkipped} skipped ·{' '}
+              {lastSync.pagesRemoved} removed · {Math.round(lastSync.elapsed)}ms
+            </Text>
+          </Box>
+        )}
       </Box>
 
-      {lastFile !== null && (
-        <Box>
-          <Text dimColor>{lastFile}</Text>
-        </Box>
-      )}
-
-      {lastSync !== null && (
-        <Box>
-          <Text>
-            {lastSync.pagesWritten} written · {lastSync.pagesSkipped} skipped ·{' '}
-            {lastSync.pagesRemoved} removed · {Math.round(lastSync.elapsed)}ms
-          </Text>
-        </Box>
-      )}
-
+      {/* Hotkey bar */}
       {isTTY && (
-        <>
-          <Newline />
-          <Box>
-            <Text dimColor>r resync · c clear · o open · q quit</Text>
-          </Box>
-        </>
+        <Box marginTop={1}>
+          <HotkeyHint label="r" description="resync" />
+          <Text dimColor> · </Text>
+          <HotkeyHint label="o" description="open" />
+          <Text dimColor> · </Text>
+          <HotkeyHint label="c" description="clear" />
+          <Text dimColor> · </Text>
+          <HotkeyHint label="q" description="quit" />
+        </Box>
       )}
     </Box>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Render a single hotkey hint (e.g. "r resync").
+ *
+ * @private
+ * @param props - Label and description for the hotkey
+ * @returns React element with styled hotkey hint
+ */
+function HotkeyHint(props: {
+  readonly label: string
+  readonly description: string
+}): React.ReactElement {
+  return (
+    <Text>
+      <Text bold color="cyan">
+        {props.label}
+      </Text>
+      <Text dimColor> {props.description}</Text>
+    </Text>
   )
 }
