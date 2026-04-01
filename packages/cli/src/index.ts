@@ -22,6 +22,7 @@ import { draftCommand } from './commands/draft.ts'
 import { dumpCommand } from './commands/dump.ts'
 import { serveCommand } from './commands/serve.ts'
 import { setupCommand } from './commands/setup.ts'
+import { storiesCommand } from './commands/stories.ts'
 
 declare const ZPRESS_VERSION: string
 
@@ -40,9 +41,10 @@ await cli({
       draft: draftCommand,
       clean: cleanCommand,
       dump: dumpCommand,
+      stories: storiesCommand,
     },
   },
   help: {
-    order: ['setup', 'dev', 'build', 'serve', 'check', 'diff', 'draft', 'clean', 'dump'],
+    order: ['setup', 'dev', 'build', 'serve', 'check', 'diff', 'draft', 'clean', 'dump', 'stories'],
   },
 })
