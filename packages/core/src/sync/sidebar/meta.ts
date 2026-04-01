@@ -67,6 +67,35 @@ export interface MetaDirectory {
 }
 
 /**
+ * Build the root `_meta.json` items for the content directory.
+ *
+ * Rspress creates a separate sidebar per top-level directory by default.
+ * A root `_meta.json` listing all sections as `dir` items tells Rspress
+ * to generate a single unified sidebar (keyed by `"/"`) instead, with
+ * full HMR support for sidebar changes.
+ *
+ * @param entries - Top-level resolved entries (sections)
+ * @returns Root meta items for the content-level `_meta.json`
+ */
+export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaItem[] {
+  return entries
+    .filter((e) => !e.hidden)
+    .flatMap((entry) => {
+      const name = resolveDirName(entry)
+      if (name === null) {
+        return []
+      }
+      return [
+        {
+          type: 'dir' as const,
+          name,
+          label: entry.title,
+        },
+      ]
+    })
+}
+
+/**
  * Build all `_meta.json` directory entries from a resolved entry tree.
  *
  * Uses a filesystem-first approach: each entry is placed in the `_meta.json`

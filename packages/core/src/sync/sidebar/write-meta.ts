@@ -13,7 +13,7 @@ import path from 'node:path'
 import type { OpenAPISidebarEntry } from '../openapi.ts'
 import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
 import type { MetaItem, MetaSectionHeaderItem } from './meta.ts'
-import { buildMetaDirectories } from './meta.ts'
+import { buildMetaDirectories, buildRootMeta } from './meta.ts'
 
 /**
  * Options for writing meta files.
@@ -55,11 +55,14 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
 
   const sectionDirectories = buildMetaDirectories(entries)
   const openapiDirectories = openapiEntries.flatMap(buildOpenapiMetaDirectory)
+  const rootMeta = buildRootMeta(entries)
 
   const allDirectories = [...sectionDirectories, ...openapiDirectories]
 
   await Promise.all([
-    // Write _meta.json for each directory
+    // Write root _meta.json (unified sidebar for non-standalone sections)
+    fs.writeFile(path.resolve(contentDir, '_meta.json'), JSON.stringify(rootMeta, null, 2), 'utf8'),
+    // Write _meta.json for each subdirectory
     ...allDirectories.map(async (dir) => {
       const metaPath = path.resolve(contentDir, dir.dirPath, '_meta.json')
       await fs.mkdir(path.dirname(metaPath), { recursive: true })

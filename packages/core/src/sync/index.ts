@@ -379,21 +379,9 @@ function buildAssetConfig(config: ZpressConfig): AssetConfig {
  * @returns Sidebar record suitable for JSON serialization
  */
 function buildSidebarSnapshot(entries: readonly ResolvedEntry[]): Record<string, unknown[]> {
-  const rootEntries = entries.filter((e) => !e.standalone)
-  const standaloneEntries = entries.filter((e) => e.standalone && e.link)
-
-  const sidebar: Record<string, unknown[]> = {
-    '/': entriesToSidebarItems(rootEntries) as unknown[],
+  return {
+    '/': entriesToSidebarItems(entries) as unknown[],
   }
-
-  standaloneEntries.reduce<Record<string, unknown[]>>((acc, entry) => {
-    const key = entry.link as string
-    // oxlint-disable-next-line functional/immutable-data -- building snapshot record
-    acc[key] = entriesToSidebarItems(entry.items ?? []) as unknown[]
-    return acc
-  }, sidebar)
-
-  return sidebar
 }
 
 /**
