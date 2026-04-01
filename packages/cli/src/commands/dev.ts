@@ -6,7 +6,7 @@ import { DevScreen } from './dev-screen.tsx'
 /**
  * Registers the `dev` CLI command to sync, watch, and start a live dev server.
  */
-export const devCommand = screen({
+export default screen({
   description: 'Run sync + watcher and start Rspress dev server',
   exit: 'manual',
   fullscreen: true,

@@ -19,7 +19,7 @@ interface DumpEntry {
  *
  * @returns A CLI command that outputs the resolved entry tree as formatted JSON
  */
-export const dumpCommand = command({
+export default command({
   description: 'Resolve and print the full entry tree as JSON',
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())

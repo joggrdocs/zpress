@@ -36,12 +36,11 @@
   "scripts": {
     "build": "rslib build",
     "dev": "node ./dist/index.mjs dev --cwd ../..",
-    "stories": "node ./dist/index.mjs stories",
+    "stories": "kidd stories",
     "test": "vitest run",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@inkjs/ui": "^2.0.0",
     "@kidd-cli/core": "^0.20.0",
     "@rspress/core": "catalog:",
     "@zpress/core": "workspace:*",
@@ -55,6 +54,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@kidd-cli/cli": "^0.11.0",
     "@rslib/core": "catalog:",
     "@types/react": "^19.1.0",
     "typescript": "catalog:",

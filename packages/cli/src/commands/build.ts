@@ -16,7 +16,7 @@ import { clean } from './clean.ts'
  * detection run as part of the build. Use `--no-check` to skip checks
  * and build with standard (noisy) Rspress output.
  */
-export const buildCommand = command({
+export default command({
   description: 'Sync content, generate assets, and build the site',
   options: z.object({
     quiet: z.boolean().optional().default(false),

@@ -7,7 +7,7 @@ import { openBrowser, serveSite } from '../lib/rspress.ts'
 /**
  * Registers the `serve` CLI command to preview a previously built site.
  */
-export const serveCommand = command({
+export default command({
   description: 'Preview the built Rspress site',
   options: z.object({
     open: z.boolean().optional().default(true),
