@@ -9,6 +9,7 @@ import { DevScreen } from './dev-screen.tsx'
 export const devCommand = screen({
   description: 'Run sync + watcher and start Rspress dev server',
   exit: 'manual',
+  fullscreen: true,
   options: z.object({
     quiet: z.boolean().optional().default(false),
     clean: z.boolean().optional().default(false),
