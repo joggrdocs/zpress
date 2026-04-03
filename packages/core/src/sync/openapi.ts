@@ -6,6 +6,7 @@
  * by tag, and generates one `.mdx` per operation plus an index overview page.
  */
 
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import SwaggerParser from '@apidevtools/swagger-parser'
@@ -33,6 +34,7 @@ export interface OpenAPISidebarEntry {
 export interface SyncOpenAPIResult {
   readonly sidebar: readonly OpenAPISidebarEntry[]
   readonly pages: readonly PageData[]
+  readonly specMtimes: Readonly<Record<string, number>>
 }
 
 /**
@@ -50,10 +52,16 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
   const allConfigs = [...rootConfigs, ...workspaceConfigs]
 
   if (allConfigs.length === 0) {
-    return { sidebar: [], pages: [] }
+    return { sidebar: [], pages: [], specMtimes: {} }
   }
 
   const configResults = await Promise.all(allConfigs.map((entry) => syncOpenAPI(entry.config, ctx)))
+
+  const specMtimes = configResults.reduce<Record<string, number>>(
+    // oxlint-disable-next-line unicorn/no-accumulating-spread -- Object.assign avoids O(n^2) copies
+    (acc, result) => Object.assign(acc, result.specMtimes),
+    {}
+  )
 
   return {
     sidebar: configResults.map((result, index) => ({
@@ -61,6 +69,7 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
       sidebar: result.sidebar,
     })),
     pages: configResults.flatMap((result) => result.pages),
+    specMtimes,
   }
 }
 
@@ -99,6 +108,7 @@ interface TagGroup {
 interface SingleSyncResult {
   readonly sidebar: readonly SidebarItem[]
   readonly pages: readonly PageData[]
+  readonly specMtimes: Readonly<Record<string, number>>
 }
 
 /**
@@ -120,26 +130,61 @@ interface ConfigEntry {
  */
 async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<SingleSyncResult> {
   const specAbsPath = path.resolve(ctx.repoRoot, config.spec)
-  const api = await SwaggerParser.dereference(specAbsPath, {
-    dereference: { circular: 'ignore' },
-  }).catch((error: unknown) => {
-    const message = match(error)
-      .with(P.instanceOf(Error), (e) => e.message)
-      .otherwise(String)
-    console.warn(`[zpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
-    return null
-  })
+  const specRelPath = config.spec
+
+  // Stat the spec file to get mtime for caching
+  const specStat = await fs.stat(specAbsPath).catch(() => null)
+  const specMtime = match(specStat)
+    .with(P.nonNullable, (s) => s.mtimeMs)
+    .otherwise(() => null)
+
+  // Try to use cached dereferenced spec when mtime is unchanged
+  const api = await (async () => {
+    if (specMtime !== null && ctx.openapiCache) {
+      const prevMtime = match(ctx.previousManifest)
+        .with(P.nonNullable, (m) => (m.openapiMtimes ?? {})[specRelPath])
+        .otherwise(() => null)
+      if (prevMtime === specMtime && ctx.openapiCache.has(specRelPath)) {
+        return ctx.openapiCache.get(specRelPath) as Record<string, unknown>
+      }
+    }
+    const parsed = await SwaggerParser.dereference(specAbsPath, {
+      dereference: { circular: 'ignore' },
+    }).catch((error: unknown) => {
+      const message = match(error)
+        .with(P.instanceOf(Error), (e) => e.message)
+        .otherwise(String)
+      console.warn(`[zpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
+      return null
+    })
+    if (parsed === null) {
+      // Evict stale cache entry so the next pass retries instead of serving stale output
+      if (ctx.openapiCache) {
+        ctx.openapiCache.delete(specRelPath)
+      }
+      return null
+    }
+    // Populate cache on successful parse
+    if (ctx.openapiCache) {
+      ctx.openapiCache.set(specRelPath, parsed)
+    }
+    return parsed
+  })()
+
+  const specMtimes: Readonly<Record<string, number>> = match(specMtime)
+    .with(P.nonNullable, (mt) => ({ [specRelPath]: mt }))
+    .otherwise(() => ({}))
 
   // oxlint-disable-next-line security/detect-possible-timing-attacks -- not a security comparison
   if (api === null) {
-    return { sidebar: [], pages: [] }
+    return { sidebar: [], pages: [], specMtimes }
   }
   const paths = (api as Record<string, unknown>).paths as
     | Record<string, Record<string, unknown>>
     | undefined
 
   if (paths === null || paths === undefined) {
-    return { sidebar: [], pages: [] }
+    return { sidebar: [], pages: [], specMtimes }
   }
 
   const operations = extractOperations(paths)
@@ -179,7 +224,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     .otherwise(() => 'method-path' as const)
   const sidebarItems = buildSidebarItems(title, prefix, tagGroups, sidebarLayout)
 
-  return { sidebar: sidebarItems, pages }
+  return { sidebar: sidebarItems, pages, specMtimes }
 }
 
 /**

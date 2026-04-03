@@ -53,15 +53,14 @@ const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 export function createRspressConfig(options: CreateRspressConfigOptions): UserConfig {
   const { config, paths, logLevel, vscode } = options
 
-  const sidebar = loadGenerated({
-    contentDir: paths.contentDir,
-    name: 'sidebar.json',
-    fallback: {},
-  })
-  const nav = loadGenerated({ contentDir: paths.contentDir, name: 'nav.json', fallback: [] })
   const workspaces = loadGenerated({
     contentDir: paths.contentDir,
     name: 'workspaces.json',
+    fallback: [],
+  })
+  const standaloneScopePaths = loadGenerated<readonly string[]>({
+    contentDir: paths.contentDir,
+    name: 'scopes.json',
     fallback: [],
   })
   const gitBranch = detectGitBranch()
@@ -155,13 +154,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     },
 
     themeConfig: {
-      sidebar,
-      nav,
       darkMode: colorMode === 'toggle',
       search: true,
       // Custom zpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
-      ...({ workspaces } as Record<string, unknown>),
+      ...({ workspaces, standaloneScopePaths } as Record<string, unknown>),
       ...({
         socialLinks: config.socialLinks,
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),

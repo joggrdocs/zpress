@@ -107,8 +107,16 @@ export async function rewriteImages(params: {
       const baseName = path.basename(imagePath, path.extname(imagePath))
       const hash = createHash('md5').update(imagePath).digest('hex').slice(0, 8)
       const filename = `${baseName}-${hash}${ext}`
+      const destPath = path.resolve(imagesOutDir, filename)
+
+      // Skip copy when destination is at least as recent as source
+      const destStat = await fs.stat(destPath).catch(() => null)
+      if (destStat && destStat.mtimeMs >= exists.mtimeMs) {
+        return [imagePath, `/images/${filename}`] as const
+      }
+
       // oxlint-disable-next-line security/detect-non-literal-fs-filename -- paths are constructed from trusted repo root + user source paths
-      await fs.copyFile(absoluteImagePath, path.resolve(imagesOutDir, filename))
+      await fs.copyFile(absoluteImagePath, destPath)
 
       return [imagePath, `/images/${filename}`] as const
     })

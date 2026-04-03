@@ -34,24 +34,28 @@
     "provenance": true
   },
   "scripts": {
-    "build": "rslib build",
-    "dev": "node ./dist/index.mjs dev --cwd ../..",
+    "build": "kidd build",
+    "dev": "kidd dev",
+    "stories": "kidd stories",
     "test": "vitest run",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@kidd-cli/core": "^0.13.0",
+    "@kidd-cli/core": "^0.22.1",
     "@rspress/core": "catalog:",
     "@zpress/core": "workspace:*",
     "@zpress/templates": "workspace:*",
     "@zpress/ui": "workspace:*",
     "es-toolkit": "catalog:",
     "get-port": "^7.2.0",
+    "ink": "^6.8.0",
+    "react": "^19.2.0",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@rslib/core": "catalog:",
+    "@kidd-cli/cli": "^0.11.2",
+    "@types/react": "^19.1.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

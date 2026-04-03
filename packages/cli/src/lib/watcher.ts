@@ -1,11 +1,12 @@
+import { createHash } from 'node:crypto'
 import { watch } from 'node:fs'
 import path from 'node:path'
 
-import type { Log } from '@kidd-cli/core'
 import type { ZpressConfig, Paths } from '@zpress/core'
 import { loadConfig, sync } from '@zpress/core'
 import { debounce } from 'es-toolkit'
 
+import type { WatcherCallbacks, WatcherHandle } from './dev-types.ts'
 import { toError } from './error'
 
 const CONFIG_EXTENSIONS = ['.ts', '.mts', '.cts', '.js', '.mjs', '.cjs', '.json'] as const
@@ -19,13 +20,6 @@ const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
 const IGNORED_DIRS = new Set(['node_modules', '.git', '.zpress', 'bundle', 'dist', '.turbo'])
 
 /**
- * Closeable handle returned by createWatcher.
- */
-interface WatcherHandle {
-  close(): void
-}
-
-/**
  * Create a file watcher that re-syncs documentation on changes.
  *
  * Uses Node.js native fs.watch with recursive:true which on macOS
@@ -36,23 +30,25 @@ interface WatcherHandle {
  * @param params - Watcher configuration
  * @param params.initialConfig - Initial zpress config to use for syncing
  * @param params.paths - Resolved project paths
- * @param params.log - Logger instance for status output
+ * @param params.callbacks - Callbacks for status changes, sync results, and file changes
  * @param params.onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
- * @returns Closeable watcher handle
+ * @param params.openapiCache - Optional shared cache of dereferenced OpenAPI specs
+ * @returns Closeable and resyncable watcher handle
  */
 export function createWatcher(params: {
   readonly initialConfig: ZpressConfig
   readonly paths: Paths
-  readonly log: Log
+  readonly callbacks: WatcherCallbacks
   readonly onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
+  readonly openapiCache?: Map<string, unknown>
 }): WatcherHandle {
-  const { initialConfig, paths, log, onConfigReload } = params
+  const { initialConfig, paths, callbacks, onConfigReload, openapiCache } = params
   const { repoRoot } = paths
   const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `zpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
 
-  log.info(`Watching ${repoRoot}`)
+  callbacks.onStatusChange({ _tag: 'idle' })
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
   let syncing = false
@@ -68,41 +64,48 @@ export function createWatcher(params: {
       return
     }
     syncing = true
+    callbacks.onStatusChange({ _tag: 'syncing', isConfigReload: reloadConfig })
     // oxlint-disable-next-line functional/no-let -- tracks whether this sync included a config reload
     let didReloadConfig = false
+    const previousConfig = config
     try {
       if (reloadConfig) {
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
         if (configErr) {
-          log.error(`Config reload failed: ${configErr.message}`)
-          if (configErr.errors && configErr.errors.length > 0) {
-            // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
-            configErr.errors.forEach((err) => {
-              const pathStr = err.path.join('.')
-              log.error(`  ${pathStr}: ${err.message}`)
-            })
-          }
+          callbacks.onStatusChange({
+            _tag: 'error',
+            message: `Config reload failed: ${configErr.message}`,
+          })
           return
         }
         config = newConfig
-        log.info('Config reloaded')
         didReloadConfig = true
+        if (openapiCache) {
+          openapiCache.clear()
+        }
       }
-      await sync(config, { paths })
+      const result = await sync(config, { paths, quiet: true, openapiCache })
       consecutiveFailures = 0
-      if (didReloadConfig && onConfigReload) {
+      callbacks.onSyncComplete(result)
+      // Only restart the dev server when restart-relevant fields changed.
+      // Sidebar/nav changes are picked up by Rspress via _meta.json/_nav.json HMR.
+      if (didReloadConfig && onConfigReload && needsServerRestart(previousConfig, config)) {
+        callbacks.onStatusChange({ _tag: 'restarting' })
         await onConfigReload(config)
+        callbacks.onConfigReloaded()
       }
+      callbacks.onStatusChange({ _tag: 'idle' })
     } catch (error) {
       consecutiveFailures += 1
-      log.error(`Sync error: ${toError(error).message}`)
+      callbacks.onStatusChange({ _tag: 'error', message: `Sync error: ${toError(error).message}` })
     } finally {
       syncing = false
       if (pendingReloadConfig !== null) {
         if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-          log.error(
-            `Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`
-          )
+          callbacks.onStatusChange({
+            _tag: 'error',
+            message: `Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`,
+          })
           pendingReloadConfig = null
           consecutiveFailures = 0
         } else {
@@ -147,7 +150,7 @@ export function createWatcher(params: {
     const basename = path.basename(filename)
 
     if (isConfigFile(basename, filename)) {
-      log.info(`Config changed: ${basename}`)
+      callbacks.onFileChange(basename)
       debouncedConfigSync()
       return
     }
@@ -156,13 +159,18 @@ export function createWatcher(params: {
       return
     }
 
-    log.step(`Changed: ${filename}`)
+    callbacks.onFileChange(filename)
     debouncedSync()
   })
 
   return {
     close() {
+      debouncedSync.cancel()
+      debouncedConfigSync.cancel()
       watcher.close()
+    },
+    resync() {
+      triggerSync(false)
     },
   }
 }
@@ -191,4 +199,46 @@ function isMarkdownFile(filePath: string): boolean {
  */
 function isIgnored(filePath: string): boolean {
   return filePath.split(path.sep).some((segment) => IGNORED_DIRS.has(segment))
+}
+
+/**
+ * Check whether a config change requires a full dev server restart.
+ *
+ * Sidebar/nav structure changes are handled by Rspress HMR via `_meta.json`
+ * and `_nav.json` files. Only changes to fields that affect `source.define`,
+ * theme CSS, or other Rsbuild-level config require a restart.
+ *
+ * @private
+ * @param prev - Previous zpress config
+ * @param next - New zpress config after reload
+ * @returns True if the server must restart
+ */
+function needsServerRestart(prev: ZpressConfig, next: ZpressConfig): boolean {
+  return restartRelevantHash(prev) !== restartRelevantHash(next)
+}
+
+/**
+ * Hash the config fields that require a server restart when changed.
+ *
+ * Excludes `sections`, `nav`, `apps`, `packages`, and `workspaces` since
+ * those only affect sidebar/nav structure handled by `_meta.json`/`_nav.json`.
+ *
+ * @private
+ * @param config - Zpress config to hash
+ * @returns SHA-256 hex digest of restart-relevant fields
+ */
+function restartRelevantHash(config: ZpressConfig): string {
+  const relevant = {
+    title: config.title,
+    description: config.description,
+    tagline: config.tagline,
+    icon: config.icon,
+    theme: config.theme,
+    sidebar: config.sidebar,
+    socialLinks: config.socialLinks,
+    footer: config.footer,
+    home: config.home,
+    openapi: config.openapi,
+  }
+  return createHash('sha256').update(JSON.stringify(relevant)).digest('hex')
 }
