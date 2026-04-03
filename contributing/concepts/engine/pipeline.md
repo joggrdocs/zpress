@@ -74,26 +74,26 @@ flowchart TB
 
 ## Steps
 
-| # | Step | Phase | What it does |
-| --- | --- | --- | --- |
-| 1 | Create dirs | Setup | Create `.zpress/content/`, `.zpress/content/.generated/`, and `.zpress/public/` directories |
-| 2 | Load manifest | Setup | Load previous sync manifest for incremental diffing |
-| 3 | Generate assets | Setup | Generate branded SVG assets (conditional -- skipped when asset config hash unchanged) |
-| 4 | Copy public/ | Setup | Copy public assets into `.zpress/public/` for Rspress |
-| 5 | Synthesize workspaces | Resolve | Convert `apps`/`packages`/`workspaces` into entry sections |
-| 6 | Resolve entries | Resolve | Walk config tree, resolve globs, derive text, merge frontmatter |
-| 7 | Enrich cards | Resolve | Attach workspace metadata (icon, scope, tags, badge) |
-| 8 | Inject landing pages | Resolve | Generate virtual MDX for sections with children but no page |
-| 9 | Collect pages | Resolve | Flatten the resolved tree into a flat page list |
-| 10 | Write workspace data | Resolve | Serialize workspace metadata to `.zpress/content/.generated/workspaces.json` |
-| 11 | Generate home | Resolve | Create default home page from config metadata (when no explicit index.md) |
-| 12 | Discover planning pages | Resolve | Resolve pages from `.planning/` directory (included in output, excluded from sidebar/nav) |
-| 13 | OpenAPI sync | Resolve | Dereference specs, generate `.mdx` per operation |
-| 14 | Copy pages | Write | Write pages with injected frontmatter, rewrite links, track hashes (parallel) |
-| 15 | Clean stale files | Write | Remove files present in old manifest but absent in new; prune empty directories |
-| 16 | Build sidebar + nav | Generate | Build multi-sidebar JSON and nav array |
-| 17 | Save manifest | Generate | Record file hashes and incremental metadata |
-| 18 | Write README | Generate | Write bare-bones README to `.zpress/` root |
+| #   | Step                    | Phase    | What it does                                                                                |
+| --- | ----------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| 1   | Create dirs             | Setup    | Create `.zpress/content/`, `.zpress/content/.generated/`, and `.zpress/public/` directories |
+| 2   | Load manifest           | Setup    | Load previous sync manifest for incremental diffing                                         |
+| 3   | Generate assets         | Setup    | Generate branded SVG assets (conditional -- skipped when asset config hash unchanged)       |
+| 4   | Copy public/            | Setup    | Copy public assets into `.zpress/public/` for Rspress                                       |
+| 5   | Synthesize workspaces   | Resolve  | Convert `apps`/`packages`/`workspaces` into entry sections                                  |
+| 6   | Resolve entries         | Resolve  | Walk config tree, resolve globs, derive text, merge frontmatter                             |
+| 7   | Enrich cards            | Resolve  | Attach workspace metadata (icon, scope, tags, badge)                                        |
+| 8   | Inject landing pages    | Resolve  | Generate virtual MDX for sections with children but no page                                 |
+| 9   | Collect pages           | Resolve  | Flatten the resolved tree into a flat page list                                             |
+| 10  | Write workspace data    | Resolve  | Serialize workspace metadata to `.zpress/content/.generated/workspaces.json`                |
+| 11  | Generate home           | Resolve  | Create default home page from config metadata (when no explicit index.md)                   |
+| 12  | Discover planning pages | Resolve  | Resolve pages from `.planning/` directory (included in output, excluded from sidebar/nav)   |
+| 13  | OpenAPI sync            | Resolve  | Dereference specs, generate `.mdx` per operation                                            |
+| 14  | Copy pages              | Write    | Write pages with injected frontmatter, rewrite links, track hashes (parallel)               |
+| 15  | Clean stale files       | Write    | Remove files present in old manifest but absent in new; prune empty directories             |
+| 16  | Build sidebar + nav     | Generate | Build multi-sidebar JSON and nav array                                                      |
+| 17  | Save manifest           | Generate | Record file hashes and incremental metadata                                                 |
+| 18  | Write README            | Generate | Write bare-bones README to `.zpress/` root                                                  |
 
 Returns: `{ pagesWritten, pagesSkipped, pagesRemoved, elapsed }` (elapsed in milliseconds)
 
@@ -155,23 +155,23 @@ flowchart LR
 
 The entry resolver (`sync/resolve/index.ts`) recursively walks the config tree and resolves each entry:
 
-| Entry type | Description | Example |
-| --- | --- | --- |
-| Single file | Source file with explicit link | `include: 'docs/getting-started.md'` |
-| Virtual page | Generated content | `content: () => '# Hello'` |
-| Glob section | Pattern that discovers files | `include: 'docs/guides/*.md'` |
-| Recursive glob | Directory-driven nesting | `include: 'docs/**/*.md', recursive: true` |
-| Explicit items | Hand-written child entries | `items: [{ title: '...', include: '...' }]` |
+| Entry type     | Description                    | Example                                     |
+| -------------- | ------------------------------ | ------------------------------------------- |
+| Single file    | Source file with explicit link | `include: 'docs/getting-started.md'`        |
+| Virtual page   | Generated content              | `content: () => '# Hello'`                  |
+| Glob section   | Pattern that discovers files   | `include: 'docs/guides/*.md'`               |
+| Recursive glob | Directory-driven nesting       | `include: 'docs/**/*.md', recursive: true`  |
+| Explicit items | Hand-written child entries     | `items: [{ title: '...', include: '...' }]` |
 
 ### Text Derivation
 
 Text derivation is configurable via the `title` field's `from` property:
 
-| Value | Source |
-| --- | --- |
-| `'auto'` | Frontmatter title, then first `#` heading, then filename (default) |
-| `'filename'` | Kebab-case filename to title case |
-| `'heading'` | First `#` heading in the markdown file |
+| Value           | Source                                                                |
+| --------------- | --------------------------------------------------------------------- |
+| `'auto'`        | Frontmatter title, then first `#` heading, then filename (default)    |
+| `'filename'`    | Kebab-case filename to title case                                     |
+| `'heading'`     | First `#` heading in the markdown file                                |
 | `'frontmatter'` | `title` from YAML frontmatter, falling back to heading, then filename |
 
 ## Multi-Sidebar

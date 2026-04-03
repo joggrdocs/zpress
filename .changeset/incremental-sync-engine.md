@@ -1,6 +1,6 @@
 ---
 '@zpress/core': minor
-'@zpress/cli': patch
+'@zpress/cli': minor
 ---
 
 Sync engine now only processes what changed instead of running a full sync on every pass.
@@ -12,3 +12,4 @@ Sync engine now only processes what changed instead of running a full sync on ev
 - **Image copy skip**: destination images are skipped when their mtime is at least as recent as the source
 - **OpenAPI spec caching**: specs are only re-parsed when their file mtime changes; a shared cache persists across dev-mode sync passes and is cleared on config reload
 - **Structural change detection**: `resolvedCount` mismatch between syncs forces a full resync to handle added/removed pages correctly
+- **Build system migration**: switched CLI from rslib to kidd's native build system (tsdown-based), with static command imports, proper dependency externalization, and React/Ink TUI dev screen

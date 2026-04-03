@@ -35,6 +35,7 @@ export async function clean(paths: Paths): Promise<readonly string[]> {
  * Registers the `clean` CLI command to remove build artifacts and caches.
  */
 export default command({
+  name: 'clean',
   description: 'Remove build artifacts, synced content, and build cache',
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())

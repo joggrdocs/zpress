@@ -47,15 +47,15 @@ flowchart LR
 
 ## Steps
 
-| # | Step | What it does |
-| --- | --- | --- |
-| 1 | Collect configs | Gather OpenAPI configs from root `config.openapi` and entry-level `openapi` fields (`apps`, `packages`, and workspace items) |
-| 2 | Check mtime | Stat the spec file and compare its mtime to the previous manifest to decide whether a shared cached dereference can be reused |
-| 3 | Dereference | Resolve all `$ref`s via `@apidevtools/swagger-parser` (or use cached result) |
-| 4 | Extract operations | Pull operations from paths, group by tag |
-| 5 | Generate MDX | One `.mdx` per operation (renders `<OpenAPIOperation>`) + overview page (`<OpenAPIOverview>`) |
-| 6 | Build sidebar | Sidebar items grouped by tag with configurable layout (`method-path` or `title`) |
-| 7 | Emit spec | Emit dereferenced spec as a virtual `openapi.json` page (written by the sync engine's copy step) |
+| #   | Step               | What it does                                                                                                                  |
+| --- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Collect configs    | Gather OpenAPI configs from root `config.openapi` and entry-level `openapi` fields (`apps`, `packages`, and workspace items)  |
+| 2   | Check mtime        | Stat the spec file and compare its mtime to the previous manifest to decide whether a shared cached dereference can be reused |
+| 3   | Dereference        | Resolve all `$ref`s via `@apidevtools/swagger-parser` (or use cached result)                                                  |
+| 4   | Extract operations | Pull operations from paths, group by tag                                                                                      |
+| 5   | Generate MDX       | One `.mdx` per operation (renders `<OpenAPIOperation>`) + overview page (`<OpenAPIOverview>`)                                 |
+| 6   | Build sidebar      | Sidebar items grouped by tag with configurable layout (`method-path` or `title`)                                              |
+| 7   | Emit spec          | Emit dereferenced spec as a virtual `openapi.json` page (written by the sync engine's copy step)                              |
 
 ## Caching
 

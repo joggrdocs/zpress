@@ -62,13 +62,13 @@ Pages with no previous manifest entry (new pages) and pages with missing `frontm
 
 The manifest enables multiple skip layers, ordered cheapest to most expensive:
 
-| Check | What's skipped | Cost |
-| --- | --- | --- |
-| Source `mtime` + frontmatter hash match | Entire read/transform/hash pipeline | `fs.stat` + MD5 comparison |
-| Content hash unchanged (post-transform) | File write to disk | SHA-256 of transformed output |
-| Asset config hash unchanged | All SVG generation | SHA-256 comparison |
-| Image destination `mtime` >= source | `copyFile` for that image | `fs.stat` (1 syscall) |
-| OpenAPI spec `mtime` unchanged | `SwaggerParser.dereference` | `fs.stat` (1 syscall) |
+| Check                                   | What's skipped                      | Cost                          |
+| --------------------------------------- | ----------------------------------- | ----------------------------- |
+| Source `mtime` + frontmatter hash match | Entire read/transform/hash pipeline | `fs.stat` + MD5 comparison    |
+| Content hash unchanged (post-transform) | File write to disk                  | SHA-256 of transformed output |
+| Asset config hash unchanged             | All SVG generation                  | SHA-256 comparison            |
+| Image destination `mtime` >= source     | `copyFile` for that image           | `fs.stat` (1 syscall)         |
+| OpenAPI spec `mtime` unchanged          | `SwaggerParser.dereference`         | `fs.stat` (1 syscall)         |
 
 ## Structural Change Detection
 
@@ -84,12 +84,12 @@ After every sync, files present in the old manifest but absent in the new one ar
 
 The manifest (`sync/manifest.ts`) stores:
 
-| Field | Purpose |
-| --- | --- |
-| `files` | Per-page entries keyed by `outputPath`: `contentHash`, `sourceMtime`, `frontmatterHash` (MD5), `source` |
-| `assetConfigHash` | SHA-256 of serialized asset config (title, tagline) |
-| `openapiMtimes` | Per-spec mtime for OpenAPI skip checks |
-| `resolvedCount` | Total page count for structural change detection |
+| Field             | Purpose                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| `files`           | Per-page entries keyed by `outputPath`: `contentHash`, `sourceMtime`, `frontmatterHash` (MD5), `source` |
+| `assetConfigHash` | SHA-256 of serialized asset config (title, tagline)                                                     |
+| `openapiMtimes`   | Per-spec mtime for OpenAPI skip checks                                                                  |
+| `resolvedCount`   | Total page count for structural change detection                                                        |
 
 ## References
 

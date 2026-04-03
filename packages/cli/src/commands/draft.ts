@@ -16,6 +16,7 @@ const registry = createRegistry()
  * then writes the rendered template to the specified output directory.
  */
 export default command({
+  name: 'draft',
   description: 'Scaffold a new documentation file from a template',
   options: z.object({
     type: z.string().optional(),

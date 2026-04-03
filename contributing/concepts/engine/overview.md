@@ -89,12 +89,12 @@ After initial sync, the watcher monitors the repo and triggers incremental resyn
 
 ## Topics
 
-| Topic | What it covers |
-| --- | --- |
-| [Pipeline](./pipeline.md) | The sync pipeline, page transformation, entry resolution, multi-sidebar |
-| [Incremental Sync](./incremental.md) | Mtime-based skipping, content hashing, structural change detection |
-| [OpenAPI Sync](./openapi.md) | Spec dereferencing, MDX generation, sidebar building |
-| [Dev Mode](./dev.md) | File watching, debouncing, HMR, config reload, concurrency |
+| Topic                                | What it covers                                                          |
+| ------------------------------------ | ----------------------------------------------------------------------- |
+| [Pipeline](./pipeline.md)            | The sync pipeline, page transformation, entry resolution, multi-sidebar |
+| [Incremental Sync](./incremental.md) | Mtime-based skipping, content hashing, structural change detection      |
+| [OpenAPI Sync](./openapi.md)         | Spec dereferencing, MDX generation, sidebar building                    |
+| [Dev Mode](./dev.md)                 | File watching, debouncing, HMR, config reload, concurrency              |
 
 ## References
 

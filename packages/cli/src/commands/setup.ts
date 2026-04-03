@@ -17,6 +17,7 @@ const CONFIG_FILENAME = 'zpress.config.ts'
  * and generates initial banner/logo assets.
  */
 export default command({
+  name: 'setup',
   description: 'Initialize a zpress config in the current project',
   handler: async (ctx) => {
     const cwd = process.cwd()

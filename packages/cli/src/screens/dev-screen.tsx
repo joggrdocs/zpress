@@ -3,7 +3,6 @@ import {
   Box,
   Spacer,
   Spinner,
-  StatusMessage,
   Text,
   useApp,
   useFullScreen,
@@ -12,16 +11,40 @@ import {
 } from '@kidd-cli/core/ui'
 import type { SyncResult } from '@zpress/core'
 import { createPaths, loadConfig, sync } from '@zpress/core'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
 
 import type { WatcherCallbacks, WatcherHandle, WatcherStatus } from '../lib/dev-types.ts'
 import { toError } from '../lib/error.ts'
 import { openBrowser, startDevServer } from '../lib/rspress.ts'
 import { createWatcher } from '../lib/watcher.ts'
-import { clean } from './clean.ts'
+import { clean } from '../commands/clean.ts'
 
 const isTTY = Boolean(process.stdin.isTTY)
+
+const MAX_LOG_ENTRIES = 50
+
+/**
+ * ASCII Shadow banner for the dev screen header.
+ */
+const BANNER = [
+  '         ██████╗ ██████╗ ███████╗███████╗███████╗',
+  '  ██╔══█ ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
+  '  ╚═══█║ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
+  '  █╗  ██ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
+  '  ╚█████ ██║     ██║  ██║███████╗███████║███████║',
+  '   ╚════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
+]
+
+/**
+ * A single entry in the activity log.
+ */
+export interface LogEntry {
+  readonly timestamp: string
+  readonly action: 'synced' | 'removed' | 'restarted' | 'error'
+  readonly file: string
+  readonly elapsed: number
+}
 
 /**
  * Props passed to the DevScreen component by the screen() runtime.
@@ -39,8 +62,8 @@ interface DevScreenProps {
 /**
  * React/Ink TUI for the `zpress dev` command.
  *
- * Renders a fullscreen status display with watcher state, sync results,
- * and hotkey bar. Falls back to plain text in non-TTY environments.
+ * Renders a fullscreen status display with ASCII banner, activity log,
+ * sync stats, and hotkey bar.
  *
  * @param props - Parsed CLI options
  * @returns React element tree for the dev TUI
@@ -53,12 +76,17 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   const [errorMessage, setErrorMessage] = useState('')
   const [watcherStatus, setWatcherStatus] = useState<WatcherStatus>({ _tag: 'idle' })
   const [lastSync, setLastSync] = useState<SyncResult | null>(null)
-  const [lastFile, setLastFile] = useState<string | null>(null)
+  const [log, setLog] = useState<readonly LogEntry[]>([])
   const [port, setPort] = useState(0)
 
   const watcherRef = useRef<WatcherHandle | null>(null)
   const openapiCacheRef = useRef(new Map<string, unknown>())
   const cancelledRef = useRef(false)
+  const lastFileRef = useRef<string | null>(null)
+
+  const pushLog = useCallback((entry: LogEntry) => {
+    setLog((prev) => [entry, ...prev].slice(0, MAX_LOG_ENTRIES))
+  }, [])
 
   useEffect(() => {
     /**
@@ -121,12 +149,34 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
         guard(setPort)(resolvedPort)
 
+        const guardedPushLog = guard(pushLog)
+
         const callbacks: WatcherCallbacks = {
           onStatusChange: guard(setWatcherStatus),
-          onSyncComplete: guard(setLastSync),
-          onFileChange: guard(setLastFile),
-          // No UI update needed — server restart via onConfigReload handles state refresh
-          onConfigReloaded: () => {},
+          onSyncComplete: (result) => {
+            guard(setLastSync)(result)
+            const file = lastFileRef.current
+            if (file) {
+              guardedPushLog({
+                timestamp: formatTime(new Date()),
+                action: 'synced',
+                file,
+                elapsed: result.elapsed,
+              })
+            }
+          },
+          onFileChange: (filename) => {
+            // oxlint-disable-next-line functional/immutable-data -- ref tracking for log entries
+            lastFileRef.current = filename
+          },
+          onConfigReloaded: () => {
+            guardedPushLog({
+              timestamp: formatTime(new Date()),
+              action: 'restarted',
+              file: 'zpress.config.ts',
+              elapsed: 0,
+            })
+          },
         }
 
         const watcher = createWatcher({
@@ -170,7 +220,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   useHotkey({
     keys: ['c'],
     action: () => {
-      process.stdout.write('\u001B[2J\u001B[H')
+      setLog([])
     },
     active: phase === 'ready' && isTTY,
   })
@@ -199,12 +249,17 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     { isActive: isTTY }
   )
 
+  const width = Math.min(columns, 80)
+
   if (phase === 'error') {
     return (
       <Box flexDirection="column" padding={1}>
-        <Alert variant="error" title="Dev Server Error" width={Math.min(columns, 80)}>
-          {errorMessage}
-        </Alert>
+        <Banner />
+        <Box marginTop={1}>
+          <Alert variant="error" title="Dev Server Error" width={width}>
+            {errorMessage}
+          </Alert>
+        </Box>
       </Box>
     )
   }
@@ -212,65 +267,77 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   if (phase === 'loading') {
     return (
       <Box flexDirection="column" padding={1}>
-        <Box flexDirection="column" gap={1}>
-          <Text bold color="cyan">
-            zpress dev
-          </Text>
+        <Banner />
+        <Box marginTop={1}>
           <Spinner label="Starting dev server..." type="dots" />
         </Box>
       </Box>
     )
   }
 
+  const watcherTag = watcherStatus._tag
+
   return (
     <Box flexDirection="column" padding={1}>
-      {/* Header */}
-      <Box>
-        <Text bold color="cyan">
-          zpress dev
-        </Text>
-        <Spacer />
+      {/* Banner + URL */}
+      <Banner />
+      <Box marginTop={1}>
         <Text dimColor>
           http://localhost:<Text color="cyan">{port}</Text>
         </Text>
-      </Box>
-
-      <Box marginTop={1} flexDirection="column" gap={0}>
-        {/* Watcher status */}
-        {match(watcherStatus)
-          .with({ _tag: 'idle' }, () => (
-            <StatusMessage variant="success">Watching for changes</StatusMessage>
-          ))
-          .with({ _tag: 'syncing' }, () => <Spinner label="Syncing..." type="dots" />)
-          .with({ _tag: 'restarting' }, () => <Spinner label="Restarting server..." type="dots" />)
-          .with({ _tag: 'error' }, (s) => (
-            <StatusMessage variant="error">{s.message}</StatusMessage>
+        <Spacer />
+        {match(watcherTag)
+          .with('idle', () => <Text color="green">● Ready</Text>)
+          .with('syncing', () => <Spinner label="Syncing" type="dots" />)
+          .with('restarting', () => <Spinner label="Restarting" type="dots" />)
+          .with('error', () => (
+            <Text color="red">
+              ● Error
+            </Text>
           ))
           .exhaustive()}
-
-        {/* Last changed file */}
-        {lastFile !== null && (
-          <Box>
-            <Text dimColor> changed </Text>
-            <Text>{lastFile}</Text>
-          </Box>
-        )}
-
-        {/* Sync stats */}
-        {lastSync !== null && (
-          <Box>
-            <Text dimColor>
-              {'  '}
-              {lastSync.pagesWritten} written · {lastSync.pagesSkipped} skipped ·{' '}
-              {lastSync.pagesRemoved} removed · {Math.round(lastSync.elapsed)}ms
-            </Text>
-          </Box>
-        )}
       </Box>
+
+      {/* Separator */}
+      <Box marginTop={1}>
+        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+      </Box>
+
+      {/* Activity log */}
+      <Box flexDirection="column" marginTop={0}>
+        {log.length === 0 && (
+          <Box paddingLeft={1}>
+            <Text dimColor>Waiting for changes...</Text>
+          </Box>
+        )}
+        {log.slice(0, 12).map((entry, i) => (
+          <LogLine key={`${entry.timestamp}-${entry.file}-${i}`} entry={entry} first={i === 0} />
+        ))}
+      </Box>
+
+      {/* Separator */}
+      <Box marginTop={1}>
+        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+      </Box>
+
+      {/* Stats bar */}
+      {lastSync !== null && (
+        <Box paddingLeft={1}>
+          <Text dimColor>
+            <Text color="green">{lastSync.pagesWritten}</Text> written
+            {' · '}
+            <Text color="yellow">{lastSync.pagesSkipped}</Text> skipped
+            {' · '}
+            <Text color="red">{lastSync.pagesRemoved}</Text> removed
+            {' · '}
+            {Math.round(lastSync.elapsed)}ms
+          </Text>
+        </Box>
+      )}
 
       {/* Hotkey bar */}
       {isTTY && (
-        <Box marginTop={1}>
+        <Box marginTop={1} paddingLeft={1}>
           <HotkeyHint label="r" description="resync" />
           <Text dimColor> · </Text>
           <HotkeyHint label="o" description="open" />
@@ -287,6 +354,56 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Render the ASCII banner.
+ *
+ * @private
+ * @returns React element with the zpress ASCII art
+ */
+function Banner(): React.ReactElement {
+  return (
+    <Box flexDirection="column">
+      {BANNER.map((line) => (
+        <Text key={line} color="cyan">{line}</Text>
+      ))}
+    </Box>
+  )
+}
+
+/**
+ * Render a single line in the activity log.
+ *
+ * @private
+ * @param props - Log entry data and whether this is the most recent entry
+ * @returns React element for one log line
+ */
+function LogLine(props: {
+  readonly entry: LogEntry
+  readonly first: boolean
+}): React.ReactElement {
+  const { entry, first } = props
+  const actionColor = match(entry.action)
+    .with('synced', () => 'green' as const)
+    .with('removed', () => 'red' as const)
+    .with('restarted', () => 'yellow' as const)
+    .with('error', () => 'red' as const)
+    .exhaustive()
+
+  return (
+    <Box paddingLeft={1}>
+      <Text dimColor={!first}>{entry.timestamp}</Text>
+      <Text> </Text>
+      <Text color={first ? actionColor : undefined} dimColor={!first}>
+        {entry.action.padEnd(10)}
+      </Text>
+      <Text dimColor={!first}>{entry.file}</Text>
+      {entry.elapsed > 0 && (
+        <Text dimColor> {Math.round(entry.elapsed)}ms</Text>
+      )}
+    </Box>
+  )
+}
 
 /**
  * Render a single hotkey hint (e.g. "r resync").
@@ -307,4 +424,19 @@ function HotkeyHint(props: {
       <Text dimColor> {props.description}</Text>
     </Text>
   )
+}
+
+/**
+ * Format a Date to HH:MM:SS string.
+ *
+ * @private
+ * @param date - Date to format
+ * @returns Time string in HH:MM:SS format
+ */
+function formatTime(date: Date): string {
+  return [
+    String(date.getHours()).padStart(2, '0'),
+    String(date.getMinutes()).padStart(2, '0'),
+    String(date.getSeconds()).padStart(2, '0'),
+  ].join(':')
 }

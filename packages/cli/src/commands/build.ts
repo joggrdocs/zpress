@@ -17,6 +17,7 @@ import { clean } from './clean.ts'
  * and build with standard (noisy) Rspress output.
  */
 export default command({
+  name: 'build',
   description: 'Sync content, generate assets, and build the site',
   options: z.object({
     quiet: z.boolean().optional().default(false),

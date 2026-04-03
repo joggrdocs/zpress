@@ -7,6 +7,7 @@ import { presentResults, runBuildCheck, runConfigCheck } from '../lib/check.ts'
  * Registers the `check` CLI command to validate config and detect deadlinks.
  */
 export default command({
+  name: 'check',
   description: 'Validate config and check for broken links',
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())

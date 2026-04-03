@@ -44,6 +44,7 @@ const CONFIG_GLOBS = [
  * ```
  */
 export default command({
+  name: 'diff',
   description: 'Show changed files in configured source directories',
   options: z.object({
     pretty: z.boolean().optional().default(false),

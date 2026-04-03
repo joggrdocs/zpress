@@ -1,12 +1,13 @@
 import { screen } from '@kidd-cli/core/ui'
 import { z } from 'zod'
 
-import { DevScreen } from './dev-screen.tsx'
+import { DevScreen } from '../screens/dev-screen.tsx'
 
 /**
  * Registers the `dev` CLI command to sync, watch, and start a live dev server.
  */
 export default screen({
+  name: 'dev',
   description: 'Run sync + watcher and start Rspress dev server',
   exit: 'manual',
   fullscreen: true,
