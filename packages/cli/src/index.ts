@@ -14,7 +14,7 @@ import { cli } from '@kidd-cli/core'
 
 import build from './commands/build.ts'
 import check from './commands/check.ts'
-import clean from './commands/clean.ts'
+import cleanCmd from './commands/clean.ts'
 import dev from './commands/dev.ts'
 import diff from './commands/diff.ts'
 import draft from './commands/draft.ts'
@@ -28,7 +28,7 @@ await cli({
   name: 'zpress',
   version: __KIDD_VERSION__,
   description: 'CLI for building and serving documentation',
-  commands: { build, check, clean, dev, diff, draft, dump, serve, setup },
+  commands: { build, check, clean: cleanCmd, dev, diff, draft, dump, serve, setup },
   help: {
     order: ['setup', 'dev', 'build', 'serve', 'check', 'diff', 'draft', 'clean', 'dump'],
   },

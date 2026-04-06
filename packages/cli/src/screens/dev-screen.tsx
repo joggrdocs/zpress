@@ -389,12 +389,16 @@ function LogLine(props: {
     .with('restarted', () => 'yellow' as const)
     .with('error', () => 'red' as const)
     .exhaustive()
+  const resolvedColor = match(first)
+    .with(true, () => actionColor)
+    // oxlint-disable-next-line unicorn/no-useless-undefined -- match requires explicit return
+    .otherwise(() => undefined)
 
   return (
     <Box paddingLeft={1}>
       <Text dimColor={!first}>{entry.timestamp}</Text>
       <Text> </Text>
-      <Text color={first ? actionColor : undefined} dimColor={!first}>
+      <Text color={resolvedColor} dimColor={!first}>
         {entry.action.padEnd(10)}
       </Text>
       <Text dimColor={!first}>{entry.file}</Text>

@@ -1,6 +1,7 @@
 import { stories, withFullScreen, withLayout } from '@kidd-cli/core/stories'
 import { Alert, Box, Spacer, Spinner, Text } from '@kidd-cli/core/ui'
 import type React from 'react'
+import { match } from 'ts-pattern'
 import { z } from 'zod'
 
 import type { LogEntry } from '../screens/dev-screen.tsx'
@@ -47,7 +48,7 @@ type DevScreenPreviewProps = Record<string, unknown> & {
  * @returns React element rendering the dev screen preview
  */
 function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
-  const width = props.width
+  const { width } = props
 
   if (props.phase === 'error') {
     return (
@@ -170,13 +171,17 @@ function LogLine(props: {
     restarted: 'yellow',
     error: 'red',
   }
-  const color = actionColors[entry.action]
+  const actionColor = actionColors[entry.action]
+  const resolvedColor = match(first)
+    .with(true, () => actionColor)
+    // oxlint-disable-next-line unicorn/no-useless-undefined -- match requires explicit return
+    .otherwise(() => undefined)
 
   return (
     <Box paddingLeft={1}>
       <Text dimColor={!first}>{entry.timestamp}</Text>
       <Text> </Text>
-      <Text color={first ? color : undefined} dimColor={!first}>
+      <Text color={resolvedColor} dimColor={!first}>
         {entry.action.padEnd(10)}
       </Text>
       <Text dimColor={!first}>{entry.file}</Text>
