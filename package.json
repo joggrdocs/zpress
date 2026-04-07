@@ -23,7 +23,8 @@
     "docs:build": "node packages/zpress/dist/cli.mjs build",
     "docs:serve": "node packages/zpress/dist/cli.mjs serve",
     "docs:generate": "lauf run docs",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "stories": "pnpm --filter @zpress/cli stories"
   },
   "dependencies": {
     "@zpress/kit": "workspace:*"

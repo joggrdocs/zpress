@@ -586,6 +586,18 @@ export default defineConfig({
         },
         {
           title: { from: 'heading' },
+          path: '/contributing/concepts/engine',
+          include: 'contributing/concepts/engine/*.md',
+          sort: 'alpha',
+        },
+        {
+          title: { from: 'heading' },
+          path: '/contributing/references',
+          include: 'contributing/references/*.md',
+          sort: 'alpha',
+        },
+        {
+          title: { from: 'heading' },
           path: '/contributing/guides',
           include: 'contributing/guides/*.md',
           sort: 'alpha',

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
 |==========================================================================
 | zpress CLI
@@ -13,34 +12,24 @@
 import './shims/require.ts'
 import { cli } from '@kidd-cli/core'
 
-import { buildCommand } from './commands/build.ts'
-import { checkCommand } from './commands/check.ts'
-import { cleanCommand } from './commands/clean.ts'
-import { devCommand } from './commands/dev.ts'
-import { diffCommand } from './commands/diff.ts'
-import { draftCommand } from './commands/draft.ts'
-import { dumpCommand } from './commands/dump.ts'
-import { serveCommand } from './commands/serve.ts'
-import { setupCommand } from './commands/setup.ts'
+import build from './commands/build.ts'
+import check from './commands/check.ts'
+import cleanCmd from './commands/clean.ts'
+import dev from './commands/dev.ts'
+import diff from './commands/diff.ts'
+import draft from './commands/draft.ts'
+import dump from './commands/dump.ts'
+import serve from './commands/serve.ts'
+import setup from './commands/setup.ts'
 
-declare const ZPRESS_VERSION: string
+declare const __KIDD_VERSION__: string
 
 await cli({
   name: 'zpress',
-  version: ZPRESS_VERSION,
+  version: __KIDD_VERSION__,
   description: 'CLI for building and serving documentation',
-  commands: {
-    commands: {
-      setup: setupCommand,
-      dev: devCommand,
-      build: buildCommand,
-      serve: serveCommand,
-      check: checkCommand,
-      diff: diffCommand,
-      draft: draftCommand,
-      clean: cleanCommand,
-      dump: dumpCommand,
-    },
+  commands: { build, check, clean: cleanCmd, dev, diff, draft, dump, serve, setup },
+  help: {
     order: ['setup', 'dev', 'build', 'serve', 'check', 'diff', 'draft', 'clean', 'dump'],
   },
 })

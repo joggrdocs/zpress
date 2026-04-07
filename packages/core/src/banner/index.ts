@@ -112,29 +112,29 @@ export async function generateAssets(
     () => generateIconSvg(params.config),
   ]
 
-  const written = await generators.reduce<Promise<readonly string[]>>(
-    async (accPromise, generate) => {
-      const acc = await accPromise
+  const results = await Promise.all(
+    generators.map(async (generate) => {
       const [err, asset] = generate()
       if (err) {
-        return acc
+        return null
       }
 
       const filePath = path.resolve(params.publicDir, asset.filename)
-      const shouldWrite = await shouldGenerate(filePath)
+      const shouldWrite = await shouldGenerate(filePath, asset.content)
       if (!shouldWrite) {
-        return acc
+        return null
       }
 
       const [writeErr, filename] = await writeAsset({ asset, publicDir: params.publicDir })
       if (writeErr) {
-        return acc
+        return null
       }
 
-      return [...acc, filename]
-    },
-    Promise.resolve([])
+      return filename
+    })
   )
+
+  const written = results.filter((f): f is string => f !== null)
 
   return [null, written]
 }
@@ -148,26 +148,31 @@ export async function generateAssets(
  *
  * Returns `true` when:
  * - The file does not exist (first generation)
- * - The file exists and contains the zpress-generated marker (regeneration)
+ * - The file exists with the generated marker and content differs from `newContent`
  *
  * Returns `false` when:
  * - The file exists without the marker (user-customized)
+ * - The file exists with the marker but content is identical to `newContent`
  *
  * @private
  * @param filePath - Absolute path to the file to check
+ * @param newContent - The content that would be written
  * @returns Whether the file should be (re)generated
  */
-async function shouldGenerate(filePath: string): Promise<boolean> {
+async function shouldGenerate(filePath: string, newContent: string): Promise<boolean> {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
-  const content = await fs.readFile(filePath, 'utf8').catch(() => null)
-  if (content === null) {
+  const existing = await fs.readFile(filePath, 'utf8').catch(() => null)
+  if (existing === null) {
     return true
   }
-  const [firstLine] = content.split('\n')
-  if (firstLine === GENERATED_MARKER) {
-    return true
+  const [firstLine] = existing.split('\n')
+  if (firstLine !== GENERATED_MARKER) {
+    return false
   }
-  return false
+  if (existing === newContent) {
+    return false
+  }
+  return true
 }
 
 interface WriteAssetParams {
@@ -192,7 +197,10 @@ async function writeAsset(params: WriteAssetParams): Promise<AssetResult<string>
 
   if (writeResult) {
     return [
-      assetError('write_failed', `Failed to write ${params.asset.filename}: ${writeResult.message}`),
+      assetError(
+        'write_failed',
+        `Failed to write ${params.asset.filename}: ${writeResult.message}`
+      ),
       null,
     ]
   }

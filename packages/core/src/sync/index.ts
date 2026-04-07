@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -18,8 +19,8 @@ import { resolveEntries } from './resolve/index.ts'
 import { buildSourceMap } from './rewrite-links.ts'
 import { generateNav } from './sidebar/index.ts'
 import { injectLandingPages } from './sidebar/inject.ts'
-import { buildMultiSidebar } from './sidebar/multi.ts'
-import type { PageData, ResolvedEntry, SyncContext } from './types.ts'
+import { writeMetaFiles } from './sidebar/write-meta.ts'
+import type { PageData, ResolvedEntry, SidebarItem, SyncContext } from './types.ts'
 import { enrichWorkspaceCards, synthesizeWorkspaceSections } from './workspace.ts'
 
 /**
@@ -41,6 +42,11 @@ export interface SyncOptions {
    * When true, suppress all log output during sync.
    */
   readonly quiet?: boolean
+  /**
+   * Shared cache of dereferenced OpenAPI specs.
+   * Persisted across sync passes in dev mode to avoid re-parsing unchanged specs.
+   */
+  readonly openapiCache?: Map<string, unknown>
 }
 
 /**
@@ -64,13 +70,22 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // Generate banner/logo/icon SVGs (skips user-customized files automatically)
   const assetConfig = buildAssetConfig(config)
-  await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
+  const assetConfigHash = createHash('sha256').update(JSON.stringify(assetConfig)).digest('hex')
+
+  const previousManifest = await loadManifest(outDir)
+
+  // Skip asset generation entirely when config hasn't changed
+  const assetConfigChanged =
+    previousManifest === null ||
+    previousManifest === undefined ||
+    previousManifest.assetConfigHash !== assetConfigHash
+  if (assetConfigChanged) {
+    await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
+  }
 
   // Copy public assets into content/public/ so Rspress can resolve them
   // (Rspress looks for public/ inside the root directory, which is .zpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))
-
-  const previousManifest = await loadManifest(outDir)
 
   const ctx: SyncContext = {
     repoRoot,
@@ -79,6 +94,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     previousManifest,
     manifest: { files: {}, timestamp: Date.now() },
     quiet,
+    openapiCache: options.openapiCache,
   }
 
   // 0. Synthesize workspace sections from apps/packages/workspaces config
@@ -104,11 +120,19 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // 2.1 Write workspace data (always — independent of home page strategy)
   const workspaceResult = buildWorkspaceData(config)
-  await fs.writeFile(
-    path.resolve(outDir, '.generated/workspaces.json'),
-    JSON.stringify(workspaceResult.data, null, 2),
-    'utf8'
-  )
+  const standaloneScopePaths = collectStandaloneScopePaths(resolved)
+  await Promise.all([
+    fs.writeFile(
+      path.resolve(outDir, '.generated/workspaces.json'),
+      JSON.stringify(workspaceResult.data, null, 2),
+      'utf8'
+    ),
+    fs.writeFile(
+      path.resolve(outDir, '.generated/scopes.json'),
+      JSON.stringify(standaloneScopePaths, null, 2),
+      'utf8'
+    ),
+  ])
 
   // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
@@ -136,13 +160,18 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 3. Copy/generate all pages (sections + home + planning + openapi)
   const allPages = [...pages, ...planningPages, ...openapiResult.pages]
 
+  // Detect structural changes — skip mtime optimization when page count changes
+  const skipMtimeOptimization =
+    previousManifest !== null &&
+    previousManifest !== undefined &&
+    allPages.length !== previousManifest.resolvedCount
+
   // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
-  const copyCtx = { ...ctx, sourceMap }
+  const copyCtx: SyncContext = { ...ctx, sourceMap, skipMtimeOptimization }
 
-  const { written, skipped } = await allPages.reduce(
-    async (accPromise, page) => {
-      const counts = await accPromise
+  const pageResults = await Promise.all(
+    allPages.map(async (page) => {
       const entry = await copyPage(page, copyCtx)
       const prevFile = match(previousManifest)
         .with(P.nonNullable, (m) => m.files[entry.outputPath])
@@ -152,14 +181,25 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
         match(prevFile)
           .with(P.nonNullable, (p) => p.contentHash)
           .otherwise(() => {})
-      // oxlint-disable-next-line eslint/no-unused-expressions -- side-effect boundary: manifest is intentionally mutable context accumulated during sync
-      ctx.manifest.files[entry.outputPath] = entry
+      return { entry, isNew }
+    })
+  )
+
+  // Build manifest from collected results
+  const manifestFiles = Object.fromEntries(
+    pageResults.map(({ entry }) => [entry.outputPath, entry])
+  )
+  // oxlint-disable-next-line eslint/no-unused-expressions -- side-effect boundary: manifest is intentionally mutable context accumulated during sync
+  ctx.manifest.files = manifestFiles
+
+  const { written, skipped } = pageResults.reduce(
+    (counts, { isNew }) => {
       if (isNew) {
         return { written: counts.written + 1, skipped: counts.skipped }
       }
       return { written: counts.written, skipped: counts.skipped + 1 }
     },
-    Promise.resolve({ written: 0, skipped: 0 })
+    { written: 0, skipped: 0 }
   )
 
   // 5. Clean stale files
@@ -167,23 +207,35 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     .with(P.nonNullable, async (m) => await cleanStaleFiles(outDir, m, ctx.manifest))
     .otherwise(() => Promise.resolve(0))
 
-  // 6. Generate sidebar + nav
-  const sortedSidebar = buildMultiSidebar(resolved, openapiResult.sidebar)
+  // 6. Generate nav + write Rspress-native _meta.json / _nav.json
   const nav = generateNav(config, resolved)
+  await writeMetaFiles({
+    contentDir: outDir,
+    entries: resolved,
+    nav,
+    openapiEntries: openapiResult.sidebar,
+  })
 
-  await fs.writeFile(
-    path.resolve(outDir, '.generated/sidebar.json'),
-    JSON.stringify(sortedSidebar, null, 2),
-    'utf8'
-  )
-  await fs.writeFile(
-    path.resolve(outDir, '.generated/nav.json'),
-    JSON.stringify(nav, null, 2),
-    'utf8'
-  )
+  // 6.1 Write sidebar.json + nav.json snapshots for tooling / debugging.
+  // Rspress no longer reads these (sidebar/nav come from _meta.json/_nav.json),
+  // but they provide a single-file view of the resolved structure.
+  await Promise.all([
+    fs.writeFile(
+      path.resolve(outDir, '.generated/sidebar.json'),
+      JSON.stringify(buildSidebarSnapshot(resolved), null, 2),
+      'utf8'
+    ),
+    fs.writeFile(path.resolve(outDir, '.generated/nav.json'), JSON.stringify(nav, null, 2), 'utf8'),
+  ])
 
-  // 7. Save manifest
-  await saveManifest(outDir, ctx.manifest)
+  // 7. Save manifest with incremental metadata
+  const manifest = {
+    ...ctx.manifest,
+    assetConfigHash,
+    openapiMtimes: openapiResult.specMtimes,
+    resolvedCount: allPages.length,
+  }
+  await saveManifest(outDir, manifest)
 
   // 8. Write bare-bones README in .zpress/ root
   await writeZpressReadme(options.paths.outputRoot)
@@ -269,16 +321,17 @@ async function copyAll(src: string, dest: string): Promise<void> {
   }
   await fs.mkdir(dest, { recursive: true })
   const entries = await fs.readdir(src, { withFileTypes: true })
-  await entries.reduce(async (prevPromise, entry) => {
-    await prevPromise
-    const srcPath = path.resolve(src, entry.name)
-    const destPath = path.resolve(dest, entry.name)
-    if (entry.isDirectory()) {
-      await copyAll(srcPath, destPath)
-    } else {
-      await fs.copyFile(srcPath, destPath)
-    }
-  }, Promise.resolve())
+  await Promise.all(
+    entries.map(async (entry) => {
+      const srcPath = path.resolve(src, entry.name)
+      const destPath = path.resolve(dest, entry.name)
+      if (entry.isDirectory()) {
+        await copyAll(srcPath, destPath)
+      } else {
+        await fs.copyFile(srcPath, destPath)
+      }
+    })
+  )
 }
 
 /**
@@ -311,6 +364,22 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
 }
 
 /**
+ * Collect standalone sidebar scope paths from resolved entries.
+ *
+ * Returns an array of link paths (e.g. `["/packages", "/contributing"]`)
+ * for sections that have `standalone: true`. These paths are written to
+ * `.generated/scopes.json` and consumed at runtime by the custom Sidebar
+ * component to isolate standalone sections into their own sidebar scope.
+ *
+ * @private
+ * @param entries - Top-level resolved entries
+ * @returns Array of standalone scope path strings
+ */
+function collectStandaloneScopePaths(entries: readonly ResolvedEntry[]): readonly string[] {
+  return entries.filter((e) => e.standalone && e.link).map((e) => e.link as string)
+}
+
+/**
  * Extract an `AssetConfig` from the zpress config.
  * Falls back to 'Documentation' when no title is set.
  *
@@ -320,4 +389,79 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
  */
 function buildAssetConfig(config: ZpressConfig): AssetConfig {
   return { title: config.title ?? 'Documentation', tagline: config.tagline }
+}
+
+/**
+ * Build a flat sidebar snapshot from the resolved entry tree.
+ *
+ * Produces a `Record<string, SidebarItem[]>` keyed by top-level section
+ * link (or `"/"` for non-standalone sections). Used only for the
+ * `.generated/sidebar.json` snapshot — Rspress reads `_meta.json` instead.
+ *
+ * @private
+ * @param entries - Resolved entry tree
+ * @returns Sidebar record suitable for JSON serialization
+ */
+function buildSidebarSnapshot(entries: readonly ResolvedEntry[]): Record<string, unknown[]> {
+  return {
+    '/': entriesToSidebarItems(entries) as unknown[],
+  }
+}
+
+/**
+ * Recursively convert resolved entries to sidebar items for the snapshot.
+ *
+ * @private
+ * @param items - Resolved entries to convert
+ * @returns Flat sidebar items array
+ */
+function entriesToSidebarItems(items: readonly ResolvedEntry[]): readonly SidebarItem[] {
+  return items.filter((e) => !e.hidden).map(entryToSidebarItem)
+}
+
+/**
+ * Convert a single resolved entry to a sidebar item.
+ *
+ * @private
+ * @param entry - Resolved entry to convert
+ * @returns Sidebar item with text, optional link, and optional children
+ */
+function entryToSidebarItem(entry: ResolvedEntry): SidebarItem {
+  if (entry.items && entry.items.length > 0) {
+    return {
+      text: entry.title,
+      ...maybeSidebarLink(entry.link),
+      ...maybeSidebarCollapsed(entry.collapsible),
+      items: entriesToSidebarItems(entry.items),
+    }
+  }
+  return { text: entry.title, link: entry.link }
+}
+
+/**
+ * Return a link property if defined.
+ *
+ * @private
+ * @param link - Optional link string
+ * @returns Object with link, or empty object
+ */
+function maybeSidebarLink(link: string | undefined): { readonly link?: string } {
+  if (link) {
+    return { link }
+  }
+  return {}
+}
+
+/**
+ * Return a collapsed property if collapsible is true.
+ *
+ * @private
+ * @param collapsible - Optional collapsible flag
+ * @returns Object with collapsed flag, or empty object
+ */
+function maybeSidebarCollapsed(collapsible: boolean | undefined): { readonly collapsed?: true } {
+  if (collapsible) {
+    return { collapsed: true as const }
+  }
+  return {}
 }

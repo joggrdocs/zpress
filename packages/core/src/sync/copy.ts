@@ -26,6 +26,11 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
   const outPath = path.resolve(ctx.outDir, page.outputPath)
   await fs.mkdir(path.dirname(outPath), { recursive: true })
 
+  const cached = await tryMtimeSkip(page, ctx)
+  if (cached !== null) {
+    return cached
+  }
+
   const content: string = await (async () => {
     if (page.source) {
       const raw = await fs.readFile(page.source, 'utf8')
@@ -71,12 +76,15 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
     }
   }
 
+  const fmHash = hashFrontmatter(page.frontmatter)
+
   if (prev && prev.contentHash === contentHash) {
     return {
       source: relativeSource,
       sourceMtime: await resolveSourceMtime(),
       contentHash,
       outputPath: page.outputPath,
+      frontmatterHash: fmHash,
     }
   }
 
@@ -87,12 +95,72 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
     sourceMtime: await resolveSourceMtime(),
     contentHash,
     outputPath: page.outputPath,
+    frontmatterHash: fmHash,
   }
 }
 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+/**
+ * Compute an MD5 hash of serialized frontmatter for change detection.
+ *
+ * @private
+ * @param fm - Frontmatter key-value pairs
+ * @returns Hex MD5 digest of the JSON-serialized frontmatter
+ */
+function hashFrontmatter(fm: Frontmatter): string {
+  return createHash('md5').update(JSON.stringify(fm)).digest('hex')
+}
+
+/**
+ * Attempt to skip the full copy pipeline by comparing source mtime and frontmatter hash.
+ *
+ * Returns the previous manifest entry when all conditions hold:
+ * - `ctx.skipMtimeOptimization` is not true
+ * - Page has a source file (not virtual)
+ * - Previous manifest has a matching entry with the same `sourceMtime`
+ * - Page frontmatter hash matches stored `frontmatterHash`
+ *
+ * @private
+ * @param page - Page data to check
+ * @param ctx - Sync context with previous manifest
+ * @returns Previous manifest entry if skippable, null otherwise
+ */
+async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestEntry | null> {
+  if (ctx.skipMtimeOptimization === true) {
+    return null
+  }
+  if (page.source === null || page.source === undefined) {
+    return null
+  }
+  if (ctx.previousManifest === null || ctx.previousManifest === undefined) {
+    return null
+  }
+  const prev = ctx.previousManifest.files[page.outputPath]
+  if (prev === null || prev === undefined) {
+    return null
+  }
+  if (prev.sourceMtime === null || prev.sourceMtime === undefined) {
+    return null
+  }
+  const stat = await fs.stat(page.source).catch(() => null)
+  if (stat === null) {
+    return null
+  }
+  if (stat.mtimeMs !== prev.sourceMtime) {
+    return null
+  }
+  const fmHash = hashFrontmatter(page.frontmatter)
+  if (prev.frontmatterHash === null || prev.frontmatterHash === undefined) {
+    return null
+  }
+  if (fmHash !== prev.frontmatterHash) {
+    return null
+  }
+  return prev
+}
 
 /**
  * Rewrite relative markdown links in source content when a source map is available.

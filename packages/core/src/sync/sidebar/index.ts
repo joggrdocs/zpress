@@ -1,30 +1,6 @@
-import { log } from '@clack/prompts'
-
 import type { NavItem, ZpressConfig } from '../../types.ts'
 import { isEntrySlug } from '../resolve/path.ts'
-import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
-
-/**
- * Convert resolved entry tree to Rspress sidebar config.
- *
- * Leaf pages are placed before sections (directories) at every level.
- *
- * @param entries - Resolved entry tree from the sync engine
- * @returns Rspress sidebar items
- */
-export function generateSidebar(entries: readonly ResolvedEntry[]): SidebarItem[] {
-  const visible = entries.filter((e) => !e.hidden)
-  const pages = visible.filter((e) => !e.items || e.items.length === 0)
-  const sections = visible.filter((e) => e.items && e.items.length > 0)
-
-  return [...pages, ...sections].flatMap((entry) => {
-    const item = buildSidebarEntry(entry)
-    if (item === undefined) {
-      return []
-    }
-    return [item]
-  })
-}
+import type { ResolvedEntry, RspressNavItem } from '../types.ts'
 
 /**
  * Generate Rspress nav config from resolved tree.
@@ -60,35 +36,6 @@ export function generateNav(
 // ---------------------------------------------------------------------------
 
 /**
- * Build a SidebarItem from a resolved entry.
- *
- * @private
- * @param entry - Resolved entry to convert
- * @returns Sidebar item for Rspress config
- */
-function buildSidebarEntry(entry: ResolvedEntry): SidebarItem | undefined {
-  if (entry.items && entry.items.length > 0) {
-    const dedupedItems = filterDuplicateChildLink(entry.items, entry.link)
-    return {
-      text: entry.title,
-      items: generateSidebar(dedupedItems),
-      ...maybeCollapsed(entry.collapsible),
-      ...maybeLink(entry.link),
-    }
-  }
-
-  if (!entry.link || entry.link.trim().length === 0) {
-    log.error(`[zpress] Leaf entry "${entry.title}" has no link — skipping`)
-    return undefined
-  }
-
-  return {
-    text: entry.title,
-    link: entry.link,
-  }
-}
-
-/**
  * Build a NavItem from a resolved entry.
  *
  * @private
@@ -122,34 +69,6 @@ function findFirstLink(entry: ResolvedEntry): string | undefined {
     return mapped.find(Boolean)
   }
   return undefined
-}
-
-/**
- * Return a collapsed property object if collapsible is true.
- *
- * @private
- * @param collapsible - Whether the sidebar group is collapsible
- * @returns Object with collapsed property, or empty object
- */
-function maybeCollapsed(collapsible: boolean | undefined): { collapsed?: true } {
-  if (collapsible) {
-    return { collapsed: true as const }
-  }
-  return {}
-}
-
-/**
- * Return a link property object if link is defined.
- *
- * @private
- * @param link - Optional link string
- * @returns Object with link property, or empty object
- */
-function maybeLink(link: string | undefined): { link?: string } {
-  if (link) {
-    return { link }
-  }
-  return {}
 }
 
 /**
@@ -294,26 +213,4 @@ function mapNavItem(item: NavItem): RspressNavItem {
     ...maybeActiveMatch(item),
     ...maybeItems(item),
   }
-}
-
-/**
- * Remove any direct child whose link duplicates the parent section link.
- *
- * When a child (e.g. "Overview") has the same link as its parent group,
- * it is redundant in the sidebar — the group header already navigates there.
- * Keeping both causes double-highlighting of the active state.
- *
- * @private
- * @param items - Direct child entries
- * @param parentLink - Parent section link to check against
- * @returns Filtered child entries with duplicates removed
- */
-function filterDuplicateChildLink(
-  items: readonly ResolvedEntry[],
-  parentLink: string | undefined
-): readonly ResolvedEntry[] {
-  if (!parentLink) {
-    return items
-  }
-  return items.filter((item) => item.link !== parentLink)
 }

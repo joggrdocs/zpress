@@ -50,7 +50,7 @@ Read the project docs in this order:
 
 1. `CLAUDE.md` (repo root) -- tech stack, project structure, available commands
 2. [`contributing/concepts/architecture.md`](../concepts/architecture.md) -- packages, sync engine, and data flow
-3. [`contributing/concepts/cli.md`](../concepts/cli.md) -- commands, dev server, and build pipeline
+3. [`contributing/concepts/engine/overview.md`](../concepts/engine/overview.md) -- sync engine, build vs dev, key concepts
 4. Relevant standards in the [Contributing](../README.md) overview as needed
 
 ### 6. Set up Claude Code (optional)

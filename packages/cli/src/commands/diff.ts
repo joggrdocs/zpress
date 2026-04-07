@@ -43,7 +43,8 @@ const CONFIG_GLOBS = [
  * zpress diff --ref main --pretty
  * ```
  */
-export const diffCommand = command({
+export default command({
+  name: 'diff',
   description: 'Show changed files in configured source directories',
   options: z.object({
     pretty: z.boolean().optional().default(false),
