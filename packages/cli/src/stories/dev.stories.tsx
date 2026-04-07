@@ -16,8 +16,18 @@ const BANNER = [
 ]
 
 const SAMPLE_LOG: readonly LogEntry[] = [
-  { timestamp: '14:32:18', action: 'synced', file: 'docs/guides/deploying-to-vercel.md', elapsed: 12 },
-  { timestamp: '14:32:15', action: 'synced', file: 'docs/getting-started/introduction.md', elapsed: 8 },
+  {
+    timestamp: '14:32:18',
+    action: 'synced',
+    file: 'docs/guides/deploying-to-vercel.md',
+    elapsed: 12,
+  },
+  {
+    timestamp: '14:32:15',
+    action: 'synced',
+    file: 'docs/getting-started/introduction.md',
+    elapsed: 8,
+  },
   { timestamp: '14:32:10', action: 'removed', file: 'docs/old-page.md', elapsed: 2 },
   { timestamp: '14:31:55', action: 'synced', file: 'docs/api/reference.md', elapsed: 15 },
   { timestamp: '14:31:42', action: 'restarted', file: 'zpress.config.ts', elapsed: 0 },
@@ -151,7 +161,9 @@ function BannerBlock(): React.ReactElement {
   return (
     <Box flexDirection="column">
       {BANNER.map((line) => (
-        <Text key={line} color="cyan">{line}</Text>
+        <Text key={line} color="cyan">
+          {line}
+        </Text>
       ))}
     </Box>
   )
@@ -160,10 +172,7 @@ function BannerBlock(): React.ReactElement {
 /**
  * @private
  */
-function LogLine(props: {
-  readonly entry: LogEntry
-  readonly first: boolean
-}): React.ReactElement {
+function LogLine(props: { readonly entry: LogEntry; readonly first: boolean }): React.ReactElement {
   const { entry, first } = props
   const actionColors: Record<LogEntry['action'], string> = {
     synced: 'green',
@@ -185,9 +194,7 @@ function LogLine(props: {
         {entry.action.padEnd(10)}
       </Text>
       <Text dimColor={!first}>{entry.file}</Text>
-      {entry.elapsed > 0 && (
-        <Text dimColor> {Math.round(entry.elapsed)}ms</Text>
-      )}
+      {entry.elapsed > 0 && <Text dimColor> {Math.round(entry.elapsed)}ms</Text>}
     </Box>
   )
 }
