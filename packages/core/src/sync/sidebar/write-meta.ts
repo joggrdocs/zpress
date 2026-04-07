@@ -12,7 +12,7 @@ import path from 'node:path'
 
 import type { OpenAPISidebarEntry } from '../openapi.ts'
 import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
-import type { MetaItem, MetaSectionHeaderItem } from './meta.ts'
+import type { MetaDirItem, MetaItem, MetaSectionHeaderItem } from './meta.ts'
 import { buildMetaDirectories, buildRootMeta } from './meta.ts'
 
 /**
@@ -59,7 +59,15 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
 
   const allDirectories = [...sectionDirectories, ...openapiDirectories]
 
+  // Ensure all directories referenced in the root _meta.json exist on disk.
+  // Rspress's auto-nav-sidebar reads these with scandir and crashes if missing.
+  const rootDirNames = rootMeta
+    .filter((item): item is MetaDirItem => typeof item !== 'string' && 'type' in item && item.type === 'dir')
+    .map((item) => item.name)
+
   await Promise.all([
+    // Create directories referenced in root _meta.json
+    ...rootDirNames.map((name) => fs.mkdir(path.resolve(contentDir, name), { recursive: true })),
     // Write root _meta.json (unified sidebar for non-standalone sections)
     fs.writeFile(path.resolve(contentDir, '_meta.json'), JSON.stringify(rootMeta, null, 2), 'utf8'),
     // Write _meta.json for each subdirectory

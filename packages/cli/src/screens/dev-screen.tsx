@@ -11,6 +11,8 @@ import {
 } from '@kidd-cli/core/ui'
 import type { SyncResult } from '@zpress/core'
 import { createPaths, loadConfig, sync } from '@zpress/core'
+import BigText from 'ink-big-text'
+import Gradient from 'ink-gradient'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
 
@@ -23,18 +25,6 @@ import { clean } from '../commands/clean.ts'
 const isTTY = Boolean(process.stdin.isTTY)
 
 const MAX_LOG_ENTRIES = 50
-
-/**
- * ASCII Shadow banner for the dev screen header.
- */
-const BANNER = [
-  '         ██████╗ ██████╗ ███████╗███████╗███████╗',
-  '  ██╔══█ ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
-  '  ╚═══█║ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
-  '  █╗  ██ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
-  '  ╚█████ ██║     ██║  ██║███████╗███████║███████║',
-  '   ╚════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
-]
 
 /**
  * A single entry in the activity log.
@@ -62,7 +52,7 @@ interface DevScreenProps {
 /**
  * React/Ink TUI for the `zpress dev` command.
  *
- * Renders a fullscreen status display with ASCII banner, activity log,
+ * Renders a fullscreen status display with styled banner, activity log,
  * sync stats, and hotkey bar.
  *
  * @param props - Parsed CLI options
@@ -244,6 +234,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           watcherRef.current.close()
         }
         exit()
+        process.exit(0)
       }
     },
     { isActive: isTTY }
@@ -356,18 +347,16 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 // ---------------------------------------------------------------------------
 
 /**
- * Render the ASCII banner.
+ * Render the styled banner using cfonts and gradient coloring.
  *
  * @private
- * @returns React element with the zpress ASCII art
+ * @returns React element with the zpress banner
  */
 function Banner(): React.ReactElement {
   return (
-    <Box flexDirection="column">
-      {BANNER.map((line) => (
-        <Text key={line} color="cyan">{line}</Text>
-      ))}
-    </Box>
+    <Gradient name="vice">
+      <BigText text="zpress" font="chrome" />
+    </Gradient>
   )
 }
 

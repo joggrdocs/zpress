@@ -1,19 +1,12 @@
 import { stories, withFullScreen, withLayout } from '@kidd-cli/core/stories'
 import { Alert, Box, Spacer, Spinner, Text } from '@kidd-cli/core/ui'
+import BigText from 'ink-big-text'
+import Gradient from 'ink-gradient'
 import type React from 'react'
 import { match } from 'ts-pattern'
 import { z } from 'zod'
 
 import type { LogEntry } from '../screens/dev-screen.tsx'
-
-const BANNER = [
-  '         ██████╗ ██████╗ ███████╗███████╗███████╗',
-  '  ██╔══█ ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
-  '  ╚═══█║ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
-  '  █╗  ██ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
-  '  ╚█████ ██║     ██║  ██║███████╗███████║███████║',
-  '   ╚════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
-]
 
 const SAMPLE_LOG: readonly LogEntry[] = [
   { timestamp: '14:32:18', action: 'synced', file: 'docs/guides/deploying-to-vercel.md', elapsed: 12 },
@@ -149,11 +142,9 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
  */
 function BannerBlock(): React.ReactElement {
   return (
-    <Box flexDirection="column">
-      {BANNER.map((line) => (
-        <Text key={line} color="cyan">{line}</Text>
-      ))}
-    </Box>
+    <Gradient name="vice">
+      <BigText text="zpress" font="chrome" />
+    </Gradient>
   )
 }
 
@@ -243,7 +234,7 @@ export default stories<DevScreenPreviewProps>({
   stories: {
     Loading: {
       props: { phase: 'loading' },
-      description: 'Initial loading state with ASCII banner',
+      description: 'Initial loading state with styled banner',
     },
     'Idle (No Activity)': {
       props: {
