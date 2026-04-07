@@ -1,11 +1,10 @@
 import { stories, withFullScreen, withLayout } from '@kidd-cli/core/stories'
 import { Alert, Box, Spacer, Spinner, Text } from '@kidd-cli/core/ui'
-import BigText from 'ink-big-text'
-import Gradient from 'ink-gradient'
 import type React from 'react'
 import { match } from 'ts-pattern'
 import { z } from 'zod'
 
+import { Banner } from '../components/banner.tsx'
 import type { LogEntry } from '../screens/dev-screen.tsx'
 
 const SAMPLE_LOG: readonly LogEntry[] = [
@@ -141,11 +140,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
  * @private
  */
 function BannerBlock(): React.ReactElement {
-  return (
-    <Gradient name="vice">
-      <BigText text="zpress" font="chrome" />
-    </Gradient>
-  )
+  return <Banner />
 }
 
 /**

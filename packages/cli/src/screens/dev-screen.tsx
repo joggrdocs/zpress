@@ -11,8 +11,6 @@ import {
 } from '@kidd-cli/core/ui'
 import type { SyncResult } from '@zpress/core'
 import { createPaths, loadConfig, sync } from '@zpress/core'
-import BigText from 'ink-big-text'
-import Gradient from 'ink-gradient'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
 
@@ -21,6 +19,7 @@ import { toError } from '../lib/error.ts'
 import { openBrowser, startDevServer } from '../lib/rspress.ts'
 import { createWatcher } from '../lib/watcher.ts'
 import { clean } from '../commands/clean.ts'
+import { Banner } from '../components/banner.tsx'
 
 const isTTY = Boolean(process.stdin.isTTY)
 
@@ -345,20 +344,6 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
-
-/**
- * Render the styled banner using cfonts and gradient coloring.
- *
- * @private
- * @returns React element with the zpress banner
- */
-function Banner(): React.ReactElement {
-  return (
-    <Gradient name="vice">
-      <BigText text="zpress" font="chrome" />
-    </Gradient>
-  )
-}
 
 /**
  * Render a single line in the activity log.
