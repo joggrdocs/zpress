@@ -14,12 +14,12 @@ import { createPaths, loadConfig, sync } from '@zpress/core'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
 
+import { clean } from '../commands/clean.ts'
+import { Banner } from '../components/banner.tsx'
 import type { WatcherCallbacks, WatcherHandle, WatcherStatus } from '../lib/dev-types.ts'
 import { toError } from '../lib/error.ts'
 import { openBrowser, startDevServer } from '../lib/rspress.ts'
 import { createWatcher } from '../lib/watcher.ts'
-import { clean } from '../commands/clean.ts'
-import { Banner } from '../components/banner.tsx'
 
 const isTTY = Boolean(process.stdin.isTTY)
 
@@ -280,11 +280,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           .with('idle', () => <Text color="green">● Ready</Text>)
           .with('syncing', () => <Spinner label="Syncing" type="dots" />)
           .with('restarting', () => <Spinner label="Restarting" type="dots" />)
-          .with('error', () => (
-            <Text color="red">
-              ● Error
-            </Text>
-          ))
+          .with('error', () => <Text color="red">● Error</Text>)
           .exhaustive()}
       </Box>
 
@@ -352,10 +348,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
  * @param props - Log entry data and whether this is the most recent entry
  * @returns React element for one log line
  */
-function LogLine(props: {
-  readonly entry: LogEntry
-  readonly first: boolean
-}): React.ReactElement {
+function LogLine(props: { readonly entry: LogEntry; readonly first: boolean }): React.ReactElement {
   const { entry, first } = props
   const actionColor = match(entry.action)
     .with('synced', () => 'green' as const)
@@ -376,9 +369,7 @@ function LogLine(props: {
         {entry.action.padEnd(10)}
       </Text>
       <Text dimColor={!first}>{entry.file}</Text>
-      {entry.elapsed > 0 && (
-        <Text dimColor> {Math.round(entry.elapsed)}ms</Text>
-      )}
+      {entry.elapsed > 0 && <Text dimColor> {Math.round(entry.elapsed)}ms</Text>}
     </Box>
   )
 }

@@ -146,10 +146,7 @@ function BannerBlock(): React.ReactElement {
 /**
  * @private
  */
-function LogLine(props: {
-  readonly entry: LogEntry
-  readonly first: boolean
-}): React.ReactElement {
+function LogLine(props: { readonly entry: LogEntry; readonly first: boolean }): React.ReactElement {
   const { entry, first } = props
   const actionColors: Record<LogEntry['action'], string> = {
     synced: 'green',
@@ -171,9 +168,7 @@ function LogLine(props: {
         {entry.action.padEnd(10)}
       </Text>
       <Text dimColor={!first}>{entry.file}</Text>
-      {entry.elapsed > 0 && (
-        <Text dimColor> {Math.round(entry.elapsed)}ms</Text>
-      )}
+      {entry.elapsed > 0 && <Text dimColor> {Math.round(entry.elapsed)}ms</Text>}
     </Box>
   )
 }
