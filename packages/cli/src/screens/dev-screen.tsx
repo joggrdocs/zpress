@@ -277,11 +277,12 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           .with('idle', () => <Text color="green">● Ready</Text>)
           .with('syncing', () => <Spinner label="Syncing" type="dots" />)
           .with('restarting', () => <Spinner label="Restarting" type="dots" />)
-          .with('error', () => (
-            <Text color="red">
-              ● Error{watcherStatus._tag === 'error' ? `: ${watcherStatus.message}` : ''}
-            </Text>
-          ))
+          .with('error', () => {
+            if (watcherStatus._tag === 'error') {
+              return <Text color="red">● Error: {watcherStatus.message}</Text>
+            }
+            return <Text color="red">● Error</Text>
+          })
           .exhaustive()}
       </Box>
 
