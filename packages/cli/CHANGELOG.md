@@ -1,5 +1,34 @@
 # @zpress/cli
 
+## 0.8.0
+
+### Minor Changes
+
+- c169109: Sync engine now only processes what changed instead of running a full sync on every pass.
+  - **mtime-based page skip**: pages whose source mtime and frontmatter hash match the previous manifest skip the entire read/transform/hash pipeline
+  - **Parallel page copy**: all pages are copied concurrently via `Promise.all` instead of sequential reduce
+  - **Parallel `copyAll`**: public asset directory copy runs in parallel
+  - **Asset generation skip**: banner/logo/icon SVGs skip generation entirely when the asset config hash is unchanged; `shouldGenerate` also compares content to avoid redundant writes
+  - **Image copy skip**: destination images are skipped when their mtime is at least as recent as the source
+  - **OpenAPI spec caching**: specs are only re-parsed when their file mtime changes; a shared cache persists across dev-mode sync passes and is cleared on config reload
+  - **Structural change detection**: `resolvedCount` mismatch between syncs forces a full resync to handle added/removed pages correctly
+  - **Build system migration**: switched CLI from rslib to kidd's native build system (tsdown-based), with static command imports, proper dependency externalization, and React/Ink TUI dev screen
+
+### Patch Changes
+
+- c169109: Fix dev TUI banner and quit hotkey
+  - Replace broken hand-crafted ASCII banner with `ink-big-text` (cfonts) and `ink-gradient` for properly styled terminal output
+  - Fix "q" hotkey not exiting by adding `process.exit(0)` after Ink's `exit()`, which only unmounts React but leaves the dev server and watcher keeping the process alive
+
+- c169109: Fix home page not updating on config changes during dev
+
+  The restart-relevance hash was missing `actions`, `features`, `apps`, `packages`, and `workspaces` — all of which feed into the generated home page hero, feature cards, and workspace cards. Changes to these fields now correctly trigger a dev server restart so the home page reflects the updated config.
+
+- Updated dependencies [c169109]
+- Updated dependencies [c169109]
+  - @zpress/core@0.10.0
+  - @zpress/ui@0.8.10
+
 ## 0.7.0
 
 ### Minor Changes

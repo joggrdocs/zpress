@@ -8,8 +8,18 @@ import { Banner } from '../components/banner.tsx'
 import type { LogEntry } from '../screens/dev-screen.tsx'
 
 const SAMPLE_LOG: readonly LogEntry[] = [
-  { timestamp: '14:32:18', action: 'synced', file: 'docs/guides/deploying-to-vercel.md', elapsed: 12 },
-  { timestamp: '14:32:15', action: 'synced', file: 'docs/getting-started/introduction.md', elapsed: 8 },
+  {
+    timestamp: '14:32:18',
+    action: 'synced',
+    file: 'docs/guides/deploying-to-vercel.md',
+    elapsed: 12,
+  },
+  {
+    timestamp: '14:32:15',
+    action: 'synced',
+    file: 'docs/getting-started/introduction.md',
+    elapsed: 8,
+  },
   { timestamp: '14:32:10', action: 'removed', file: 'docs/old-page.md', elapsed: 2 },
   { timestamp: '14:31:55', action: 'synced', file: 'docs/api/reference.md', elapsed: 15 },
   { timestamp: '14:31:42', action: 'restarted', file: 'zpress.config.ts', elapsed: 0 },
