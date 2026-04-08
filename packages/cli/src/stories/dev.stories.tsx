@@ -4,30 +4,12 @@ import type React from 'react'
 import { match } from 'ts-pattern'
 import { z } from 'zod'
 
+import { Banner } from '../components/banner.tsx'
 import type { LogEntry } from '../screens/dev-screen.tsx'
 
-const BANNER = [
-  '         ██████╗ ██████╗ ███████╗███████╗███████╗',
-  '  ██╔══█ ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
-  '  ╚═══█║ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
-  '  █╗  ██ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
-  '  ╚█████ ██║     ██║  ██║███████╗███████║███████║',
-  '   ╚════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
-]
-
 const SAMPLE_LOG: readonly LogEntry[] = [
-  {
-    timestamp: '14:32:18',
-    action: 'synced',
-    file: 'docs/guides/deploying-to-vercel.md',
-    elapsed: 12,
-  },
-  {
-    timestamp: '14:32:15',
-    action: 'synced',
-    file: 'docs/getting-started/introduction.md',
-    elapsed: 8,
-  },
+  { timestamp: '14:32:18', action: 'synced', file: 'docs/guides/deploying-to-vercel.md', elapsed: 12 },
+  { timestamp: '14:32:15', action: 'synced', file: 'docs/getting-started/introduction.md', elapsed: 8 },
   { timestamp: '14:32:10', action: 'removed', file: 'docs/old-page.md', elapsed: 2 },
   { timestamp: '14:31:55', action: 'synced', file: 'docs/api/reference.md', elapsed: 15 },
   { timestamp: '14:31:42', action: 'restarted', file: 'zpress.config.ts', elapsed: 0 },
@@ -58,7 +40,8 @@ type DevScreenPreviewProps = Record<string, unknown> & {
  * @returns React element rendering the dev screen preview
  */
 function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
-  const { width } = props
+  const width = Math.max(Math.floor(props.width), 2)
+  const separatorWidth = Math.max(width - 2, 0)
 
   if (props.phase === 'error') {
     return (
@@ -103,7 +86,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Activity log */}
@@ -120,7 +103,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Stats bar */}
@@ -158,15 +141,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
  * @private
  */
 function BannerBlock(): React.ReactElement {
-  return (
-    <Box flexDirection="column">
-      {BANNER.map((line) => (
-        <Text key={line} color="cyan">
-          {line}
-        </Text>
-      ))}
-    </Box>
-  )
+  return <Banner />
 }
 
 /**
@@ -250,7 +225,7 @@ export default stories<DevScreenPreviewProps>({
   stories: {
     Loading: {
       props: { phase: 'loading' },
-      description: 'Initial loading state with ASCII banner',
+      description: 'Initial loading state with styled banner',
     },
     'Idle (No Activity)': {
       props: {

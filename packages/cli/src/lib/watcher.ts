@@ -220,8 +220,12 @@ function needsServerRestart(prev: ZpressConfig, next: ZpressConfig): boolean {
 /**
  * Hash the config fields that require a server restart when changed.
  *
- * Excludes `sections`, `nav`, `apps`, `packages`, and `workspaces` since
- * those only affect sidebar/nav structure handled by `_meta.json`/`_nav.json`.
+ * Excludes `sections` and `nav` since those only affect sidebar/nav
+ * structure handled by `_meta.json`/`_nav.json` HMR.
+ *
+ * Includes `apps`, `packages`, `workspaces`, `features`, and `actions`
+ * because they feed into the generated home page (`index.md`) hero,
+ * feature cards, and workspace cards via `themeConfig.home`.
  *
  * @private
  * @param config - Zpress config to hash
@@ -239,6 +243,11 @@ function restartRelevantHash(config: ZpressConfig): string {
     footer: config.footer,
     home: config.home,
     openapi: config.openapi,
+    actions: config.actions,
+    features: config.features,
+    apps: config.apps,
+    packages: config.packages,
+    workspaces: config.workspaces,
   }
   return createHash('sha256').update(JSON.stringify(relevant)).digest('hex')
 }

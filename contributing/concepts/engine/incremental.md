@@ -78,7 +78,7 @@ After the full pass completes, the new `resolvedCount` is saved and mtime skippi
 
 ## Stale File Cleanup
 
-After every sync, files present in the old manifest but absent in the new one are removed from the output directory. Empty parent directories are pruned afterwards.
+After every sync, files present in the old manifest but absent in the new one are removed from the output directory. Empty parent directories are pruned afterward.
 
 ## Manifest Shape
 

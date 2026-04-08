@@ -28,7 +28,12 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
 
   const cached = await tryMtimeSkip(page, ctx)
   if (cached !== null) {
-    return cached
+    // Verify the output file still exists on disk — the manifest may survive
+    // even if .zpress/content/ was partially deleted.
+    const outputExists = await fs.stat(outPath).catch(() => null)
+    if (outputExists !== null) {
+      return cached
+    }
   }
 
   const content: string = await (async () => {

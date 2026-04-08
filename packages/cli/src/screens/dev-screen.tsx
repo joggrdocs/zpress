@@ -15,6 +15,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
 
 import { clean } from '../commands/clean.ts'
+import { Banner } from '../components/banner.tsx'
 import type { WatcherCallbacks, WatcherHandle, WatcherStatus } from '../lib/dev-types.ts'
 import { toError } from '../lib/error.ts'
 import { openBrowser, startDevServer } from '../lib/rspress.ts'
@@ -23,18 +24,6 @@ import { createWatcher } from '../lib/watcher.ts'
 const isTTY = Boolean(process.stdin.isTTY)
 
 const MAX_LOG_ENTRIES = 50
-
-/**
- * ASCII Shadow banner for the dev screen header.
- */
-const BANNER = [
-  '         ██████╗ ██████╗ ███████╗███████╗███████╗',
-  '  ██╔══█ ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
-  '  ╚═══█║ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
-  '  █╗  ██ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
-  '  ╚█████ ██║     ██║  ██║███████╗███████║███████║',
-  '   ╚════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
-]
 
 /**
  * A single entry in the activity log.
@@ -62,7 +51,7 @@ interface DevScreenProps {
 /**
  * React/Ink TUI for the `zpress dev` command.
  *
- * Renders a fullscreen status display with ASCII banner, activity log,
+ * Renders a fullscreen status display with styled banner, activity log,
  * sync stats, and hotkey bar.
  *
  * @param props - Parsed CLI options
@@ -235,21 +224,19 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   useInput(
     (input, key) => {
-      if (phase !== 'ready') {
-        return
-      }
-
       if (input === 'q' || (key.ctrl && input === 'c')) {
         if (watcherRef.current) {
           watcherRef.current.close()
         }
         exit()
+        process.exit(0)
       }
     },
     { isActive: isTTY }
   )
 
-  const width = Math.min(columns, 80)
+  const width = Math.max(Math.min(columns, 80), 2)
+  const separatorWidth = Math.max(width - 2, 0)
 
   if (phase === 'error') {
     return (
@@ -290,13 +277,18 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           .with('idle', () => <Text color="green">● Ready</Text>)
           .with('syncing', () => <Spinner label="Syncing" type="dots" />)
           .with('restarting', () => <Spinner label="Restarting" type="dots" />)
-          .with('error', () => <Text color="red">● Error</Text>)
+          .with('error', () => {
+            if (watcherStatus._tag === 'error') {
+              return <Text color="red">● Error: {watcherStatus.message}</Text>
+            }
+            return <Text color="red">● Error</Text>
+          })
           .exhaustive()}
       </Box>
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Activity log */}
@@ -313,7 +305,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Stats bar */}
@@ -350,24 +342,6 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
-
-/**
- * Render the ASCII banner.
- *
- * @private
- * @returns React element with the zpress ASCII art
- */
-function Banner(): React.ReactElement {
-  return (
-    <Box flexDirection="column">
-      {BANNER.map((line) => (
-        <Text key={line} color="cyan">
-          {line}
-        </Text>
-      ))}
-    </Box>
-  )
-}
 
 /**
  * Render a single line in the activity log.
