@@ -62,7 +62,10 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
   // Ensure all directories referenced in the root _meta.json exist on disk.
   // Rspress's auto-nav-sidebar reads these with scandir and crashes if missing.
   const rootDirNames = rootMeta
-    .filter((item): item is MetaDirItem => typeof item !== 'string' && 'type' in item && item.type === 'dir')
+    .filter(
+      (item): item is MetaDirItem =>
+        typeof item !== 'string' && 'type' in item && item.type === 'dir'
+    )
     .map((item) => item.name)
 
   await Promise.all([

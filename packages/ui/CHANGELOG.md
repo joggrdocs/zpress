@@ -1,5 +1,13 @@
 # @zpress/ui
 
+## 0.8.10
+
+### Patch Changes
+
+- Updated dependencies [c169109]
+- Updated dependencies [c169109]
+  - @zpress/core@0.10.0
+
 ## 0.8.9
 
 ### Patch Changes
