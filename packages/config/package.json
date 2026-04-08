@@ -51,11 +51,11 @@
   },
   "devDependencies": {
     "@rslib/core": "catalog:",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "tsx": "^4.21.0",
     "typescript": "catalog:",
     "vitest": "catalog:",
-    "zod-to-json-schema": "^3.25.1"
+    "zod-to-json-schema": "^3.25.2"
   },
   "engines": {
     "node": ">=24.0.0"

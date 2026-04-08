@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
-    "@clack/prompts": "^1.1.0",
+    "@clack/prompts": "^1.2.0",
     "@zpress/config": "workspace:*",
     "@zpress/theme": "workspace:*",
     "es-toolkit": "catalog:",

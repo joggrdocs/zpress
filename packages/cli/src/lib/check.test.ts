@@ -2,7 +2,7 @@ import type { ZpressConfig } from '@zpress/core'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock(import('./rspress.ts'), () => ({
-  buildSiteForCheck: vi.fn(),
+  buildSiteForCheck: vi.fn<() => void>(),
 }))
 
 const { runConfigCheck, presentResults } = await import('./check.ts')
@@ -16,10 +16,10 @@ const loadError = {
 }
 
 const mockLogger = {
-  success: vi.fn(),
-  error: vi.fn(),
-  warn: vi.fn(),
-  message: vi.fn(),
+  success: vi.fn<(msg: string) => void>(),
+  error: vi.fn<(msg: string) => void>(),
+  warn: vi.fn<(msg: string) => void>(),
+  message: vi.fn<(msg: string) => void>(),
 }
 
 beforeEach(() => {

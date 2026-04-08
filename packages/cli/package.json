@@ -41,7 +41,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@kidd-cli/core": "^0.22.1",
+    "@kidd-cli/core": "^0.23.0",
     "@rspress/core": "catalog:",
     "@zpress/core": "workspace:*",
     "@zpress/templates": "workspace:*",
@@ -51,13 +51,13 @@
     "ink": "^6.8.0",
     "ink-big-text": "^2.0.0",
     "ink-gradient": "^4.0.0",
-    "react": "^19.2.0",
+    "react": "^19.2.5",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@kidd-cli/cli": "^0.11.2",
-    "@types/react": "^19.1.0",
+    "@kidd-cli/cli": "^0.11.3",
+    "@types/react": "^19.2.14",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
