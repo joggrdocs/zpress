@@ -224,10 +224,6 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   useInput(
     (input, key) => {
-      if (phase !== 'ready') {
-        return
-      }
-
       if (input === 'q' || (key.ctrl && input === 'c')) {
         if (watcherRef.current) {
           watcherRef.current.close()
@@ -239,7 +235,8 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     { isActive: isTTY }
   )
 
-  const width = Math.min(columns, 80)
+  const width = Math.max(Math.min(columns, 80), 2)
+  const separatorWidth = Math.max(width - 2, 0)
 
   if (phase === 'error') {
     return (
@@ -280,13 +277,17 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           .with('idle', () => <Text color="green">● Ready</Text>)
           .with('syncing', () => <Spinner label="Syncing" type="dots" />)
           .with('restarting', () => <Spinner label="Restarting" type="dots" />)
-          .with('error', () => <Text color="red">● Error</Text>)
+          .with('error', () => (
+            <Text color="red">
+              ● Error{watcherStatus._tag === 'error' ? `: ${watcherStatus.message}` : ''}
+            </Text>
+          ))
           .exhaustive()}
       </Box>
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Activity log */}
@@ -303,7 +304,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Stats bar */}

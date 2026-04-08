@@ -165,11 +165,12 @@ async function shouldGenerate(filePath: string, newContent: string): Promise<boo
   if (existing === null) {
     return true
   }
-  const [firstLine] = existing.split('\n')
+  const normalized = existing.replaceAll('\r\n', '\n')
+  const [firstLine] = normalized.split('\n')
   if (firstLine !== GENERATED_MARKER) {
     return false
   }
-  if (existing === newContent) {
+  if (normalized === newContent) {
     return false
   }
   return true

@@ -40,7 +40,8 @@ type DevScreenPreviewProps = Record<string, unknown> & {
  * @returns React element rendering the dev screen preview
  */
 function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
-  const { width } = props
+  const width = Math.max(Math.floor(props.width), 2)
+  const separatorWidth = Math.max(width - 2, 0)
 
   if (props.phase === 'error') {
     return (
@@ -85,7 +86,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Activity log */}
@@ -102,7 +103,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
 
       {/* Separator */}
       <Box marginTop={1}>
-        <Text dimColor>{'─'.repeat(width - 2)}</Text>
+        <Text dimColor>{'─'.repeat(separatorWidth)}</Text>
       </Box>
 
       {/* Stats bar */}

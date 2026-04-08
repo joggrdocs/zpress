@@ -27,7 +27,7 @@ flowchart LR
     subgraph input ["Input"]
         CONFIG(["zpress.config.ts"])
         MD(["*.md / *.mdx"])
-        SPECS(["openapi.yaml"])
+        SPECS(["OpenAPI specs"])
     end
 
     subgraph engine ["Engine"]

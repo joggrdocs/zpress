@@ -59,7 +59,7 @@ flowchart LR
 
 ## Caching
 
-In dev mode, a shared `Map<string, unknown>` is created once and threaded through all sync passes. See [Dev Mode -- OpenAPI Cache](./dev.md#openapi-cache) for lifecycle details.
+In dev mode, a shared `Map<string, unknown>` is created once and threaded through all sync passes. See [Dev Mode — OpenAPI Cache](./dev.md#openapi-cache) for lifecycle details.
 
 ## References
 
