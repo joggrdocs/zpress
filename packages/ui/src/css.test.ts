@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 
 vi.mock(import('./head/read.ts'), () => ({
-  readCss: vi.fn((name: string) => `/* mock ${name} */`),
-  readJs: vi.fn((name: string) => `/* mock ${name} */`),
+  readCss: vi.fn<(name: string) => string>((name: string) => `/* mock ${name} */`),
+  readJs: vi.fn<(name: string) => string>((name: string) => `/* mock ${name} */`),
 }))
 
 const { getThemeCss } = await import('./css.ts')

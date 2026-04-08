@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock(import('node:fs/promises'), () => ({
   default: {
-    readFile: vi.fn(),
+    readFile: vi.fn<() => Promise<string>>(),
   },
 }))
 
