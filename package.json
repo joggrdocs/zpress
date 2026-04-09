@@ -40,7 +40,7 @@
     "@iconify-json/simple-icons": "^1.2.77",
     "@iconify-json/skill-icons": "^1.2.4",
     "@iconify-json/vscode-icons": "^1.2.45",
-    "@microsoft/api-extractor": "^7.58.1",
+    "@microsoft/api-extractor": "^7.58.2",
     "@types/node": "^25.5.2",
     "@typescript/native-preview": "catalog:",
     "eslint-plugin-functional": "^9.0.4",
