@@ -132,13 +132,11 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 2.1 Write workspace data (always — independent of home page strategy)
   const workspaceResult = buildWorkspaceData(config)
   const sectionScopePaths = collectStandaloneScopePaths(resolved)
-  await Promise.all([
-    fs.writeFile(
-      path.resolve(outDir, '.generated/workspaces.json'),
-      JSON.stringify(workspaceResult.data, null, 2),
-      'utf8'
-    ),
-  ])
+  await fs.writeFile(
+    path.resolve(outDir, '.generated/workspaces.json'),
+    JSON.stringify(workspaceResult.data, null, 2),
+    'utf8'
+  )
 
   // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
