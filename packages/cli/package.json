@@ -48,7 +48,7 @@
     "@zpress/ui": "workspace:*",
     "es-toolkit": "catalog:",
     "get-port": "^7.2.0",
-    "ink": "^6.8.0",
+    "ink": "^7.0.0",
     "ink-big-text": "^2.0.0",
     "ink-gradient": "^4.0.0",
     "react": "^19.2.5",
