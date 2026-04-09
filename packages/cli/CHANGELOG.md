@@ -1,5 +1,15 @@
 # @zpress/cli
 
+## 0.8.1
+
+### Patch Changes
+
+- 7a39840: upgrade dependencies to latest
+- Updated dependencies [d25fea5]
+- Updated dependencies [7a39840]
+  - @zpress/ui@0.8.11
+  - @zpress/core@0.10.1
+
 ## 0.8.0
 
 ### Minor Changes
