@@ -85,6 +85,10 @@ export function createWatcher(params: {
         }
       }
       const result = await sync(config, { paths, quiet: true, openapiCache })
+      if (result.error) {
+        callbacks.onStatusChange({ _tag: 'error', message: `Sync error: ${result.error}` })
+        return
+      }
       consecutiveFailures = 0
       callbacks.onSyncComplete(result)
       // Only restart the dev server when restart-relevant fields changed.

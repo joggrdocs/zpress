@@ -26,6 +26,12 @@ import { slugify } from './workspace.ts'
 export interface OpenAPISidebarEntry {
   readonly prefix: string
   readonly sidebar: readonly SidebarItem[]
+  /**
+   * True when this entry originates from the root `config.openapi` field
+   * rather than a workspace item's `.openapi`. Root-level entries need
+   * their own standalone sidebar scope and a root `_meta.json` dir entry.
+   */
+  readonly rootLevel: boolean
 }
 
 /**
@@ -67,6 +73,7 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
     sidebar: configResults.map((result, index) => ({
       prefix: allConfigs[index].config.path,
       sidebar: result.sidebar,
+      rootLevel: allConfigs[index].rootLevel,
     })),
     pages: configResults.flatMap((result) => result.pages),
     specMtimes,
@@ -112,12 +119,13 @@ interface SingleSyncResult {
 }
 
 /**
- * A config entry with its associated OpenAPI config.
+ * A config entry with its associated OpenAPI config and source flag.
  *
  * @private
  */
 interface ConfigEntry {
   readonly config: OpenAPIConfig
+  readonly rootLevel: boolean
 }
 
 /**
@@ -236,7 +244,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
  */
 function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
   return match(config.openapi)
-    .with(P.nonNullable, (o) => [{ config: o }])
+    .with(P.nonNullable, (o) => [{ config: o, rootLevel: true }])
     .otherwise(() => [])
 }
 
@@ -255,7 +263,7 @@ function collectWorkspaceConfigs(config: ZpressConfig): readonly ConfigEntry[] {
       (ws): ws is Workspace & { readonly openapi: OpenAPIConfig } =>
         ws.openapi !== null && ws.openapi !== undefined
     )
-    .map((ws) => ({ config: ws.openapi }))
+    .map((ws) => ({ config: ws.openapi, rootLevel: false }))
 }
 
 /**

@@ -103,7 +103,7 @@ Each node in `sections` is a `Section`. What you provide determines what it is:
 
 `TitleConfig` is either a plain `string` or `{ from: 'auto' | 'filename' | 'heading' | 'frontmatter', transform?: (text, slug) => string }` for derived titles.
 
-`IconConfig` is either a plain Iconify identifier string (e.g. `'devicon:hono'`) or an object `{ id: string, color: string }` for explicit color control. See [Icon Colors](/references/icons/colors) for available color values.
+`IconConfig` is either a plain Iconify identifier string (e.g. `'devicon:hono'`) or an object `{ id: string, color: string }` for explicit color control. See [Icon Colors](/reference/icons/colors) for available color values.
 
 The `sort` field accepts `'default'`, `'alpha'`, `'filename'`, or a custom comparator function with the signature `(a: ResolvedPage, b: ResolvedPage) => number` where each `ResolvedPage` has `title`, `link`, and `frontmatter` properties. The `'default'` strategy pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then sorts alphabetically. This is the implicit default when `sort` is omitted.
 

@@ -13,6 +13,7 @@ import { collectAllWorkspaceItems } from './collect-workspaces.ts'
 import { copyPage } from './copy.ts'
 import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
+import type { OpenAPISidebarEntry } from './openapi.ts'
 import { syncAllOpenAPI } from './openapi.ts'
 import { discoverPlanningPages } from './planning.ts'
 import { resolveEntries } from './resolve/index.ts'
@@ -31,6 +32,11 @@ export interface SyncResult {
   readonly pagesSkipped: number
   readonly pagesRemoved: number
   readonly elapsed: number
+  /**
+   * When set, the sync failed and this message describes why.
+   * Callers should treat a non-null error as a hard failure.
+   */
+  readonly error?: string
 }
 
 export interface SyncOptions {
@@ -104,8 +110,13 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   // 1. Resolve the section tree
   const [resolveErr, rawResolved] = await resolveEntries(allSections, ctx)
   if (resolveErr) {
-    log.error(`[zpress] ${resolveErr.message}`)
-    return { pagesWritten: 0, pagesSkipped: 0, pagesRemoved: 0, elapsed: performance.now() - start }
+    return {
+      pagesWritten: 0,
+      pagesSkipped: 0,
+      pagesRemoved: 0,
+      elapsed: performance.now() - start,
+      error: resolveErr.message,
+    }
   }
 
   // 1.25 Enrich sections with workspace card metadata from workspaces config
@@ -120,19 +131,12 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // 2.1 Write workspace data (always — independent of home page strategy)
   const workspaceResult = buildWorkspaceData(config)
-  const standaloneScopePaths = collectStandaloneScopePaths(resolved)
-  await Promise.all([
-    fs.writeFile(
-      path.resolve(outDir, '.generated/workspaces.json'),
-      JSON.stringify(workspaceResult.data, null, 2),
-      'utf8'
-    ),
-    fs.writeFile(
-      path.resolve(outDir, '.generated/scopes.json'),
-      JSON.stringify(standaloneScopePaths, null, 2),
-      'utf8'
-    ),
-  ])
+  const sectionScopePaths = collectStandaloneScopePaths(resolved)
+  await fs.writeFile(
+    path.resolve(outDir, '.generated/workspaces.json'),
+    JSON.stringify(workspaceResult.data, null, 2),
+    'utf8'
+  )
 
   // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
@@ -156,6 +160,15 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   // 2.6 Sync OpenAPI specs
   const openapiResult = await syncAllOpenAPI(ctx)
+
+  // 2.7 Write scopes.json — section standalone scopes + root-level OpenAPI scopes
+  const openapiScopePaths = collectOpenapiScopePaths(openapiResult.sidebar)
+  const standaloneScopePaths = [...sectionScopePaths, ...openapiScopePaths]
+  await fs.writeFile(
+    path.resolve(outDir, '.generated/scopes.json'),
+    JSON.stringify(standaloneScopePaths, null, 2),
+    'utf8'
+  )
 
   // 3. Copy/generate all pages (sections + home + planning + openapi)
   const allPages = [...pages, ...planningPages, ...openapiResult.pages]
@@ -377,6 +390,21 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
  */
 function collectStandaloneScopePaths(entries: readonly ResolvedEntry[]): readonly string[] {
   return entries.filter((e) => e.standalone && e.link).map((e) => e.link as string)
+}
+
+/**
+ * Collect scope paths from root-level OpenAPI sidebar entries.
+ *
+ * Root-level entries (from `config.openapi`) need their own standalone
+ * scope so their sidebar items don't bleed into the main sidebar.
+ * Workspace-level entries inherit their parent workspace's scope.
+ *
+ * @private
+ * @param entries - OpenAPI sidebar entries from sync
+ * @returns Array of root-level OpenAPI scope path strings
+ */
+function collectOpenapiScopePaths(entries: readonly OpenAPISidebarEntry[]): readonly string[] {
+  return entries.filter((e) => e.rootLevel).map((e) => e.prefix)
 }
 
 /**

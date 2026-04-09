@@ -4,7 +4,9 @@ import type { ResolvedEntry } from '../types'
 
 vi.mock(import('node:fs/promises'), () => ({
   default: {
-    readFile: vi.fn<() => Promise<string>>().mockResolvedValue('---\n---\nSome description paragraph'),
+    readFile: vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValue('---\n---\nSome description paragraph'),
   },
 }))
 
