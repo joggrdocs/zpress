@@ -12,7 +12,7 @@ import path from 'node:path'
 
 import type { OpenAPISidebarEntry } from '../openapi.ts'
 import type { ResolvedEntry, RspressNavItem, SidebarItem } from '../types.ts'
-import type { MetaDirItem, MetaItem, MetaSectionHeaderItem } from './meta.ts'
+import type { MetaDirectory, MetaDirItem, MetaItem, MetaSectionHeaderItem } from './meta.ts'
 import { buildMetaDirectories, buildRootMeta } from './meta.ts'
 
 /**
@@ -57,11 +57,19 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
   const openapiDirectories = openapiEntries.flatMap(buildOpenapiMetaDirectory)
   const rootMeta = buildRootMeta(entries)
 
-  const allDirectories = [...sectionDirectories, ...openapiDirectories]
+  // Merge OpenAPI entries into the appropriate _meta.json files:
+  // - Root-level entries → root _meta.json as dir items
+  // - Workspace-level entries → parent directory's _meta.json as dir items
+  const openapiRootItems = buildOpenapiRootMetaItems(openapiEntries)
+  const mergedSectionDirectories = mergeOpenapiParentEntries(sectionDirectories, openapiEntries)
+
+  const mergedRootMeta = [...rootMeta, ...openapiRootItems]
+
+  const allDirectories = [...mergedSectionDirectories, ...openapiDirectories]
 
   // Ensure all directories referenced in the root _meta.json exist on disk.
   // Rspress's auto-nav-sidebar reads these with scandir and crashes if missing.
-  const rootDirNames = rootMeta
+  const rootDirNames = mergedRootMeta
     .filter(
       (item): item is MetaDirItem =>
         typeof item !== 'string' && 'type' in item && item.type === 'dir'
@@ -72,7 +80,11 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
     // Create directories referenced in root _meta.json
     ...rootDirNames.map((name) => fs.mkdir(path.resolve(contentDir, name), { recursive: true })),
     // Write root _meta.json (unified sidebar for non-standalone sections)
-    fs.writeFile(path.resolve(contentDir, '_meta.json'), JSON.stringify(rootMeta, null, 2), 'utf8'),
+    fs.writeFile(
+      path.resolve(contentDir, '_meta.json'),
+      JSON.stringify(mergedRootMeta, null, 2),
+      'utf8'
+    ),
     // Write _meta.json for each subdirectory
     ...allDirectories.map(async (dir) => {
       const metaPath = path.resolve(contentDir, dir.dirPath, '_meta.json')
@@ -89,13 +101,98 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /**
- * Intermediate directory structure matching {@link import('./meta.ts').MetaDirectory}.
+ * Build root `_meta.json` dir items for root-level OpenAPI entries.
+ *
+ * Root-level entries (from `config.openapi`) need a `dir` item in the root
+ * `_meta.json` so Rspress discovers them in the unified sidebar.
+ * Workspace-level entries are nested under an existing section and do not
+ * need root-level discovery.
  *
  * @private
+ * @param entries - All OpenAPI sidebar entries
+ * @returns Dir meta items for root-level entries
  */
-interface MetaDirectory {
-  readonly dirPath: string
-  readonly items: readonly MetaItem[]
+function buildOpenapiRootMetaItems(
+  entries: readonly OpenAPISidebarEntry[]
+): readonly MetaDirItem[] {
+  return entries
+    .filter((entry) => entry.rootLevel)
+    .flatMap((entry) => {
+      const dirName = stripLeadingSlash(entry.prefix)
+      if (dirName === '' || dirName.includes('/')) {
+        return []
+      }
+      const label = resolveOpenapiLabel(entry)
+      return [{ type: 'dir' as const, name: dirName, label }]
+    })
+}
+
+/**
+ * Merge workspace-level OpenAPI entries into their parent directory's meta.
+ *
+ * For each workspace-level OpenAPI entry whose prefix is nested (e.g.
+ * `/apps/api/reference`), adds a `dir` item for the last segment
+ * (`reference`) into the parent directory's (`apps/api`) `_meta.json`.
+ * If the parent directory doesn't exist yet, creates a new MetaDirectory.
+ *
+ * @private
+ * @param directories - Existing section meta directories
+ * @param openapiEntries - All OpenAPI sidebar entries
+ * @returns Updated directories with workspace-level OpenAPI dir items merged in
+ */
+function mergeOpenapiParentEntries(
+  directories: readonly MetaDirectory[],
+  openapiEntries: readonly OpenAPISidebarEntry[]
+): readonly MetaDirectory[] {
+  const workspaceEntries = openapiEntries.filter((entry) => !entry.rootLevel)
+  if (workspaceEntries.length === 0) {
+    return [...directories]
+  }
+
+  // Build a mutable map of dirPath → items for merging
+  const dirMap = new Map<string, MetaItem[]>(
+    directories.map((dir) => [dir.dirPath, [...dir.items]])
+  )
+
+  workspaceEntries.reduce<null>((_, entry) => {
+    const cleanPrefix = stripLeadingSlash(entry.prefix)
+    if (cleanPrefix === '' || !cleanPrefix.includes('/')) {
+      return null
+    }
+    const segments = cleanPrefix.split('/')
+    const childName = segments.at(-1) as string
+    const parentDir = segments.slice(0, -1).join('/')
+    const label = resolveOpenapiLabel(entry)
+    const dirItem: MetaDirItem = { type: 'dir', name: childName, label }
+
+    const existing = dirMap.get(parentDir)
+    if (existing) {
+      existing.push(dirItem)
+    } else {
+      dirMap.set(parentDir, [dirItem])
+    }
+    return null
+  }, null)
+
+  return [...dirMap.entries()].map(([dirPath, items]) => ({ dirPath, items }))
+}
+
+/**
+ * Resolve the display label for an OpenAPI sidebar entry.
+ *
+ * Extracts the title from the root sidebar item (e.g. "API Reference"),
+ * falling back to "API Reference" when the sidebar is empty.
+ *
+ * @private
+ * @param entry - OpenAPI sidebar entry
+ * @returns Display label string
+ */
+function resolveOpenapiLabel(entry: OpenAPISidebarEntry): string {
+  const root = entry.sidebar[0]
+  if (root && root.text) {
+    return root.text
+  }
+  return 'API Reference'
 }
 
 /**
@@ -115,7 +212,7 @@ function buildOpenapiMetaDirectory(entry: OpenAPISidebarEntry): readonly MetaDir
     return []
   }
 
-  const items = flattenOpenapiSidebar(entry.sidebar, entry.prefix)
+  const items = flattenOpenapiSidebar(entry.sidebar, entry.prefix, entry.rootLevel)
 
   return [{ dirPath, items }]
 }
@@ -134,16 +231,24 @@ function buildOpenapiMetaDirectory(entry: OpenAPISidebarEntry): readonly MetaDir
  */
 function flattenOpenapiSidebar(
   sidebar: readonly SidebarItem[],
-  prefix: string
+  prefix: string,
+  rootLevel: boolean
 ): readonly MetaItem[] {
   // The root sidebar typically has one item: { text: "API Reference", items: [tag groups] }
   // Extract the tag groups from the root item's children
   const tagGroups = sidebar.flatMap((root) => root.items ?? [])
 
-  const indexItem: MetaItem = { type: 'file', name: 'index', label: 'Overview' }
-
   const tagItems = tagGroupsToMetaItems(tagGroups, prefix)
 
+  // Root-level entries have a `dir` item in root _meta.json that already
+  // links to the index page. Including it again causes a double highlight.
+  // Workspace-level entries have no parent dir linking to them, so they
+  // need the explicit index item.
+  if (rootLevel) {
+    return [...tagItems]
+  }
+
+  const indexItem: MetaItem = { type: 'file', name: 'index', label: 'Overview' }
   return [indexItem, ...tagItems]
 }
 

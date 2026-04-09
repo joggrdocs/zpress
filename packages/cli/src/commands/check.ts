@@ -30,6 +30,10 @@ export default command({
     // Sync content (quiet — no per-file output)
     ctx.log.step('Syncing content...')
     const syncResult = await sync(config, { paths, quiet: true })
+    if (syncResult.error) {
+      ctx.log.error(syncResult.error)
+      process.exit(1)
+    }
     ctx.log.success(
       `Synced (${syncResult.pagesWritten} written, ${syncResult.pagesSkipped} unchanged)`
     )
