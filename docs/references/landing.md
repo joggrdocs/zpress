@@ -16,6 +16,6 @@ Detailed technical descriptions of every zpress API surface.
 | [Frontmatter Fields](/reference/frontmatter)    | Supported frontmatter keys for markdown files                         |
 | [OpenAPI](/reference/openapi)                   | Generate interactive API reference pages from an OpenAPI spec         |
 | [VSCode Extension](/reference/vscode-extension) | Preview your docs site inside VS Code                                 |
-| [Built-ins](/reference/built-ins/code-blocks)  | Components, diagrams, and markdown extensions included out of the box |
-| [Icons](/reference/icons)                      | Icon sets and color options                                           |
-| [Tags](/reference/technology)                  | Technology tag definitions                                            |
+| [Built-ins](/reference/built-ins/code-blocks)   | Components, diagrams, and markdown extensions included out of the box |
+| [Icons](/reference/icons)                       | Icon sets and color options                                           |
+| [Tags](/reference/technology)                   | Technology tag definitions                                            |

@@ -1,5 +1,13 @@
 # @zpress/ui
 
+## 0.8.12
+
+### Patch Changes
+
+- 81d5928: upgrade dependencies to latest
+- Updated dependencies [81d5928]
+  - @zpress/core@0.10.2
+
 ## 0.8.11
 
 ### Patch Changes
