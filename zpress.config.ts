@@ -481,6 +481,21 @@ export default defineConfig({
       icon: 'pixelarticons:archive',
       path: '/packages',
       standalone: true,
+      sort: (a, b) => {
+        const order = ['@zpress/kit', '@zpress/cli', '@zpress/config', '@zpress/core']
+        const aIdx = order.indexOf(a.title)
+        const bIdx = order.indexOf(b.title)
+        if (aIdx !== -1 && bIdx !== -1) {
+          return aIdx - bIdx
+        }
+        if (aIdx !== -1) {
+          return -1
+        }
+        if (bIdx !== -1) {
+          return 1
+        }
+        return a.title.localeCompare(b.title)
+      },
       items: [
         {
           title: '@zpress/kit',
@@ -507,18 +522,6 @@ export default defineConfig({
           ],
         },
         {
-          title: '@zpress/core',
-          path: '/packages/core',
-          items: [
-            { title: 'Overview', path: '/packages/core', include: 'packages/core/README.md' },
-            {
-              title: 'Changelog',
-              path: '/packages/core/changelog',
-              include: 'packages/core/CHANGELOG.md',
-            },
-          ],
-        },
-        {
           title: '@zpress/config',
           path: '/packages/config',
           items: [
@@ -527,6 +530,18 @@ export default defineConfig({
               title: 'Changelog',
               path: '/packages/config/changelog',
               include: 'packages/config/CHANGELOG.md',
+            },
+          ],
+        },
+        {
+          title: '@zpress/core',
+          path: '/packages/core',
+          items: [
+            { title: 'Overview', path: '/packages/core', include: 'packages/core/README.md' },
+            {
+              title: 'Changelog',
+              path: '/packages/core/changelog',
+              include: 'packages/core/CHANGELOG.md',
             },
           ],
         },

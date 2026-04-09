@@ -1,0 +1,263 @@
+import { describe, expect, it } from 'vitest'
+
+import type { ResolvedEntry } from '../types'
+import { buildMetaDirectories, buildRootMeta } from './meta'
+
+// ---------------------------------------------------------------------------
+// Fixtures
+// ---------------------------------------------------------------------------
+
+/**
+ * Simulates the packages section from zpress.config.ts where each package
+ * section has a landing page leaf that shares the same path as the parent.
+ *
+ * ```
+ * packages/
+ *   cli.md          ← leaf "Overview" at /packages/cli
+ *   cli/
+ *     changelog.md  ← leaf "Changelog" at /packages/cli/changelog
+ * ```
+ */
+function makePackageSection(params: {
+  readonly name: string
+  readonly label: string
+}): ResolvedEntry {
+  const { name, label } = params
+  return {
+    title: label,
+    link: `/packages/${name}`,
+    items: [
+      {
+        title: 'Overview',
+        link: `/packages/${name}`,
+        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
+      },
+      {
+        title: 'Changelog',
+        link: `/packages/${name}/changelog`,
+        page: { outputPath: `packages/${name}/changelog.md`, frontmatter: {} },
+      },
+    ],
+  }
+}
+
+/**
+ * Simulates a package section with only a landing page and no subdirectory
+ * content (e.g., @zpress/templates has no Changelog).
+ */
+function makePackageSectionNoSubdir(params: {
+  readonly name: string
+  readonly label: string
+}): ResolvedEntry {
+  const { name, label } = params
+  return {
+    title: label,
+    link: `/packages/${name}`,
+    items: [
+      {
+        title: 'Overview',
+        link: `/packages/${name}`,
+        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
+      },
+    ],
+  }
+}
+
+const packagesRoot: ResolvedEntry = {
+  title: 'Packages',
+  link: '/packages',
+  items: [
+    makePackageSection({ name: 'zpress', label: '@zpress/kit' }),
+    makePackageSection({ name: 'cli', label: '@zpress/cli' }),
+    makePackageSection({ name: 'config', label: '@zpress/config' }),
+    makePackageSection({ name: 'core', label: '@zpress/core' }),
+    makePackageSection({ name: 'ui', label: '@zpress/ui' }),
+    makePackageSection({ name: 'theme', label: '@zpress/theme' }),
+    makePackageSectionNoSubdir({ name: 'templates', label: '@zpress/templates' }),
+  ],
+}
+
+// ---------------------------------------------------------------------------
+// buildRootMeta
+// ---------------------------------------------------------------------------
+
+describe(buildRootMeta, () => {
+  it('should include visible top-level sections', () => {
+    const entries: readonly ResolvedEntry[] = [
+      {
+        title: 'Getting Started',
+        link: '/getting-started',
+        items: [{ title: 'Intro', link: '/getting-started/intro' }],
+      },
+      { title: 'Packages', link: '/packages', items: [] },
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toEqual([
+      { type: 'dir', name: 'getting-started', label: 'Getting Started' },
+      { type: 'dir', name: 'packages', label: 'Packages' },
+    ])
+  })
+
+  it('should exclude hidden sections', () => {
+    const entries: readonly ResolvedEntry[] = [
+      { title: 'Visible', link: '/visible', items: [] },
+      { title: 'Hidden', link: '/hidden', hidden: true, items: [] },
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ name: 'visible' })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// buildMetaDirectories
+// ---------------------------------------------------------------------------
+
+describe(buildMetaDirectories, () => {
+  it('should use the section title when a leaf and section share the same name', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const packagesDir = directories.find((d) => d.dirPath === 'packages')
+
+    expect(packagesDir).toBeDefined()
+    if (packagesDir) {
+      const cliItem = packagesDir.items.find(
+        (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
+      )
+
+      expect(cliItem).toMatchObject({ type: 'dir', name: 'cli', label: '@zpress/cli' })
+    }
+  })
+
+  it('should not produce duplicate entries for same-name leaf and section', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const packagesDir = directories.find((d) => d.dirPath === 'packages')
+
+    expect(packagesDir).toBeDefined()
+    if (packagesDir) {
+      const cliItems = packagesDir.items.filter(
+        (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
+      )
+
+      expect(cliItems).toHaveLength(1)
+    }
+  })
+
+  it('should place child leaves in the correct subdirectory', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const cliDir = directories.find((d) => d.dirPath === 'packages/cli')
+
+    expect(cliDir).toBeDefined()
+    if (cliDir) {
+      expect(cliDir.items).toContainEqual({ type: 'file', name: 'changelog', label: 'Changelog' })
+    }
+  })
+
+  it('should preserve config order for sections in the same directory', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const packagesDir = directories.find((d) => d.dirPath === 'packages')
+
+    expect(packagesDir).toBeDefined()
+    if (packagesDir) {
+      const names = packagesDir.items
+        .filter(
+          (
+            item
+          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
+            typeof item === 'object' && 'name' in item
+        )
+        .map((item) => item.name)
+
+      expect(names).toEqual(['zpress', 'cli', 'config', 'core', 'ui', 'theme', 'templates'])
+    }
+  })
+
+  it('should emit file type with section label when section has no subdirectory content', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const packagesDir = directories.find((d) => d.dirPath === 'packages')
+
+    expect(packagesDir).toBeDefined()
+    if (packagesDir) {
+      const templatesItem = packagesDir.items.find(
+        (item) => typeof item === 'object' && 'name' in item && item.name === 'templates'
+      )
+
+      expect(templatesItem).toMatchObject({
+        type: 'file',
+        name: 'templates',
+        label: '@zpress/templates',
+      })
+    }
+  })
+
+  it('should preserve all package sections in the packages directory', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const packagesDir = directories.find((d) => d.dirPath === 'packages')
+
+    expect(packagesDir).toBeDefined()
+    if (packagesDir) {
+      const names = packagesDir.items
+        .filter(
+          (
+            item
+          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
+            typeof item === 'object' && 'name' in item
+        )
+        .map((item) => item.name)
+
+      expect(names).toContain('cli')
+      expect(names).toContain('core')
+      expect(names).toContain('ui')
+    }
+  })
+
+  it('should preserve leaf-before-section order when names do not collide', () => {
+    const mixedSection: ResolvedEntry = {
+      title: 'Mixed',
+      link: '/mixed',
+      items: [
+        {
+          title: 'Intro',
+          link: '/mixed/intro',
+          page: { outputPath: 'mixed/intro.md', frontmatter: {} },
+        },
+        {
+          title: 'API',
+          link: '/mixed/api',
+          items: [
+            {
+              title: 'Auth',
+              link: '/mixed/api/auth',
+              page: { outputPath: 'mixed/api/auth.md', frontmatter: {} },
+            },
+          ],
+        },
+        {
+          title: 'FAQ',
+          link: '/mixed/faq',
+          page: { outputPath: 'mixed/faq.md', frontmatter: {} },
+        },
+      ],
+    }
+
+    const directories = buildMetaDirectories([mixedSection])
+    const mixedDir = directories.find((d) => d.dirPath === 'mixed')
+
+    expect(mixedDir).toBeDefined()
+    if (mixedDir) {
+      const names = mixedDir.items
+        .filter(
+          (
+            item
+          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
+            typeof item === 'object' && 'name' in item
+        )
+        .map((item) => item.name)
+
+      expect(names).toEqual(['intro', 'api', 'faq'])
+    }
+  })
+})
