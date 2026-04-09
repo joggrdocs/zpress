@@ -325,7 +325,7 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
       const deduped = sorted.reduce<readonly MetaPlacement[]>((acc, p) => {
         const name = extractItemName(p.item)
         if (name === null) {
-          return [...acc, p]
+          return acc.concat(p)
         }
         if (seen.has(name)) {
           return acc
@@ -333,9 +333,9 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
         seen.add(name)
         const merged = mergedByName.get(name)
         if (merged) {
-          return [...acc, merged]
+          return acc.concat(merged)
         }
-        return [...acc, p]
+        return acc.concat(p)
       }, [])
       return { dirPath, items: deduped.map((p) => p.item) }
     })
