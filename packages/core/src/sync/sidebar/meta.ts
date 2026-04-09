@@ -301,28 +301,104 @@ function buildDirPlacement(
  */
 function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly MetaDirectory[] {
   const grouped = Map.groupBy(placements, (p) => p.dirPath)
+  const allDirPaths = new Set(grouped.keys())
 
   return [...grouped.entries()]
     .filter(([dirPath]) => dirPath !== '')
     .map(([dirPath, items]) => {
       const leaves = items.filter((p) => !p.isSection).toSorted((a, b) => a.order - b.order)
       const sections = items.filter((p) => p.isSection).toSorted((a, b) => a.order - b.order)
-      // Deduplicate items by name to avoid duplicate entries when the same
-      // directory/file appears multiple times (e.g., same-name landing pages)
+      // Build a lookup of merged sections keyed by name. Merging uses the
+      // section's label but downgrades to file type when no subdirectory
+      // content exists (see mergeWithLeaf).
+      const mergedByName = new Map(
+        sections
+          .map((s) => mergeWithLeaf({ section: s, leaves, dirPath, allDirPaths }))
+          .map((s) => [extractItemName(s.item), s] as const)
+          .filter((pair): pair is readonly [string, MetaPlacement] => pair[0] !== null)
+      )
+      // Interleave by original insertion order, replacing leaves with their
+      // merged section counterpart when one exists. This preserves the
+      // relative order of leaves and sections within a directory.
+      const sorted = items.toSorted((a, b) => a.order - b.order)
       const seen = new Set<string>()
-      const deduped = [...leaves, ...sections].filter((p) => {
+      const deduped = sorted.flatMap((p) => {
         const name = extractItemName(p.item)
         if (name === null) {
-          return true
+          return [p]
         }
         if (seen.has(name)) {
-          return false
+          return []
         }
         seen.add(name)
-        return true
+        const merged = mergedByName.get(name)
+        return [merged ?? p]
       })
       return { dirPath, items: deduped.map((p) => p.item) }
     })
+}
+
+/**
+ * Parameters for {@link mergeWithLeaf}.
+ *
+ * @private
+ */
+interface MergeWithLeafParams {
+  readonly section: MetaPlacement
+  readonly leaves: readonly MetaPlacement[]
+  readonly dirPath: string
+  readonly allDirPaths: ReadonlySet<string>
+}
+
+/**
+ * Merge a section placement with its matching leaf when the section's
+ * subdirectory has no content placements.
+ *
+ * When both a `dir` section and a `file` leaf exist for the same name
+ * (e.g., `packages/cli` has both a directory and a landing page file),
+ * keep the section's label but downgrade to a `file` type if no actual
+ * subdirectory content exists. This prevents Rspress from expecting a
+ * directory that doesn't exist on disk.
+ *
+ * @private
+ * @param params - Merge parameters
+ * @returns The section placement, possibly with its item downgraded to file type
+ */
+function mergeWithLeaf(params: MergeWithLeafParams): MetaPlacement {
+  const { section, leaves, dirPath, allDirPaths } = params
+  const sectionName = extractItemName(section.item)
+  if (sectionName === null) {
+    return section
+  }
+  // If the subdirectory has its own placements, keep as dir
+  const subDirPath = resolveSubDirPath(dirPath, sectionName)
+  if (allDirPaths.has(subDirPath)) {
+    return section
+  }
+  // No subdirectory content — find matching leaf and use file type with section label
+  const matchingLeaf = leaves.find((l) => extractItemName(l.item) === sectionName)
+  if (matchingLeaf && typeof section.item === 'object' && 'label' in section.item) {
+    return {
+      ...section,
+      item: { type: 'file' as const, name: sectionName, label: section.item.label },
+    }
+  }
+  return section
+}
+
+/**
+ * Build a subdirectory path from a parent dir and child name.
+ *
+ * @private
+ * @param dirPath - Parent directory path (empty string for root)
+ * @param name - Child directory name
+ * @returns Full subdirectory path
+ */
+function resolveSubDirPath(dirPath: string, name: string): string {
+  if (dirPath === '') {
+    return name
+  }
+  return `${dirPath}/${name}`
 }
 
 /**
