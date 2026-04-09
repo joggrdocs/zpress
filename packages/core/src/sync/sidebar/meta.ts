@@ -307,10 +307,13 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
     .map(([dirPath, items]) => {
       const leaves = items.filter((p) => !p.isSection).toSorted((a, b) => a.order - b.order)
       const sections = items.filter((p) => p.isSection).toSorted((a, b) => a.order - b.order)
-      // Deduplicate items by name to avoid duplicate entries when the same
-      // directory/file appears multiple times (e.g., same-name landing pages)
+      // Deduplicate items by name. When a leaf and section share the same
+      // name (e.g., a landing page file alongside its directory), the section
+      // wins because its label represents the group header shown in the sidebar.
+      // Sections are deduped first so their labels take priority, then leaves
+      // fill in any remaining entries.
       const seen = new Set<string>()
-      const deduped = [...leaves, ...sections].filter((p) => {
+      const deduped = [...sections, ...leaves].filter((p) => {
         const name = extractItemName(p.item)
         if (name === null) {
           return true
