@@ -1,5 +1,17 @@
 # @zpress/ui
 
+## 0.8.11
+
+### Patch Changes
+
+- d25fea5: Fix standalone sidebar scoping and package label deduplication
+  - Fix sidebar scope filtering using URL pathname instead of file path for scope matching
+  - Fix `_meta.json` deduplication preferring section labels over leaf labels when both share the same name
+
+- 7a39840: upgrade dependencies to latest
+- Updated dependencies [d25fea5]
+  - @zpress/core@0.10.1
+
 ## 0.8.10
 
 ### Patch Changes
