@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import type { ResolvedEntry } from '../types'
-
 import { buildMetaDirectories, buildRootMeta } from './meta'
 
 // ---------------------------------------------------------------------------
@@ -19,7 +18,10 @@ import { buildMetaDirectories, buildRootMeta } from './meta'
  *     changelog.md  ← leaf "Changelog" at /packages/cli/changelog
  * ```
  */
-function makePackageSection(params: { readonly name: string; readonly label: string }): ResolvedEntry {
+function makePackageSection(params: {
+  readonly name: string
+  readonly label: string
+}): ResolvedEntry {
   const { name, label } = params
   return {
     title: label,
@@ -43,7 +45,10 @@ function makePackageSection(params: { readonly name: string; readonly label: str
  * Simulates a package section with only a landing page and no subdirectory
  * content (e.g., @zpress/templates has no Changelog).
  */
-function makePackageSectionNoSubdir(params: { readonly name: string; readonly label: string }): ResolvedEntry {
+function makePackageSectionNoSubdir(params: {
+  readonly name: string
+  readonly label: string
+}): ResolvedEntry {
   const { name, label } = params
   return {
     title: label,
@@ -76,10 +81,14 @@ const packagesRoot: ResolvedEntry = {
 // buildRootMeta
 // ---------------------------------------------------------------------------
 
-describe('buildRootMeta', () => {
+describe(buildRootMeta, () => {
   it('should include visible top-level sections', () => {
     const entries: readonly ResolvedEntry[] = [
-      { title: 'Getting Started', link: '/getting-started', items: [{ title: 'Intro', link: '/getting-started/intro' }] },
+      {
+        title: 'Getting Started',
+        link: '/getting-started',
+        items: [{ title: 'Intro', link: '/getting-started/intro' }],
+      },
       { title: 'Packages', link: '/packages', items: [] },
     ]
 
@@ -108,7 +117,7 @@ describe('buildRootMeta', () => {
 // buildMetaDirectories
 // ---------------------------------------------------------------------------
 
-describe('buildMetaDirectories', () => {
+describe(buildMetaDirectories, () => {
   it('should use the section title when a leaf and section share the same name', () => {
     const directories = buildMetaDirectories([packagesRoot])
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
@@ -154,8 +163,11 @@ describe('buildMetaDirectories', () => {
     expect(packagesDir).toBeDefined()
     if (packagesDir) {
       const names = packagesDir.items
-        .filter((item): item is { readonly type: string; readonly name: string; readonly label: string } =>
-          typeof item === 'object' && 'name' in item
+        .filter(
+          (
+            item
+          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
+            typeof item === 'object' && 'name' in item
         )
         .map((item) => item.name)
 
@@ -173,7 +185,11 @@ describe('buildMetaDirectories', () => {
         (item) => typeof item === 'object' && 'name' in item && item.name === 'templates'
       )
 
-      expect(templatesItem).toMatchObject({ type: 'file', name: 'templates', label: '@zpress/templates' })
+      expect(templatesItem).toMatchObject({
+        type: 'file',
+        name: 'templates',
+        label: '@zpress/templates',
+      })
     }
   })
 
@@ -184,8 +200,11 @@ describe('buildMetaDirectories', () => {
     expect(packagesDir).toBeDefined()
     if (packagesDir) {
       const names = packagesDir.items
-        .filter((item): item is { readonly type: string; readonly name: string; readonly label: string } =>
-          typeof item === 'object' && 'name' in item
+        .filter(
+          (
+            item
+          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
+            typeof item === 'object' && 'name' in item
         )
         .map((item) => item.name)
 
@@ -230,8 +249,11 @@ describe('buildMetaDirectories', () => {
     expect(mixedDir).toBeDefined()
     if (mixedDir) {
       const names = mixedDir.items
-        .filter((item): item is { readonly type: string; readonly name: string; readonly label: string } =>
-          typeof item === 'object' && 'name' in item
+        .filter(
+          (
+            item
+          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
+            typeof item === 'object' && 'name' in item
         )
         .map((item) => item.name)
 

@@ -44,9 +44,7 @@ const groupWithoutLink: SidebarData[number] = {
   text: 'Nested Group',
   collapsible: true,
   collapsed: true,
-  items: [
-    { text: 'Deep Page', link: '/packages/deep/page' },
-  ],
+  items: [{ text: 'Deep Page', link: '/packages/deep/page' }],
 }
 
 const fullSidebar: SidebarData = [gettingStarted, packages, contributing]
@@ -56,7 +54,7 @@ const scopes: readonly string[] = ['/packages', '/contributing']
 // resolveScopedSidebar
 // ---------------------------------------------------------------------------
 
-describe('resolveScopedSidebar', () => {
+describe(resolveScopedSidebar, () => {
   it('should return all items when no scopes are defined', () => {
     const result = resolveScopedSidebar(fullSidebar, '/getting-started', [])
 
@@ -111,44 +109,44 @@ describe('resolveScopedSidebar', () => {
 // belongsToScope
 // ---------------------------------------------------------------------------
 
-describe('belongsToScope', () => {
+describe(belongsToScope, () => {
   it('should match an item whose link equals the scope', () => {
-    expect(belongsToScope(packages, '/packages')).toBe(true)
+    expect(belongsToScope(packages, '/packages')).toBeTruthy()
   })
 
   it('should match an item whose link starts with scope/', () => {
     const item: SidebarData[number] = { text: 'CLI', link: '/packages/cli' }
 
-    expect(belongsToScope(item, '/packages')).toBe(true)
+    expect(belongsToScope(item, '/packages')).toBeTruthy()
   })
 
   it('should not match an item from a different scope', () => {
-    expect(belongsToScope(gettingStarted, '/packages')).toBe(false)
+    expect(belongsToScope(gettingStarted, '/packages')).toBeFalsy()
   })
 
   it('should not match a partial path segment overlap', () => {
     const item: SidebarData[number] = { text: 'Extra', link: '/packages-extra' }
 
-    expect(belongsToScope(item, '/packages')).toBe(false)
+    expect(belongsToScope(item, '/packages')).toBeFalsy()
   })
 
   it('should match a group without a link by checking children', () => {
-    expect(belongsToScope(groupWithoutLink, '/packages')).toBe(true)
+    expect(belongsToScope(groupWithoutLink, '/packages')).toBeTruthy()
   })
 
   it('should not match a group without a link when children belong to a different scope', () => {
-    expect(belongsToScope(groupWithoutLink, '/contributing')).toBe(false)
+    expect(belongsToScope(groupWithoutLink, '/contributing')).toBeFalsy()
   })
 
   it('should not match a divider (no link, no items)', () => {
     const divider: SidebarData[number] = { dividerType: 'solid' }
 
-    expect(belongsToScope(divider, '/packages')).toBe(false)
+    expect(belongsToScope(divider, '/packages')).toBeFalsy()
   })
 
   it('should not match a section header (no link, no items)', () => {
     const header: SidebarData[number] = { sectionHeaderText: 'Header' }
 
-    expect(belongsToScope(header, '/packages')).toBe(false)
+    expect(belongsToScope(header, '/packages')).toBeFalsy()
   })
 })
