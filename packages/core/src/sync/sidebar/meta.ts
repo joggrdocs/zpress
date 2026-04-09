@@ -317,23 +317,23 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
           .map((s) => [extractItemName(s.item), s] as const)
           .filter((pair): pair is readonly [string, MetaPlacement] => pair[0] !== null)
       )
-      // Interleave by original insertion order, replacing leaves with their
-      // merged section counterpart when one exists. This preserves the
-      // relative order of leaves and sections within a directory.
-      const sorted = items.toSorted((a, b) => a.order - b.order)
-      const seen = new Set<string>()
-      const deduped = sorted.flatMap((p) => {
+      // Leaves first, then sections — preserving relative order within each
+      // group. Merged sections replace their leaf counterpart so the section
+      // label wins but the item appears in the sections block (bottom).
+      const mergedNames = new Set(mergedByName.keys())
+      const orderedLeaves = leaves.filter((p) => {
         const name = extractItemName(p.item)
-        if (name === null) {
-          return [p]
-        }
-        if (seen.has(name)) {
-          return []
-        }
-        seen.add(name)
-        const merged = mergedByName.get(name)
-        return [merged ?? p]
+        // Exclude leaves that were merged into a section (they'll appear below)
+        return name === null || !mergedNames.has(name)
       })
+      const orderedSections = sections.map((s) => {
+        const name = extractItemName(s.item)
+        if (name === null) {
+          return s
+        }
+        return mergedByName.get(name) ?? s
+      })
+      const deduped = [...orderedLeaves, ...orderedSections]
       return { dirPath, items: deduped.map((p) => p.item) }
     })
 }

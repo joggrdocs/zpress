@@ -257,7 +257,7 @@ describe(buildMetaDirectories, () => {
         )
         .map((item) => item.name)
 
-      expect(names).toEqual(['intro', 'api', 'faq'])
+      expect(names).toEqual(['intro', 'faq', 'api'])
     }
   })
 })

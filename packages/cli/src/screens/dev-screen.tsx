@@ -115,6 +115,11 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
         if (cancelledRef.current) {
           return
         }
+        if (initialResult.error) {
+          guard(setErrorMessage)(`Sync failed: ${initialResult.error}`)
+          guard(setPhase)('error')
+          return
+        }
         guard(setLastSync)(initialResult)
       } catch (error) {
         guard(setErrorMessage)(`Initial sync failed: ${toError(error).message}`)

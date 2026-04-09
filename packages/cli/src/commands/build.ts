@@ -55,7 +55,11 @@ export default command({
       const configResult = runConfigCheck({ config, loadError: configErr })
 
       ctx.log.step('Syncing content...')
-      await sync(config, { paths, quiet: true })
+      const syncResult = await sync(config, { paths, quiet: true })
+      if (syncResult.error) {
+        ctx.log.error(syncResult.error)
+        process.exit(1)
+      }
 
       await runAssetGeneration({ config, paths, log: ctx.log, quiet: true })
 
@@ -71,7 +75,11 @@ export default command({
       ctx.log.outro('Done')
     } else {
       // Unchecked build: sync + assets + build (no validation, noisy output)
-      await sync(config, { paths, quiet })
+      const uncheckedSyncResult = await sync(config, { paths, quiet })
+      if (uncheckedSyncResult.error) {
+        ctx.log.error(uncheckedSyncResult.error)
+        process.exit(1)
+      }
       await runAssetGeneration({ config, paths, log: ctx.log, quiet })
       await buildSite({ config, paths })
       ctx.log.outro('Done')
