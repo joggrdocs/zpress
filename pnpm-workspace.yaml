@@ -4,7 +4,7 @@ packages:
   - 'extensions/*'
 
 catalog:
-  '@rslib/core': ^0.20.0
+  '@rslib/core': ^0.21.0
   '@rspress/core': ^2.0.8
   '@typescript/native-preview': 7.0.0-dev.20260408.1
   es-toolkit: ^1.45.1

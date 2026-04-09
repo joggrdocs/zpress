@@ -11,12 +11,13 @@
  */
 
 import type { SidebarData } from '@rspress/core'
-import { useActiveMatcher, usePage, useSidebar } from '@rspress/core/runtime'
+import { useActiveMatcher, useLocation, useSidebar } from '@rspress/core/runtime'
 import { SidebarList } from '@rspress/core/theme-original'
 import type React from 'react'
 import { useLayoutEffect, useMemo, useState } from 'react'
 
 import { useZpress } from '../../hooks/use-zpress'
+import { resolveScopedSidebar } from './sidebar-filter'
 
 /**
  * Union element of `SidebarData` — sidebar items may be groups, leaf items,
@@ -39,14 +40,14 @@ type SidebarDataItem = SidebarData[number]
 export function Sidebar(): React.ReactElement {
   const rawSidebarData = useSidebar()
   const activeMatcher = useActiveMatcher()
-  const { page } = usePage()
+  const { pathname: rawPathname } = useLocation()
   const { standaloneScopePaths } = useZpress()
 
-  const pathname = page.pagePath
+  const pathname = decodeURIComponent(rawPathname)
   const scopes = standaloneScopePaths ?? []
 
   const filteredData = useMemo(
-    () => filterByScope(rawSidebarData, pathname, scopes),
+    () => resolveScopedSidebar(rawSidebarData, pathname, scopes),
     [rawSidebarData, pathname, scopes]
   )
 
@@ -64,59 +65,6 @@ export function Sidebar(): React.ReactElement {
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
-
-/**
- * Filter sidebar items based on the current path and standalone scopes.
- *
- * @private
- * @param items - Full unified sidebar items
- * @param pathname - Current decoded pathname
- * @param scopes - Standalone scope paths
- * @returns Filtered sidebar items for the active scope
- */
-function filterByScope(
-  items: SidebarData,
-  pathname: string,
-  scopes: readonly string[]
-): SidebarData {
-  if (scopes.length === 0) {
-    return [...items]
-  }
-
-  const standaloneMatch = scopes.find(
-    (scope) => pathname === scope || pathname.startsWith(`${scope}/`)
-  )
-
-  const all = [...items]
-
-  if (standaloneMatch) {
-    return all.filter((item) => isItemInScope(item, standaloneMatch))
-  }
-
-  return all.filter((item) => !scopes.some((scope) => isItemInScope(item, scope)))
-}
-
-/**
- * Check whether a sidebar item belongs to a given scope path.
- *
- * Matches when the item's link equals the scope or starts with scope + "/".
- * Dividers and section headers (no link) are never matched.
- *
- * @private
- * @param item - Sidebar item to check
- * @param scope - Scope path (e.g. "/packages")
- * @returns True when the item belongs to the scope
- */
-function isItemInScope(item: SidebarDataItem, scope: string): boolean {
-  if (!Object.hasOwn(item, 'link')) {
-    return false
-  }
-  const { link } = item as { readonly link?: string }
-  if (!link) {
-    return false
-  }
-  return link === scope || link.startsWith(`${scope}/`)
-}
 
 /**
  * Walk the sidebar tree and uncollapse groups that contain the active path.
