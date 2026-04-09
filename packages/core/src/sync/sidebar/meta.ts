@@ -322,21 +322,18 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
       // relative order of leaves and sections within a directory.
       const sorted = items.toSorted((a, b) => a.order - b.order)
       const seen = new Set<string>()
-      const deduped = sorted.reduce<readonly MetaPlacement[]>((acc, p) => {
+      const deduped = sorted.flatMap((p) => {
         const name = extractItemName(p.item)
         if (name === null) {
-          return acc.concat(p)
+          return [p]
         }
         if (seen.has(name)) {
-          return acc
+          return []
         }
         seen.add(name)
         const merged = mergedByName.get(name)
-        if (merged) {
-          return acc.concat(merged)
-        }
-        return acc.concat(p)
-      }, [])
+        return [merged ?? p]
+      })
       return { dirPath, items: deduped.map((p) => p.item) }
     })
 }
