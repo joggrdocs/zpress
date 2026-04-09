@@ -194,4 +194,48 @@ describe('buildMetaDirectories', () => {
       expect(names).toContain('ui')
     }
   })
+
+  it('should preserve leaf-before-section order when names do not collide', () => {
+    const mixedSection: ResolvedEntry = {
+      title: 'Mixed',
+      link: '/mixed',
+      items: [
+        {
+          title: 'Intro',
+          link: '/mixed/intro',
+          page: { outputPath: 'mixed/intro.md', frontmatter: {} },
+        },
+        {
+          title: 'API',
+          link: '/mixed/api',
+          items: [
+            {
+              title: 'Auth',
+              link: '/mixed/api/auth',
+              page: { outputPath: 'mixed/api/auth.md', frontmatter: {} },
+            },
+          ],
+        },
+        {
+          title: 'FAQ',
+          link: '/mixed/faq',
+          page: { outputPath: 'mixed/faq.md', frontmatter: {} },
+        },
+      ],
+    }
+
+    const directories = buildMetaDirectories([mixedSection])
+    const mixedDir = directories.find((d) => d.dirPath === 'mixed')
+
+    expect(mixedDir).toBeDefined()
+    if (mixedDir) {
+      const names = mixedDir.items
+        .filter((item): item is { readonly type: string; readonly name: string; readonly label: string } =>
+          typeof item === 'object' && 'name' in item
+        )
+        .map((item) => item.name)
+
+      expect(names).toEqual(['intro', 'api', 'faq'])
+    }
+  })
 })

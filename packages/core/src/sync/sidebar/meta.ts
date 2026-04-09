@@ -308,23 +308,35 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
     .map(([dirPath, items]) => {
       const leaves = items.filter((p) => !p.isSection).toSorted((a, b) => a.order - b.order)
       const sections = items.filter((p) => p.isSection).toSorted((a, b) => a.order - b.order)
-      // Merge sections with leaves: use the section's label (it represents the
-      // group header) but only emit a `dir` type when the subdirectory actually
-      // has content. When a section and leaf share the same name but no
-      // subdirectory placements exist, emit a `file` item with the section's label.
-      const merged = sections.map((s) => mergeWithLeaf({ section: s, leaves, dirPath, allDirPaths }))
+      // Build a lookup of merged sections keyed by name. Merging uses the
+      // section's label but downgrades to file type when no subdirectory
+      // content exists (see mergeWithLeaf).
+      const mergedByName = new Map(
+        sections
+          .map((s) => mergeWithLeaf({ section: s, leaves, dirPath, allDirPaths }))
+          .map((s) => [extractItemName(s.item), s] as const)
+          .filter((pair): pair is readonly [string, MetaPlacement] => pair[0] !== null)
+      )
+      // Interleave by original insertion order, replacing leaves with their
+      // merged section counterpart when one exists. This preserves the
+      // relative order of leaves and sections within a directory.
+      const sorted = items.toSorted((a, b) => a.order - b.order)
       const seen = new Set<string>()
-      const deduped = [...merged, ...leaves].filter((p) => {
+      const deduped = sorted.reduce<readonly MetaPlacement[]>((acc, p) => {
         const name = extractItemName(p.item)
         if (name === null) {
-          return true
+          return [...acc, p]
         }
         if (seen.has(name)) {
-          return false
+          return acc
         }
         seen.add(name)
-        return true
-      })
+        const merged = mergedByName.get(name)
+        if (merged) {
+          return [...acc, merged]
+        }
+        return [...acc, p]
+      }, [])
       return { dirPath, items: deduped.map((p) => p.item) }
     })
 }
