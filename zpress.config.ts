@@ -485,9 +485,15 @@ export default defineConfig({
         const order = ['@zpress/kit', '@zpress/cli', '@zpress/config', '@zpress/core']
         const aIdx = order.indexOf(a.title)
         const bIdx = order.indexOf(b.title)
-        if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx
-        if (aIdx !== -1) return -1
-        if (bIdx !== -1) return 1
+        if (aIdx !== -1 && bIdx !== -1) {
+          return aIdx - bIdx
+        }
+        if (aIdx !== -1) {
+          return -1
+        }
+        if (bIdx !== -1) {
+          return 1
+        }
         return a.title.localeCompare(b.title)
       },
       items: [
