@@ -38,6 +38,24 @@ function makePackageSection(name: string, label: string): ResolvedEntry {
   }
 }
 
+/**
+ * Simulates a package section with only a landing page and no subdirectory
+ * content (e.g., @zpress/templates has no Changelog).
+ */
+function makePackageSectionNoSubdir(name: string, label: string): ResolvedEntry {
+  return {
+    title: label,
+    link: `/packages/${name}`,
+    items: [
+      {
+        title: 'Overview',
+        link: `/packages/${name}`,
+        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
+      },
+    ],
+  }
+}
+
 const packagesRoot: ResolvedEntry = {
   title: 'Packages',
   link: '/packages',
@@ -48,7 +66,7 @@ const packagesRoot: ResolvedEntry = {
     makePackageSection('core', '@zpress/core'),
     makePackageSection('ui', '@zpress/ui'),
     makePackageSection('theme', '@zpress/theme'),
-    makePackageSection('templates', '@zpress/templates'),
+    makePackageSectionNoSubdir('templates', '@zpress/templates'),
   ],
 }
 
@@ -140,6 +158,20 @@ describe('buildMetaDirectories', () => {
         .map((item) => item.name)
 
       expect(names).toEqual(['zpress', 'cli', 'config', 'core', 'ui', 'theme', 'templates'])
+    }
+  })
+
+  it('should emit file type with section label when section has no subdirectory content', () => {
+    const directories = buildMetaDirectories([packagesRoot])
+    const packagesDir = directories.find((d) => d.dirPath === 'packages')
+
+    expect(packagesDir).toBeDefined()
+    if (packagesDir) {
+      const templatesItem = packagesDir.items.find(
+        (item) => typeof item === 'object' && 'name' in item && item.name === 'templates'
+      )
+
+      expect(templatesItem).toMatchObject({ type: 'file', name: 'templates', label: '@zpress/templates' })
     }
   })
 

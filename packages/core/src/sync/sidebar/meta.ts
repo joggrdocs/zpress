@@ -301,19 +301,20 @@ function buildDirPlacement(
  */
 function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly MetaDirectory[] {
   const grouped = Map.groupBy(placements, (p) => p.dirPath)
+  const allDirPaths = new Set(grouped.keys())
 
   return [...grouped.entries()]
     .filter(([dirPath]) => dirPath !== '')
     .map(([dirPath, items]) => {
       const leaves = items.filter((p) => !p.isSection).toSorted((a, b) => a.order - b.order)
       const sections = items.filter((p) => p.isSection).toSorted((a, b) => a.order - b.order)
-      // Deduplicate items by name. When a leaf and section share the same
-      // name (e.g., a landing page file alongside its directory), the section
-      // wins because its label represents the group header shown in the sidebar.
-      // Sections are deduped first so their labels take priority, then leaves
-      // fill in any remaining entries.
+      // Merge sections with leaves: use the section's label (it represents the
+      // group header) but only emit a `dir` type when the subdirectory actually
+      // has content. When a section and leaf share the same name but no
+      // subdirectory placements exist, emit a `file` item with the section's label.
+      const merged = sections.map((s) => mergeWithLeaf(s, leaves, dirPath, allDirPaths))
       const seen = new Set<string>()
-      const deduped = [...sections, ...leaves].filter((p) => {
+      const deduped = [...merged, ...leaves].filter((p) => {
         const name = extractItemName(p.item)
         if (name === null) {
           return true
@@ -326,6 +327,49 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
       })
       return { dirPath, items: deduped.map((p) => p.item) }
     })
+}
+
+/**
+ * Merge a section placement with its matching leaf when the section's
+ * subdirectory has no content placements.
+ *
+ * When both a `dir` section and a `file` leaf exist for the same name
+ * (e.g., `packages/cli` has both a directory and a landing page file),
+ * keep the section's label but downgrade to a `file` type if no actual
+ * subdirectory content exists. This prevents Rspress from expecting a
+ * directory that doesn't exist on disk.
+ *
+ * @private
+ * @param section - Section placement to potentially merge
+ * @param leaves - All leaf placements in the same directory
+ * @param dirPath - Parent directory path
+ * @param allDirPaths - Set of all directory paths that have placements
+ * @returns The section placement, possibly with its item downgraded to file type
+ */
+function mergeWithLeaf(
+  section: MetaPlacement,
+  leaves: readonly MetaPlacement[],
+  dirPath: string,
+  allDirPaths: ReadonlySet<string>
+): MetaPlacement {
+  const sectionName = extractItemName(section.item)
+  if (sectionName === null) {
+    return section
+  }
+  // If the subdirectory has its own placements, keep as dir
+  const subDirPath = dirPath === '' ? sectionName : `${dirPath}/${sectionName}`
+  if (allDirPaths.has(subDirPath)) {
+    return section
+  }
+  // No subdirectory content — find matching leaf and use file type with section label
+  const matchingLeaf = leaves.find((l) => extractItemName(l.item) === sectionName)
+  if (matchingLeaf && typeof section.item === 'object' && 'label' in section.item) {
+    return {
+      ...section,
+      item: { type: 'file' as const, name: sectionName, label: section.item.label },
+    }
+  }
+  return section
 }
 
 /**
