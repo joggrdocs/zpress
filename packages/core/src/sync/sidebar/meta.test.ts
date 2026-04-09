@@ -19,7 +19,8 @@ import { buildMetaDirectories, buildRootMeta } from './meta'
  *     changelog.md  ← leaf "Changelog" at /packages/cli/changelog
  * ```
  */
-function makePackageSection(name: string, label: string): ResolvedEntry {
+function makePackageSection(params: { readonly name: string; readonly label: string }): ResolvedEntry {
+  const { name, label } = params
   return {
     title: label,
     link: `/packages/${name}`,
@@ -42,7 +43,8 @@ function makePackageSection(name: string, label: string): ResolvedEntry {
  * Simulates a package section with only a landing page and no subdirectory
  * content (e.g., @zpress/templates has no Changelog).
  */
-function makePackageSectionNoSubdir(name: string, label: string): ResolvedEntry {
+function makePackageSectionNoSubdir(params: { readonly name: string; readonly label: string }): ResolvedEntry {
+  const { name, label } = params
   return {
     title: label,
     link: `/packages/${name}`,
@@ -60,13 +62,13 @@ const packagesRoot: ResolvedEntry = {
   title: 'Packages',
   link: '/packages',
   items: [
-    makePackageSection('zpress', '@zpress/kit'),
-    makePackageSection('cli', '@zpress/cli'),
-    makePackageSection('config', '@zpress/config'),
-    makePackageSection('core', '@zpress/core'),
-    makePackageSection('ui', '@zpress/ui'),
-    makePackageSection('theme', '@zpress/theme'),
-    makePackageSectionNoSubdir('templates', '@zpress/templates'),
+    makePackageSection({ name: 'zpress', label: '@zpress/kit' }),
+    makePackageSection({ name: 'cli', label: '@zpress/cli' }),
+    makePackageSection({ name: 'config', label: '@zpress/config' }),
+    makePackageSection({ name: 'core', label: '@zpress/core' }),
+    makePackageSection({ name: 'ui', label: '@zpress/ui' }),
+    makePackageSection({ name: 'theme', label: '@zpress/theme' }),
+    makePackageSectionNoSubdir({ name: 'templates', label: '@zpress/templates' }),
   ],
 }
 

@@ -312,7 +312,7 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
       // group header) but only emit a `dir` type when the subdirectory actually
       // has content. When a section and leaf share the same name but no
       // subdirectory placements exist, emit a `file` item with the section's label.
-      const merged = sections.map((s) => mergeWithLeaf(s, leaves, dirPath, allDirPaths))
+      const merged = sections.map((s) => mergeWithLeaf({ section: s, leaves, dirPath, allDirPaths }))
       const seen = new Set<string>()
       const deduped = [...merged, ...leaves].filter((p) => {
         const name = extractItemName(p.item)
@@ -330,6 +330,18 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
 }
 
 /**
+ * Parameters for {@link mergeWithLeaf}.
+ *
+ * @private
+ */
+interface MergeWithLeafParams {
+  readonly section: MetaPlacement
+  readonly leaves: readonly MetaPlacement[]
+  readonly dirPath: string
+  readonly allDirPaths: ReadonlySet<string>
+}
+
+/**
  * Merge a section placement with its matching leaf when the section's
  * subdirectory has no content placements.
  *
@@ -340,24 +352,17 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
  * directory that doesn't exist on disk.
  *
  * @private
- * @param section - Section placement to potentially merge
- * @param leaves - All leaf placements in the same directory
- * @param dirPath - Parent directory path
- * @param allDirPaths - Set of all directory paths that have placements
+ * @param params - Merge parameters
  * @returns The section placement, possibly with its item downgraded to file type
  */
-function mergeWithLeaf(
-  section: MetaPlacement,
-  leaves: readonly MetaPlacement[],
-  dirPath: string,
-  allDirPaths: ReadonlySet<string>
-): MetaPlacement {
+function mergeWithLeaf(params: MergeWithLeafParams): MetaPlacement {
+  const { section, leaves, dirPath, allDirPaths } = params
   const sectionName = extractItemName(section.item)
   if (sectionName === null) {
     return section
   }
   // If the subdirectory has its own placements, keep as dir
-  const subDirPath = dirPath === '' ? sectionName : `${dirPath}/${sectionName}`
+  const subDirPath = resolveSubDirPath(dirPath, sectionName)
   if (allDirPaths.has(subDirPath)) {
     return section
   }
@@ -370,6 +375,21 @@ function mergeWithLeaf(
     }
   }
   return section
+}
+
+/**
+ * Build a subdirectory path from a parent dir and child name.
+ *
+ * @private
+ * @param dirPath - Parent directory path (empty string for root)
+ * @param name - Child directory name
+ * @returns Full subdirectory path
+ */
+function resolveSubDirPath(dirPath: string, name: string): string {
+  if (dirPath === '') {
+    return name
+  }
+  return `${dirPath}/${name}`
 }
 
 /**
