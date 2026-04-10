@@ -25,6 +25,7 @@
   align-items: center;
   gap: 10px;
   width: 100%;
+  margin: 0;
   padding: 10px 14px;
   border: none;
   background: none;
@@ -34,6 +35,7 @@
   font-weight: 600;
   font-family: var(--zp-font-family-base);
   text-align: left;
+  line-height: 1.4;
 }
 
 .zp-accordion__icon {
@@ -44,6 +46,10 @@
   width: 16px;
   height: 16px;
   color: var(--zp-c-brand-1);
+}
+
+.zp-accordion__icon svg {
+  display: block;
 }
 
 .zp-accordion__header {
@@ -66,9 +72,7 @@
 }
 
 .zp-accordion__chevron {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   flex-shrink: 0;
   width: 16px;
   height: 16px;
