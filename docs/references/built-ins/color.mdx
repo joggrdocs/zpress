@@ -55,23 +55,35 @@ import { Color } from '@theme'
 import { Color, Columns, Column } from '@theme'
 
 <Columns cols={3}>
-  <Column><Color value="#7c3aed" name="Brand" /></Column>
-  <Column><Color value="#2563eb" name="Info" /></Column>
-  <Column><Color value="#059669" name="Success" /></Column>
+  <Column>
+    <Color value="#7c3aed" name="Brand" />
+  </Column>
+  <Column>
+    <Color value="#2563eb" name="Info" />
+  </Column>
+  <Column>
+    <Color value="#059669" name="Success" />
+  </Column>
 </Columns>
 ```
 
 **Output**
 
 <Columns cols={3}>
-  <Column><Color value="#7c3aed" name="Brand" /></Column>
-  <Column><Color value="#2563eb" name="Info" /></Column>
-  <Column><Color value="#059669" name="Success" /></Column>
+  <Column>
+    <Color value="#7c3aed" name="Brand" />
+  </Column>
+  <Column>
+    <Color value="#2563eb" name="Info" />
+  </Column>
+  <Column>
+    <Color value="#059669" name="Success" />
+  </Column>
 </Columns>
 
 ## Props
 
-| Prop    | Type     | Required | Default | Description                            |
-| ------- | -------- | -------- | ------- | -------------------------------------- |
-| `value` | `string` | yes      | —       | Color value (hex, rgb, hsl)            |
-| `name`  | `string` | no       | —       | Display name for the color             |
+| Prop    | Type     | Required | Default | Description                 |
+| ------- | -------- | -------- | ------- | --------------------------- |
+| `value` | `string` | yes      | —       | Color value (hex, rgb, hsl) |
+| `name`  | `string` | no       | —       | Display name for the color  |

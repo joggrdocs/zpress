@@ -1,54 +1,52 @@
 ---
-title: Status Badge
-description: Inline status labels for marking feature maturity.
+title: Badge
+description: Inline labels for marking feature maturity and status.
 ---
 
-import { StatusBadge } from '@theme'
+import { Badge } from '@theme'
 
-# Status Badge
+# Badge
 
-The `<StatusBadge>` component renders inline status labels for marking features, API endpoints, or documentation sections with their maturity status.
+The `<Badge>` component renders inline labels for marking features, API endpoints, or documentation sections with status or category information.
 
 ## Variants
 
 **Code**
 
 ```mdx
-import { StatusBadge } from '@theme'
+import { Badge } from '@theme'
 
-- <StatusBadge variant="new">New</StatusBadge> — just shipped
-- <StatusBadge variant="beta">Beta</StatusBadge> — testing phase
-- <StatusBadge variant="experimental">Experimental</StatusBadge> — may change
-- <StatusBadge variant="stable">Stable</StatusBadge> — production ready
-- <StatusBadge variant="deprecated">Deprecated</StatusBadge> — avoid using
-- <StatusBadge variant="info">Info</StatusBadge> — informational
-- <StatusBadge variant="warning">Warning</StatusBadge> — heads up
+- <Badge variant="new">New</Badge> — just shipped
+- <Badge variant="beta">Beta</Badge> — testing phase
+- <Badge variant="experimental">Experimental</Badge> — may change
+- <Badge variant="stable">Stable</Badge> — production ready
+- <Badge variant="deprecated">Deprecated</Badge> — avoid using
+- <Badge variant="info">Info</Badge> — informational
+- <Badge variant="warning">Warning</Badge> — heads up
 ```
 
 **Output**
 
-- <StatusBadge variant="new">New</StatusBadge> — just shipped
-- <StatusBadge variant="beta">Beta</StatusBadge> — testing phase
-- <StatusBadge variant="experimental">Experimental</StatusBadge> — may change
-- <StatusBadge variant="stable">Stable</StatusBadge> — production ready
-- <StatusBadge variant="deprecated">Deprecated</StatusBadge> — avoid using
-- <StatusBadge variant="info">Info</StatusBadge> — informational
-- <StatusBadge variant="warning">Warning</StatusBadge> — heads up
+- <Badge variant="new">New</Badge> — just shipped
+- <Badge variant="beta">Beta</Badge> — testing phase
+- <Badge variant="experimental">Experimental</Badge> — may change
+- <Badge variant="stable">Stable</Badge> — production ready
+- <Badge variant="deprecated">Deprecated</Badge> — avoid using
+- <Badge variant="info">Info</Badge> — informational
+- <Badge variant="warning">Warning</Badge> — heads up
 
 ## Inline with headings
 
 ```mdx
-## Authentication <StatusBadge variant="beta">Beta</StatusBadge>
-
-The authentication API is currently in beta.
+## Authentication <Badge variant="beta">Beta</Badge>
 ```
 
 ## Props
 
-| Prop       | Type           | Required | Default  | Description                          |
-| ---------- | -------------- | -------- | -------- | ------------------------------------ |
-| `variant`  | `BadgeVariant` | no       | `'info'` | Visual variant controlling color     |
-| `children` | `ReactNode`    | yes      | —        | Badge label text                     |
+| Prop       | Type           | Required | Default  | Description                      |
+| ---------- | -------------- | -------- | -------- | -------------------------------- |
+| `variant`  | `BadgeVariant` | no       | `'info'` | Visual variant controlling color |
+| `children` | `ReactNode`    | yes      | —        | Badge label text                 |
 
 ### BadgeVariant
 

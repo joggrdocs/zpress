@@ -1,13 +1,13 @@
 ---
 title: Prompt
-description: Copyable command and prompt blocks.
+description: Copyable AI prompt blocks with sparkle icon.
 ---
 
 import { Prompt } from '@theme'
 
 # Prompt
 
-The `<Prompt>` component renders a copyable command or prompt block with a one-click copy button. Visually distinct from code blocks with a terminal prompt icon.
+The `<Prompt>` component renders a copyable AI prompt block with a sparkle icon header and one-click copy button. Designed for sharing prompts, instructions, and reusable text snippets.
 
 ## Basic
 
@@ -16,12 +16,12 @@ The `<Prompt>` component renders a copyable command or prompt block with a one-c
 ```mdx
 import { Prompt } from '@theme'
 
-<Prompt>pnpm add @zpress/kit</Prompt>
+<Prompt>Explain how zpress generates sidebar navigation from the config file.</Prompt>
 ```
 
 **Output**
 
-<Prompt>pnpm add @zpress/kit</Prompt>
+<Prompt>Explain how zpress generates sidebar navigation from the config file.</Prompt>
 
 ## Multi-line
 
@@ -29,22 +29,20 @@ import { Prompt } from '@theme'
 
 ```mdx
 <Prompt>
-npx create-zpress@latest my-docs
-cd my-docs
-pnpm dev
+  You are a documentation expert. Review the following API endpoint and generate a clear, concise
+  description that includes: - What the endpoint does - Required parameters - Example response
 </Prompt>
 ```
 
 **Output**
 
 <Prompt>
-npx create-zpress@latest my-docs
-cd my-docs
-pnpm dev
+  You are a documentation expert. Review the following API endpoint and generate a clear, concise
+  description that includes: - What the endpoint does - Required parameters - Example response
 </Prompt>
 
 ## Props
 
-| Prop       | Type        | Required | Default | Description                         |
-| ---------- | ----------- | -------- | ------- | ----------------------------------- |
-| `children` | `ReactNode` | yes      | —       | Prompt or command text to display   |
+| Prop       | Type        | Required | Default | Description            |
+| ---------- | ----------- | -------- | ------- | ---------------------- |
+| `children` | `ReactNode` | yes      | —       | Prompt text to display |

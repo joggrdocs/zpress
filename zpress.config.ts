@@ -429,9 +429,9 @@ export default defineConfig({
               include: 'docs/references/built-ins/prompt.mdx',
             },
             {
-              title: 'Status Badge',
-              description: 'Inline status labels for marking feature maturity.',
-              path: '/reference/built-ins/status-badge',
+              title: 'Badge',
+              description: 'Inline labels for marking feature maturity and status.',
+              path: '/reference/built-ins/badge',
               include: 'docs/references/built-ins/status-badge.mdx',
             },
             {

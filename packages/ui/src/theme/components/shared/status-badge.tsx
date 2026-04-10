@@ -10,7 +10,7 @@ export type BadgeVariant =
   | 'info'
   | 'warning'
 
-export interface StatusBadgeProps {
+export interface BadgeProps {
   /**
    * Visual variant controlling color and semantics.
    * Defaults to 'info'.
@@ -23,13 +23,13 @@ export interface StatusBadgeProps {
 }
 
 /**
- * Inline status badge for marking features, API endpoints,
- * or documentation sections with their maturity status.
+ * Inline badge for marking features, API endpoints,
+ * or documentation sections with status or category labels.
  *
  * @param props - Badge variant and label content
  * @returns React element with styled inline badge
  */
-export function StatusBadge({ variant = 'info', children }: StatusBadgeProps): React.ReactElement {
+export function Badge({ variant = 'info', children }: BadgeProps): React.ReactElement {
   const className = match(variant)
     .with('new', () => 'zp-status-badge zp-status-badge--new')
     .with('beta', () => 'zp-status-badge zp-status-badge--beta')
