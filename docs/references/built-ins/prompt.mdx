@@ -1,13 +1,13 @@
 ---
 title: Prompt
-description: Copyable AI prompt blocks with sparkle icon.
+description: AI prompt blocks with actions and expandable code view.
 ---
 
 import { Prompt } from '@theme'
 
 # Prompt
 
-The `<Prompt>` component renders a copyable AI prompt block with a sparkle icon header and one-click copy button. Designed for sharing prompts, instructions, and reusable text snippets.
+The `<Prompt>` component displays an AI prompt with a description, action buttons, and an expandable code view showing the full prompt text. Click the expand button to reveal the raw prompt in a code block.
 
 ## Basic
 
@@ -16,33 +16,87 @@ The `<Prompt>` component renders a copyable AI prompt block with a sparkle icon 
 ```mdx
 import { Prompt } from '@theme'
 
-<Prompt>Explain how zpress generates sidebar navigation from the config file.</Prompt>
+<Prompt description="Generate clear, concise documentation.">
+  You are a technical writing assistant. Write documentation that is clear, accurate, and concise.
+  Use second-person voice and active verbs.
+</Prompt>
 ```
 
 **Output**
 
-<Prompt>Explain how zpress generates sidebar navigation from the config file.</Prompt>
+<Prompt description="Generate clear, concise documentation.">
+  You are a technical writing assistant. Write documentation that is clear, accurate, and concise.
+  Use second-person voice and active verbs.
+</Prompt>
 
-## Multi-line
+## With custom icon and actions
 
 **Code**
 
 ```mdx
-<Prompt>
-  You are a documentation expert. Review the following API endpoint and generate a clear, concise
-  description that includes: - What the endpoint does - Required parameters - Example response
+<Prompt
+  description="Review code for security vulnerabilities."
+  icon="pixelarticons:shield"
+  actions={['copy', 'cursor']}
+>
+  You are a security auditor. Review the provided code for OWASP Top 10 vulnerabilities. Flag any
+  issues with severity level and remediation steps. Focus on: injection, authentication, XSS, and
+  data exposure.
 </Prompt>
 ```
 
 **Output**
 
-<Prompt>
+<Prompt
+  description="Review code for security vulnerabilities."
+  icon="pixelarticons:shield"
+  actions={['copy', 'cursor']}
+>
+  You are a security auditor. Review the provided code for OWASP Top 10 vulnerabilities. Flag any
+  issues with severity level and remediation steps. Focus on: injection, authentication, XSS, and
+  data exposure.
+</Prompt>
+
+## Multi-line prompt
+
+**Code**
+
+```mdx
+<Prompt
+  description="Generate API endpoint documentation."
+  icon="pixelarticons:article"
+  actions={['copy', 'cursor']}
+>
   You are a documentation expert. Review the following API endpoint and generate a clear, concise
-  description that includes: - What the endpoint does - Required parameters - Example response
+  description that includes: - What the endpoint does - Required parameters - Example response -
+  Error codes
+</Prompt>
+```
+
+**Output**
+
+<Prompt
+  description="Generate API endpoint documentation."
+  icon="pixelarticons:article"
+  actions={['copy', 'cursor']}
+>
+  You are a documentation expert. Review the following API endpoint and generate a clear, concise
+  description that includes: - What the endpoint does - Required parameters - Example response -
+  Error codes
 </Prompt>
 
 ## Props
 
-| Prop       | Type        | Required | Default | Description            |
-| ---------- | ----------- | -------- | ------- | ---------------------- |
-| `children` | `ReactNode` | yes      | —       | Prompt text to display |
+| Prop          | Type             | Required | Default                    | Description                                  |
+| ------------- | ---------------- | -------- | -------------------------- | -------------------------------------------- |
+| `description` | `string`         | no       | —                          | Short description of what the prompt does    |
+| `icon`        | `string`         | no       | `'pixelarticons:sparkles'` | Iconify icon ID                              |
+| `actions`     | `PromptAction[]` | no       | `['copy']`                 | Action buttons to display                    |
+| `children`    | `ReactNode`      | yes      | —                          | The raw prompt text (shown in expanded view) |
+
+### PromptAction
+
+| Value      | Description                            |
+| ---------- | -------------------------------------- |
+| `'copy'`   | Copy prompt text to clipboard          |
+| `'cursor'` | Copy prompt text for use in Cursor IDE |

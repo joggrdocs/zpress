@@ -97,7 +97,7 @@ export type { FrameProps } from './components/shared/frame'
 export { Tooltip } from './components/shared/tooltip'
 export type { TooltipProps } from './components/shared/tooltip'
 export { Prompt } from './components/shared/prompt'
-export type { PromptProps } from './components/shared/prompt'
+export type { PromptProps, PromptAction } from './components/shared/prompt'
 export { Color } from './components/shared/color'
 export type { ColorProps } from './components/shared/color'
 
