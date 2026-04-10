@@ -143,6 +143,12 @@ export interface ResolvedEntry {
    */
   readonly standalone?: boolean
   /**
+   * When true, child sections are promoted to top-level sidebar items
+   * and the parent title is hidden from the sidebar hierarchy.
+   * Implies standalone scope isolation.
+   */
+  readonly root?: boolean
+  /**
    * When true, `link` was auto-derived from `path` or children's common prefix
    * rather than explicitly set in the config.
    */
