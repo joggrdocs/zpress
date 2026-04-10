@@ -81,6 +81,24 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
   return entries
     .filter((e) => !e.hidden)
     .flatMap((entry) => {
+      if (entry.root && entry.items) {
+        return entry.items
+          .filter((child) => !child.hidden)
+          .flatMap((child) => {
+            const name = resolveDirName(child)
+            if (name === null) {
+              return []
+            }
+            return [
+              {
+                type: 'dir' as const,
+                name,
+                label: child.title,
+              },
+            ]
+          })
+      }
+
       const name = resolveDirName(entry)
       if (name === null) {
         return []
