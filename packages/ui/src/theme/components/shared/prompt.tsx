@@ -1,3 +1,4 @@
+import { CodeBlockRuntime } from '@rspress/core/theme'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { match, P } from 'ts-pattern'
@@ -154,9 +155,9 @@ export function Prompt({
       </div>
       {match(expanded)
         .with(true, () => (
-          <pre className="zp-prompt__code">
-            <code>{getRawText()}</code>
-          </pre>
+          <div className="zp-prompt__code">
+            <CodeBlockRuntime lang="markdown" code={getRawText()} />
+          </div>
         ))
         .otherwise(() => null)}
     </div>
@@ -194,7 +195,7 @@ function actionMeta(action: PromptAction): ActionMeta {
     }))
     .with('cursor', () => ({
       label: 'Cursor',
-      icon: <CursorLogo />,
+      icon: <Icon icon="simple-icons:cursor" />,
       description: 'Copy and open Cursor IDE',
     }))
     .with('vscode', () => ({
@@ -204,12 +205,12 @@ function actionMeta(action: PromptAction): ActionMeta {
     }))
     .with('chatgpt', () => ({
       label: 'ChatGPT',
-      icon: <ChatGPTLogo />,
+      icon: <Icon icon="simple-icons:openai" />,
       description: 'Open in ChatGPT with prompt',
     }))
     .with('claude', () => ({
       label: 'Claude',
-      icon: <ClaudeLogo />,
+      icon: <Icon icon="simple-icons:claude" />,
       description: 'Open in Claude with prompt',
     }))
     .exhaustive()
@@ -342,54 +343,5 @@ function DropdownItem({ action, meta, onPress }: DropdownItemProps): React.React
         <span className="zp-prompt__menu-desc">{meta.description}</span>
       </span>
     </button>
-  )
-}
-
-/**
- * Cursor IDE logo SVG.
- *
- * @private
- * @returns SVG element
- */
-function CursorLogo(): React.ReactElement {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 2L14 8L8 9.5L5.5 14L2 2Z" fill="currentColor" />
-    </svg>
-  )
-}
-
-/**
- * ChatGPT logo SVG.
- *
- * @private
- * @returns SVG element
- */
-function ChatGPTLogo(): React.ReactElement {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M14.1 6.9a3.5 3.5 0 0 0-.3-2.9 3.6 3.6 0 0 0-3.8-1.7A3.5 3.5 0 0 0 7.3.5a3.6 3.6 0 0 0-3.4 2.3 3.5 3.5 0 0 0-2.4 1.7 3.6 3.6 0 0 0 .4 4.2 3.5 3.5 0 0 0 .3 2.9 3.6 3.6 0 0 0 3.8 1.7 3.5 3.5 0 0 0 2.7 1.2 3.6 3.6 0 0 0 3.4-2.3 3.5 3.5 0 0 0 2.4-1.7 3.6 3.6 0 0 0-.4-3.6Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
-
-/**
- * Claude/Anthropic logo SVG.
- *
- * @private
- * @returns SVG element
- */
-function ClaudeLogo(): React.ReactElement {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M10.6 3.2L5.7 13.2h2l1-2.1h4.6l1 2.1h2L11.4 3.2h-.8Zm.4 2.7 1.6 3.3H9.4l1.6-3.3Z"
-        fill="currentColor"
-      />
-      <path d="M6.4 3.2H4.5l-4 10h2l4-10Z" fill="currentColor" />
-    </svg>
   )
 }
