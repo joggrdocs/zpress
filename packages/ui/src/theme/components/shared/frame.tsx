@@ -65,7 +65,7 @@ function enhanceVideoChild(child: React.ReactNode): React.ReactNode {
 
   const props = child.props as Record<string, unknown>
 
-  if (child.type === 'video' && props['autoPlay'] !== undefined) {
+  if (child.type === 'video' && props['autoPlay'] === true) {
     return React.cloneElement(
       child as React.ReactElement<React.VideoHTMLAttributes<HTMLVideoElement>>,
       {

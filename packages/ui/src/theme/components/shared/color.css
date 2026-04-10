@@ -19,6 +19,12 @@
   border-color: var(--zp-c-brand-1);
 }
 
+.zp-color:focus-visible {
+  border-color: var(--zp-c-brand-1);
+  outline: 2px solid var(--zp-c-brand-1);
+  outline-offset: 2px;
+}
+
 .zp-color__swatch {
   display: block;
   width: 24px;

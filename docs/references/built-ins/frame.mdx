@@ -21,6 +21,12 @@ import { Frame } from '@theme'
 </Frame>
 ```
 
+**Output**
+
+<Frame>
+  <img src="/images/screenshot.png" alt="Dashboard screenshot" />
+</Frame>
+
 ## With caption
 
 **Code**
@@ -31,6 +37,12 @@ import { Frame } from '@theme'
 </Frame>
 ```
 
+**Output**
+
+<Frame caption="The dashboard after completing setup.">
+  <img src="/images/screenshot.png" alt="Dashboard screenshot" />
+</Frame>
+
 ## With hint and caption
 
 **Code**
@@ -40,6 +52,12 @@ import { Frame } from '@theme'
   <img src="/images/architecture.png" alt="Architecture diagram" />
 </Frame>
 ```
+
+**Output**
+
+<Frame hint="Click to expand" caption="Architecture overview diagram.">
+  <img src="/images/architecture.png" alt="Architecture diagram" />
+</Frame>
 
 ## Video
 
@@ -52,6 +70,12 @@ When a `<video>` child has `autoPlay`, the Frame automatically injects `playsInl
   <video autoPlay src="/videos/demo.mp4" />
 </Frame>
 ```
+
+**Output**
+
+<Frame caption="Product walkthrough">
+  <video autoPlay src="/videos/demo.mp4" />
+</Frame>
 
 ## Props
 

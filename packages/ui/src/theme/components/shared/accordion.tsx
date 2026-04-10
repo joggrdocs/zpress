@@ -109,6 +109,13 @@ export function Accordion({
 
   const [isExpanded, setIsExpanded] = useState(initialOpen)
 
+  // Seed exclusive group state from defaultOpen on initial render
+  useEffect(() => {
+    if (group !== null && group.exclusive && group.openId === null && initialOpen) {
+      group.setOpenId(anchorId)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- seed once on mount
+
   // Sync with group exclusive mode
   const expanded = match(group)
     .with(

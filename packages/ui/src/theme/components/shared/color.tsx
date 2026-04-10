@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { match, P } from 'ts-pattern'
 
 export interface ColorProps {
@@ -22,13 +22,29 @@ export interface ColorProps {
  */
 export function Color({ value, name }: ColorProps): React.ReactElement {
   const [copied, setCopied] = useState(false)
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current !== null) {
+        clearTimeout(resetTimerRef.current)
+      }
+    }
+  }, [])
 
   const handleClick = useCallback(() => {
-    navigator.clipboard.writeText(value).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-      return null
-    })
+    navigator.clipboard.writeText(value).then(
+      () => {
+        if (resetTimerRef.current !== null) {
+          clearTimeout(resetTimerRef.current)
+        }
+        setCopied(true)
+        resetTimerRef.current = setTimeout(() => setCopied(false), 2000)
+      },
+      () => {
+        setCopied(false)
+      }
+    )
   }, [value])
 
   const nameEl = match(name)

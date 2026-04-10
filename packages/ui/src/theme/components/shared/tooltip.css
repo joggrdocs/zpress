@@ -16,6 +16,12 @@
   text-underline-offset: 3px;
 }
 
+.zp-tooltip__trigger:focus-visible {
+  outline: 2px solid var(--zp-c-brand-1);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .zp-tooltip__overlay {
   max-width: 320px;
   padding: 10px 14px;

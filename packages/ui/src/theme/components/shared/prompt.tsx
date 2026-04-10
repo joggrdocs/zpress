@@ -58,9 +58,22 @@ export function Prompt({
     []
   )
 
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current !== null) {
+        clearTimeout(feedbackTimerRef.current)
+      }
+    }
+  }, [])
+
   const showFeedback = useCallback((msg: string) => {
+    if (feedbackTimerRef.current !== null) {
+      clearTimeout(feedbackTimerRef.current)
+    }
     setFeedback(msg)
-    setTimeout(() => setFeedback(null), 2000)
+    feedbackTimerRef.current = setTimeout(() => setFeedback(null), 2000)
   }, [])
 
   const handleAction = useCallback(
@@ -69,26 +82,38 @@ export function Prompt({
 
       match(action)
         .with('copy', () => {
-          navigator.clipboard.writeText(text).then(() => {
-            showFeedback('Copied!')
-            return null
-          })
+          navigator.clipboard.writeText(text).then(
+            () => {
+              showFeedback('Copied!')
+            },
+            () => {
+              showFeedback('Copy failed')
+            }
+          )
         })
         .with('cursor', () => {
           // Copy prompt to clipboard then open Cursor so the user can paste into composer
-          navigator.clipboard.writeText(text).then(() => {
-            showFeedback('Copied — opening Cursor…')
-            globalThis.open('cursor://', '_self')
-            return null
-          })
+          navigator.clipboard.writeText(text).then(
+            () => {
+              showFeedback('Copied — opening Cursor…')
+              globalThis.open('cursor://', '_self')
+            },
+            () => {
+              showFeedback('Copy failed')
+            }
+          )
         })
         .with('vscode', () => {
           // Copy prompt to clipboard then open VS Code so the user can paste
-          navigator.clipboard.writeText(text).then(() => {
-            showFeedback('Copied — opening VS Code…')
-            globalThis.open('vscode://', '_self')
-            return null
-          })
+          navigator.clipboard.writeText(text).then(
+            () => {
+              showFeedback('Copied — opening VS Code…')
+              globalThis.open('vscode://', '_self')
+            },
+            () => {
+              showFeedback('Copy failed')
+            }
+          )
         })
         .with('chatgpt', () => {
           const encoded = encodeURIComponent(text)
