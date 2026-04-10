@@ -49,6 +49,9 @@ Thumbs.db
 # Worktrees
 .worktrees/
 
+# Superpowers
+.superpowers/
+
 # Misc
 *.tgz
 *.vsix
