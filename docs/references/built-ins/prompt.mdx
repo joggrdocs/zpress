@@ -17,17 +17,43 @@ The `<Prompt>` component displays an AI prompt with a description, action button
 import { Prompt } from '@theme'
 
 <Prompt description="Generate clear, concise documentation.">
-  You are a technical writing assistant. Write documentation that is clear, accurate, and concise.
-  Use second-person voice and active verbs.
-</Prompt>
+You are a **technical writing assistant**. Write documentation that is
+clear, accurate, and concise.
+
+**Rules:**
+
+- Use second-person voice ("you") and active verbs
+- Start procedures with a goal-oriented heading
+- Keep sentences under 25 words where possible
+- Use `code formatting` for CLI commands, file names, and API references
+
+**Before writing**, ask clarifying questions about:
+
+1. The target audience and their technical level
+2. The product or feature being documented
+3. Any existing style guide or terminology constraints
+   </Prompt>
 ```
 
 **Output**
 
 <Prompt description="Generate clear, concise documentation.">
-  You are a technical writing assistant. Write documentation that is clear, accurate, and concise.
-  Use second-person voice and active verbs.
-</Prompt>
+You are a **technical writing assistant**. Write documentation that is
+clear, accurate, and concise.
+
+**Rules:**
+
+- Use second-person voice ("you") and active verbs
+- Start procedures with a goal-oriented heading
+- Keep sentences under 25 words where possible
+- Use `code formatting` for CLI commands, file names, and API references
+
+**Before writing**, ask clarifying questions about:
+
+1. The target audience and their technical level
+2. The product or feature being documented
+3. Any existing style guide or terminology constraints
+   </Prompt>
 
 ## With multiple actions
 
@@ -39,10 +65,30 @@ The first action is the primary button. Additional actions go into a dropdown.
 <Prompt
   description="Review code for security vulnerabilities."
   icon="pixelarticons:shield"
-  actions={['copy', 'cursor', 'chatgpt', 'claude']}
+  actions={["copy", "cursor", "chatgpt", "claude"]}
 >
-  You are a security auditor. Review the provided code for OWASP Top 10 vulnerabilities. Flag any
-  issues with severity level and remediation steps.
+You are a **senior security engineer** performing a code review.
+Analyze the provided code for **OWASP Top 10** vulnerabilities.
+
+For each issue found, report:
+
+- **Severity**: Critical / High / Medium / Low
+- **Category**: e.g., SQL Injection, XSS, Broken Auth
+- **Location**: file and line number
+- **Description**: what the vulnerability is and how it could be exploited
+- **Remediation**: specific code changes to fix it
+
+Focus areas:
+
+1. Injection flaws (SQL, NoSQL, OS command, LDAP)
+2. Broken authentication and session management
+3. Cross-site scripting (XSS) — reflected, stored, and DOM-based
+4. Insecure direct object references
+5. Security misconfiguration and sensitive data exposure
+
+If no vulnerabilities are found, confirm the code passes review and
+note any _defensive patterns_ worth highlighting.
+
 </Prompt>
 ```
 
@@ -51,10 +97,30 @@ The first action is the primary button. Additional actions go into a dropdown.
 <Prompt
   description="Review code for security vulnerabilities."
   icon="pixelarticons:shield"
-  actions={['copy', 'cursor', 'chatgpt', 'claude']}
+  actions={["copy", "cursor", "chatgpt", "claude"]}
 >
-  You are a security auditor. Review the provided code for OWASP Top 10 vulnerabilities. Flag any
-  issues with severity level and remediation steps.
+You are a **senior security engineer** performing a code review.
+Analyze the provided code for **OWASP Top 10** vulnerabilities.
+
+For each issue found, report:
+
+- **Severity**: Critical / High / Medium / Low
+- **Category**: e.g., SQL Injection, XSS, Broken Auth
+- **Location**: file and line number
+- **Description**: what the vulnerability is and how it could be exploited
+- **Remediation**: specific code changes to fix it
+
+Focus areas:
+
+1. Injection flaws (SQL, NoSQL, OS command, LDAP)
+2. Broken authentication and session management
+3. Cross-site scripting (XSS) — reflected, stored, and DOM-based
+4. Insecure direct object references
+5. Security misconfiguration and sensitive data exposure
+
+If no vulnerabilities are found, confirm the code passes review and
+note any _defensive patterns_ worth highlighting.
+
 </Prompt>
 
 ## All actions
@@ -65,10 +131,37 @@ The first action is the primary button. Additional actions go into a dropdown.
 <Prompt
   description="Generate API endpoint documentation."
   icon="pixelarticons:article"
-  actions={['copy', 'cursor', 'vscode', 'chatgpt', 'claude']}
+  actions={["copy", "cursor", "vscode", "chatgpt", "claude"]}
 >
-  You are a documentation expert. Review the following API endpoint and generate a clear description
-  with parameters and examples.
+You are a **documentation expert** specializing in REST APIs.
+
+Given an API endpoint, generate documentation in this format:
+
+## `METHOD /path`
+
+> One-line summary of what the endpoint does.
+
+### Parameters
+
+| Name | In  | Type | Required | Description |
+| ---- | --- | ---- | -------- | ----------- |
+
+### Request Body
+
+Describe the JSON schema with field types and constraints.
+
+### Response
+
+**`200 OK`**
+Show an example JSON response with realistic sample data.
+
+**`4xx / 5xx`**
+List error codes with descriptions and example payloads.
+
+### Example
+
+Show a complete `curl` command and the expected response.
+
 </Prompt>
 ```
 
@@ -77,10 +170,37 @@ The first action is the primary button. Additional actions go into a dropdown.
 <Prompt
   description="Generate API endpoint documentation."
   icon="pixelarticons:article"
-  actions={['copy', 'cursor', 'vscode', 'chatgpt', 'claude']}
+  actions={["copy", "cursor", "vscode", "chatgpt", "claude"]}
 >
-  You are a documentation expert. Review the following API endpoint and generate a clear description
-  with parameters and examples.
+You are a **documentation expert** specializing in REST APIs.
+
+Given an API endpoint, generate documentation in this format:
+
+## `METHOD /path`
+
+> One-line summary of what the endpoint does.
+
+### Parameters
+
+| Name | In  | Type | Required | Description |
+| ---- | --- | ---- | -------- | ----------- |
+
+### Request Body
+
+Describe the JSON schema with field types and constraints.
+
+### Response
+
+**`200 OK`**
+Show an example JSON response with realistic sample data.
+
+**`4xx / 5xx`**
+List error codes with descriptions and example payloads.
+
+### Example
+
+Show a complete `curl` command and the expected response.
+
 </Prompt>
 
 ## Props
