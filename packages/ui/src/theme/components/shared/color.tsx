@@ -33,18 +33,19 @@ export function Color({ value, name }: ColorProps): React.ReactElement {
   }, [])
 
   const handleClick = useCallback(() => {
-    navigator.clipboard.writeText(value).then(
-      () => {
+    navigator.clipboard
+      .writeText(value)
+      .then(() => {
         if (resetTimerRef.current !== null) {
           clearTimeout(resetTimerRef.current)
         }
         setCopied(true)
         resetTimerRef.current = setTimeout(() => setCopied(false), 2000)
-      },
-      () => {
+        return null
+      })
+      .catch(() => {
         setCopied(false)
-      }
-    )
+      })
   }, [value])
 
   const nameEl = match(name)

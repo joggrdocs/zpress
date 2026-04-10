@@ -82,38 +82,41 @@ export function Prompt({
 
       match(action)
         .with('copy', () => {
-          navigator.clipboard.writeText(text).then(
-            () => {
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
               showFeedback('Copied!')
-            },
-            () => {
+              return null
+            })
+            .catch(() => {
               showFeedback('Copy failed')
-            }
-          )
+            })
         })
         .with('cursor', () => {
           // Copy prompt to clipboard then open Cursor so the user can paste into composer
-          navigator.clipboard.writeText(text).then(
-            () => {
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
               showFeedback('Copied — opening Cursor…')
               globalThis.open('cursor://', '_self')
-            },
-            () => {
+              return null
+            })
+            .catch(() => {
               showFeedback('Copy failed')
-            }
-          )
+            })
         })
         .with('vscode', () => {
           // Copy prompt to clipboard then open VS Code so the user can paste
-          navigator.clipboard.writeText(text).then(
-            () => {
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
               showFeedback('Copied — opening VS Code…')
               globalThis.open('vscode://', '_self')
-            },
-            () => {
+              return null
+            })
+            .catch(() => {
               showFeedback('Copy failed')
-            }
-          )
+            })
         })
         .with('chatgpt', () => {
           const encoded = encodeURIComponent(text)
