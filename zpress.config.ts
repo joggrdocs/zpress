@@ -343,6 +343,7 @@ export default defineConfig({
           title: 'Built-ins',
           description: 'Components, diagrams, and markdown extensions included out of the box.',
           path: '/reference/built-ins',
+          sort: 'none',
           items: [
             // Layout & Structure
             {
