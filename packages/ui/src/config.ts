@@ -80,9 +80,10 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   // Without this alias, Rspress's rspack may resolve react from the
   // @zpress/ui dist/theme directory (deep inside pnpm's .pnpm store),
   // producing a second copy that triggers "Invalid hook call" errors.
-  const projectRequire = createRequire(path.join(paths.repoRoot, '_'))
-  const reactAlias = path.dirname(projectRequire.resolve('react/package.json'))
-  const reactDomAlias = path.dirname(projectRequire.resolve('react-dom/package.json'))
+  // Resolve from this package's context (react is a peer dep of @zpress/ui).
+  const selfRequire = createRequire(import.meta.url)
+  const reactAlias = path.dirname(selfRequire.resolve('react/package.json'))
+  const reactDomAlias = path.dirname(selfRequire.resolve('react-dom/package.json'))
 
   return {
     root: paths.contentDir,
