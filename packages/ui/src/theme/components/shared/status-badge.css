@@ -1,8 +1,8 @@
 /**
- * StatusBadge — inline semantic status labels.
+ * Badge — inline labels with semantic variants and custom colors.
  */
 
-.zp-status-badge {
+.zp-badge {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
@@ -16,37 +16,22 @@
   vertical-align: middle;
 }
 
-.zp-status-badge--new {
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
-}
-
-.zp-status-badge--beta {
-  background: rgba(99, 102, 241, 0.12);
-  color: #6366f1;
-}
-
-.zp-status-badge--deprecated {
-  background: rgba(220, 38, 38, 0.12);
-  color: #dc2626;
-}
-
-.zp-status-badge--experimental {
-  background: rgba(217, 119, 6, 0.12);
-  color: #d97706;
-}
-
-.zp-status-badge--stable {
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
-}
-
-.zp-status-badge--info {
+.zp-badge--info {
   background: rgba(37, 99, 235, 0.12);
   color: #2563eb;
 }
 
-.zp-status-badge--warning {
+.zp-badge--success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.zp-badge--warning {
   background: rgba(217, 119, 6, 0.12);
   color: #d97706;
+}
+
+.zp-badge--error {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
 }
