@@ -20,10 +20,10 @@ export interface PromptProps {
   /**
    * Action buttons to display. Defaults to `['copy']`.
    * - `copy` — copy prompt text to clipboard
-   * - `cursor` — copy and open in Cursor IDE
-   * - `vscode` — copy and open in VS Code
-   * - `chatgpt` — open in ChatGPT with prompt pre-filled
-   * - `claude` — open in Claude with prompt pre-filled
+   * - `cursor` — copy to clipboard and launch Cursor IDE
+   * - `vscode` — copy to clipboard and launch VS Code
+   * - `chatgpt` — open ChatGPT in a new tab with prompt pre-filled
+   * - `claude` — open Claude in a new tab with prompt pre-filled
    */
   readonly actions?: readonly PromptAction[]
   /**
@@ -74,24 +74,30 @@ export function Prompt({
           })
         })
         .with('cursor', () => {
+          // Copy prompt to clipboard then open Cursor so the user can paste into composer
           navigator.clipboard.writeText(text).then(() => {
-            showFeedback('Copied for Cursor!')
+            showFeedback('Copied — opening Cursor…')
+            globalThis.open('cursor://', '_self')
             return null
           })
         })
         .with('vscode', () => {
+          // Copy prompt to clipboard then open VS Code so the user can paste
           navigator.clipboard.writeText(text).then(() => {
-            showFeedback('Copied for VS Code!')
+            showFeedback('Copied — opening VS Code…')
+            globalThis.open('vscode://', '_self')
             return null
           })
         })
         .with('chatgpt', () => {
           const encoded = encodeURIComponent(text)
-          globalThis.open(`https://chat.openai.com/?q=${encoded}`, '_blank')
+          globalThis.open(`https://chatgpt.com/?hints=search&prompt=${encoded}`, '_blank')
+          showFeedback('Opened ChatGPT')
         })
         .with('claude', () => {
           const encoded = encodeURIComponent(text)
           globalThis.open(`https://claude.ai/new?q=${encoded}`, '_blank')
+          showFeedback('Opened Claude')
         })
         .exhaustive()
     },
@@ -189,22 +195,22 @@ function actionMeta(action: PromptAction): ActionMeta {
     .with('cursor', () => ({
       label: 'Cursor',
       icon: <CursorLogo />,
-      description: 'Copy for Cursor IDE',
+      description: 'Copy and open Cursor IDE',
     }))
     .with('vscode', () => ({
       label: 'VS Code',
       icon: <Icon icon="mdi:microsoft-visual-studio-code" />,
-      description: 'Copy for VS Code',
+      description: 'Copy and open VS Code',
     }))
     .with('chatgpt', () => ({
       label: 'ChatGPT',
       icon: <ChatGPTLogo />,
-      description: 'Open in ChatGPT',
+      description: 'Open in ChatGPT with prompt',
     }))
     .with('claude', () => ({
       label: 'Claude',
       icon: <ClaudeLogo />,
-      description: 'Open in Claude',
+      description: 'Open in Claude with prompt',
     }))
     .exhaustive()
 }
