@@ -9,6 +9,8 @@ import { Prompt } from '@theme'
 
 The `<Prompt>` component displays an AI prompt with a description, action buttons, and an expandable code view. The first action renders as a full button; additional actions appear in a dropdown menu.
 
+Note: prompt children are rendered as plain text in the expanded code view, not as markdown. Use plain text formatting inside `<Prompt>` tags.
+
 ## Basic
 
 **Code**
@@ -16,44 +18,38 @@ The `<Prompt>` component displays an AI prompt with a description, action button
 ```mdx
 import { Prompt } from '@theme'
 
-<Prompt description="Generate clear, concise documentation.">
-You are a **technical writing assistant**. Write documentation that is
-clear, accurate, and concise.
+<Prompt description="Generate clear, concise documentation.">{`You are a **technical writing assistant**. Write documentation that is clear, accurate, and concise.
 
 **Rules:**
 
 - Use second-person voice ("you") and active verbs
 - Start procedures with a goal-oriented heading
 - Keep sentences under 25 words where possible
-- Use `code formatting` for CLI commands, file names, and API references
+- Use \`code formatting\` for CLI commands, file names, and API references
 
 **Before writing**, ask clarifying questions about:
 
 1. The target audience and their technical level
 2. The product or feature being documented
-3. Any existing style guide or terminology constraints
-   </Prompt>
+3. Any existing style guide or terminology constraints`}</Prompt>
 ```
 
 **Output**
 
-<Prompt description="Generate clear, concise documentation.">
-You are a **technical writing assistant**. Write documentation that is
-clear, accurate, and concise.
+<Prompt description="Generate clear, concise documentation.">{`You are a **technical writing assistant**. Write documentation that is clear, accurate, and concise.
 
 **Rules:**
 
 - Use second-person voice ("you") and active verbs
 - Start procedures with a goal-oriented heading
 - Keep sentences under 25 words where possible
-- Use `code formatting` for CLI commands, file names, and API references
+- Use \`code formatting\` for CLI commands, file names, and API references
 
 **Before writing**, ask clarifying questions about:
 
 1. The target audience and their technical level
 2. The product or feature being documented
-3. Any existing style guide or terminology constraints
-   </Prompt>
+3. Any existing style guide or terminology constraints`}</Prompt>
 
 ## With multiple actions
 
@@ -66,8 +62,7 @@ The first action is the primary button. Additional actions go into a dropdown.
   description="Review code for security vulnerabilities."
   icon="pixelarticons:shield"
   actions={["copy", "cursor", "chatgpt", "claude"]}
->
-You are a **senior security engineer** performing a code review.
+>{`You are a **senior security engineer** performing a code review.
 Analyze the provided code for **OWASP Top 10** vulnerabilities.
 
 For each issue found, report:
@@ -87,9 +82,7 @@ Focus areas:
 5. Security misconfiguration and sensitive data exposure
 
 If no vulnerabilities are found, confirm the code passes review and
-note any _defensive patterns_ worth highlighting.
-
-</Prompt>
+note any _defensive patterns_ worth highlighting.`}</Prompt>
 ```
 
 **Output**
@@ -98,8 +91,7 @@ note any _defensive patterns_ worth highlighting.
   description="Review code for security vulnerabilities."
   icon="pixelarticons:shield"
   actions={["copy", "cursor", "chatgpt", "claude"]}
->
-You are a **senior security engineer** performing a code review.
+>{`You are a **senior security engineer** performing a code review.
 Analyze the provided code for **OWASP Top 10** vulnerabilities.
 
 For each issue found, report:
@@ -119,9 +111,7 @@ Focus areas:
 5. Security misconfiguration and sensitive data exposure
 
 If no vulnerabilities are found, confirm the code passes review and
-note any _defensive patterns_ worth highlighting.
-
-</Prompt>
+note any _defensive patterns_ worth highlighting.`}</Prompt>
 
 ## All actions
 
@@ -132,12 +122,11 @@ note any _defensive patterns_ worth highlighting.
   description="Generate API endpoint documentation."
   icon="pixelarticons:article"
   actions={["copy", "cursor", "vscode", "chatgpt", "claude"]}
->
-You are a **documentation expert** specializing in REST APIs.
+>{`You are a **documentation expert** specializing in REST APIs.
 
 Given an API endpoint, generate documentation in this format:
 
-## `METHOD /path`
+## \`METHOD /path\`
 
 > One-line summary of what the endpoint does.
 
@@ -152,17 +141,12 @@ Describe the JSON schema with field types and constraints.
 
 ### Response
 
-**`200 OK`**
-Show an example JSON response with realistic sample data.
-
-**`4xx / 5xx`**
-List error codes with descriptions and example payloads.
+**\`200 OK\`** — Show an example JSON response with realistic sample data.
+**\`4xx / 5xx\`** — List error codes with descriptions and example payloads.
 
 ### Example
 
-Show a complete `curl` command and the expected response.
-
-</Prompt>
+Show a complete \`curl\` command and the expected response.`}</Prompt>
 ```
 
 **Output**
@@ -171,12 +155,11 @@ Show a complete `curl` command and the expected response.
   description="Generate API endpoint documentation."
   icon="pixelarticons:article"
   actions={["copy", "cursor", "vscode", "chatgpt", "claude"]}
->
-You are a **documentation expert** specializing in REST APIs.
+>{`You are a **documentation expert** specializing in REST APIs.
 
 Given an API endpoint, generate documentation in this format:
 
-## `METHOD /path`
+## \`METHOD /path\`
 
 > One-line summary of what the endpoint does.
 
@@ -191,17 +174,12 @@ Describe the JSON schema with field types and constraints.
 
 ### Response
 
-**`200 OK`**
-Show an example JSON response with realistic sample data.
-
-**`4xx / 5xx`**
-List error codes with descriptions and example payloads.
+**\`200 OK\`** — Show an example JSON response with realistic sample data.
+**\`4xx / 5xx\`** — List error codes with descriptions and example payloads.
 
 ### Example
 
-Show a complete `curl` command and the expected response.
-
-</Prompt>
+Show a complete \`curl\` command and the expected response.`}</Prompt>
 
 ## Props
 
