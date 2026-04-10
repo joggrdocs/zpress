@@ -126,8 +126,20 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
  * @returns Flat array of directories needing `_meta.json` files
  */
 export function buildMetaDirectories(entries: readonly ResolvedEntry[]): readonly MetaDirectory[] {
-  const { placements } = flattenToPlacements(entries, 0)
-  return groupPlacementsByDir(placements)
+  const rootParentDirs = new Set(
+    entries
+      .filter((entry) => entry.root && entry.link)
+      .map((entry) => stripLeadingSlash(entry.link ?? ''))
+      .filter(Boolean)
+  )
+  const expanded = entries.flatMap((entry) => {
+    if (entry.root && entry.items) {
+      return entry.items.filter((child) => !child.hidden)
+    }
+    return [entry]
+  })
+  const { placements } = flattenToPlacements(expanded, 0)
+  return groupPlacementsByDir(placements).filter((dir) => !rootParentDirs.has(dir.dirPath))
 }
 
 // ---------------------------------------------------------------------------
