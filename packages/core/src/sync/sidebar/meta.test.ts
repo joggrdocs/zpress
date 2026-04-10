@@ -77,6 +77,36 @@ const packagesRoot: ResolvedEntry = {
   ],
 }
 
+const referenceRoot: ResolvedEntry = {
+  title: 'Reference',
+  link: '/references',
+  root: true,
+  items: [
+    {
+      title: 'API',
+      link: '/references/api',
+      items: [
+        {
+          title: 'Auth',
+          link: '/references/api/auth',
+          page: { outputPath: 'references/api/auth.md', frontmatter: {} },
+        },
+      ],
+    },
+    {
+      title: 'CLI',
+      link: '/references/cli',
+      items: [
+        {
+          title: 'Commands',
+          link: '/references/cli/commands',
+          page: { outputPath: 'references/cli/commands.md', frontmatter: {} },
+        },
+      ],
+    },
+  ],
+}
+
 // ---------------------------------------------------------------------------
 // buildRootMeta
 // ---------------------------------------------------------------------------
@@ -110,6 +140,46 @@ describe(buildRootMeta, () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toMatchObject({ name: 'visible' })
+  })
+
+  it('should promote root section children to top-level meta items', () => {
+    const entries: readonly ResolvedEntry[] = [
+      { title: 'Getting Started', link: '/getting-started', items: [] },
+      referenceRoot,
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toEqual([
+      { type: 'dir', name: 'getting-started', label: 'Getting Started' },
+      { type: 'dir', name: 'api', label: 'API' },
+      { type: 'dir', name: 'cli', label: 'CLI' },
+    ])
+  })
+
+  it('should not include root section parent as a meta item', () => {
+    const entries: readonly ResolvedEntry[] = [referenceRoot]
+
+    const result = buildRootMeta(entries)
+
+    const names = result.map((item) => ('name' in item ? item.name : null))
+    expect(names).not.toContain('references')
+  })
+
+  it('should exclude hidden children from root section promotion', () => {
+    const rootWithHidden: ResolvedEntry = {
+      title: 'Reference',
+      link: '/references',
+      root: true,
+      items: [
+        { title: 'API', link: '/references/api', items: [] },
+        { title: 'Internal', link: '/references/internal', hidden: true, items: [] },
+      ],
+    }
+
+    const result = buildRootMeta([rootWithHidden])
+
+    expect(result).toEqual([{ type: 'dir', name: 'api', label: 'API' }])
   })
 })
 
