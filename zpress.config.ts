@@ -365,10 +365,22 @@ export default defineConfig({
               include: 'docs/references/built-ins/columns.mdx',
             },
             {
+              title: 'Field',
+              description: 'Structured parameter and field documentation with nesting.',
+              path: '/reference/built-ins/field',
+              include: 'docs/references/built-ins/field.mdx',
+            },
+            {
               title: 'Frame',
               description: 'Media wrapper for images and videos with captions.',
               path: '/reference/built-ins/frame',
               include: 'docs/references/built-ins/frame.mdx',
+            },
+            {
+              title: 'Steps',
+              description: 'Vertical timeline stepper for sequential instructions.',
+              path: '/reference/built-ins/steps',
+              include: 'docs/references/built-ins/steps.mdx',
             },
             // Window Chrome
             {

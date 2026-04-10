@@ -37,6 +37,8 @@ import './components/shared/frame.css'
 import './components/shared/tooltip.css'
 import './components/shared/prompt.css'
 import './components/shared/color.css'
+import './components/shared/steps.css'
+import './components/shared/field.css'
 
 // ── Rspress theme re-export ──────────────────────────────────────────
 // (theme-original avoids circular resolution when used inside a themeDir)
@@ -100,6 +102,10 @@ export { Prompt } from './components/shared/prompt'
 export type { PromptProps, PromptAction } from './components/shared/prompt'
 export { Color } from './components/shared/color'
 export type { ColorProps } from './components/shared/color'
+export { Steps, Step } from './components/shared/steps'
+export type { StepsProps, StepProps } from './components/shared/steps'
+export { Field, FieldGroup } from './components/shared/field'
+export type { FieldProps, FieldGroupProps } from './components/shared/field'
 
 // ── OpenAPI (framework-generated — advanced use only) ────────────────
 
