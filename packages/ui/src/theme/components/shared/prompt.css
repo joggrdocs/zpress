@@ -7,7 +7,7 @@
   flex-direction: column;
   margin: 16px 0;
   border: 1px solid var(--zp-c-border);
-  border-radius: var(--rp-radius-large);
+  border-radius: var(--rp-radius);
   overflow: visible;
   position: relative;
 }
@@ -18,11 +18,11 @@
   gap: 10px;
   padding: 10px 14px;
   background: var(--zp-c-bg-elv);
-  border-radius: var(--rp-radius-large);
+  border-radius: var(--rp-radius);
 }
 
 .zp-prompt__header:has(+ .zp-prompt__code) {
-  border-radius: var(--rp-radius-large) var(--rp-radius-large) 0 0;
+  border-radius: var(--rp-radius) var(--rp-radius) 0 0;
 }
 
 .zp-prompt__icon {
@@ -109,7 +109,7 @@
   padding: 4px;
   background: var(--zp-c-bg);
   border: 1px solid var(--zp-c-border);
-  border-radius: var(--rp-radius-large);
+  border-radius: var(--rp-radius);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
@@ -120,7 +120,7 @@
   width: 100%;
   padding: 8px 10px;
   border: none;
-  border-radius: var(--rp-radius);
+  border-radius: var(--rp-radius-small);
   background: none;
   color: var(--zp-c-text-1);
   font-family: var(--zp-font-family-base);
@@ -174,5 +174,5 @@
 
 .zp-prompt__code div[class*='language-'] {
   margin: 0 !important;
-  border-radius: 0 0 var(--rp-radius-large) var(--rp-radius-large) !important;
+  border-radius: 0 0 var(--rp-radius) var(--rp-radius) !important;
 }

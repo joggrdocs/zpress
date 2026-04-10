@@ -10,18 +10,22 @@
 
 .zp-accordion {
   border: 1px solid var(--zp-c-border);
-  border-radius: var(--rp-radius-large);
+  border-radius: var(--rp-radius);
   background: var(--zp-c-bg-soft);
   overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.zp-accordion:hover {
+  border-color: var(--zp-c-brand-1);
 }
 
 .zp-accordion__trigger {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 10px 14px;
   border: none;
   background: none;
   cursor: pointer;
@@ -30,11 +34,6 @@
   font-weight: 600;
   font-family: var(--zp-font-family-base);
   text-align: left;
-  transition: color 0.2s;
-}
-
-.zp-accordion__trigger:hover {
-  color: var(--zp-c-brand-1);
 }
 
 .zp-accordion__icon {
@@ -42,8 +41,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   color: var(--zp-c-brand-1);
 }
 
@@ -67,7 +66,12 @@
 }
 
 .zp-accordion__chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
   transition: transform 0.2s;
   color: var(--zp-c-text-3);
 }
@@ -77,7 +81,7 @@
 }
 
 .zp-accordion__panel {
-  padding: 4px 16px 8px;
+  padding: 0 14px 10px;
   font-size: 14px;
   line-height: 1.7;
   color: var(--zp-c-text-2);
