@@ -13,7 +13,7 @@ The `<Accordion>` component creates expandable sections with title, optional des
 
 **Code**
 
-```mdx
+````mdx
 import { Accordion } from '@theme'
 
 <Accordion title="What is zpress?">
@@ -22,7 +22,7 @@ zpress is a documentation framework built on Rspress that generates
 beautiful, themeable documentation sites from your codebase.
 
 </Accordion>
-```
+````
 
 **Output**
 
@@ -37,7 +37,7 @@ beautiful, themeable documentation sites from your codebase.
 
 **Code**
 
-```mdx
+````mdx
 <Accordion
   title="Installation"
   description="How to install zpress in your project"
@@ -51,7 +51,7 @@ pnpm add @zpress/kit
 ```
 
 </Accordion>
-```
+````
 
 **Output**
 
@@ -61,11 +61,7 @@ pnpm add @zpress/kit
   icon="pixelarticons:cloud-download"
 >
 
-Run the following command to install zpress:
-
-```bash
-pnpm add @zpress/kit
-```
+Run `pnpm add @zpress/kit` to install.
 
 </Accordion>
 
@@ -75,13 +71,13 @@ Use `defaultOpen` to start the accordion in the expanded state.
 
 **Code**
 
-```mdx
+````mdx
 <Accordion title="Expanded by default" defaultOpen>
 
 This content is visible on page load.
 
 </Accordion>
-```
+````
 
 **Output**
 
@@ -97,7 +93,7 @@ Wrap multiple accordions in `<AccordionGroup>` to coordinate them. Set `exclusiv
 
 **Code**
 
-```mdx
+````mdx
 import { Accordion, AccordionGroup } from '@theme'
 
 <AccordionGroup exclusive>
@@ -111,7 +107,7 @@ import { Accordion, AccordionGroup } from '@theme'
     Run `pnpm build` to generate your documentation site.
   </Accordion>
 </AccordionGroup>
-```
+````
 
 **Output**
 
@@ -131,11 +127,11 @@ import { Accordion, AccordionGroup } from '@theme'
 
 Each accordion generates a URL hash from its title (or custom `id` prop). Navigating to `#your-title` will auto-expand the matching accordion.
 
-```mdx
+````mdx
 <Accordion title="Custom Anchor" id="my-custom-id">
   Link to this section with `#my-custom-id`.
 </Accordion>
-```
+````
 
 ## Accordion props
 
