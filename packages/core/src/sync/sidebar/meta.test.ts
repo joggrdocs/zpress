@@ -284,6 +284,39 @@ describe(buildMetaDirectories, () => {
     }
   })
 
+  it('should flatten root section children without emitting parent directory group', () => {
+    const directories = buildMetaDirectories([referenceRoot])
+
+    const dirPaths = directories.map((d) => d.dirPath)
+    expect(dirPaths).not.toContain('references')
+  })
+
+  it('should emit subdirectories for root section children', () => {
+    const directories = buildMetaDirectories([referenceRoot])
+
+    const apiDir = directories.find((d) => d.dirPath === 'references/api')
+    expect(apiDir).toBeDefined()
+    if (apiDir) {
+      expect(apiDir.items).toContainEqual({ type: 'file', name: 'auth', label: 'Auth' })
+    }
+
+    const cliDir = directories.find((d) => d.dirPath === 'references/cli')
+    expect(cliDir).toBeDefined()
+    if (cliDir) {
+      expect(cliDir.items).toContainEqual({ type: 'file', name: 'commands', label: 'Commands' })
+    }
+  })
+
+  it('should handle mix of root and non-root sections', () => {
+    const directories = buildMetaDirectories([packagesRoot, referenceRoot])
+
+    const dirPaths = directories.map((d) => d.dirPath)
+    expect(dirPaths).toContain('packages')
+    expect(dirPaths).not.toContain('references')
+    expect(dirPaths).toContain('references/api')
+    expect(dirPaths).toContain('references/cli')
+  })
+
   it('should preserve leaf-before-section order when names do not collide', () => {
     const mixedSection: ResolvedEntry = {
       title: 'Mixed',
