@@ -1,10 +1,10 @@
 import type React from 'react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { match, P } from 'ts-pattern'
 
 import { Icon } from './icon'
 
-export type PromptAction = 'copy' | 'cursor'
+export type PromptAction = 'copy' | 'cursor' | 'vscode' | 'chatgpt' | 'claude'
 
 export interface PromptProps {
   /**
@@ -20,7 +20,10 @@ export interface PromptProps {
   /**
    * Action buttons to display. Defaults to `['copy']`.
    * - `copy` — copy prompt text to clipboard
-   * - `cursor` — copy prompt text for use in Cursor IDE
+   * - `cursor` — copy and open in Cursor IDE
+   * - `vscode` — copy and open in VS Code
+   * - `chatgpt` — open in ChatGPT with prompt pre-filled
+   * - `claude` — open in Claude with prompt pre-filled
    */
   readonly actions?: readonly PromptAction[]
   /**
@@ -43,7 +46,7 @@ export function Prompt({
   children,
 }: PromptProps): React.ReactElement {
   const [expanded, setExpanded] = useState(false)
-  const [copiedAction, setCopiedAction] = useState<PromptAction | null>(null)
+  const [feedback, setFeedback] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
   const getRawText = useCallback(
@@ -54,15 +57,45 @@ export function Prompt({
     []
   )
 
-  const handleCopy = useCallback(
+  const showFeedback = useCallback((msg: string) => {
+    setFeedback(msg)
+    setTimeout(() => setFeedback(null), 2000)
+  }, [])
+
+  const handleAction = useCallback(
     (action: PromptAction) => {
-      navigator.clipboard.writeText(getRawText()).then(() => {
-        setCopiedAction(action)
-        setTimeout(() => setCopiedAction(null), 2000)
-        return null
-      })
+      const text = getRawText()
+
+      match(action)
+        .with('copy', () => {
+          navigator.clipboard.writeText(text).then(() => {
+            showFeedback('Copied!')
+            return null
+          })
+        })
+        .with('cursor', () => {
+          navigator.clipboard.writeText(text).then(() => {
+            showFeedback('Copied for Cursor!')
+            return null
+          })
+        })
+        .with('vscode', () => {
+          navigator.clipboard.writeText(text).then(() => {
+            showFeedback('Copied for VS Code!')
+            return null
+          })
+        })
+        .with('chatgpt', () => {
+          const encoded = encodeURIComponent(text)
+          globalThis.open(`https://chat.openai.com/?q=${encoded}`, '_blank')
+        })
+        .with('claude', () => {
+          const encoded = encodeURIComponent(text)
+          globalThis.open(`https://claude.ai/new?q=${encoded}`, '_blank')
+        })
+        .exhaustive()
     },
-    [getRawText]
+    [getRawText, showFeedback]
   )
 
   const toggleExpanded = useCallback(() => {
@@ -73,6 +106,14 @@ export function Prompt({
     .with(P.nonNullable, (d) => <span className="zp-prompt__description">{d}</span>)
     .otherwise(() => null)
 
+  const feedbackEl = match(feedback)
+    .with(P.nonNullable, (msg) => <span className="zp-prompt__feedback">{msg}</span>)
+    .otherwise(() => null)
+
+  // Split first action as primary button, rest go into dropdown
+  const primaryAction = actions[0] ?? 'copy'
+  const dropdownActions = actions.slice(1)
+
   return (
     <div className="zp-prompt">
       <div className="zp-prompt__header">
@@ -80,18 +121,15 @@ export function Prompt({
           <Icon icon={icon} />
         </span>
         {descEl}
+        {feedbackEl}
         <span className="zp-prompt__actions">
-          {actions.map((action) => (
-            <ActionButton
-              key={action}
-              action={action}
-              copied={copiedAction === action}
-              onPress={handleCopy}
-            />
-          ))}
+          <PrimaryButton action={primaryAction} onPress={handleAction} />
+          {match(dropdownActions.length > 0)
+            .with(true, () => <ActionDropdown actions={dropdownActions} onPress={handleAction} />)
+            .otherwise(() => null)}
           <button
             type="button"
-            className="zp-prompt__action"
+            className="zp-prompt__btn zp-prompt__btn--icon"
             onClick={toggleExpanded}
             title={match(expanded)
               .with(true, () => 'Hide prompt')
@@ -123,75 +161,229 @@ export function Prompt({
 // Private
 // ---------------------------------------------------------------------------
 
-interface ActionButtonProps {
+/**
+ * Action metadata for display.
+ *
+ * @private
+ */
+interface ActionMeta {
+  readonly label: string
+  readonly icon: React.ReactNode
+  readonly description: string
+}
+
+/**
+ * Resolve display metadata for a prompt action.
+ *
+ * @private
+ * @param action - The prompt action type
+ * @returns Label, icon, and description for the action
+ */
+function actionMeta(action: PromptAction): ActionMeta {
+  return match(action)
+    .with('copy', () => ({
+      label: 'Copy',
+      icon: <Icon icon="pixelarticons:clipboard" />,
+      description: 'Copy to clipboard',
+    }))
+    .with('cursor', () => ({
+      label: 'Cursor',
+      icon: <CursorLogo />,
+      description: 'Copy for Cursor IDE',
+    }))
+    .with('vscode', () => ({
+      label: 'VS Code',
+      icon: <Icon icon="mdi:microsoft-visual-studio-code" />,
+      description: 'Copy for VS Code',
+    }))
+    .with('chatgpt', () => ({
+      label: 'ChatGPT',
+      icon: <ChatGPTLogo />,
+      description: 'Open in ChatGPT',
+    }))
+    .with('claude', () => ({
+      label: 'Claude',
+      icon: <ClaudeLogo />,
+      description: 'Open in Claude',
+    }))
+    .exhaustive()
+}
+
+interface PrimaryButtonProps {
   readonly action: PromptAction
-  readonly copied: boolean
   readonly onPress: (action: PromptAction) => void
 }
 
 /**
- * Render an action button for the prompt header.
+ * Full-width primary action button.
  *
  * @private
- * @param props - Action type, copied state, and press handler
- * @returns Action button element
+ * @param props - Action and press handler
+ * @returns Button element
  */
-function ActionButton({ action, copied, onPress }: ActionButtonProps): React.ReactElement {
+function PrimaryButton({ action, onPress }: PrimaryButtonProps): React.ReactElement {
+  const meta = actionMeta(action)
   const handleClick = useCallback(() => {
     onPress(action)
   }, [action, onPress])
 
-  return match(action)
-    .with('copy', () => (
-      <button
-        type="button"
-        className="zp-prompt__action"
-        onClick={handleClick}
-        title={match(copied)
-          .with(true, () => 'Copied!')
-          .otherwise(() => 'Copy to clipboard')}
-      >
-        <Icon
-          icon={match(copied)
-            .with(true, () => 'pixelarticons:check')
-            .otherwise(() => 'pixelarticons:clipboard')}
-        />
-      </button>
-    ))
-    .with('cursor', () => (
-      <button
-        type="button"
-        className="zp-prompt__action zp-prompt__action--cursor"
-        onClick={handleClick}
-        title={match(copied)
-          .with(true, () => 'Copied for Cursor!')
-          .otherwise(() => 'Copy for Cursor')}
-      >
-        <CursorIcon copied={copied} />
-      </button>
-    ))
-    .exhaustive()
+  return (
+    <button type="button" className="zp-prompt__btn zp-prompt__btn--primary" onClick={handleClick}>
+      {meta.icon}
+      <span>{meta.label}</span>
+    </button>
+  )
 }
 
-interface CursorIconProps {
-  readonly copied: boolean
+interface ActionDropdownProps {
+  readonly actions: readonly PromptAction[]
+  readonly onPress: (action: PromptAction) => void
 }
 
 /**
- * Cursor IDE logo icon with copied state overlay.
+ * Dropdown menu for additional prompt actions.
  *
  * @private
- * @param props - Whether the copy was successful
+ * @param props - Actions list and press handler
+ * @returns Dropdown element with toggle and menu
+ */
+function ActionDropdown({ actions, onPress }: ActionDropdownProps): React.ReactElement {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    function handler(e: MouseEvent): void {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const handleToggle = useCallback(() => {
+    setOpen((prev) => !prev)
+  }, [])
+
+  return (
+    <div ref={ref} className="zp-prompt__dropdown">
+      <button
+        type="button"
+        className="zp-prompt__btn zp-prompt__btn--icon"
+        onClick={handleToggle}
+        aria-expanded={open}
+        aria-haspopup="menu"
+      >
+        <Icon
+          icon={match(open)
+            .with(true, () => 'pixelarticons:chevron-up')
+            .otherwise(() => 'pixelarticons:chevron-down')}
+        />
+      </button>
+      {match(open)
+        .with(true, () => (
+          <div className="zp-prompt__menu" role="menu">
+            {actions.map((action) => {
+              const meta = actionMeta(action)
+              return (
+                <DropdownItem
+                  key={action}
+                  action={action}
+                  meta={meta}
+                  onPress={(a) => {
+                    onPress(a)
+                    setOpen(false)
+                  }}
+                />
+              )
+            })}
+          </div>
+        ))
+        .otherwise(() => null)}
+    </div>
+  )
+}
+
+interface DropdownItemProps {
+  readonly action: PromptAction
+  readonly meta: ActionMeta
+  readonly onPress: (action: PromptAction) => void
+}
+
+/**
+ * A single item in the action dropdown menu.
+ *
+ * @private
+ * @param props - Action, display metadata, and press handler
+ * @returns Menu item button
+ */
+function DropdownItem({ action, meta, onPress }: DropdownItemProps): React.ReactElement {
+  const handleClick = useCallback(() => {
+    onPress(action)
+  }, [action, onPress])
+
+  return (
+    <button type="button" className="zp-prompt__menu-item" role="menuitem" onClick={handleClick}>
+      <span className="zp-prompt__menu-icon">{meta.icon}</span>
+      <span className="zp-prompt__menu-text">
+        <span className="zp-prompt__menu-label">{meta.label}</span>
+        <span className="zp-prompt__menu-desc">{meta.description}</span>
+      </span>
+    </button>
+  )
+}
+
+/**
+ * Cursor IDE logo SVG.
+ *
+ * @private
  * @returns SVG element
  */
-function CursorIcon({ copied }: CursorIconProps): React.ReactElement {
-  if (copied) {
-    return <Icon icon="pixelarticons:check" />
-  }
-
+function CursorLogo(): React.ReactElement {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M2 2L14 8L8 9.5L5.5 14L2 2Z" fill="currentColor" />
+    </svg>
+  )
+}
+
+/**
+ * ChatGPT logo SVG.
+ *
+ * @private
+ * @returns SVG element
+ */
+function ChatGPTLogo(): React.ReactElement {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M14.1 6.9a3.5 3.5 0 0 0-.3-2.9 3.6 3.6 0 0 0-3.8-1.7A3.5 3.5 0 0 0 7.3.5a3.6 3.6 0 0 0-3.4 2.3 3.5 3.5 0 0 0-2.4 1.7 3.6 3.6 0 0 0 .4 4.2 3.5 3.5 0 0 0 .3 2.9 3.6 3.6 0 0 0 3.8 1.7 3.5 3.5 0 0 0 2.7 1.2 3.6 3.6 0 0 0 3.4-2.3 3.5 3.5 0 0 0 2.4-1.7 3.6 3.6 0 0 0-.4-3.6Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+/**
+ * Claude/Anthropic logo SVG.
+ *
+ * @private
+ * @returns SVG element
+ */
+function ClaudeLogo(): React.ReactElement {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M10.6 3.2L5.7 13.2h2l1-2.1h4.6l1 2.1h2L11.4 3.2h-.8Zm.4 2.7 1.6 3.3H9.4l1.6-3.3Z"
+        fill="currentColor"
+      />
+      <path d="M6.4 3.2H4.5l-4 10h2l4-10Z" fill="currentColor" />
     </svg>
   )
 }

@@ -1,13 +1,13 @@
 ---
 title: Prompt
-description: AI prompt blocks with actions and expandable code view.
+description: AI prompt blocks with action buttons and expandable code view.
 ---
 
 import { Prompt } from '@theme'
 
 # Prompt
 
-The `<Prompt>` component displays an AI prompt with a description, action buttons, and an expandable code view showing the full prompt text. Click the expand button to reveal the raw prompt in a code block.
+The `<Prompt>` component displays an AI prompt with a description, action buttons, and an expandable code view. The first action renders as a full button; additional actions appear in a dropdown menu.
 
 ## Basic
 
@@ -29,7 +29,9 @@ import { Prompt } from '@theme'
   Use second-person voice and active verbs.
 </Prompt>
 
-## With custom icon and actions
+## With multiple actions
+
+The first action is the primary button. Additional actions go into a dropdown.
 
 **Code**
 
@@ -37,11 +39,10 @@ import { Prompt } from '@theme'
 <Prompt
   description="Review code for security vulnerabilities."
   icon="pixelarticons:shield"
-  actions={['copy', 'cursor']}
+  actions={['copy', 'cursor', 'chatgpt', 'claude']}
 >
   You are a security auditor. Review the provided code for OWASP Top 10 vulnerabilities. Flag any
-  issues with severity level and remediation steps. Focus on: injection, authentication, XSS, and
-  data exposure.
+  issues with severity level and remediation steps.
 </Prompt>
 ```
 
@@ -50,14 +51,13 @@ import { Prompt } from '@theme'
 <Prompt
   description="Review code for security vulnerabilities."
   icon="pixelarticons:shield"
-  actions={['copy', 'cursor']}
+  actions={['copy', 'cursor', 'chatgpt', 'claude']}
 >
   You are a security auditor. Review the provided code for OWASP Top 10 vulnerabilities. Flag any
-  issues with severity level and remediation steps. Focus on: injection, authentication, XSS, and
-  data exposure.
+  issues with severity level and remediation steps.
 </Prompt>
 
-## Multi-line prompt
+## All actions
 
 **Code**
 
@@ -65,11 +65,10 @@ import { Prompt } from '@theme'
 <Prompt
   description="Generate API endpoint documentation."
   icon="pixelarticons:article"
-  actions={['copy', 'cursor']}
+  actions={['copy', 'cursor', 'vscode', 'chatgpt', 'claude']}
 >
-  You are a documentation expert. Review the following API endpoint and generate a clear, concise
-  description that includes: - What the endpoint does - Required parameters - Example response -
-  Error codes
+  You are a documentation expert. Review the following API endpoint and generate a clear description
+  with parameters and examples.
 </Prompt>
 ```
 
@@ -78,25 +77,27 @@ import { Prompt } from '@theme'
 <Prompt
   description="Generate API endpoint documentation."
   icon="pixelarticons:article"
-  actions={['copy', 'cursor']}
+  actions={['copy', 'cursor', 'vscode', 'chatgpt', 'claude']}
 >
-  You are a documentation expert. Review the following API endpoint and generate a clear, concise
-  description that includes: - What the endpoint does - Required parameters - Example response -
-  Error codes
+  You are a documentation expert. Review the following API endpoint and generate a clear description
+  with parameters and examples.
 </Prompt>
 
 ## Props
 
-| Prop          | Type             | Required | Default                    | Description                                  |
-| ------------- | ---------------- | -------- | -------------------------- | -------------------------------------------- |
-| `description` | `string`         | no       | —                          | Short description of what the prompt does    |
-| `icon`        | `string`         | no       | `'pixelarticons:sparkles'` | Iconify icon ID                              |
-| `actions`     | `PromptAction[]` | no       | `['copy']`                 | Action buttons to display                    |
-| `children`    | `ReactNode`      | yes      | —                          | The raw prompt text (shown in expanded view) |
+| Prop          | Type             | Required | Default                    | Description                                       |
+| ------------- | ---------------- | -------- | -------------------------- | ------------------------------------------------- |
+| `description` | `string`         | no       | —                          | Short description of what the prompt does         |
+| `icon`        | `string`         | no       | `'pixelarticons:sparkles'` | Iconify icon ID                                   |
+| `actions`     | `PromptAction[]` | no       | `['copy']`                 | Action buttons (first = primary, rest = dropdown) |
+| `children`    | `ReactNode`      | yes      | —                          | The raw prompt text (shown in expanded view)      |
 
 ### PromptAction
 
-| Value      | Description                            |
-| ---------- | -------------------------------------- |
-| `'copy'`   | Copy prompt text to clipboard          |
-| `'cursor'` | Copy prompt text for use in Cursor IDE |
+| Value       | Description                            |
+| ----------- | -------------------------------------- |
+| `'copy'`    | Copy prompt text to clipboard          |
+| `'cursor'`  | Copy for Cursor IDE                    |
+| `'vscode'`  | Copy for VS Code                       |
+| `'chatgpt'` | Open in ChatGPT with prompt pre-filled |
+| `'claude'`  | Open in Claude with prompt pre-filled  |
