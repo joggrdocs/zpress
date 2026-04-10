@@ -7,22 +7,21 @@ export default defineConfig({
   sections: [
     {
       title: 'Getting Started',
-      link: '/getting-started',
-      from: 'docs/getting-started.md',
+      path: '/getting-started',
+      include: 'docs/getting-started.md',
       icon: 'pixelarticons:speed-fast',
     },
     {
       title: 'API Reference',
-      link: '/api-reference',
-      from: 'docs/api-reference.md',
+      path: '/api-reference',
+      include: 'docs/api-reference.md',
       icon: 'pixelarticons:book-open',
     },
     {
       title: 'Guides',
-      prefix: '/guides',
-      from: 'docs/guides/*.md',
+      path: '/guides',
+      include: 'docs/guides/*.md',
       icon: 'pixelarticons:article',
-      titleFrom: 'frontmatter',
       sort: 'alpha',
     },
   ],
