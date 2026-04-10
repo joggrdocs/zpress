@@ -46,6 +46,9 @@ Thumbs.db
 # Claude
 .claude/plans/
 
+# Worktrees
+.worktrees/
+
 # Misc
 *.tgz
 *.vsix
