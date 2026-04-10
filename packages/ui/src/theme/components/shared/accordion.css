@@ -25,6 +25,7 @@
   align-items: center;
   gap: 10px;
   width: 100%;
+  min-height: 40px;
   margin: 0;
   padding: 10px 14px;
   border: none;
@@ -72,12 +73,18 @@
 }
 
 .zp-accordion__chevron {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  min-height: 40px;
   width: 16px;
-  height: 16px;
   transition: transform 0.2s;
   color: var(--zp-c-text-3);
+}
+
+.zp-accordion__chevron svg {
+  display: block;
 }
 
 .zp-accordion[data-expanded] .zp-accordion__chevron {

@@ -172,7 +172,9 @@ export function Accordion({
           <span className="zp-accordion__title">{title}</span>
           {descEl}
         </span>
-        <ChevronIcon className="zp-accordion__chevron" />
+        <span className="zp-accordion__chevron">
+          <Icon icon="pixelarticons:chevron-right" />
+        </span>
       </Button>
       <DisclosurePanel className="zp-accordion__panel">{children}</DisclosurePanel>
     </Disclosure>
@@ -195,36 +197,4 @@ function slugify(text: string): string {
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, '-')
     .replaceAll(/^-|-$/g, '')
-}
-
-interface ChevronIconProps {
-  readonly className?: string
-}
-
-/**
- * Inline SVG chevron icon for the accordion trigger.
- *
- * @private
- * @param props - Optional className
- * @returns SVG chevron element
- */
-function ChevronIcon({ className }: ChevronIconProps): React.ReactElement {
-  return (
-    <svg
-      className={className}
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6 4L10 8L6 12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
 }
