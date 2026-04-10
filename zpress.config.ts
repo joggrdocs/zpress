@@ -344,6 +344,7 @@ export default defineConfig({
           description: 'Components, diagrams, and markdown extensions included out of the box.',
           path: '/reference/built-ins',
           items: [
+            // Layout & Structure
             {
               title: 'Accordion',
               description: 'Expandable disclosure sections for progressive content reveal.',
@@ -357,23 +358,18 @@ export default defineConfig({
               include: 'docs/references/built-ins/cards.mdx',
             },
             {
-              title: 'Code Blocks',
-              description: 'Syntax highlighting, line numbers, diffs, and code block features.',
-              path: '/reference/built-ins/code-blocks',
-              include: 'docs/references/built-ins/code-blocks.md',
-            },
-            {
-              title: 'Color',
-              description: 'Color swatch display with click-to-copy.',
-              path: '/reference/built-ins/color',
-              include: 'docs/references/built-ins/color.mdx',
-            },
-            {
               title: 'Columns',
               description: 'Responsive grid layout for side-by-side content.',
               path: '/reference/built-ins/columns',
               include: 'docs/references/built-ins/columns.mdx',
             },
+            {
+              title: 'Frame',
+              description: 'Media wrapper for images and videos with captions.',
+              path: '/reference/built-ins/frame',
+              include: 'docs/references/built-ins/frame.mdx',
+            },
+            // Window Chrome
             {
               title: 'Desktop Window',
               description: 'macOS-style window chrome that all window components build on.',
@@ -398,6 +394,39 @@ export default defineConfig({
               path: '/reference/built-ins/terminal-window',
               include: 'docs/references/built-ins/terminal-window.mdx',
             },
+            // Inline Elements
+            {
+              title: 'Badge',
+              description: 'Inline labels with semantic variants and custom colors.',
+              path: '/reference/built-ins/badge',
+              include: 'docs/references/built-ins/status-badge.mdx',
+            },
+            {
+              title: 'Color',
+              description: 'Color swatch display with click-to-copy.',
+              path: '/reference/built-ins/color',
+              include: 'docs/references/built-ins/color.mdx',
+            },
+            {
+              title: 'Tooltip',
+              description: 'Hover-to-reveal definitions for inline contextual help.',
+              path: '/reference/built-ins/tooltip',
+              include: 'docs/references/built-ins/tooltip.mdx',
+            },
+            // Code & Prompts
+            {
+              title: 'Code Blocks',
+              description: 'Syntax highlighting, line numbers, diffs, and code block features.',
+              path: '/reference/built-ins/code-blocks',
+              include: 'docs/references/built-ins/code-blocks.md',
+            },
+            {
+              title: 'Prompt',
+              description: 'Copyable AI prompt blocks with sparkle icon.',
+              path: '/reference/built-ins/prompt',
+              include: 'docs/references/built-ins/prompt.mdx',
+            },
+            // Diagrams & Visualizations
             {
               title: 'File Tree',
               description: 'Render interactive file tree visualizations.',
@@ -405,17 +434,12 @@ export default defineConfig({
               include: 'docs/references/built-ins/file-tree.md',
             },
             {
-              title: 'Frame',
-              description: 'Media wrapper for images and videos with captions.',
-              path: '/reference/built-ins/frame',
-              include: 'docs/references/built-ins/frame.mdx',
-            },
-            {
               title: 'Mermaid Diagrams',
               description: 'Render diagrams from text using Mermaid fenced code blocks.',
               path: '/reference/built-ins/mermaid',
               include: 'docs/references/built-ins/mermaid.md',
             },
+            // Markdown Extensions
             {
               title: 'Math (KaTeX)',
               description: 'Render LaTeX math expressions inline and in blocks.',
@@ -423,28 +447,10 @@ export default defineConfig({
               include: 'docs/references/built-ins/math.md',
             },
             {
-              title: 'Prompt',
-              description: 'Copyable command and prompt blocks.',
-              path: '/reference/built-ins/prompt',
-              include: 'docs/references/built-ins/prompt.mdx',
-            },
-            {
-              title: 'Badge',
-              description: 'Inline labels for marking feature maturity and status.',
-              path: '/reference/built-ins/badge',
-              include: 'docs/references/built-ins/status-badge.mdx',
-            },
-            {
               title: 'Superscript & Subscript',
               description: 'Inline superscript and subscript syntax.',
               path: '/reference/built-ins/superscript-subscript',
               include: 'docs/references/built-ins/superscript-subscript.md',
-            },
-            {
-              title: 'Tooltip',
-              description: 'Hover-to-reveal definitions for inline contextual help.',
-              path: '/reference/built-ins/tooltip',
-              include: 'docs/references/built-ins/tooltip.mdx',
             },
           ],
         },
