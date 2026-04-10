@@ -392,6 +392,9 @@
                     },
                     "standalone": {
                       "type": "boolean"
+                    },
+                    "root": {
+                      "type": "boolean"
                     }
                   },
                   "required": [
