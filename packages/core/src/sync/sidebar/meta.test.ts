@@ -162,7 +162,12 @@ describe(buildRootMeta, () => {
 
     const result = buildRootMeta(entries)
 
-    const names = result.map((item) => ('name' in item ? item.name : null))
+    const names = result
+      .filter(
+        (item): item is { readonly type: string; readonly name: string; readonly label: string } =>
+          'name' in item
+      )
+      .map((item) => item.name)
     expect(names).not.toContain('references')
   })
 
