@@ -1,5 +1,17 @@
 # @zpress/kit
 
+## 0.2.19
+
+### Patch Changes
+
+- ffed994: fix(packages/ui,packages/cli,packages/zpress): resolve duplicate React instances in consumer repos
+
+  Added `react` and `react-dom` resolve aliases to the Rspress builder config so rspack always uses the consumer's single React copy. Moved `react` from direct dependencies to peer dependencies in `@zpress/cli` to prevent pnpm from installing a private copy. Aligned React peer version range in `@zpress/kit` to `^19.2.5`.
+
+- Updated dependencies [ffed994]
+  - @zpress/ui@0.8.13
+  - @zpress/cli@0.8.3
+
 ## 0.2.18
 
 ### Patch Changes
