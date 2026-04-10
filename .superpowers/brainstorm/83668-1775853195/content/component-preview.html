@@ -1,0 +1,110 @@
+<h2>New Components Preview</h2>
+<p class="subtitle">Steps and ParamField — visual mockups of what was built</p>
+
+<div class="section">
+  <h3>Steps / Step</h3>
+  <p>Vertical timeline stepper with numbered circles and connecting lines.</p>
+
+  <div class="mockup">
+    <div class="mockup-header">Steps — Basic Usage</div>
+    <div class="mockup-body" style="padding: 24px; font-family: -apple-system, system-ui, sans-serif; background: #fff;">
+      <!-- Step 1 -->
+      <div style="display: flex; gap: 16px;">
+        <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+          <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #6466f1; color: #fff; font-size: 12px; font-weight: 600;">1</span>
+          <div style="width: 2px; flex: 1; background: #e5e7eb; min-height: 16px;"></div>
+        </div>
+        <div style="padding-bottom: 24px; flex: 1;">
+          <h3 style="margin: 0; font-size: 16px; font-weight: 600; line-height: 24px;">Install zpress</h3>
+          <div style="margin-top: 8px; font-size: 14px; color: #6b7280; line-height: 1.6;">
+            <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px;">npm install @zpress/kit</code>
+          </div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div style="display: flex; gap: 16px;">
+        <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+          <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #6466f1; color: #fff; font-size: 12px; font-weight: 600;">2</span>
+          <div style="width: 2px; flex: 1; background: #e5e7eb; min-height: 16px;"></div>
+        </div>
+        <div style="padding-bottom: 24px; flex: 1;">
+          <h3 style="margin: 0; font-size: 16px; font-weight: 600; line-height: 24px;">Configure your site</h3>
+          <div style="margin-top: 8px; font-size: 14px; color: #6b7280; line-height: 1.6;">
+            Create a <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px;">zpress.config.ts</code> file in your project root.
+          </div>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div style="display: flex; gap: 16px;">
+        <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+          <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #6466f1; color: #fff; font-size: 12px; font-weight: 600;">3</span>
+          <div style="width: 2px; flex: 1; background: #e5e7eb; visibility: hidden; min-height: 16px;"></div>
+        </div>
+        <div style="flex: 1;">
+          <h3 style="margin: 0; font-size: 16px; font-weight: 600; line-height: 24px;">Start writing docs</h3>
+          <div style="margin-top: 8px; font-size: 14px; color: #6b7280; line-height: 1.6;">
+            Add <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px;">.mdx</code> files and run the dev server.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 32px;">
+  <h3>ParamField</h3>
+  <p>Structured parameter documentation with type badges, required/optional indicators, and nesting.</p>
+
+  <div class="mockup">
+    <div class="mockup-header">ParamField — API Parameter Docs</div>
+    <div class="mockup-body" style="padding: 24px; font-family: -apple-system, system-ui, sans-serif; background: #fff;">
+      <!-- Field 1: name -->
+      <div style="border-left: 2px solid #e5e7eb; padding: 12px 0 12px 16px; margin: 8px 0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <span style="font-family: ui-monospace, monospace; font-weight: 600; font-size: 14px; color: #111;">name</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; color: #6b7280; background: #f3f4f6;">string</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; background: rgba(220,38,38,0.12); color: #dc2626;">REQUIRED</span>
+        </div>
+        <div style="font-size: 14px; color: #6b7280; line-height: 1.6;">The display name of the user.</div>
+      </div>
+      <!-- Field 2: email -->
+      <div style="border-left: 2px solid #e5e7eb; padding: 12px 0 12px 16px; margin: 8px 0; border-top: 1px solid #f0f0f0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <span style="font-family: ui-monospace, monospace; font-weight: 600; font-size: 14px; color: #111;">email</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; color: #6b7280; background: #f3f4f6;">string</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #9ca3af;">OPTIONAL</span>
+        </div>
+        <div style="font-size: 14px; color: #6b7280; line-height: 1.6;">Contact email address.</div>
+      </div>
+      <!-- Field 3: role with default -->
+      <div style="border-left: 2px solid #e5e7eb; padding: 12px 0 12px 16px; margin: 8px 0; border-top: 1px solid #f0f0f0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <span style="font-family: ui-monospace, monospace; font-weight: 600; font-size: 14px; color: #111;">role</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; color: #6b7280; background: #f3f4f6;">string</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #9ca3af;">OPTIONAL</span>
+        </div>
+        <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Default: <code style="font-family: ui-monospace, monospace; font-size: 11px; padding: 1px 4px; border-radius: 4px; background: #f3f4f6; color: #6b7280;">"viewer"</code></div>
+        <div style="font-size: 14px; color: #6b7280; line-height: 1.6;">The user's role. Controls access permissions.</div>
+      </div>
+      <!-- Field 4: nested options -->
+      <div style="border-left: 2px solid #e5e7eb; padding: 12px 0 12px 16px; margin: 8px 0; border-top: 1px solid #f0f0f0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <span style="font-family: ui-monospace, monospace; font-weight: 600; font-size: 14px; color: #111;">options</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; color: #6b7280; background: #f3f4f6;">object</span>
+          <span style="padding: 1px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #9ca3af;">OPTIONAL</span>
+        </div>
+        <div style="font-size: 14px; color: #6b7280; line-height: 1.6;">Additional configuration options.</div>
+        <!-- Nested field -->
+        <div style="border-left: 2px solid #e5e7eb; padding: 12px 0 12px 16px; margin: 8px 0 0 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-family: ui-monospace, monospace; font-weight: 600; font-size: 14px; color: #111;">verbose</span>
+            <span style="padding: 1px 8px; border-radius: 9999px; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 500; color: #6b7280; background: #f3f4f6;">boolean</span>
+            <span style="padding: 1px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #9ca3af;">OPTIONAL</span>
+          </div>
+          <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Default: <code style="font-family: ui-monospace, monospace; font-size: 11px; padding: 1px 4px; border-radius: 4px; background: #f3f4f6; color: #6b7280;">false</code></div>
+          <div style="font-size: 14px; color: #6b7280; line-height: 1.6;">Enable verbose logging output.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
