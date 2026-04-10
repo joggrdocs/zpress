@@ -1,0 +1,62 @@
+---
+title: Frame
+description: Media wrapper for images and videos with captions.
+---
+
+import { Frame } from '@theme'
+
+# Frame
+
+The `<Frame>` component wraps images and videos with consistent border styling, optional caption, and hint text. Uses semantic `<figure>` / `<figcaption>` HTML.
+
+## Basic image
+
+**Code**
+
+```mdx
+import { Frame } from '@theme'
+
+<Frame>
+  <img src="/images/screenshot.png" alt="Dashboard screenshot" />
+</Frame>
+```
+
+## With caption
+
+**Code**
+
+```mdx
+<Frame caption="The dashboard after completing setup.">
+  <img src="/images/screenshot.png" alt="Dashboard screenshot" />
+</Frame>
+```
+
+## With hint and caption
+
+**Code**
+
+```mdx
+<Frame hint="Click to expand" caption="Architecture overview diagram.">
+  <img src="/images/architecture.png" alt="Architecture diagram" />
+</Frame>
+```
+
+## Video
+
+When a `<video>` child has `autoPlay`, the Frame automatically injects `playsInline`, `loop`, and `muted` attributes.
+
+**Code**
+
+```mdx
+<Frame caption="Product walkthrough">
+  <video autoPlay src="/videos/demo.mp4" />
+</Frame>
+```
+
+## Props
+
+| Prop       | Type        | Required | Default | Description                                    |
+| ---------- | ----------- | -------- | ------- | ---------------------------------------------- |
+| `caption`  | `string`    | no       | —       | Caption text displayed below the content       |
+| `hint`     | `string`    | no       | —       | Hint text displayed above the content          |
+| `children` | `ReactNode` | yes      | —       | Image, video, or other visual content to frame |

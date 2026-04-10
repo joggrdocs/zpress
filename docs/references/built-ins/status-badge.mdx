@@ -1,0 +1,55 @@
+---
+title: Status Badge
+description: Inline status labels for marking feature maturity.
+---
+
+import { StatusBadge } from '@theme'
+
+# Status Badge
+
+The `<StatusBadge>` component renders inline status labels for marking features, API endpoints, or documentation sections with their maturity status.
+
+## Variants
+
+**Code**
+
+```mdx
+import { StatusBadge } from '@theme'
+
+- <StatusBadge variant="new">New</StatusBadge> — just shipped
+- <StatusBadge variant="beta">Beta</StatusBadge> — testing phase
+- <StatusBadge variant="experimental">Experimental</StatusBadge> — may change
+- <StatusBadge variant="stable">Stable</StatusBadge> — production ready
+- <StatusBadge variant="deprecated">Deprecated</StatusBadge> — avoid using
+- <StatusBadge variant="info">Info</StatusBadge> — informational
+- <StatusBadge variant="warning">Warning</StatusBadge> — heads up
+```
+
+**Output**
+
+- <StatusBadge variant="new">New</StatusBadge> — just shipped
+- <StatusBadge variant="beta">Beta</StatusBadge> — testing phase
+- <StatusBadge variant="experimental">Experimental</StatusBadge> — may change
+- <StatusBadge variant="stable">Stable</StatusBadge> — production ready
+- <StatusBadge variant="deprecated">Deprecated</StatusBadge> — avoid using
+- <StatusBadge variant="info">Info</StatusBadge> — informational
+- <StatusBadge variant="warning">Warning</StatusBadge> — heads up
+
+## Inline with headings
+
+```mdx
+## Authentication <StatusBadge variant="beta">Beta</StatusBadge>
+
+The authentication API is currently in beta.
+```
+
+## Props
+
+| Prop       | Type           | Required | Default  | Description                          |
+| ---------- | -------------- | -------- | -------- | ------------------------------------ |
+| `variant`  | `BadgeVariant` | no       | `'info'` | Visual variant controlling color     |
+| `children` | `ReactNode`    | yes      | —        | Badge label text                     |
+
+### BadgeVariant
+
+`'new'` | `'beta'` | `'deprecated'` | `'experimental'` | `'stable'` | `'info'` | `'warning'`

@@ -1,0 +1,50 @@
+---
+title: Prompt
+description: Copyable command and prompt blocks.
+---
+
+import { Prompt } from '@theme'
+
+# Prompt
+
+The `<Prompt>` component renders a copyable command or prompt block with a one-click copy button. Visually distinct from code blocks with a terminal prompt icon.
+
+## Basic
+
+**Code**
+
+```mdx
+import { Prompt } from '@theme'
+
+<Prompt>pnpm add @zpress/kit</Prompt>
+```
+
+**Output**
+
+<Prompt>pnpm add @zpress/kit</Prompt>
+
+## Multi-line
+
+**Code**
+
+```mdx
+<Prompt>
+npx create-zpress@latest my-docs
+cd my-docs
+pnpm dev
+</Prompt>
+```
+
+**Output**
+
+<Prompt>
+npx create-zpress@latest my-docs
+cd my-docs
+pnpm dev
+</Prompt>
+
+## Props
+
+| Prop       | Type        | Required | Default | Description                         |
+| ---------- | ----------- | -------- | ------- | ----------------------------------- |
+| `children` | `ReactNode` | yes      | —       | Prompt or command text to display   |
