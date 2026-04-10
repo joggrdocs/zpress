@@ -264,6 +264,7 @@ export interface Section {
   readonly icon?: IconConfig
   readonly card?: CardConfig
   readonly standalone?: boolean
+  readonly root?: boolean
 }
 
 /**

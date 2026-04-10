@@ -116,6 +116,7 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
       icon: iconConfigSchema.optional(),
       card: cardConfigSchema.optional(),
       standalone: z.boolean().optional(),
+      root: z.boolean().optional(),
     })
     .strict()
 )
