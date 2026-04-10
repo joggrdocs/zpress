@@ -389,7 +389,7 @@ function concatPage(pages: readonly PageData[], page: PageData | undefined): Pag
  * @returns Array of standalone scope path strings
  */
 function collectStandaloneScopePaths(entries: readonly ResolvedEntry[]): readonly string[] {
-  return entries.filter((e) => e.standalone && e.link).map((e) => e.link as string)
+  return entries.filter((e) => (e.standalone || e.root) && e.link).map((e) => e.link as string)
 }
 
 /**

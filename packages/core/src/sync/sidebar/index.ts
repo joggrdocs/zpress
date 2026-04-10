@@ -23,8 +23,8 @@ export function generateNav(
   // Auto: first 3 non-standalone sections (matching home page features),
   // plus all standalone sections (workspace dropdowns).
   const visible = resolved.filter((e) => !e.hidden)
-  const nonStandalone = visible.filter((e) => !e.standalone).slice(0, 3)
-  const standalone = visible.filter((e) => e.standalone)
+  const nonStandalone = visible.filter((e) => !e.standalone && !e.root).slice(0, 3)
+  const standalone = visible.filter((e) => e.standalone || e.root)
 
   return [...nonStandalone, ...standalone]
     .map(buildNavEntry)
@@ -127,7 +127,7 @@ function resolveLink(entry: ResolvedEntry): string | undefined {
  * @returns Array of nav items for dropdown, or undefined
  */
 function resolveChildren(entry: ResolvedEntry): readonly RspressNavItem[] | undefined {
-  if (entry.standalone && entry.items && entry.items.length > 0) {
+  if ((entry.standalone || entry.root) && entry.items && entry.items.length > 0) {
     return entry.items
       .filter((child) => !child.hidden)
       .map(
