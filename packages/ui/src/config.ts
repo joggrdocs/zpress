@@ -81,8 +81,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   // @zpress/ui dist/theme directory (deep inside pnpm's .pnpm store),
   // producing a second copy that triggers "Invalid hook call" errors.
   const projectRequire = createRequire(path.join(paths.repoRoot, '_'))
-  const reactAlias = projectRequire.resolve('react')
-  const reactDomAlias = projectRequire.resolve('react-dom')
+  const reactAlias = path.dirname(projectRequire.resolve('react/package.json'))
+  const reactDomAlias = path.dirname(projectRequire.resolve('react-dom/package.json'))
 
   return {
     root: paths.contentDir,
