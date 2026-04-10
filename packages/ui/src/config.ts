@@ -1,5 +1,6 @@
 import { execSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 
 import type { UserConfig } from '@rspress/core'
@@ -75,6 +76,14 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const isVscode = vscode === true
   const headScriptBody = buildHeadScriptBody({ colorMode, themeName, vscode: isVscode })
 
+  // Force a single React instance across all compiled theme components.
+  // Without this alias, Rspress's rspack may resolve react from the
+  // @zpress/ui dist/theme directory (deep inside pnpm's .pnpm store),
+  // producing a second copy that triggers "Invalid hook call" errors.
+  const projectRequire = createRequire(path.join(paths.repoRoot, '_'))
+  const reactAlias = projectRequire.resolve('react')
+  const reactDomAlias = projectRequire.resolve('react-dom')
+
   return {
     root: paths.contentDir,
     outDir: paths.distDir,
@@ -130,6 +139,10 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       },
       resolve: {
         alias: {
+          // Deduplicate React — pnpm isolation can cause rspack to resolve
+          // different physical copies from theme components vs Rspress internals.
+          react: reactAlias,
+          'react-dom': reactDomAlias,
           // Allow generated MDX files in .zpress/content/ to import
           // zpress React components used in landing pages.
           '@zpress/ui/theme': path.resolve(import.meta.dirname, 'theme', 'index.tsx'),
