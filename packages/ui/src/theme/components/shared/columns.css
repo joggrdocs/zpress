@@ -1,0 +1,37 @@
+/**
+ * Columns — responsive grid layout (1–4 columns).
+ */
+
+.zp-columns {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.zp-columns--1 {
+  grid-template-columns: 1fr;
+}
+
+.zp-columns--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.zp-columns--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.zp-columns--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 640px) {
+  .zp-columns--2,
+  .zp-columns--3,
+  .zp-columns--4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zp-column {
+  min-width: 0;
+}

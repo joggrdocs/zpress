@@ -253,7 +253,12 @@ export interface Section {
   readonly exclude?: readonly string[]
   readonly hidden?: boolean
   readonly frontmatter?: Frontmatter
-  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly sort?:
+    | 'default'
+    | 'alpha'
+    | 'filename'
+    | 'none'
+    | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly recursive?: boolean
   readonly entryFile?: string
   readonly icon?: IconConfig
@@ -288,7 +293,12 @@ export interface Workspace {
   readonly path: string
   readonly include?: string | readonly string[]
   readonly items?: readonly Section[]
-  readonly sort?: 'default' | 'alpha' | 'filename' | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly sort?:
+    | 'default'
+    | 'alpha'
+    | 'filename'
+    | 'none'
+    | ((a: ResolvedPage, b: ResolvedPage) => number)
   readonly exclude?: readonly string[]
   readonly recursive?: boolean
   readonly entryFile?: string

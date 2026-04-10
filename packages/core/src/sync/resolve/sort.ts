@@ -23,9 +23,11 @@ export function sortEntries(
     | 'default'
     | 'alpha'
     | 'filename'
+    | 'none'
     | ((a: ResolvedPage, b: ResolvedPage) => number) = 'default'
 ): ResolvedEntry[] {
   return match(sort)
+    .with('none', () => [...entries])
     .with('default', () => entries.toSorted(defaultCompare))
     .with('alpha', () =>
       entries.toSorted((a, b) => sectionFirst(a, b) || a.title.localeCompare(b.title))

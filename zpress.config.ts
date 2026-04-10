@@ -343,12 +343,14 @@ export default defineConfig({
           title: 'Built-ins',
           description: 'Components, diagrams, and markdown extensions included out of the box.',
           path: '/reference/built-ins',
+          sort: 'none',
           items: [
+            // Layout & Structure
             {
-              title: 'Code Blocks',
-              description: 'Syntax highlighting, line numbers, diffs, and code block features.',
-              path: '/reference/built-ins/code-blocks',
-              include: 'docs/references/built-ins/code-blocks.md',
+              title: 'Accordion',
+              description: 'Expandable disclosure sections for progressive content reveal.',
+              path: '/reference/built-ins/accordion',
+              include: 'docs/references/built-ins/accordion.mdx',
             },
             {
               title: 'Cards',
@@ -357,11 +359,30 @@ export default defineConfig({
               include: 'docs/references/built-ins/cards.mdx',
             },
             {
-              title: 'File Tree',
-              description: 'Render interactive file tree visualizations.',
-              path: '/reference/built-ins/file-tree',
-              include: 'docs/references/built-ins/file-tree.md',
+              title: 'Columns',
+              description: 'Responsive grid layout for side-by-side content.',
+              path: '/reference/built-ins/columns',
+              include: 'docs/references/built-ins/columns.mdx',
             },
+            {
+              title: 'Field',
+              description: 'Structured parameter and field documentation with nesting.',
+              path: '/reference/built-ins/field',
+              include: 'docs/references/built-ins/field.mdx',
+            },
+            {
+              title: 'Frame',
+              description: 'Media wrapper for images and videos with captions.',
+              path: '/reference/built-ins/frame',
+              include: 'docs/references/built-ins/frame.mdx',
+            },
+            {
+              title: 'Steps',
+              description: 'Vertical timeline stepper for sequential instructions.',
+              path: '/reference/built-ins/steps',
+              include: 'docs/references/built-ins/steps.mdx',
+            },
+            // Window Chrome
             {
               title: 'Desktop Window',
               description: 'macOS-style window chrome that all window components build on.',
@@ -386,12 +407,52 @@ export default defineConfig({
               path: '/reference/built-ins/terminal-window',
               include: 'docs/references/built-ins/terminal-window.mdx',
             },
+            // Inline Elements
+            {
+              title: 'Badge',
+              description: 'Inline labels with semantic variants and custom colors.',
+              path: '/reference/built-ins/badge',
+              include: 'docs/references/built-ins/status-badge.mdx',
+            },
+            {
+              title: 'Color',
+              description: 'Color swatch display with click-to-copy.',
+              path: '/reference/built-ins/color',
+              include: 'docs/references/built-ins/color.mdx',
+            },
+            {
+              title: 'Tooltip',
+              description: 'Hover-to-reveal definitions for inline contextual help.',
+              path: '/reference/built-ins/tooltip',
+              include: 'docs/references/built-ins/tooltip.mdx',
+            },
+            // Code & Prompts
+            {
+              title: 'Code Blocks',
+              description: 'Syntax highlighting, line numbers, diffs, and code block features.',
+              path: '/reference/built-ins/code-blocks',
+              include: 'docs/references/built-ins/code-blocks.md',
+            },
+            {
+              title: 'Prompt',
+              description: 'Copyable AI prompt blocks with sparkle icon.',
+              path: '/reference/built-ins/prompt',
+              include: 'docs/references/built-ins/prompt.mdx',
+            },
+            // Diagrams & Visualizations
+            {
+              title: 'File Tree',
+              description: 'Render interactive file tree visualizations.',
+              path: '/reference/built-ins/file-tree',
+              include: 'docs/references/built-ins/file-tree.md',
+            },
             {
               title: 'Mermaid Diagrams',
               description: 'Render diagrams from text using Mermaid fenced code blocks.',
               path: '/reference/built-ins/mermaid',
               include: 'docs/references/built-ins/mermaid.md',
             },
+            // Markdown Extensions
             {
               title: 'Math (KaTeX)',
               description: 'Render LaTeX math expressions inline and in blocks.',

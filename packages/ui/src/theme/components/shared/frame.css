@@ -1,0 +1,39 @@
+/**
+ * Frame — media wrapper with caption and hint.
+ */
+
+.zp-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+  padding: 0;
+}
+
+.zp-frame__hint {
+  display: block;
+  font-size: 12px;
+  color: var(--zp-c-text-3);
+  text-align: center;
+}
+
+.zp-frame__content {
+  border: 1px solid var(--zp-c-border);
+  border-radius: var(--rp-radius-large);
+  overflow: hidden;
+  background: var(--zp-c-bg-soft);
+}
+
+.zp-frame__content img,
+.zp-frame__content video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.zp-frame__caption {
+  font-size: 13px;
+  color: var(--zp-c-text-2);
+  text-align: center;
+  line-height: 1.5;
+}

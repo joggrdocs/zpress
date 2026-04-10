@@ -1,0 +1,118 @@
+/**
+ * Accordion — expandable disclosure sections.
+ */
+
+.zp-accordion-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zp-accordion {
+  border: 1px solid var(--zp-c-border);
+  border-radius: var(--rp-radius);
+  background: var(--zp-c-bg-soft);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.zp-accordion:hover {
+  border-color: var(--zp-c-brand-1);
+}
+
+.zp-accordion__trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--zp-c-text-1);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--zp-font-family-base);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.zp-accordion__trigger:focus-visible {
+  outline: 2px solid var(--zp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.zp-accordion__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--zp-c-brand-1);
+}
+
+.zp-accordion__icon svg {
+  display: block;
+}
+
+.zp-accordion__header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.zp-accordion__title {
+  line-height: 1.4;
+}
+
+.zp-accordion__description {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--zp-c-text-2);
+  line-height: 1.4;
+}
+
+.zp-accordion__chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 40px;
+  width: 16px;
+  transition: transform 0.2s;
+  color: var(--zp-c-text-3);
+}
+
+.zp-accordion__chevron svg {
+  display: block;
+}
+
+.zp-accordion[data-expanded] .zp-accordion__chevron {
+  transform: rotate(90deg);
+}
+
+.zp-accordion__panel {
+  display: none;
+  padding: 0 14px 10px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--zp-c-text-2);
+}
+
+.zp-accordion[data-expanded] .zp-accordion__panel {
+  display: block;
+}
+
+.zp-accordion__panel > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.zp-accordion__panel > * + * {
+  margin-top: 8px;
+}

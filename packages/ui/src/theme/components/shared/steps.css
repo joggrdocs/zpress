@@ -1,0 +1,88 @@
+/**
+ * Steps — vertical timeline stepper with numbered circles and connecting lines.
+ */
+
+.zp-steps {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.zp-step {
+  display: flex;
+  gap: 16px;
+}
+
+.zp-step__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.zp-step__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--zp-c-border);
+  background: var(--zp-c-bg-soft);
+  color: var(--zp-c-text-1);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.zp-step__connector {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  width: 2px;
+  flex: 1;
+  background: var(--zp-c-border);
+  min-height: 16px;
+}
+
+.zp-step:last-child .zp-step__connector {
+  background: linear-gradient(to bottom, var(--zp-c-border) 50%, transparent);
+}
+
+.zp-step__body {
+  padding-bottom: 24px;
+  min-width: 0;
+  flex: 1;
+}
+
+.zp-step:last-child .zp-step__body {
+  padding-bottom: 0;
+}
+
+.zp-step__title {
+  margin-top: 0 !important;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--zp-c-text-1);
+}
+
+h2.zp-step__title {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+p.zp-step__title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.zp-step__content {
+  margin-top: 8px;
+}
+
+.zp-step__content:empty {
+  display: none;
+}
