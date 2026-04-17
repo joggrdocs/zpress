@@ -1,6 +1,5 @@
-import { afterAll, beforeAll, bench, describe } from 'vitest'
-
 import { createPaths, loadConfig, sync } from '@zpress/core'
+import { afterAll, beforeAll, bench, describe } from 'vitest'
 
 import { FIXTURES, generateLargeFixture } from '../helpers/fixtures.ts'
 

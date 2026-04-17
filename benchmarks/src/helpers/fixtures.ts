@@ -20,7 +20,9 @@ const FILES_PER_SECTION = 50
  * @returns Object with `dir` path and `cleanup` function
  */
 export function generateLargeFixture(): { readonly dir: string; readonly cleanup: () => void } {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'zpress-bench-large-'))
+  const fixturesDir = path.join(REPO_ROOT, '.bench-fixtures')
+  fs.mkdirSync(fixturesDir, { recursive: true })
+  const dir = fs.mkdtempSync(path.join(fixturesDir, 'large-'))
 
   // Write zpress.config.ts
   const sectionConfigs = SECTIONS.map(
@@ -50,7 +52,12 @@ ${sectionConfigs}
   fs.writeFileSync(
     path.join(dir, 'package.json'),
     JSON.stringify(
-      { name: 'bench-large', private: true, type: 'module', dependencies: { '@zpress/kit': 'workspace:*' } },
+      {
+        name: 'bench-large',
+        private: true,
+        type: 'module',
+        dependencies: { '@zpress/kit': 'workspace:*' },
+      },
       null,
       2
     ),

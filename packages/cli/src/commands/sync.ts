@@ -32,7 +32,7 @@ export default command({
 
     if (!ctx.args.quiet) {
       ctx.log.success(
-        `${result.pagesWritten} written, ${result.pagesSkipped} unchanged, ${result.pagesRemoved} removed (${result.elapsed.toFixed(0)}ms)`,
+        `${result.pagesWritten} written, ${result.pagesSkipped} unchanged, ${result.pagesRemoved} removed (${result.elapsed.toFixed(0)}ms)`
       )
     }
 

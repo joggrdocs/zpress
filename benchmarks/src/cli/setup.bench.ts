@@ -11,7 +11,11 @@ let tempDir: string
 beforeEach(() => {
   tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zpress-bench-setup-'))
   // setup needs a package.json
-  fs.writeFileSync(path.join(tempDir, 'package.json'), '{"name":"bench-setup","private":true}', 'utf8')
+  fs.writeFileSync(
+    path.join(tempDir, 'package.json'),
+    '{"name":"bench-setup","private":true}',
+    'utf8'
+  )
 })
 
 afterEach(() => {
