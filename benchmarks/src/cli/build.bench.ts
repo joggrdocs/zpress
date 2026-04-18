@@ -14,13 +14,11 @@ afterAll(() => {
   fixtures.forEach((f) => f.cleanup())
 })
 
-describe('zpress build (cli)', () => {
-  TIERS.forEach((tier) => {
-    bench(`${tier.name} (~${tier.files} files)`, () => {
-      const fixture = fixtures.get(tier.name)
-      if (fixture) {
-        runCli(['build', '--no-check', '--quiet'], fixture.dir)
-      }
-    })
+describe.each(TIERS)('zpress build (cli) — $name (~$files files)', (tier) => {
+  bench('build', () => {
+    const fixture = fixtures.get(tier.name)
+    if (fixture) {
+      runCli(['build', '--no-check', '--quiet'], fixture.dir)
+    }
   })
 })

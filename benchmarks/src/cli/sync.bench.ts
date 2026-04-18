@@ -14,13 +14,11 @@ afterAll(() => {
   fixtures.forEach((f) => f.cleanup())
 })
 
-describe('zpress sync (cli)', () => {
-  TIERS.forEach((tier) => {
-    bench(`${tier.name} (~${tier.files} files)`, () => {
-      const fixture = fixtures.get(tier.name)
-      if (fixture) {
-        runCli(['sync', '--quiet'], fixture.dir)
-      }
-    })
+describe.each(TIERS)('zpress sync (cli) — $name (~$files files)', (tier) => {
+  bench('sync', () => {
+    const fixture = fixtures.get(tier.name)
+    if (fixture) {
+      runCli(['sync', '--quiet'], fixture.dir)
+    }
   })
 })

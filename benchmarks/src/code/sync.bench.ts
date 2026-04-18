@@ -28,13 +28,11 @@ afterAll(() => {
   prepared.forEach((p) => p.fixture.cleanup())
 })
 
-describe('sync() (code)', () => {
-  TIERS.forEach((tier) => {
-    bench(`${tier.name} (~${tier.files} files)`, async () => {
-      const p = prepared.get(tier.name)
-      if (p) {
-        await sync(p.config, { paths: p.paths, quiet: true })
-      }
-    })
+describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
+  bench('sync', async () => {
+    const p = prepared.get(tier.name)
+    if (p) {
+      await sync(p.config, { paths: p.paths, quiet: true })
+    }
   })
 })
