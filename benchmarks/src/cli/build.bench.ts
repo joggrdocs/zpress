@@ -2,41 +2,25 @@ import { afterAll, beforeAll, bench, describe } from 'vitest'
 
 import { runCli } from '../helpers/exec.ts'
 import type { GeneratedFixture } from '../helpers/fixtures.ts'
-import { generateFixture } from '../helpers/fixtures.ts'
+import { TIERS, generateFixture } from '../helpers/fixtures.ts'
 
-let small: GeneratedFixture
-let medium: GeneratedFixture
-let large: GeneratedFixture
-let xl: GeneratedFixture
+const fixtures = new Map<string, GeneratedFixture>()
 
 beforeAll(() => {
-  small = generateFixture({ sections: 5, directories: 2, files: 5 })
-  medium = generateFixture({ sections: 5, directories: 5, files: 6 })
-  large = generateFixture({ sections: 6, directories: 5, files: 10 })
-  xl = generateFixture({ sections: 5, directories: 10, files: 15 })
+  TIERS.forEach((tier) => fixtures.set(tier.name, generateFixture({ files: tier.files })))
 })
 
 afterAll(() => {
-  small.cleanup()
-  medium.cleanup()
-  large.cleanup()
-  xl.cleanup()
+  fixtures.forEach((f) => f.cleanup())
 })
 
 describe('zpress build (cli)', () => {
-  bench('small (~50 files)', () => {
-    runCli(['build', '--no-check', '--quiet'], small.dir)
-  })
-
-  bench('medium (~150 files)', () => {
-    runCli(['build', '--no-check', '--quiet'], medium.dir)
-  })
-
-  bench('large (~300 files)', () => {
-    runCli(['build', '--no-check', '--quiet'], large.dir)
-  })
-
-  bench('xl (~750 files)', () => {
-    runCli(['build', '--no-check', '--quiet'], xl.dir)
+  TIERS.forEach((tier) => {
+    bench(`${tier.name} (~${tier.files} files)`, () => {
+      const fixture = fixtures.get(tier.name)
+      if (fixture) {
+        runCli(['build', '--no-check', '--quiet'], fixture.dir)
+      }
+    })
   })
 })

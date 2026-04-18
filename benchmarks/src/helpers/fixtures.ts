@@ -35,6 +35,16 @@ const LOREM_PARAGRAPHS = [
 ]
 
 /**
+ * Benchmark tier definition.
+ */
+export const TIERS = [
+  { name: 'small', files: 50 },
+  { name: 'medium', files: 150 },
+  { name: 'large', files: 300 },
+  { name: 'xl', files: 750 },
+] as const
+
+/**
  * A generated fixture project with a cleanup function.
  */
 export interface GeneratedFixture {
@@ -47,47 +57,47 @@ export interface GeneratedFixture {
  * Options for generating a fixture project.
  */
 export interface GenerateFixtureOptions {
-  /** Number of top-level sections in the zpress config. */
-  readonly sections: number
-  /** Number of markdown files per directory. */
+  /** Total number of markdown files to generate. */
   readonly files: number
-  /** Number of subdirectories per section (files are spread across these). */
-  readonly directories: number
+  /** Override the number of sections (default: auto-derived from file count). */
+  readonly sections?: number
 }
 
 /**
  * Generate a fixture project with deterministic markdown files.
  *
  * Creates a temp directory inside the repo (so workspace deps resolve),
- * writes a zpress config and markdown files with lorem ipsum content.
- * Each section gets `directories` subdirectories, each containing `files` markdown files.
- * Total file count = sections * directories * files.
+ * writes a zpress config and distributes markdown files across sections
+ * and subdirectories automatically.
+ *
+ * Sections default to `clamp(ceil(files / 50), 2, 15)`.
+ * Subdirectories per section default to `clamp(ceil(filesPerSection / 10), 1, 10)`.
+ * Files are distributed as evenly as possible, with remainders going to earlier groups.
  *
  * @param options - Fixture generation options
  * @returns Object with dir path, file count, and cleanup function
  */
 export function generateFixture(options: GenerateFixtureOptions): GeneratedFixture {
-  const { sections, files, directories } = options
+  const { files } = options
+  const sectionCount = options.sections ?? Math.min(15, Math.max(2, Math.ceil(files / 50)))
+  const filesPerSection = Math.ceil(files / sectionCount)
+  const dirsPerSection = Math.min(10, Math.max(1, Math.ceil(filesPerSection / 10)))
+
   const fixturesDir = path.join(REPO_ROOT, '.bench-fixtures')
   fs.mkdirSync(fixturesDir, { recursive: true })
-  const dir = fs.mkdtempSync(path.join(fixturesDir, `bench-`))
+  const dir = fs.mkdtempSync(path.join(fixturesDir, 'bench-'))
 
-  const sectionNames = Array.from(
-    { length: sections },
-    (_, i) => DIRECTORY_NAMES[i % DIRECTORY_NAMES.length],
-  )
-
-  // Deduplicate section names by appending index when needed
-  const uniqueSectionNames = sectionNames.map((name, i) => {
-    const firstIndex = sectionNames.indexOf(name)
-    if (firstIndex === i) {
-      return name
+  // Build unique section names
+  const sectionNames = Array.from({ length: sectionCount }, (_, i) => {
+    const base = DIRECTORY_NAMES[i % DIRECTORY_NAMES.length]
+    if (i < DIRECTORY_NAMES.length) {
+      return base
     }
-    return `${name}-${i}`
+    return `${base}-${Math.floor(i / DIRECTORY_NAMES.length) + 1}`
   })
 
-  // Write zpress.config.ts — each section uses recursive glob over its directory
-  const sectionConfigs = uniqueSectionNames
+  // Write zpress.config.ts
+  const sectionConfigs = sectionNames
     .map(
       (name) => `    {
       title: '${name.charAt(0).toUpperCase()}${name.slice(1)}',
@@ -128,18 +138,31 @@ ${sectionConfigs}
     'utf8',
   )
 
-  // Generate markdown files: sections × directories × files
-  const dirNames = Array.from({ length: directories }, (_, i) => `group-${String(i + 1).padStart(2, '0')}`)
+  // Distribute files across sections, then across directories within each section
+  let remaining = files
+  let globalIdx = 0
 
-  let totalFiles = 0
+  sectionNames.forEach((section, sectionIdx) => {
+    const sectionsLeft = sectionCount - sectionIdx
+    const sectionFiles = Math.ceil(remaining / sectionsLeft)
+    remaining -= sectionFiles
 
-  uniqueSectionNames.forEach((section, sectionIdx) => {
+    // Distribute this section's files across directories
+    let sectionRemaining = sectionFiles
+    const dirNames = Array.from(
+      { length: dirsPerSection },
+      (_, i) => `group-${String(i + 1).padStart(2, '0')}`,
+    )
+
     dirNames.forEach((dirName, dirIdx) => {
+      const dirsLeft = dirsPerSection - dirIdx
+      const dirFiles = Math.ceil(sectionRemaining / dirsLeft)
+      sectionRemaining -= dirFiles
+
       const targetDir = path.join(dir, section, dirName)
       fs.mkdirSync(targetDir, { recursive: true })
 
-      Array.from({ length: files }, (_, fileIdx) => {
-        const globalIdx = sectionIdx * directories * files + dirIdx * files + fileIdx
+      Array.from({ length: dirFiles }, (_, fileIdx) => {
         const title = `${section} ${dirName} document ${fileIdx + 1}`
         const slug = `doc-${String(fileIdx + 1).padStart(3, '0')}`
         const para1 = LOREM_PARAGRAPHS[globalIdx % LOREM_PARAGRAPHS.length]
@@ -174,14 +197,14 @@ const config = {
 \`\`\`
 `
         fs.writeFileSync(path.join(targetDir, `${slug}.md`), content, 'utf8')
-        totalFiles += 1
+        globalIdx += 1
       })
     })
   })
 
   return {
     dir,
-    fileCount: totalFiles,
+    fileCount: globalIdx,
     cleanup: () => fs.rmSync(dir, { recursive: true, force: true }),
   }
 }
