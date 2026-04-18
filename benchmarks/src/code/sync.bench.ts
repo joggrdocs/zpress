@@ -1,29 +1,39 @@
 import { createPaths, loadConfig, sync } from '@zpress/core'
+import type { ZpressConfig } from '@zpress/core'
 import { afterAll, beforeAll, bench, describe } from 'vitest'
 
 import type { GeneratedFixture } from '../helpers/fixtures.ts'
 import { TIERS, generateFixture } from '../helpers/fixtures.ts'
 
-const fixtures = new Map<string, GeneratedFixture>()
+interface PreparedFixture {
+  readonly fixture: GeneratedFixture
+  readonly config: ZpressConfig
+  readonly paths: ReturnType<typeof createPaths>
+}
 
-beforeAll(() => {
-  TIERS.forEach((tier) => fixtures.set(tier.name, generateFixture({ files: tier.files })))
+const prepared = new Map<string, PreparedFixture>()
+
+beforeAll(async () => {
+  for (const tier of TIERS) {
+    const fixture = generateFixture({ files: tier.files })
+    const paths = createPaths(fixture.dir)
+    const [, config] = await loadConfig(paths.repoRoot)
+    if (config) {
+      prepared.set(tier.name, { fixture, config, paths })
+    }
+  }
 })
 
 afterAll(() => {
-  fixtures.forEach((f) => f.cleanup())
+  prepared.forEach((p) => p.fixture.cleanup())
 })
 
 describe('sync() (code)', () => {
   TIERS.forEach((tier) => {
     bench(`${tier.name} (~${tier.files} files)`, async () => {
-      const fixture = fixtures.get(tier.name)
-      if (fixture) {
-        const paths = createPaths(fixture.dir)
-        const [, config] = await loadConfig(paths.repoRoot)
-        if (config) {
-          await sync(config, { paths, quiet: true })
-        }
+      const p = prepared.get(tier.name)
+      if (p) {
+        await sync(p.config, { paths: p.paths, quiet: true })
       }
     })
   })
