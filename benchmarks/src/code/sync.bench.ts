@@ -14,14 +14,18 @@ interface PreparedFixture {
 const prepared = new Map<string, PreparedFixture>()
 
 beforeAll(async () => {
-  for (const tier of TIERS) {
-    const fixture = generateFixture({ files: tier.files })
-    const paths = createPaths(fixture.dir)
-    const [, config] = await loadConfig(paths.repoRoot)
-    if (config) {
-      prepared.set(tier.name, { fixture, config, paths })
-    }
-  }
+  const results = await Promise.all(
+    TIERS.map(async (tier) => {
+      const fixture = generateFixture({ files: tier.files })
+      const paths = createPaths(fixture.dir)
+      const [error, config] = await loadConfig(paths.repoRoot)
+      if (error || !config) {
+        throw new Error(`Failed to load config for ${tier.name}: ${error}`)
+      }
+      return [tier.name, { fixture, config, paths }] as const
+    }),
+  )
+  results.map(([name, entry]) => prepared.set(name, entry))
 })
 
 afterAll(() => {
@@ -31,8 +35,9 @@ afterAll(() => {
 describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
   bench('sync', async () => {
     const p = prepared.get(tier.name)
-    if (p) {
-      await sync(p.config, { paths: p.paths, quiet: true })
+    if (!p) {
+      throw new Error(`Fixture not prepared for tier: ${tier.name}`)
     }
+    await sync(p.config, { paths: p.paths, quiet: true })
   })
 })

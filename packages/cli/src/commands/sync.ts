@@ -16,7 +16,9 @@ export default command({
   }),
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())
-    ctx.log.intro('zpress sync')
+    if (!ctx.args.quiet) {
+      ctx.log.intro('zpress sync')
+    }
 
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
@@ -36,6 +38,8 @@ export default command({
       )
     }
 
-    ctx.log.outro('Done')
+    if (!ctx.args.quiet) {
+      ctx.log.outro('Done')
+    }
   },
 })
