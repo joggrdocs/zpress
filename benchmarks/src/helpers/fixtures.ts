@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import type { BenchOptions } from 'vitest'
+
 const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..', '..')
 
 const DIRECTORY_NAMES = [
@@ -35,12 +37,21 @@ const LOREM_PARAGRAPHS = [
 ]
 
 /**
+ * Shared bench options: 2 iterations, no warmup.
+ */
+export const BENCH_OPTIONS: BenchOptions = {
+  iterations: 2,
+  time: 0,
+  warmupIterations: 0,
+  warmupTime: 0,
+}
+
+/**
  * Benchmark tier definition.
  */
 export const TIERS = [
-  { name: 'small', files: 50 },
-  { name: 'medium', files: 150 },
-  { name: 'large', files: 300 },
+  { name: 'medium', files: 50 },
+  { name: 'large', files: 150 },
   { name: 'xl', files: 750 },
 ] as const
 

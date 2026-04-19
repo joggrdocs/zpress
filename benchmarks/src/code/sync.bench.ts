@@ -3,7 +3,7 @@ import type { ZpressConfig } from '@zpress/core'
 import { afterAll, beforeAll, bench, describe } from 'vitest'
 
 import type { GeneratedFixture } from '../helpers/fixtures.ts'
-import { TIERS, generateFixture } from '../helpers/fixtures.ts'
+import { BENCH_OPTIONS, TIERS, generateFixture } from '../helpers/fixtures.ts'
 
 interface PreparedFixture {
   readonly fixture: GeneratedFixture
@@ -33,11 +33,15 @@ afterAll(() => {
 })
 
 describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
-  bench('sync', async () => {
-    const p = prepared.get(tier.name)
-    if (!p) {
-      throw new Error(`Fixture not prepared for tier: ${tier.name}`)
-    }
-    await sync(p.config, { paths: p.paths, quiet: true })
-  })
+  bench(
+    'sync',
+    async () => {
+      const p = prepared.get(tier.name)
+      if (!p) {
+        throw new Error(`Fixture not prepared for tier: ${tier.name}`)
+      }
+      await sync(p.config, { paths: p.paths, quiet: true })
+    },
+    BENCH_OPTIONS,
+  )
 })

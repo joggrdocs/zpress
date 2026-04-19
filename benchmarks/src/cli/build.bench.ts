@@ -2,7 +2,7 @@ import { afterAll, beforeAll, bench, describe } from 'vitest'
 
 import { runCli } from '../helpers/exec.ts'
 import type { GeneratedFixture } from '../helpers/fixtures.ts'
-import { TIERS, generateFixture } from '../helpers/fixtures.ts'
+import { BENCH_OPTIONS, TIERS, generateFixture } from '../helpers/fixtures.ts'
 
 const fixtures = new Map<string, GeneratedFixture>()
 
@@ -15,10 +15,14 @@ afterAll(() => {
 })
 
 describe.each(TIERS)('zpress build (cli) — $name (~$files files)', (tier) => {
-  bench('build', () => {
-    const fixture = fixtures.get(tier.name)
-    if (fixture) {
-      runCli(['build', '--no-check', '--quiet'], fixture.dir)
-    }
-  })
+  bench(
+    'build',
+    () => {
+      const fixture = fixtures.get(tier.name)
+      if (fixture) {
+        runCli(['build', '--no-check', '--quiet'], fixture.dir)
+      }
+    },
+    BENCH_OPTIONS,
+  )
 })
