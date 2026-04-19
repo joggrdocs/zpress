@@ -63,6 +63,12 @@ pnpm typecheck      # Type check (tsc --noEmit)
 - All public properties `readonly`
 - Config validated with Zod at module boundaries
 
+## Superpowers
+
+<superpowers>
+All superpowers output (specs, brainstorms, plans, reviews, etc.) must be written to `.superpowers/`. Superpowers determines its own directory structure within `.superpowers/`. This directory is gitignored.
+</superpowers>
+
 ## Standards
 
 When planning, designing, or architecting changes — before writing any code — consult the relevant standards:
