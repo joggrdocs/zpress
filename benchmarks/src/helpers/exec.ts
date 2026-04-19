@@ -16,7 +16,7 @@ export function runCli(args: readonly string[], cwd: string): string {
     cwd,
     stdio: 'pipe',
     encoding: 'utf8',
-    timeout: 120_000,
+    timeout: 300_000,
   })
 }
 
