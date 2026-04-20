@@ -1,5 +1,6 @@
 import type { SyncResult } from '@zpress/core'
 import { createPaths, loadConfig, sync } from '@zpress/core'
+import { attemptAsync, mapValues } from 'es-toolkit'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { clean } from '../commands/clean.ts'
@@ -12,7 +13,6 @@ import type {
   WatcherHandle,
   WatcherStatus,
 } from '../lib/dev-types.ts'
-import { toError } from '../lib/error.ts'
 import { startDevServer } from '../lib/rspress.ts'
 import { createWatcher } from '../lib/watcher.ts'
 
@@ -73,17 +73,14 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
     if (watcher.current) {
       watcher.current.close()
     }
-    if (serverClose.current) {
-      try {
-        await serverClose.current()
-      } catch {
-        // Server may already be closed
-      }
+    const closeFn = serverClose.current
+    if (closeFn) {
+      await attemptAsync(closeFn)
     }
   }, [])
 
   useEffect(() => {
-    const set = createGuardedSetters(disposed, {
+    const set = guardSetters(disposed, {
       phase: setPhase,
       error: setError,
       status: setStatus,
@@ -106,16 +103,18 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
         return
       }
 
-      const syncResult = await attemptSync(config, {
-        paths,
-        quiet: props.quiet ?? true,
-        openapiCache: openapiCache.current,
-      })
+      const [syncErr, syncResult] = await attemptAsync<SyncResult, Error>(() =>
+        sync(config, { paths, quiet: props.quiet ?? true, openapiCache: openapiCache.current })
+      )
 
       if (disposed.current) {
         return
       }
-
+      if (syncErr) {
+        set.error(`Sync failed: ${syncErr.message}`)
+        set.phase('error')
+        return
+      }
       if (syncResult.error) {
         set.error(syncResult.error)
         set.phase('error')
@@ -124,17 +123,25 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
 
       set.lastSync(syncResult)
 
-      const server = await attemptStartServer(props, config, paths)
+      const [serverErr, server] = await attemptAsync<Awaited<ReturnType<typeof startDevServer>>, Error>(() =>
+        startDevServer({
+          config,
+          paths,
+          port: props.port,
+          theme: props.theme,
+          colorMode: props.colorMode,
+          vscode: props.vscode,
+        })
+      )
 
       if (disposed.current) {
-        if (server.close) {
+        if (server) {
           await server.close()
         }
         return
       }
-
-      if (server.error) {
-        set.error(server.error)
+      if (serverErr) {
+        set.error(`Dev server failed: ${serverErr.message}`)
         set.phase('error')
         return
       }
@@ -240,145 +247,24 @@ function useActivityLog(): {
 // ---------------------------------------------------------------------------
 
 /**
- * Guarded setters keyed by name. Each setter is a no-op when
- * the disposed ref is true, preventing state updates after teardown.
- *
- * @private
- */
-interface GuardedSetters {
-  readonly phase: (value: DevPhase) => void
-  readonly error: (value: string | null) => void
-  readonly status: (value: WatcherStatus) => void
-  readonly lastSync: (value: SyncResult) => void
-  readonly port: (value: number) => void
-  readonly pushLog: (entry: LogEntry) => void
-}
-
-/**
- * Wrap state setters so they become no-ops after disposal.
+ * Wrap each setter so it becomes a no-op after disposal.
  *
  * @private
  * @param disposed - Ref that indicates the hook has been torn down
- * @param setters - Raw React state setters to guard
+ * @param setters - Raw state setters keyed by name
  * @returns Guarded setters safe to call from async callbacks
  */
-function createGuardedSetters(
+// oxlint-disable-next-line typescript/no-explicit-any -- generic setter signatures can't be narrowed without any
+function guardSetters<T extends Record<string, (...args: readonly any[]) => void>>(
   disposed: React.RefObject<boolean>,
-  setters: {
-    readonly phase: (value: DevPhase) => void
-    readonly error: (value: string | null) => void
-    readonly status: (value: WatcherStatus) => void
-    readonly lastSync: (value: SyncResult | null) => void
-    readonly port: (value: number) => void
-    readonly pushLog: (entry: LogEntry) => void
-  }
-): GuardedSetters {
-  function guard<T>(setter: (value: T) => void): (value: T) => void {
-    return (value: T) => {
-      if (!disposed.current) {
-        setter(value)
-      }
+  setters: T
+): T {
+  // oxlint-disable-next-line typescript/no-explicit-any -- preserves original setter signature
+  return mapValues(setters, (setter) => (...args: readonly any[]) => {
+    if (!disposed.current) {
+      setter(...args)
     }
-  }
-
-  return {
-    phase: guard(setters.phase),
-    error: guard(setters.error),
-    status: guard(setters.status),
-    lastSync: guard(setters.lastSync),
-    port: guard(setters.port),
-    pushLog: guard(setters.pushLog),
-  }
-}
-
-/**
- * Result from attempting an initial sync.
- *
- * @private
- */
-interface SyncAttemptResult {
-  readonly pagesWritten: number
-  readonly pagesSkipped: number
-  readonly pagesRemoved: number
-  readonly elapsed: number
-  readonly error?: string
-}
-
-/**
- * Run the initial content sync, catching unexpected rejections.
- *
- * @private
- * @param config - Validated zpress config
- * @param options - Sync options
- * @returns Sync result, with error field set on failure
- */
-async function attemptSync(
-  config: Parameters<typeof sync>[0],
-  options: Parameters<typeof sync>[1]
-): Promise<SyncAttemptResult> {
-  try {
-    return await sync(config, options)
-  } catch (error) {
-    return {
-      pagesWritten: 0,
-      pagesSkipped: 0,
-      pagesRemoved: 0,
-      elapsed: 0,
-      error: `Initial sync failed: ${toError(error).message}`,
-    }
-  }
-}
-
-/**
- * Result from attempting to start the dev server.
- *
- * @private
- */
-interface ServerAttemptResult {
-  readonly port: number
-  readonly close: () => Promise<void>
-  readonly onConfigReload: (config: Parameters<typeof sync>[0]) => Promise<void>
-  readonly error?: string
-}
-
-/**
- * Start the Rspress dev server, catching unexpected rejections.
- *
- * @private
- * @param props - Hook props for server configuration
- * @param config - Validated zpress config
- * @param paths - Resolved project paths
- * @returns Server handles, with error field set on failure
- */
-async function attemptStartServer(
-  props: UseDevServerProps,
-  config: Parameters<typeof sync>[0],
-  paths: ReturnType<typeof createPaths>
-): Promise<ServerAttemptResult> {
-  try {
-    const result = await startDevServer({
-      config,
-      paths,
-      port: props.port,
-      theme: props.theme,
-      colorMode: props.colorMode,
-      vscode: props.vscode,
-    })
-    return {
-      port: result.port,
-      close: result.close,
-      onConfigReload: result.onConfigReload,
-    }
-  } catch (error) {
-    return {
-      port: 0,
-      // oxlint-disable-next-line no-empty-function -- noop close when server never started
-      close: async () => {},
-      // oxlint-disable-next-line no-empty-function -- noop reload when server never started
-      onConfigReload: async () => {},
-      error: `Dev server failed: ${toError(error).message}`,
-    }
-  }
+  }) as T
 }
 
 /**
