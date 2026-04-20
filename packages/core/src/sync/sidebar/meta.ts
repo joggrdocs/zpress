@@ -89,14 +89,10 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
             if (name === null) {
               return []
             }
-            const type = hasChildren(child) ? ('dir' as const) : ('file' as const)
-            return [
-              {
-                type,
-                name,
-                label: child.title,
-              },
-            ]
+            if (hasChildren(child)) {
+              return [{ type: 'dir' as const, name, label: child.title }]
+            }
+            return [{ type: 'file' as const, name, label: child.title }]
           })
       }
 

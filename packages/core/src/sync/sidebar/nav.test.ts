@@ -53,11 +53,9 @@ describe(generateNav, () => {
     const refItem = nav.find((item) => item.text === 'Reference')
 
     expect(refItem).toBeDefined()
-    expect(refItem && 'items' in refItem).toBeTruthy()
-    if (refItem && 'items' in refItem) {
-      const childTexts = (refItem.items as readonly { readonly text: string }[]).map((c) => c.text)
-      expect(childTexts).toEqual(['API', 'CLI'])
-    }
+    expect(refItem).toHaveProperty('items')
+    const childTexts = ((refItem as { readonly items: readonly { readonly text: string }[] }).items).map((c) => c.text)
+    expect(childTexts).toEqual(['API', 'CLI'])
   })
 
   it('should not count root sections toward the 3 non-standalone limit', () => {
