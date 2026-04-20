@@ -84,6 +84,9 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
+  "optionalDependencies": {
+    "ts-morph": "^27.0.2"
+  },
   "peerDependencies": {
     "@rspress/core": "catalog:",
     "react": "^19.2.5",

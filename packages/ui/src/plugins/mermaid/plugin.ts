@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url'
 
 import type { RspressPlugin } from '@rspress/core'
 import type { MermaidConfig } from 'mermaid'
-import { RemarkCodeBlockToGlobalComponentPluginFactory } from 'rspress-plugin-devkit'
+// Deep-import to avoid rspress-plugin-devkit's barrel export of TSSourceParser,
+// which pulls in ts-morph and the entire TypeScript compiler (~10MB).
+import { RemarkCodeBlockToGlobalComponentPluginFactory } from 'rspress-plugin-devkit/dist/RemarkPluginFactory/CodeBlock2GlobalComponent'
 
 // import.meta.url resolves to packages/ui/dist/index.mjs at runtime.
 // Rslib copies the raw .tsx component into dist/plugins/mermaid/ so the
