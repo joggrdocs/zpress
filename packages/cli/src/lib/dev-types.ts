@@ -1,6 +1,42 @@
 import type { SyncResult } from '@zpress/core'
 
 /**
+ * A single entry in the dev server activity log.
+ */
+export interface LogEntry {
+  readonly timestamp: string
+  readonly action: 'synced' | 'removed' | 'restarted' | 'error'
+  readonly file: string
+  readonly elapsed: number
+}
+
+/**
+ * Lifecycle phase of the dev server.
+ */
+export type DevPhase = 'loading' | 'ready' | 'error'
+
+/**
+ * Read-only state snapshot exposed by the useDevServer hook.
+ */
+export interface DevServerState {
+  readonly phase: DevPhase
+  readonly error: string | null
+  readonly watcherStatus: WatcherStatus
+  readonly lastSync: SyncResult | null
+  readonly log: readonly LogEntry[]
+  readonly port: number
+}
+
+/**
+ * Actions exposed by the useDevServer hook for external control.
+ */
+export interface DevServerActions {
+  readonly resync: () => void
+  readonly clearLog: () => void
+  readonly close: () => Promise<void>
+}
+
+/**
  * Discriminated union representing the current state of the file watcher.
  */
 export type WatcherStatus =
