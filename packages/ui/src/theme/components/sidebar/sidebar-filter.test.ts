@@ -111,42 +111,42 @@ describe(resolveScopedSidebar, () => {
 
 describe(belongsToScope, () => {
   it('should match an item whose link equals the scope', () => {
-    expect(belongsToScope(packages, '/packages')).toBeTruthy()
+    expect(belongsToScope(packages, '/packages')).toBe(true)
   })
 
   it('should match an item whose link starts with scope/', () => {
     const item: SidebarData[number] = { text: 'CLI', link: '/packages/cli' }
 
-    expect(belongsToScope(item, '/packages')).toBeTruthy()
+    expect(belongsToScope(item, '/packages')).toBe(true)
   })
 
   it('should not match an item from a different scope', () => {
-    expect(belongsToScope(gettingStarted, '/packages')).toBeFalsy()
+    expect(belongsToScope(gettingStarted, '/packages')).toBe(false)
   })
 
   it('should not match a partial path segment overlap', () => {
     const item: SidebarData[number] = { text: 'Extra', link: '/packages-extra' }
 
-    expect(belongsToScope(item, '/packages')).toBeFalsy()
+    expect(belongsToScope(item, '/packages')).toBe(false)
   })
 
   it('should match a group without a link by checking children', () => {
-    expect(belongsToScope(groupWithoutLink, '/packages')).toBeTruthy()
+    expect(belongsToScope(groupWithoutLink, '/packages')).toBe(true)
   })
 
   it('should not match a group without a link when children belong to a different scope', () => {
-    expect(belongsToScope(groupWithoutLink, '/contributing')).toBeFalsy()
+    expect(belongsToScope(groupWithoutLink, '/contributing')).toBe(false)
   })
 
   it('should not match a divider (no link, no items)', () => {
     const divider: SidebarData[number] = { dividerType: 'solid' }
 
-    expect(belongsToScope(divider, '/packages')).toBeFalsy()
+    expect(belongsToScope(divider, '/packages')).toBe(false)
   })
 
   it('should not match a section header (no link, no items)', () => {
     const header: SidebarData[number] = { sectionHeaderText: 'Header' }
 
-    expect(belongsToScope(header, '/packages')).toBeFalsy()
+    expect(belongsToScope(header, '/packages')).toBe(false)
   })
 })

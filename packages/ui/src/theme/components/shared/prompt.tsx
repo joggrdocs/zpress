@@ -60,13 +60,14 @@ export function Prompt({
 
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (feedbackTimerRef.current !== null) {
         clearTimeout(feedbackTimerRef.current)
       }
-    }
-  }, [])
+    },
+    []
+  )
 
   const showFeedback = useCallback((msg: string) => {
     if (feedbackTimerRef.current !== null) {

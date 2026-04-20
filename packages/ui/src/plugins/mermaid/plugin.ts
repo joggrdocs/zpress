@@ -1,15 +1,13 @@
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import type { RspressPlugin } from '@rspress/core'
 import type { MermaidConfig } from 'mermaid'
 import { RemarkCodeBlockToGlobalComponentPluginFactory } from 'rspress-plugin-devkit'
 
-// import.meta.url resolves to packages/ui/dist/index.mjs at runtime.
+// import.meta.dirname resolves to packages/ui/dist/ at runtime.
 // Rslib copies the raw .tsx component into dist/plugins/mermaid/ so the
-// path resolves correctly from the bundled output — same pattern as the
-// original rspress-plugin-mermaid standalone package.
-const distDir = path.dirname(fileURLToPath(import.meta.url))
+// path resolves correctly from the bundled output.
+const distDir = import.meta.dirname
 const componentPath = path.join(distDir, 'plugins', 'mermaid', 'MermaidRenderer.tsx')
 
 interface MermaidPluginOptions {
