@@ -188,7 +188,7 @@ function mergeOpenapiParentEntries(
  * @returns Display label string
  */
 function resolveOpenapiLabel(entry: OpenAPISidebarEntry): string {
-  const root = entry.sidebar[0]
+  const [root] = entry.sidebar
   if (root && root.text) {
     return root.text
   }

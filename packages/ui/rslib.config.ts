@@ -25,6 +25,14 @@ export default defineConfig({
   output: {
     target: 'node',
     cleanDistPath: true,
+    externals: [
+      // rspress-plugin-devkit barrel-exports TSSourceParser which depends on
+      // ts-morph (the entire TypeScript compiler, ~10MB). autoExternal fails
+      // to catch it because Rslib resolves through pnpm's deep store paths.
+      // This regex matches any import containing "ts-morph" and forces it
+      // external, keeping the bundle at ~767KB instead of ~15MB.
+      /ts-morph/,
+    ],
     // Raw-copied files that Rspress's webpack compiles at runtime as global
     // components. These are NOT bundled by Rslib — they must exist as standalone
     // files on disk because Rspress injects absolute-path `import` statements

@@ -136,6 +136,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/zpress
 
+  examples/large:
+    dependencies:
+      '@zpress/kit':
+        specifier: workspace:*
+        version: link:../../packages/zpress
+
   examples/simple:
     dependencies:
       '@zpress/kit':
@@ -392,6 +398,9 @@ importers:
       react-aria-components:
         specifier: ^1.16.0
         version: 1.16.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      ts-morph:
+        specifier: ^27.0.2
+        version: 27.0.2
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0

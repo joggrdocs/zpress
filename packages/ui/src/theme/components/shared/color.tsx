@@ -24,13 +24,14 @@ export function Color({ value, name }: ColorProps): React.ReactElement {
   const [copied, setCopied] = useState(false)
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (resetTimerRef.current !== null) {
         clearTimeout(resetTimerRef.current)
       }
-    }
-  }, [])
+    },
+    []
+  )
 
   const handleClick = useCallback(() => {
     navigator.clipboard

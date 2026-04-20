@@ -23,6 +23,6 @@ describe.each(TIERS)('zpress build (cli) — $name (~$files files)', (tier) => {
         runCli(['build', '--no-check', '--quiet'], fixture.dir)
       }
     },
-    BENCH_OPTIONS,
+    BENCH_OPTIONS
   )
 })

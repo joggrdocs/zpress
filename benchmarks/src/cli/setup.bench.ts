@@ -15,7 +15,7 @@ describe('zpress setup (cli)', () => {
       fs.writeFileSync(
         path.join(tempDir, 'package.json'),
         '{"name":"bench-setup","private":true}',
-        'utf8',
+        'utf8'
       )
       try {
         runCli(['setup'], tempDir)
@@ -23,6 +23,6 @@ describe('zpress setup (cli)', () => {
         fs.rmSync(tempDir, { recursive: true, force: true })
       }
     },
-    BENCH_OPTIONS,
+    BENCH_OPTIONS
   )
 })

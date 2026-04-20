@@ -62,6 +62,7 @@ export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
 export interface DevServerResult {
   readonly onConfigReload: OnConfigReload
   readonly port: number
+  readonly close: () => Promise<void>
 }
 
 /**
@@ -174,7 +175,18 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
     }
   }
 
-  return { onConfigReload: handleConfigReload, port }
+  async function closeServer(): Promise<void> {
+    if (serverInstance) {
+      try {
+        await serverInstance.close()
+      } catch {
+        // Server may already be closed — ignore
+      }
+      serverInstance = null
+    }
+  }
+
+  return { onConfigReload: handleConfigReload, port, close: closeServer }
 }
 
 /**

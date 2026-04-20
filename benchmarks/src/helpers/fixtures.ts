@@ -115,7 +115,7 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
       path: '/${name}',
       include: '${name}/**/*.md',
       recursive: true,
-    }`,
+    }`
     )
     .join(',\n')
 
@@ -130,7 +130,7 @@ ${sectionConfigs}
   ],
 })
 `,
-    'utf8',
+    'utf8'
   )
 
   // Write package.json so workspace deps resolve
@@ -144,9 +144,9 @@ ${sectionConfigs}
         dependencies: { '@zpress/kit': 'workspace:*' },
       },
       null,
-      2,
+      2
     ),
-    'utf8',
+    'utf8'
   )
 
   // Distribute files across sections, then across directories within each section
@@ -162,7 +162,7 @@ ${sectionConfigs}
     let sectionRemaining = sectionFiles
     const dirNames = Array.from(
       { length: dirsPerSection },
-      (_, i) => `group-${String(i + 1).padStart(2, '0')}`,
+      (_, i) => `group-${String(i + 1).padStart(2, '0')}`
     )
 
     dirNames.forEach((dirName, dirIdx) => {

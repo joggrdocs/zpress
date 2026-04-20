@@ -136,7 +136,11 @@ export function FieldGroup({
   children,
 }: FieldGroupProps): React.ReactElement {
   return match(expandable)
-    .with(true, () => <ExpandableFieldGroup title={title} defaultOpen={defaultOpen}>{children}</ExpandableFieldGroup>)
+    .with(true, () => (
+      <ExpandableFieldGroup title={title} defaultOpen={defaultOpen}>
+        {children}
+      </ExpandableFieldGroup>
+    ))
     .otherwise(() => (
       <div className="zp-field-group">
         <div className="zp-field-group__title">{title}</div>

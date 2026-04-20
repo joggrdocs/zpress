@@ -17,16 +17,16 @@ describe('createPaths()', () => {
 
   it('should set contentDir under outputRoot', () => {
     const paths = createPaths('/project')
-    expect(paths.contentDir.startsWith(paths.outputRoot)).toBeTruthy()
+    expect(paths.contentDir.startsWith(paths.outputRoot)).toBe(true)
   })
 
   it('should set all paths as absolute', () => {
     const paths = createPaths('/project')
-    expect(path.isAbsolute(paths.repoRoot)).toBeTruthy()
-    expect(path.isAbsolute(paths.outputRoot)).toBeTruthy()
-    expect(path.isAbsolute(paths.contentDir)).toBeTruthy()
-    expect(path.isAbsolute(paths.publicDir)).toBeTruthy()
-    expect(path.isAbsolute(paths.distDir)).toBeTruthy()
-    expect(path.isAbsolute(paths.cacheDir)).toBeTruthy()
+    expect(path.isAbsolute(paths.repoRoot)).toBe(true)
+    expect(path.isAbsolute(paths.outputRoot)).toBe(true)
+    expect(path.isAbsolute(paths.contentDir)).toBe(true)
+    expect(path.isAbsolute(paths.publicDir)).toBe(true)
+    expect(path.isAbsolute(paths.distDir)).toBe(true)
+    expect(path.isAbsolute(paths.cacheDir)).toBe(true)
   })
 })
