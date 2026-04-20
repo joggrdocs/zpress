@@ -51,8 +51,8 @@ function hashStr(s) {
   return s.split('').reduce((a, c) => ((a << 5) - a + c.charCodeAt(0)) | 0, 0)
 }
 
-// Apps — 4 apps, ~20 docs each = 80
-const apps = ['api', 'console', 'tasks', 'workers']
+// Apps — 8 apps, ~20 docs each = 160
+const apps = ['api', 'console', 'tasks', 'workers', 'gateway', 'scheduler', 'notifications', 'analytics']
 apps.forEach(app => {
   const topics = ['overview', 'architecture', 'configuration', 'deployment', 'testing',
     'monitoring', 'troubleshooting', 'authentication', 'authorization', 'rate-limiting',
@@ -63,8 +63,8 @@ apps.forEach(app => {
   })
 })
 
-// Packages — 6 packages, ~15 docs each = 90
-const packages = ['database', 'ai', 'fp', 'shell', 'scout', 'config']
+// Packages — 10 packages, ~15 docs each = 150
+const packages = ['database', 'ai', 'fp', 'shell', 'scout', 'config', 'auth', 'cache', 'logger', 'queue']
 packages.forEach(pkg => {
   const topics = ['overview', 'getting-started', 'api-reference', 'configuration',
     'testing', 'patterns', 'troubleshooting', 'changelog', 'migration-guide',
