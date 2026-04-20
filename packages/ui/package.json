@@ -65,6 +65,7 @@
     "mermaid": "^10.9.5",
     "openapi-sampler": "^1.7.2",
     "react-aria-components": "^1.16.0",
+    "ts-morph": "^27.0.2",
     "ts-pattern": "catalog:",
     "unist-util-visit": "^5.1.0"
   },
@@ -83,9 +84,6 @@
     "rspress-plugin-supersub": "^1.0.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
-  },
-  "optionalDependencies": {
-    "ts-morph": "^27.0.2"
   },
   "peerDependencies": {
     "@rspress/core": "catalog:",
