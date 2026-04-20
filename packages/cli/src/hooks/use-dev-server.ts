@@ -40,98 +40,20 @@ export interface UseDevServerResult {
  * Manages the full dev server lifecycle: config loading, content sync,
  * Rspress dev server, and file watcher.
  *
- * Composes `useActivityLog` (log state) and `useServerLifecycle` (everything else)
- * into a single public API.
+ * All actions are stable functions — safe to call at any time, noops
+ * when the underlying resource isn't ready yet.
  *
  * @param props - Dev server configuration from CLI options
  * @returns Read-only state snapshot and action handles
  */
 export function useDevServer(props: UseDevServerProps): UseDevServerResult {
-  const { log, pushLog, clearLog } = useActivityLog()
-  const lifecycle = useServerLifecycle(props, pushLog)
-
-  return {
-    state: {
-      phase: lifecycle.phase,
-      error: lifecycle.error,
-      status: lifecycle.status,
-      lastSync: lifecycle.lastSync,
-      log,
-      port: lifecycle.port,
-    },
-    actions: {
-      resync: lifecycle.resync,
-      clearLog,
-      close: lifecycle.close,
-    },
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Private hooks
-// ---------------------------------------------------------------------------
-
-const MAX_LOG_ENTRIES = 50
-
-/**
- * Manages the activity log — a bounded list of recent events.
- *
- * @private
- * @returns Log state, push function, and clear action
- */
-function useActivityLog(): {
-  readonly log: readonly LogEntry[]
-  readonly pushLog: (entry: LogEntry) => void
-  readonly clearLog: () => void
-} {
-  const [log, setLog] = useState<readonly LogEntry[]>([])
-
-  const pushLog = useCallback((entry: LogEntry) => {
-    setLog((prev) => [entry, ...prev].slice(0, MAX_LOG_ENTRIES))
-  }, [])
-
-  const clearLog = useCallback(() => {
-    setLog([])
-  }, [])
-
-  return { log, pushLog, clearLog }
-}
-
-/**
- * Result from the server lifecycle hook.
- *
- * @private
- */
-interface ServerLifecycleResult {
-  readonly phase: DevPhase
-  readonly error: string | null
-  readonly status: WatcherStatus
-  readonly lastSync: SyncResult | null
-  readonly port: number
-  readonly resync: () => void
-  readonly close: () => Promise<void>
-}
-
-/**
- * Manages config loading, sync, dev server, and watcher lifecycle.
- *
- * All actions (resync, close) are stable functions that are safe to call
- * at any time — they are noops when the underlying resource isn't ready.
- *
- * @private
- * @param props - Dev server configuration from CLI options
- * @param pushLog - Callback to push entries into the activity log
- * @returns Lifecycle state and stable action handles
- */
-function useServerLifecycle(
-  props: UseDevServerProps,
-  pushLog: (entry: LogEntry) => void
-): ServerLifecycleResult {
   const [phase, setPhase] = useState<DevPhase>('loading')
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<WatcherStatus>('idle')
   const [lastSync, setLastSync] = useState<SyncResult | null>(null)
   const [port, setPort] = useState(0)
+
+  const { log, pushLog, clearLog } = useActivityLog()
 
   const watcherRef = useRef<WatcherHandle | null>(null)
   const serverCloseRef = useRef<(() => Promise<void>) | null>(null)
@@ -155,19 +77,12 @@ function useServerLifecycle(
       try {
         await serverCloseRef.current()
       } catch {
-        // Server may already be closed — ignore
+        // Server may already be closed
       }
     }
   }, [])
 
   useEffect(() => {
-    /**
-     * Wraps a state setter so it becomes a no-op after the effect cleanup runs.
-     *
-     * @private
-     * @param setter - React state setter to guard
-     * @returns Guarded setter that checks cancelledRef before calling
-     */
     function guard<T>(setter: (value: T) => void): (value: T) => void {
       return (value: T) => {
         if (!cancelledRef.current) {
@@ -299,12 +214,41 @@ function useServerLifecycle(
     }
   }, [])
 
-  return { phase, error, status, lastSync, port, resync, close }
+  return {
+    state: { phase, error, status, lastSync, log, port },
+    actions: { resync, clearLog, close },
+  }
 }
 
 // ---------------------------------------------------------------------------
 // Private
 // ---------------------------------------------------------------------------
+
+const MAX_LOG_ENTRIES = 50
+
+/**
+ * Manages a bounded activity log.
+ *
+ * @private
+ * @returns Log state, push function, and clear action
+ */
+function useActivityLog(): {
+  readonly log: readonly LogEntry[]
+  readonly pushLog: (entry: LogEntry) => void
+  readonly clearLog: () => void
+} {
+  const [log, setLog] = useState<readonly LogEntry[]>([])
+
+  const pushLog = useCallback((entry: LogEntry) => {
+    setLog((prev) => [entry, ...prev].slice(0, MAX_LOG_ENTRIES))
+  }, [])
+
+  const clearLog = useCallback(() => {
+    setLog([])
+  }, [])
+
+  return { log, pushLog, clearLog }
+}
 
 /**
  * Format a Date to HH:MM:SS string.
