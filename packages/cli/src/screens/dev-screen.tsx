@@ -69,6 +69,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   const [port, setPort] = useState(0)
 
   const watcherRef = useRef<WatcherHandle | null>(null)
+  const serverCloseRef = useRef<(() => Promise<void>) | null>(null)
   const openapiCacheRef = useRef(new Map<string, unknown>())
   const cancelledRef = useRef(false)
   const lastFileRef = useRef<string | null>(null)
@@ -128,7 +129,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
       }
 
       try {
-        const { onConfigReload, port: resolvedPort } = await startDevServer({
+        const { onConfigReload, port: resolvedPort, close } = await startDevServer({
           config,
           paths,
           port: props.port,
@@ -138,9 +139,12 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
         })
 
         if (cancelledRef.current) {
+          await close()
           return
         }
 
+        // oxlint-disable-next-line functional/immutable-data -- ref assignment for cleanup
+        serverCloseRef.current = close
         guard(setPort)(resolvedPort)
 
         const guardedPushLog = guard(pushLog)
@@ -198,6 +202,9 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
       if (watcherRef.current) {
         watcherRef.current.close()
       }
+      if (serverCloseRef.current) {
+        serverCloseRef.current()
+      }
     }
   }, [])
 
@@ -233,8 +240,16 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
         if (watcherRef.current) {
           watcherRef.current.close()
         }
-        exit()
-        process.exit(0)
+        const closeServer = serverCloseRef.current
+        if (closeServer) {
+          closeServer().finally(() => {
+            exit()
+            process.exit(0)
+          })
+        } else {
+          exit()
+          process.exit(0)
+        }
       }
     },
     { isActive: isTTY }
