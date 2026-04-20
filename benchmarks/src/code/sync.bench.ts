@@ -23,7 +23,7 @@ beforeAll(async () => {
         throw new Error(`Failed to load config for ${tier.name}: ${error}`)
       }
       return [tier.name, { fixture, config, paths }] as const
-    }),
+    })
   )
   results.map(([name, entry]) => prepared.set(name, entry))
 })
@@ -42,6 +42,6 @@ describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
       }
       await sync(p.config, { paths: p.paths, quiet: true })
     },
-    BENCH_OPTIONS,
+    BENCH_OPTIONS
   )
 })

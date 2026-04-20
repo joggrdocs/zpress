@@ -23,6 +23,6 @@ describe.each(TIERS)('zpress sync (cli) — $name (~$files files)', (tier) => {
         runCli(['sync', '--quiet'], fixture.dir)
       }
     },
-    BENCH_OPTIONS,
+    BENCH_OPTIONS
   )
 })

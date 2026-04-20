@@ -245,20 +245,20 @@ For objects nested deeper than two levels, consider linking to a dedicated refer
 
 ## Field props
 
-| Prop           | Type        | Required | Default | Description                                                      |
-| -------------- | ----------- | -------- | ------- | ---------------------------------------------------------------- |
-| `name`         | `string`    | yes      | ---     | Field name, rendered in monospace bold                           |
-| `type`         | `string`    | no       | ---     | Type annotation shown as a pill badge                            |
-| `required`     | `boolean`   | no       | `false` | Shows a "required" badge instead of "optional"                   |
-| `deprecated`   | `boolean`   | no       | `false` | Shows a "deprecated" badge and strikes through the name          |
-| `defaultValue` | `string`    | no       | ---     | Default value displayed below the header row                     |
-| `children`     | `ReactNode` | yes      | ---     | Description text and optional nested FieldGroup                  |
+| Prop           | Type        | Required | Default | Description                                             |
+| -------------- | ----------- | -------- | ------- | ------------------------------------------------------- |
+| `name`         | `string`    | yes      | ---     | Field name, rendered in monospace bold                  |
+| `type`         | `string`    | no       | ---     | Type annotation shown as a pill badge                   |
+| `required`     | `boolean`   | no       | `false` | Shows a "required" badge instead of "optional"          |
+| `deprecated`   | `boolean`   | no       | `false` | Shows a "deprecated" badge and strikes through the name |
+| `defaultValue` | `string`    | no       | ---     | Default value displayed below the header row            |
+| `children`     | `ReactNode` | yes      | ---     | Description text and optional nested FieldGroup         |
 
 ## FieldGroup props
 
-| Prop          | Type        | Required | Default | Description                                                |
-| ------------- | ----------- | -------- | ------- | ---------------------------------------------------------- |
-| `title`       | `string`    | yes      | ---     | Group label displayed as a header or collapsible trigger   |
-| `expandable`  | `boolean`   | no       | `false` | Renders as a collapsible section with a toggle trigger     |
-| `defaultOpen` | `boolean`   | no       | `false` | Initial expanded state when `expandable` is true           |
-| `children`    | `ReactNode` | yes      | ---     | Field children to display within the group                 |
+| Prop          | Type        | Required | Default | Description                                              |
+| ------------- | ----------- | -------- | ------- | -------------------------------------------------------- |
+| `title`       | `string`    | yes      | ---     | Group label displayed as a header or collapsible trigger |
+| `expandable`  | `boolean`   | no       | `false` | Renders as a collapsible section with a toggle trigger   |
+| `defaultOpen` | `boolean`   | no       | `false` | Initial expanded state when `expandable` is true         |
+| `children`    | `ReactNode` | yes      | ---     | Field children to display within the group               |
