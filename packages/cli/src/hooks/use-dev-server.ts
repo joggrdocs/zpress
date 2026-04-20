@@ -78,11 +78,17 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }, [])
 
   const closeAll = useCallback(async () => {
+    // oxlint-disable-next-line functional/immutable-data -- cancel in-flight init
+    cancelledRef.current = true
     if (watcherRef.current) {
       watcherRef.current.close()
     }
     if (serverCloseRef.current) {
-      await serverCloseRef.current()
+      try {
+        await serverCloseRef.current()
+      } catch {
+        // Server may already be closed — ignore
+      }
     }
   }, [])
 
@@ -218,7 +224,8 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
         watcherRef.current.close()
       }
       if (serverCloseRef.current) {
-        serverCloseRef.current()
+        // oxlint-disable-next-line no-empty-function -- best-effort cleanup; rejection is non-fatal
+        serverCloseRef.current().catch(() => {})
       }
     }
   }, [])
