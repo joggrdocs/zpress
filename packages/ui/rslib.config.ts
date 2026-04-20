@@ -26,11 +26,11 @@ export default defineConfig({
     target: 'node',
     cleanDistPath: true,
     externals: [
-      // Safety net: rspress-plugin-devkit's barrel re-exports TSSourceParser
-      // which depends on ts-morph (bundles the entire TypeScript compiler).
-      // The deep import in mermaid/plugin.ts avoids this path, but if Rslib
-      // resolves through the barrel anyway, these regexes prevent the 15MB
-      // inlining.
+      // rspress-plugin-devkit barrel-exports TSSourceParser which depends on
+      // ts-morph (the entire TypeScript compiler, ~10MB). autoExternal fails
+      // to catch it because Rslib resolves through pnpm's deep store paths.
+      // This regex matches any import containing "ts-morph" and forces it
+      // external, keeping the bundle at ~767KB instead of ~15MB.
       /ts-morph/,
     ],
     // Raw-copied files that Rspress's webpack compiles at runtime as global
