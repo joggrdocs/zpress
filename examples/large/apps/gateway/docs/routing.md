@@ -1,6 +1,6 @@
 ---
-title: "gateway routing"
-description: "Documentation for gateway routing"
+title: 'gateway routing'
+description: 'Documentation for gateway routing'
 ---
 
 # gateway routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

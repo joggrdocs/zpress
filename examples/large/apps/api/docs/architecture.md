@@ -1,6 +1,6 @@
 ---
-title: "api architecture"
-description: "Documentation for api architecture"
+title: 'api architecture'
+description: 'Documentation for api architecture'
 ---
 
 # api architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

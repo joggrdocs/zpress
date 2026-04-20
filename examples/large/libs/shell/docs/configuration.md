@@ -1,6 +1,6 @@
 ---
-title: "shell configuration"
-description: "Documentation for shell configuration"
+title: 'shell configuration'
+description: 'Documentation for shell configuration'
 ---
 
 # shell configuration
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

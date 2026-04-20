@@ -1,6 +1,6 @@
 ---
-title: "Docker"
-description: "Documentation for Docker"
+title: 'Docker'
+description: 'Documentation for Docker'
 ---
 
 # Docker
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

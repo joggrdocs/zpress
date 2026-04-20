@@ -1,6 +1,6 @@
 ---
-title: "ai testing"
-description: "Documentation for ai testing"
+title: 'ai testing'
+description: 'Documentation for ai testing'
 ---
 
 # ai testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

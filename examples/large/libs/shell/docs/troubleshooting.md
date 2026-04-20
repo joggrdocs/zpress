@@ -1,6 +1,6 @@
 ---
-title: "shell troubleshooting"
-description: "Documentation for shell troubleshooting"
+title: 'shell troubleshooting'
+description: 'Documentation for shell troubleshooting'
 ---
 
 # shell troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

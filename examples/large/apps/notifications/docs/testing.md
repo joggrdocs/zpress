@@ -1,6 +1,6 @@
 ---
-title: "notifications testing"
-description: "Documentation for notifications testing"
+title: 'notifications testing'
+description: 'Documentation for notifications testing'
 ---
 
 # notifications testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

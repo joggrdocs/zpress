@@ -1,6 +1,6 @@
 ---
-title: "api routing"
-description: "Documentation for api routing"
+title: 'api routing'
+description: 'Documentation for api routing'
 ---
 
 # api routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

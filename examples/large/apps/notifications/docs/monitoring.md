@@ -1,6 +1,6 @@
 ---
-title: "notifications monitoring"
-description: "Documentation for notifications monitoring"
+title: 'notifications monitoring'
+description: 'Documentation for notifications monitoring'
 ---
 
 # notifications monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

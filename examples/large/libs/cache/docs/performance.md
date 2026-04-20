@@ -1,6 +1,6 @@
 ---
-title: "cache performance"
-description: "Documentation for cache performance"
+title: 'cache performance'
+description: 'Documentation for cache performance'
 ---
 
 # cache performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

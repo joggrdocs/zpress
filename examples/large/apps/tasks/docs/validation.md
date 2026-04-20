@@ -1,6 +1,6 @@
 ---
-title: "tasks validation"
-description: "Documentation for tasks validation"
+title: 'tasks validation'
+description: 'Documentation for tasks validation'
 ---
 
 # tasks validation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Chain Of Thought"
-description: "Documentation for Chain Of Thought"
+title: 'Chain Of Thought'
+description: 'Documentation for Chain Of Thought'
 ---
 
 # Chain Of Thought
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Access Control"
-description: "Documentation for Access Control"
+title: 'Access Control'
+description: 'Documentation for Access Control'
 ---
 
 # Access Control
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

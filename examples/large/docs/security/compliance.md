@@ -1,6 +1,6 @@
 ---
-title: "Compliance"
-description: "Documentation for Compliance"
+title: 'Compliance'
+description: 'Documentation for Compliance'
 ---
 
 # Compliance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

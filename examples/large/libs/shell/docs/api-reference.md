@@ -1,6 +1,6 @@
 ---
-title: "shell api-reference"
-description: "Documentation for shell api-reference"
+title: 'shell api-reference'
+description: 'Documentation for shell api-reference'
 ---
 
 # shell api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

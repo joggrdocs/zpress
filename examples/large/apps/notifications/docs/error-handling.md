@@ -1,6 +1,6 @@
 ---
-title: "notifications error-handling"
-description: "Documentation for notifications error-handling"
+title: 'notifications error-handling'
+description: 'Documentation for notifications error-handling'
 ---
 
 # notifications error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

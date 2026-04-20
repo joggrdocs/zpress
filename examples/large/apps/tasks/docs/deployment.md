@@ -1,6 +1,6 @@
 ---
-title: "tasks deployment"
-description: "Documentation for tasks deployment"
+title: 'tasks deployment'
+description: 'Documentation for tasks deployment'
 ---
 
 # tasks deployment
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

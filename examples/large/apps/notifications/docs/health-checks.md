@@ -1,6 +1,6 @@
 ---
-title: "notifications health-checks"
-description: "Documentation for notifications health-checks"
+title: 'notifications health-checks'
+description: 'Documentation for notifications health-checks'
 ---
 
 # notifications health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

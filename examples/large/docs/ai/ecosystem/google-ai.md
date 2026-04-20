@@ -1,6 +1,6 @@
 ---
-title: "Google Ai"
-description: "Documentation for Google Ai"
+title: 'Google Ai'
+description: 'Documentation for Google Ai'
 ---
 
 # Google Ai
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

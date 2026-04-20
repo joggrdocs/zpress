@@ -1,6 +1,6 @@
 ---
-title: "tasks troubleshooting"
-description: "Documentation for tasks troubleshooting"
+title: 'tasks troubleshooting'
+description: 'Documentation for tasks troubleshooting'
 ---
 
 # tasks troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

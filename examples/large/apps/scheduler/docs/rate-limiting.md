@@ -1,6 +1,6 @@
 ---
-title: "scheduler rate-limiting"
-description: "Documentation for scheduler rate-limiting"
+title: 'scheduler rate-limiting'
+description: 'Documentation for scheduler rate-limiting'
 ---
 
 # scheduler rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

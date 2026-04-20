@@ -1,6 +1,6 @@
 ---
-title: "Network Issues"
-description: "Documentation for Network Issues"
+title: 'Network Issues'
+description: 'Documentation for Network Issues'
 ---
 
 # Network Issues
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

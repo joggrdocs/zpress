@@ -1,6 +1,6 @@
 ---
-title: "scheduler testing"
-description: "Documentation for scheduler testing"
+title: 'scheduler testing'
+description: 'Documentation for scheduler testing'
 ---
 
 # scheduler testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

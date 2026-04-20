@@ -1,6 +1,6 @@
 ---
-title: "queue examples"
-description: "Documentation for queue examples"
+title: 'queue examples'
+description: 'Documentation for queue examples'
 ---
 
 # queue examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

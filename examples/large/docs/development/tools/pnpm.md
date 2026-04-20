@@ -1,6 +1,6 @@
 ---
-title: "Pnpm"
-description: "Documentation for Pnpm"
+title: 'Pnpm'
+description: 'Documentation for Pnpm'
 ---
 
 # Pnpm
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

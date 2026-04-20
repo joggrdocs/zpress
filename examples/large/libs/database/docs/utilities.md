@@ -1,6 +1,6 @@
 ---
-title: "database utilities"
-description: "Documentation for database utilities"
+title: 'database utilities'
+description: 'Documentation for database utilities'
 ---
 
 # database utilities
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

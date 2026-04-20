@@ -1,6 +1,6 @@
 ---
-title: "queue migration-guide"
-description: "Documentation for queue migration-guide"
+title: 'queue migration-guide'
+description: 'Documentation for queue migration-guide'
 ---
 
 # queue migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

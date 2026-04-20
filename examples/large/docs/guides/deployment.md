@@ -1,6 +1,6 @@
 ---
-title: "Deployment"
-description: "Documentation for Deployment"
+title: 'Deployment'
+description: 'Documentation for Deployment'
 ---
 
 # Deployment
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

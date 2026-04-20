@@ -1,6 +1,6 @@
 ---
-title: "tasks middleware"
-description: "Documentation for tasks middleware"
+title: 'tasks middleware'
+description: 'Documentation for tasks middleware'
 ---
 
 # tasks middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

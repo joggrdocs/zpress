@@ -1,6 +1,6 @@
 ---
-title: "Tree Of Thought"
-description: "Documentation for Tree Of Thought"
+title: 'Tree Of Thought'
+description: 'Documentation for Tree Of Thought'
 ---
 
 # Tree Of Thought
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

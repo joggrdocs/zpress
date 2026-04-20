@@ -1,6 +1,6 @@
 ---
-title: "scheduler authorization"
-description: "Documentation for scheduler authorization"
+title: 'scheduler authorization'
+description: 'Documentation for scheduler authorization'
 ---
 
 # scheduler authorization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

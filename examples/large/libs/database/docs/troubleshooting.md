@@ -1,6 +1,6 @@
 ---
-title: "database troubleshooting"
-description: "Documentation for database troubleshooting"
+title: 'database troubleshooting'
+description: 'Documentation for database troubleshooting'
 ---
 
 # database troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

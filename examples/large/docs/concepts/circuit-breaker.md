@@ -1,6 +1,6 @@
 ---
-title: "Circuit Breaker"
-description: "Documentation for Circuit Breaker"
+title: 'Circuit Breaker'
+description: 'Documentation for Circuit Breaker'
 ---
 
 # Circuit Breaker
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

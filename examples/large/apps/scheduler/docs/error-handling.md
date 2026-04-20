@@ -1,6 +1,6 @@
 ---
-title: "scheduler error-handling"
-description: "Documentation for scheduler error-handling"
+title: 'scheduler error-handling'
+description: 'Documentation for scheduler error-handling'
 ---
 
 # scheduler error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

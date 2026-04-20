@@ -1,6 +1,6 @@
 ---
-title: "console caching"
-description: "Documentation for console caching"
+title: 'console caching'
+description: 'Documentation for console caching'
 ---
 
 # console caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

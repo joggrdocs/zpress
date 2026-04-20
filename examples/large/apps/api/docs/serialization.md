@@ -1,6 +1,6 @@
 ---
-title: "api serialization"
-description: "Documentation for api serialization"
+title: 'api serialization'
+description: 'Documentation for api serialization'
 ---
 
 # api serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

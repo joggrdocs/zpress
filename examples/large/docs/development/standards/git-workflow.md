@@ -1,6 +1,6 @@
 ---
-title: "Git Workflow"
-description: "Documentation for Git Workflow"
+title: 'Git Workflow'
+description: 'Documentation for Git Workflow'
 ---
 
 # Git Workflow
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -22,7 +22,9 @@ function writeMd(filePath, title, extra = '') {
   fs.mkdirSync(path.dirname(p), { recursive: true })
   const para1 = LOREM[Math.abs(hashStr(title)) % LOREM.length]
   const para2 = LOREM[Math.abs(hashStr(title + '2')) % LOREM.length]
-  fs.writeFileSync(p, `---
+  fs.writeFileSync(
+    p,
+    `---
 title: "${title}"
 description: "Documentation for ${title}"
 ---
@@ -44,7 +46,8 @@ const config = {
 }
 \`\`\`
 ${extra}
-`)
+`
+  )
 }
 
 function hashStr(s) {
@@ -52,63 +55,227 @@ function hashStr(s) {
 }
 
 // Apps — 8 apps, ~20 docs each = 160
-const apps = ['api', 'console', 'tasks', 'workers', 'gateway', 'scheduler', 'notifications', 'analytics']
-apps.forEach(app => {
-  const topics = ['overview', 'architecture', 'configuration', 'deployment', 'testing',
-    'monitoring', 'troubleshooting', 'authentication', 'authorization', 'rate-limiting',
-    'caching', 'logging', 'error-handling', 'middleware', 'routing',
-    'database', 'migrations', 'validation', 'serialization', 'health-checks']
-  topics.forEach(topic => {
+const apps = [
+  'api',
+  'console',
+  'tasks',
+  'workers',
+  'gateway',
+  'scheduler',
+  'notifications',
+  'analytics',
+]
+apps.forEach((app) => {
+  const topics = [
+    'overview',
+    'architecture',
+    'configuration',
+    'deployment',
+    'testing',
+    'monitoring',
+    'troubleshooting',
+    'authentication',
+    'authorization',
+    'rate-limiting',
+    'caching',
+    'logging',
+    'error-handling',
+    'middleware',
+    'routing',
+    'database',
+    'migrations',
+    'validation',
+    'serialization',
+    'health-checks',
+  ]
+  topics.forEach((topic) => {
     writeMd(`apps/${app}/docs/${topic}.md`, `${app} ${topic}`)
   })
 })
 
 // Packages — 10 packages, ~15 docs each = 150
-const packages = ['database', 'ai', 'fp', 'shell', 'scout', 'config', 'auth', 'cache', 'logger', 'queue']
-packages.forEach(pkg => {
-  const topics = ['overview', 'getting-started', 'api-reference', 'configuration',
-    'testing', 'patterns', 'troubleshooting', 'changelog', 'migration-guide',
-    'performance', 'security', 'types', 'utilities', 'examples', 'contributing']
-  topics.forEach(topic => {
+const packages = [
+  'database',
+  'ai',
+  'fp',
+  'shell',
+  'scout',
+  'config',
+  'auth',
+  'cache',
+  'logger',
+  'queue',
+]
+packages.forEach((pkg) => {
+  const topics = [
+    'overview',
+    'getting-started',
+    'api-reference',
+    'configuration',
+    'testing',
+    'patterns',
+    'troubleshooting',
+    'changelog',
+    'migration-guide',
+    'performance',
+    'security',
+    'types',
+    'utilities',
+    'examples',
+    'contributing',
+  ]
+  topics.forEach((topic) => {
     writeMd(`libs/${pkg}/docs/${topic}.md`, `${pkg} ${topic}`)
   })
 })
 
 // Sections — guides, concepts, ai, development, security = ~250 docs
 const sectionDocs = {
-  'docs/guides': ['deployment', 'local-dev', 'ci-cd', 'docker', 'kubernetes', 'monitoring',
-    'alerts', 'backups', 'rollbacks', 'feature-flags', 'a-b-testing', 'load-testing',
-    'migrations', 'database-ops', 'cache-invalidation', 'logging-guide', 'debugging',
-    'profiling', 'security-scanning', 'dependency-updates'],
-  'docs/concepts': ['authentication', 'authorization', 'data-model', 'event-sourcing',
-    'cqrs', 'microservices', 'api-gateway', 'service-mesh', 'circuit-breaker',
-    'rate-limiting', 'caching-strategies', 'message-queues', 'pub-sub',
-    'saga-pattern', 'outbox-pattern', 'idempotency', 'eventual-consistency',
-    'sharding', 'replication', 'consensus'],
-  'docs/ai/best-practices': ['instructions', 'rules', 'settings', 'skills', 'agents',
-    'prompting', 'context-engineering', 'evaluation', 'fine-tuning', 'safety'],
-  'docs/ai/coding-agents': ['claude-code', 'cursor', 'windsurf', 'copilot', 'cline',
-    'aider', 'codex', 'gemini-cli', 'augment', 'zed'],
-  'docs/ai/concepts': ['agentic-patterns', 'tool-use', 'function-calling', 'rag',
-    'embeddings', 'vector-search', 'chain-of-thought', 'tree-of-thought',
-    'multi-agent', 'human-in-loop'],
-  'docs/ai/ecosystem': ['mcp', 'a2a', 'agent-skills', 'openai-api', 'anthropic-api',
-    'google-ai', 'aws-bedrock', 'azure-openai', 'ollama', 'vllm'],
-  'docs/development/standards': ['typescript', 'testing', 'documentation', 'errors',
-    'naming', 'git-workflow', 'code-review', 'accessibility', 'performance', 'security'],
-  'docs/development/tools': ['pnpm', 'turbo', 'vitest', 'playwright', 'eslint',
-    'prettier', 'docker-compose', 'terraform', 'github-actions', 'renovate'],
-  'docs/security': ['overview', 'authentication', 'secrets', 'encryption',
-    'compliance', 'penetration-testing', 'incident-response', 'access-control',
-    'audit-logging', 'vulnerability-management'],
-  'docs/troubleshooting': ['api-errors', 'build-failures', 'deployment-issues',
-    'database-problems', 'performance-degradation', 'auth-failures',
-    'network-issues', 'memory-leaks', 'cpu-spikes', 'disk-space'],
+  'docs/guides': [
+    'deployment',
+    'local-dev',
+    'ci-cd',
+    'docker',
+    'kubernetes',
+    'monitoring',
+    'alerts',
+    'backups',
+    'rollbacks',
+    'feature-flags',
+    'a-b-testing',
+    'load-testing',
+    'migrations',
+    'database-ops',
+    'cache-invalidation',
+    'logging-guide',
+    'debugging',
+    'profiling',
+    'security-scanning',
+    'dependency-updates',
+  ],
+  'docs/concepts': [
+    'authentication',
+    'authorization',
+    'data-model',
+    'event-sourcing',
+    'cqrs',
+    'microservices',
+    'api-gateway',
+    'service-mesh',
+    'circuit-breaker',
+    'rate-limiting',
+    'caching-strategies',
+    'message-queues',
+    'pub-sub',
+    'saga-pattern',
+    'outbox-pattern',
+    'idempotency',
+    'eventual-consistency',
+    'sharding',
+    'replication',
+    'consensus',
+  ],
+  'docs/ai/best-practices': [
+    'instructions',
+    'rules',
+    'settings',
+    'skills',
+    'agents',
+    'prompting',
+    'context-engineering',
+    'evaluation',
+    'fine-tuning',
+    'safety',
+  ],
+  'docs/ai/coding-agents': [
+    'claude-code',
+    'cursor',
+    'windsurf',
+    'copilot',
+    'cline',
+    'aider',
+    'codex',
+    'gemini-cli',
+    'augment',
+    'zed',
+  ],
+  'docs/ai/concepts': [
+    'agentic-patterns',
+    'tool-use',
+    'function-calling',
+    'rag',
+    'embeddings',
+    'vector-search',
+    'chain-of-thought',
+    'tree-of-thought',
+    'multi-agent',
+    'human-in-loop',
+  ],
+  'docs/ai/ecosystem': [
+    'mcp',
+    'a2a',
+    'agent-skills',
+    'openai-api',
+    'anthropic-api',
+    'google-ai',
+    'aws-bedrock',
+    'azure-openai',
+    'ollama',
+    'vllm',
+  ],
+  'docs/development/standards': [
+    'typescript',
+    'testing',
+    'documentation',
+    'errors',
+    'naming',
+    'git-workflow',
+    'code-review',
+    'accessibility',
+    'performance',
+    'security',
+  ],
+  'docs/development/tools': [
+    'pnpm',
+    'turbo',
+    'vitest',
+    'playwright',
+    'eslint',
+    'prettier',
+    'docker-compose',
+    'terraform',
+    'github-actions',
+    'renovate',
+  ],
+  'docs/security': [
+    'overview',
+    'authentication',
+    'secrets',
+    'encryption',
+    'compliance',
+    'penetration-testing',
+    'incident-response',
+    'access-control',
+    'audit-logging',
+    'vulnerability-management',
+  ],
+  'docs/troubleshooting': [
+    'api-errors',
+    'build-failures',
+    'deployment-issues',
+    'database-problems',
+    'performance-degradation',
+    'auth-failures',
+    'network-issues',
+    'memory-leaks',
+    'cpu-spikes',
+    'disk-space',
+  ],
 }
 
 Object.entries(sectionDocs).forEach(([dir, files]) => {
-  files.forEach(file => {
-    const title = file.replaceAll('-', ' ').replace(/\b\w/g, c => c.toUpperCase())
+  files.forEach((file) => {
+    const title = file.replaceAll('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase())
     writeMd(`${dir}/${file}.md`, title)
   })
 })
@@ -128,7 +295,7 @@ writeMd('contributing/guides/code-style.md', 'Code Style')
 let count = 0
 function countMd(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true })
-  entries.forEach(e => {
+  entries.forEach((e) => {
     if (e.isDirectory()) countMd(path.join(dir, e.name))
     else if (e.name.endsWith('.md')) count++
   })

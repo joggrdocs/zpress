@@ -1,6 +1,6 @@
 ---
-title: "scheduler validation"
-description: "Documentation for scheduler validation"
+title: 'scheduler validation'
+description: 'Documentation for scheduler validation'
 ---
 
 # scheduler validation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

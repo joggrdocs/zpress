@@ -1,6 +1,6 @@
 ---
-title: "gateway middleware"
-description: "Documentation for gateway middleware"
+title: 'gateway middleware'
+description: 'Documentation for gateway middleware'
 ---
 
 # gateway middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

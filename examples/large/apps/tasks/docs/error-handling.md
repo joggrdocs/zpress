@@ -1,6 +1,6 @@
 ---
-title: "tasks error-handling"
-description: "Documentation for tasks error-handling"
+title: 'tasks error-handling'
+description: 'Documentation for tasks error-handling'
 ---
 
 # tasks error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

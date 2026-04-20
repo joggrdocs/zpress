@@ -1,6 +1,6 @@
 ---
-title: "api logging"
-description: "Documentation for api logging"
+title: 'api logging'
+description: 'Documentation for api logging'
 ---
 
 # api logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "auth api-reference"
-description: "Documentation for auth api-reference"
+title: 'auth api-reference'
+description: 'Documentation for auth api-reference'
 ---
 
 # auth api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

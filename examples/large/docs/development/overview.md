@@ -1,6 +1,6 @@
 ---
-title: "Development Overview"
-description: "Documentation for Development Overview"
+title: 'Development Overview'
+description: 'Documentation for Development Overview'
 ---
 
 # Development Overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

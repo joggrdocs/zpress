@@ -1,6 +1,6 @@
 ---
-title: "Human In Loop"
-description: "Documentation for Human In Loop"
+title: 'Human In Loop'
+description: 'Documentation for Human In Loop'
 ---
 
 # Human In Loop
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

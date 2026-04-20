@@ -1,6 +1,6 @@
 ---
-title: "shell security"
-description: "Documentation for shell security"
+title: 'shell security'
+description: 'Documentation for shell security'
 ---
 
 # shell security
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

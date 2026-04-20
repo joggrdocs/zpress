@@ -1,6 +1,6 @@
 ---
-title: "scheduler overview"
-description: "Documentation for scheduler overview"
+title: 'scheduler overview'
+description: 'Documentation for scheduler overview'
 ---
 
 # scheduler overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

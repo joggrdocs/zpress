@@ -1,6 +1,6 @@
 ---
-title: "fp contributing"
-description: "Documentation for fp contributing"
+title: 'fp contributing'
+description: 'Documentation for fp contributing'
 ---
 
 # fp contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

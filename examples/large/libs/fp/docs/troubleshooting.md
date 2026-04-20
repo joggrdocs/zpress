@@ -1,6 +1,6 @@
 ---
-title: "fp troubleshooting"
-description: "Documentation for fp troubleshooting"
+title: 'fp troubleshooting'
+description: 'Documentation for fp troubleshooting'
 ---
 
 # fp troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

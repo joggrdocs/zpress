@@ -1,6 +1,6 @@
 ---
-title: "gateway error-handling"
-description: "Documentation for gateway error-handling"
+title: 'gateway error-handling'
+description: 'Documentation for gateway error-handling'
 ---
 
 # gateway error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

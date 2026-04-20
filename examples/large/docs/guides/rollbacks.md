@@ -1,6 +1,6 @@
 ---
-title: "Rollbacks"
-description: "Documentation for Rollbacks"
+title: 'Rollbacks'
+description: 'Documentation for Rollbacks'
 ---
 
 # Rollbacks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Migrations"
-description: "Documentation for Migrations"
+title: 'Migrations'
+description: 'Documentation for Migrations'
 ---
 
 # Migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

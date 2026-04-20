@@ -1,6 +1,6 @@
 ---
-title: "scheduler monitoring"
-description: "Documentation for scheduler monitoring"
+title: 'scheduler monitoring'
+description: 'Documentation for scheduler monitoring'
 ---
 
 # scheduler monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

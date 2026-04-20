@@ -1,6 +1,6 @@
 ---
-title: "Accessibility"
-description: "Documentation for Accessibility"
+title: 'Accessibility'
+description: 'Documentation for Accessibility'
 ---
 
 # Accessibility
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

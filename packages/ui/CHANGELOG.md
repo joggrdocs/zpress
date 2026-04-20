@@ -1,5 +1,17 @@
 # @zpress/ui
 
+## 0.9.0
+
+### Minor Changes
+
+- 4c04f9d: Add MDX content components for doc-platform parity: Accordion, AccordionGroup, Columns, Column, StatusBadge, Frame, Tooltip, Prompt, and Color. Reorganize theme barrel with public API sections and @internal annotations on framework exports.
+
+### Patch Changes
+
+- c9a2cc8: perf: reduce @zpress/ui bundle from 15MB to 767KB by externalizing ts-morph
+
+  fix: close Rspress dev server on quit (no more double ctrl+c / blank screen)
+
 ## 0.8.13
 
 ### Patch Changes

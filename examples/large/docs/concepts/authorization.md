@@ -1,6 +1,6 @@
 ---
-title: "Authorization"
-description: "Documentation for Authorization"
+title: 'Authorization'
+description: 'Documentation for Authorization'
 ---
 
 # Authorization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

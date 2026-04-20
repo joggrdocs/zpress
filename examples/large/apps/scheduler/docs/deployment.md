@@ -1,6 +1,6 @@
 ---
-title: "scheduler deployment"
-description: "Documentation for scheduler deployment"
+title: 'scheduler deployment'
+description: 'Documentation for scheduler deployment'
 ---
 
 # scheduler deployment
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

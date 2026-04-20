@@ -1,6 +1,6 @@
 ---
-title: "Local Dev"
-description: "Documentation for Local Dev"
+title: 'Local Dev'
+description: 'Documentation for Local Dev'
 ---
 
 # Local Dev
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

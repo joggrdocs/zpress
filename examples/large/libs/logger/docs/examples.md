@@ -1,6 +1,6 @@
 ---
-title: "logger examples"
-description: "Documentation for logger examples"
+title: 'logger examples'
+description: 'Documentation for logger examples'
 ---
 
 # logger examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

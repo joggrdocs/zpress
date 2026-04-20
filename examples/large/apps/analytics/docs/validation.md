@@ -1,6 +1,6 @@
 ---
-title: "analytics validation"
-description: "Documentation for analytics validation"
+title: 'analytics validation'
+description: 'Documentation for analytics validation'
 ---
 
 # analytics validation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Authentication"
-description: "Documentation for Authentication"
+title: 'Authentication'
+description: 'Documentation for Authentication'
 ---
 
 # Authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

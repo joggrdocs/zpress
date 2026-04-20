@@ -1,6 +1,6 @@
 ---
-title: "Rules"
-description: "Documentation for Rules"
+title: 'Rules'
+description: 'Documentation for Rules'
 ---
 
 # Rules
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

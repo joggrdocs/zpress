@@ -1,6 +1,6 @@
 ---
-title: "console overview"
-description: "Documentation for console overview"
+title: 'console overview'
+description: 'Documentation for console overview'
 ---
 
 # console overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

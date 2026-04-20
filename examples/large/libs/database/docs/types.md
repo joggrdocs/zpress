@@ -1,6 +1,6 @@
 ---
-title: "database types"
-description: "Documentation for database types"
+title: 'database types'
+description: 'Documentation for database types'
 ---
 
 # database types
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

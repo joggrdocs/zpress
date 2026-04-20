@@ -1,6 +1,6 @@
 ---
-title: "tasks configuration"
-description: "Documentation for tasks configuration"
+title: 'tasks configuration'
+description: 'Documentation for tasks configuration'
 ---
 
 # tasks configuration
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

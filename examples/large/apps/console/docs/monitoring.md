@@ -1,6 +1,6 @@
 ---
-title: "console monitoring"
-description: "Documentation for console monitoring"
+title: 'console monitoring'
+description: 'Documentation for console monitoring'
 ---
 
 # console monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

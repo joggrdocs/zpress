@@ -1,6 +1,6 @@
 ---
-title: "workers error-handling"
-description: "Documentation for workers error-handling"
+title: 'workers error-handling'
+description: 'Documentation for workers error-handling'
 ---
 
 # workers error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

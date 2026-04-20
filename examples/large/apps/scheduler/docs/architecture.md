@@ -1,6 +1,6 @@
 ---
-title: "scheduler architecture"
-description: "Documentation for scheduler architecture"
+title: 'scheduler architecture'
+description: 'Documentation for scheduler architecture'
 ---
 
 # scheduler architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

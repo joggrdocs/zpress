@@ -1,6 +1,6 @@
 ---
-title: "shell overview"
-description: "Documentation for shell overview"
+title: 'shell overview'
+description: 'Documentation for shell overview'
 ---
 
 # shell overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

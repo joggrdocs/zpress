@@ -1,6 +1,6 @@
 ---
-title: "workers troubleshooting"
-description: "Documentation for workers troubleshooting"
+title: 'workers troubleshooting'
+description: 'Documentation for workers troubleshooting'
 ---
 
 # workers troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

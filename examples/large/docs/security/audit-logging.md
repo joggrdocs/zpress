@@ -1,6 +1,6 @@
 ---
-title: "Audit Logging"
-description: "Documentation for Audit Logging"
+title: 'Audit Logging'
+description: 'Documentation for Audit Logging'
 ---
 
 # Audit Logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

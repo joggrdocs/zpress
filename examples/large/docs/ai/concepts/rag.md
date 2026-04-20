@@ -1,6 +1,6 @@
 ---
-title: "Rag"
-description: "Documentation for Rag"
+title: 'Rag'
+description: 'Documentation for Rag'
 ---
 
 # Rag
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "console health-checks"
-description: "Documentation for console health-checks"
+title: 'console health-checks'
+description: 'Documentation for console health-checks'
 ---
 
 # console health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

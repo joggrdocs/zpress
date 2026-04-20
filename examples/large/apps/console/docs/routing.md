@@ -1,6 +1,6 @@
 ---
-title: "console routing"
-description: "Documentation for console routing"
+title: 'console routing'
+description: 'Documentation for console routing'
 ---
 
 # console routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

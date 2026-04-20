@@ -1,6 +1,6 @@
 ---
-title: "Sharding"
-description: "Documentation for Sharding"
+title: 'Sharding'
+description: 'Documentation for Sharding'
 ---
 
 # Sharding
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "tasks caching"
-description: "Documentation for tasks caching"
+title: 'tasks caching'
+description: 'Documentation for tasks caching'
 ---
 
 # tasks caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

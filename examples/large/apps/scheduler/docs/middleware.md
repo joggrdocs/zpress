@@ -1,6 +1,6 @@
 ---
-title: "scheduler middleware"
-description: "Documentation for scheduler middleware"
+title: 'scheduler middleware'
+description: 'Documentation for scheduler middleware'
 ---
 
 # scheduler middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

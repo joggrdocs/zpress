@@ -1,6 +1,6 @@
 ---
-title: "api middleware"
-description: "Documentation for api middleware"
+title: 'api middleware'
+description: 'Documentation for api middleware'
 ---
 
 # api middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

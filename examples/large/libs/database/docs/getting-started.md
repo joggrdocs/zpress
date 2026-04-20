@@ -1,6 +1,6 @@
 ---
-title: "database getting-started"
-description: "Documentation for database getting-started"
+title: 'database getting-started'
+description: 'Documentation for database getting-started'
 ---
 
 # database getting-started
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "database overview"
-description: "Documentation for database overview"
+title: 'database overview'
+description: 'Documentation for database overview'
 ---
 
 # database overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

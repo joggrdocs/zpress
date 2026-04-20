@@ -1,6 +1,6 @@
 ---
-title: "console error-handling"
-description: "Documentation for console error-handling"
+title: 'console error-handling'
+description: 'Documentation for console error-handling'
 ---
 
 # console error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

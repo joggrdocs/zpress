@@ -1,6 +1,6 @@
 ---
-title: "auth patterns"
-description: "Documentation for auth patterns"
+title: 'auth patterns'
+description: 'Documentation for auth patterns'
 ---
 
 # auth patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

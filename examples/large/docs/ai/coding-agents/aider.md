@@ -1,6 +1,6 @@
 ---
-title: "Aider"
-description: "Documentation for Aider"
+title: 'Aider'
+description: 'Documentation for Aider'
 ---
 
 # Aider
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

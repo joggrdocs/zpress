@@ -1,6 +1,6 @@
 ---
-title: "config patterns"
-description: "Documentation for config patterns"
+title: 'config patterns'
+description: 'Documentation for config patterns'
 ---
 
 # config patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

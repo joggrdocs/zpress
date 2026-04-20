@@ -1,6 +1,6 @@
 ---
-title: "logger getting-started"
-description: "Documentation for logger getting-started"
+title: 'logger getting-started'
+description: 'Documentation for logger getting-started'
 ---
 
 # logger getting-started
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

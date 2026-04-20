@@ -1,6 +1,6 @@
 ---
-title: "Aws Bedrock"
-description: "Documentation for Aws Bedrock"
+title: 'Aws Bedrock'
+description: 'Documentation for Aws Bedrock'
 ---
 
 # Aws Bedrock
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

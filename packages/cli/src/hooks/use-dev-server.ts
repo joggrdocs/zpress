@@ -123,7 +123,10 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
 
       set.lastSync(syncResult)
 
-      const [serverErr, server] = await attemptAsync<Awaited<ReturnType<typeof startDevServer>>, Error>(() =>
+      const [serverErr, server] = await attemptAsync<
+        Awaited<ReturnType<typeof startDevServer>>,
+        Error
+      >(() =>
         startDevServer({
           config,
           paths,

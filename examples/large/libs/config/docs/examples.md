@@ -1,6 +1,6 @@
 ---
-title: "config examples"
-description: "Documentation for config examples"
+title: 'config examples'
+description: 'Documentation for config examples'
 ---
 
 # config examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

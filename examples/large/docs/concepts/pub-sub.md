@@ -1,6 +1,6 @@
 ---
-title: "Pub Sub"
-description: "Documentation for Pub Sub"
+title: 'Pub Sub'
+description: 'Documentation for Pub Sub'
 ---
 
 # Pub Sub
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

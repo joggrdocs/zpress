@@ -1,6 +1,6 @@
 ---
-title: "scheduler configuration"
-description: "Documentation for scheduler configuration"
+title: 'scheduler configuration'
+description: 'Documentation for scheduler configuration'
 ---
 
 # scheduler configuration
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

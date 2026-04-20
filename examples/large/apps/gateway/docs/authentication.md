@@ -1,6 +1,6 @@
 ---
-title: "gateway authentication"
-description: "Documentation for gateway authentication"
+title: 'gateway authentication'
+description: 'Documentation for gateway authentication'
 ---
 
 # gateway authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

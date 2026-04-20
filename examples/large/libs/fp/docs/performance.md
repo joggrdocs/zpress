@@ -1,6 +1,6 @@
 ---
-title: "fp performance"
-description: "Documentation for fp performance"
+title: 'fp performance'
+description: 'Documentation for fp performance'
 ---
 
 # fp performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "auth changelog"
-description: "Documentation for auth changelog"
+title: 'auth changelog'
+description: 'Documentation for auth changelog'
 ---
 
 # auth changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

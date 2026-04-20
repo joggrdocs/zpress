@@ -1,6 +1,6 @@
 ---
-title: "notifications caching"
-description: "Documentation for notifications caching"
+title: 'notifications caching'
+description: 'Documentation for notifications caching'
 ---
 
 # notifications caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

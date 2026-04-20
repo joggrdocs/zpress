@@ -1,6 +1,6 @@
 ---
-title: "analytics migrations"
-description: "Documentation for analytics migrations"
+title: 'analytics migrations'
+description: 'Documentation for analytics migrations'
 ---
 
 # analytics migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

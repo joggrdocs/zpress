@@ -1,6 +1,6 @@
 ---
-title: "ai changelog"
-description: "Documentation for ai changelog"
+title: 'ai changelog'
+description: 'Documentation for ai changelog'
 ---
 
 # ai changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

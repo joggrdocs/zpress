@@ -1,6 +1,6 @@
 ---
-title: "config troubleshooting"
-description: "Documentation for config troubleshooting"
+title: 'config troubleshooting'
+description: 'Documentation for config troubleshooting'
 ---
 
 # config troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

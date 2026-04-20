@@ -1,6 +1,6 @@
 ---
-title: "scheduler health-checks"
-description: "Documentation for scheduler health-checks"
+title: 'scheduler health-checks'
+description: 'Documentation for scheduler health-checks'
 ---
 
 # scheduler health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

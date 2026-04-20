@@ -1,6 +1,6 @@
 ---
-title: "Agent Skills"
-description: "Documentation for Agent Skills"
+title: 'Agent Skills'
+description: 'Documentation for Agent Skills'
 ---
 
 # Agent Skills
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

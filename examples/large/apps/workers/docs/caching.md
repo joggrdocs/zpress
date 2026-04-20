@@ -1,6 +1,6 @@
 ---
-title: "workers caching"
-description: "Documentation for workers caching"
+title: 'workers caching'
+description: 'Documentation for workers caching'
 ---
 
 # workers caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "auth performance"
-description: "Documentation for auth performance"
+title: 'auth performance'
+description: 'Documentation for auth performance'
 ---
 
 # auth performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

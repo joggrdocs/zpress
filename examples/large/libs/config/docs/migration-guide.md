@@ -1,6 +1,6 @@
 ---
-title: "config migration-guide"
-description: "Documentation for config migration-guide"
+title: 'config migration-guide'
+description: 'Documentation for config migration-guide'
 ---
 
 # config migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

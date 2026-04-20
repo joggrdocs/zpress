@@ -1,6 +1,6 @@
 ---
-title: "logger contributing"
-description: "Documentation for logger contributing"
+title: 'logger contributing'
+description: 'Documentation for logger contributing'
 ---
 
 # logger contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

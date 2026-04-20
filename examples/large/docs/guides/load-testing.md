@@ -1,6 +1,6 @@
 ---
-title: "Load Testing"
-description: "Documentation for Load Testing"
+title: 'Load Testing'
+description: 'Documentation for Load Testing'
 ---
 
 # Load Testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

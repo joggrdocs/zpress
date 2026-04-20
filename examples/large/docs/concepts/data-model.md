@@ -1,6 +1,6 @@
 ---
-title: "Data Model"
-description: "Documentation for Data Model"
+title: 'Data Model'
+description: 'Documentation for Data Model'
 ---
 
 # Data Model
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

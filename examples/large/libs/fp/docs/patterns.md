@@ -1,6 +1,6 @@
 ---
-title: "fp patterns"
-description: "Documentation for fp patterns"
+title: 'fp patterns'
+description: 'Documentation for fp patterns'
 ---
 
 # fp patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

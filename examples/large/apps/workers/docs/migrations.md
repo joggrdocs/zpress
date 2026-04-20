@@ -1,6 +1,6 @@
 ---
-title: "workers migrations"
-description: "Documentation for workers migrations"
+title: 'workers migrations'
+description: 'Documentation for workers migrations'
 ---
 
 # workers migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

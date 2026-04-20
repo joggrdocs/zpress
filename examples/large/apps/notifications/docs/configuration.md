@@ -1,6 +1,6 @@
 ---
-title: "notifications configuration"
-description: "Documentation for notifications configuration"
+title: 'notifications configuration'
+description: 'Documentation for notifications configuration'
 ---
 
 # notifications configuration
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

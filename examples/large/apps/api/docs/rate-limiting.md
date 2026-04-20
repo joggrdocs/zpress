@@ -1,6 +1,6 @@
 ---
-title: "api rate-limiting"
-description: "Documentation for api rate-limiting"
+title: 'api rate-limiting'
+description: 'Documentation for api rate-limiting'
 ---
 
 # api rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

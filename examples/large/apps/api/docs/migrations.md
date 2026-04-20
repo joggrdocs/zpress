@@ -1,6 +1,6 @@
 ---
-title: "api migrations"
-description: "Documentation for api migrations"
+title: 'api migrations'
+description: 'Documentation for api migrations'
 ---
 
 # api migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Vitest"
-description: "Documentation for Vitest"
+title: 'Vitest'
+description: 'Documentation for Vitest'
 ---
 
 # Vitest
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

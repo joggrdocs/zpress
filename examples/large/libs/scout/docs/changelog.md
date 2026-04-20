@@ -1,6 +1,6 @@
 ---
-title: "scout changelog"
-description: "Documentation for scout changelog"
+title: 'scout changelog'
+description: 'Documentation for scout changelog'
 ---
 
 # scout changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

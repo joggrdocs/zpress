@@ -1,6 +1,6 @@
 ---
-title: "tasks logging"
-description: "Documentation for tasks logging"
+title: 'tasks logging'
+description: 'Documentation for tasks logging'
 ---
 
 # tasks logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

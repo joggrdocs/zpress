@@ -1,6 +1,6 @@
 ---
-title: "analytics monitoring"
-description: "Documentation for analytics monitoring"
+title: 'analytics monitoring'
+description: 'Documentation for analytics monitoring'
 ---
 
 # analytics monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

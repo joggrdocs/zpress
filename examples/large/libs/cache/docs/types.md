@@ -1,6 +1,6 @@
 ---
-title: "cache types"
-description: "Documentation for cache types"
+title: 'cache types'
+description: 'Documentation for cache types'
 ---
 
 # cache types
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

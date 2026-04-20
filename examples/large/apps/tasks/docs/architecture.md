@@ -1,6 +1,6 @@
 ---
-title: "tasks architecture"
-description: "Documentation for tasks architecture"
+title: 'tasks architecture'
+description: 'Documentation for tasks architecture'
 ---
 
 # tasks architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

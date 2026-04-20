@@ -1,6 +1,6 @@
 ---
-title: "Caching Strategies"
-description: "Documentation for Caching Strategies"
+title: 'Caching Strategies'
+description: 'Documentation for Caching Strategies'
 ---
 
 # Caching Strategies
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

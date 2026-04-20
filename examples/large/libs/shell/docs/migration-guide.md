@@ -1,6 +1,6 @@
 ---
-title: "shell migration-guide"
-description: "Documentation for shell migration-guide"
+title: 'shell migration-guide'
+description: 'Documentation for shell migration-guide'
 ---
 
 # shell migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

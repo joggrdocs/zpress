@@ -1,6 +1,6 @@
 ---
-title: "console database"
-description: "Documentation for console database"
+title: 'console database'
+description: 'Documentation for console database'
 ---
 
 # console database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

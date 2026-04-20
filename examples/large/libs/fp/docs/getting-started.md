@@ -1,6 +1,6 @@
 ---
-title: "fp getting-started"
-description: "Documentation for fp getting-started"
+title: 'fp getting-started'
+description: 'Documentation for fp getting-started'
 ---
 
 # fp getting-started
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

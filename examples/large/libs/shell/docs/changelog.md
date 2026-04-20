@@ -1,6 +1,6 @@
 ---
-title: "shell changelog"
-description: "Documentation for shell changelog"
+title: 'shell changelog'
+description: 'Documentation for shell changelog'
 ---
 
 # shell changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

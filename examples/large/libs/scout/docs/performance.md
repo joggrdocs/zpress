@@ -1,6 +1,6 @@
 ---
-title: "scout performance"
-description: "Documentation for scout performance"
+title: 'scout performance'
+description: 'Documentation for scout performance'
 ---
 
 # scout performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

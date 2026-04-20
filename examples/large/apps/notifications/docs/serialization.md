@@ -1,6 +1,6 @@
 ---
-title: "notifications serialization"
-description: "Documentation for notifications serialization"
+title: 'notifications serialization'
+description: 'Documentation for notifications serialization'
 ---
 
 # notifications serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

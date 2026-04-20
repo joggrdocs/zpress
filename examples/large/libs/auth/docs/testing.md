@@ -1,6 +1,6 @@
 ---
-title: "auth testing"
-description: "Documentation for auth testing"
+title: 'auth testing'
+description: 'Documentation for auth testing'
 ---
 
 # auth testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "api caching"
-description: "Documentation for api caching"
+title: 'api caching'
+description: 'Documentation for api caching'
 ---
 
 # api caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

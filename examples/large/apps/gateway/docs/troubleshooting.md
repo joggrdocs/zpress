@@ -1,6 +1,6 @@
 ---
-title: "gateway troubleshooting"
-description: "Documentation for gateway troubleshooting"
+title: 'gateway troubleshooting'
+description: 'Documentation for gateway troubleshooting'
 ---
 
 # gateway troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

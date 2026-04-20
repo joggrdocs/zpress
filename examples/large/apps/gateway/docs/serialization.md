@@ -1,6 +1,6 @@
 ---
-title: "gateway serialization"
-description: "Documentation for gateway serialization"
+title: 'gateway serialization'
+description: 'Documentation for gateway serialization'
 ---
 
 # gateway serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

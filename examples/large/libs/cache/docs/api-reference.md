@@ -1,6 +1,6 @@
 ---
-title: "cache api-reference"
-description: "Documentation for cache api-reference"
+title: 'cache api-reference'
+description: 'Documentation for cache api-reference'
 ---
 
 # cache api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

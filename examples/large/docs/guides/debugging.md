@@ -1,6 +1,6 @@
 ---
-title: "Debugging"
-description: "Documentation for Debugging"
+title: 'Debugging'
+description: 'Documentation for Debugging'
 ---
 
 # Debugging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

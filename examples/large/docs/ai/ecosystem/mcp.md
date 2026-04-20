@@ -1,6 +1,6 @@
 ---
-title: "Mcp"
-description: "Documentation for Mcp"
+title: 'Mcp'
+description: 'Documentation for Mcp'
 ---
 
 # Mcp
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

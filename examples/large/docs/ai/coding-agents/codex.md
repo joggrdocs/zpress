@@ -1,6 +1,6 @@
 ---
-title: "Codex"
-description: "Documentation for Codex"
+title: 'Codex'
+description: 'Documentation for Codex'
 ---
 
 # Codex
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

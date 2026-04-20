@@ -1,6 +1,6 @@
 ---
-title: "Pull Requests"
-description: "Documentation for Pull Requests"
+title: 'Pull Requests'
+description: 'Documentation for Pull Requests'
 ---
 
 # Pull Requests
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

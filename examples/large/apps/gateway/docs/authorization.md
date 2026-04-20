@@ -1,6 +1,6 @@
 ---
-title: "gateway authorization"
-description: "Documentation for gateway authorization"
+title: 'gateway authorization'
+description: 'Documentation for gateway authorization'
 ---
 
 # gateway authorization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

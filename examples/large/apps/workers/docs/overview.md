@@ -1,6 +1,6 @@
 ---
-title: "workers overview"
-description: "Documentation for workers overview"
+title: 'workers overview'
+description: 'Documentation for workers overview'
 ---
 
 # workers overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

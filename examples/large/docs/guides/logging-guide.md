@@ -1,6 +1,6 @@
 ---
-title: "Logging Guide"
-description: "Documentation for Logging Guide"
+title: 'Logging Guide'
+description: 'Documentation for Logging Guide'
 ---
 
 # Logging Guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "analytics routing"
-description: "Documentation for analytics routing"
+title: 'analytics routing'
+description: 'Documentation for analytics routing'
 ---
 
 # analytics routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

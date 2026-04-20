@@ -1,6 +1,6 @@
 ---
-title: "notifications migrations"
-description: "Documentation for notifications migrations"
+title: 'notifications migrations'
+description: 'Documentation for notifications migrations'
 ---
 
 # notifications migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

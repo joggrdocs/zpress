@@ -1,6 +1,6 @@
 ---
-title: "auth migration-guide"
-description: "Documentation for auth migration-guide"
+title: 'auth migration-guide'
+description: 'Documentation for auth migration-guide'
 ---
 
 # auth migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

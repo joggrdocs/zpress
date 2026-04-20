@@ -1,6 +1,6 @@
 ---
-title: "database performance"
-description: "Documentation for database performance"
+title: 'database performance'
+description: 'Documentation for database performance'
 ---
 
 # database performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

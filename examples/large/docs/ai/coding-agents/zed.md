@@ -1,6 +1,6 @@
 ---
-title: "Zed"
-description: "Documentation for Zed"
+title: 'Zed'
+description: 'Documentation for Zed'
 ---
 
 # Zed
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

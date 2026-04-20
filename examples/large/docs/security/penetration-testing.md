@@ -1,6 +1,6 @@
 ---
-title: "Penetration Testing"
-description: "Documentation for Penetration Testing"
+title: 'Penetration Testing'
+description: 'Documentation for Penetration Testing'
 ---
 
 # Penetration Testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

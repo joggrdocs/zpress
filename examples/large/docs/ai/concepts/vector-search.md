@@ -1,6 +1,6 @@
 ---
-title: "Vector Search"
-description: "Documentation for Vector Search"
+title: 'Vector Search'
+description: 'Documentation for Vector Search'
 ---
 
 # Vector Search
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

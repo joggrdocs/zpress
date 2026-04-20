@@ -1,6 +1,6 @@
 ---
-title: "Memory Leaks"
-description: "Documentation for Memory Leaks"
+title: 'Memory Leaks'
+description: 'Documentation for Memory Leaks'
 ---
 
 # Memory Leaks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

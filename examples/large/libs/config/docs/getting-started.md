@@ -1,6 +1,6 @@
 ---
-title: "config getting-started"
-description: "Documentation for config getting-started"
+title: 'config getting-started'
+description: 'Documentation for config getting-started'
 ---
 
 # config getting-started
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

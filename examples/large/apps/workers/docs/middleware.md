@@ -1,6 +1,6 @@
 ---
-title: "workers middleware"
-description: "Documentation for workers middleware"
+title: 'workers middleware'
+description: 'Documentation for workers middleware'
 ---
 
 # workers middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

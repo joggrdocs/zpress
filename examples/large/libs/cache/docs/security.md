@@ -1,6 +1,6 @@
 ---
-title: "cache security"
-description: "Documentation for cache security"
+title: 'cache security'
+description: 'Documentation for cache security'
 ---
 
 # cache security
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

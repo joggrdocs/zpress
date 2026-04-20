@@ -1,6 +1,6 @@
 ---
-title: "tasks routing"
-description: "Documentation for tasks routing"
+title: 'tasks routing'
+description: 'Documentation for tasks routing'
 ---
 
 # tasks routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

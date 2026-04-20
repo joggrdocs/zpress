@@ -1,6 +1,6 @@
 ---
-title: "shell examples"
-description: "Documentation for shell examples"
+title: 'shell examples'
+description: 'Documentation for shell examples'
 ---
 
 # shell examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

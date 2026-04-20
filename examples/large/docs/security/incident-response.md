@@ -1,6 +1,6 @@
 ---
-title: "Incident Response"
-description: "Documentation for Incident Response"
+title: 'Incident Response'
+description: 'Documentation for Incident Response'
 ---
 
 # Incident Response
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

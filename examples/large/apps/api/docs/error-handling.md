@@ -1,6 +1,6 @@
 ---
-title: "api error-handling"
-description: "Documentation for api error-handling"
+title: 'api error-handling'
+description: 'Documentation for api error-handling'
 ---
 
 # api error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

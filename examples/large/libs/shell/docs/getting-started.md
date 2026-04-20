@@ -1,6 +1,6 @@
 ---
-title: "shell getting-started"
-description: "Documentation for shell getting-started"
+title: 'shell getting-started'
+description: 'Documentation for shell getting-started'
 ---
 
 # shell getting-started
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

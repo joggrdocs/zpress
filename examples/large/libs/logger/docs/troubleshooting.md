@@ -1,6 +1,6 @@
 ---
-title: "logger troubleshooting"
-description: "Documentation for logger troubleshooting"
+title: 'logger troubleshooting'
+description: 'Documentation for logger troubleshooting'
 ---
 
 # logger troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

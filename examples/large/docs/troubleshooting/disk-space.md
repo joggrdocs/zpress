@@ -1,6 +1,6 @@
 ---
-title: "Disk Space"
-description: "Documentation for Disk Space"
+title: 'Disk Space'
+description: 'Documentation for Disk Space'
 ---
 
 # Disk Space
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

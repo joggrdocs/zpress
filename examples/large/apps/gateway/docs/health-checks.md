@@ -1,6 +1,6 @@
 ---
-title: "gateway health-checks"
-description: "Documentation for gateway health-checks"
+title: 'gateway health-checks'
+description: 'Documentation for gateway health-checks'
 ---
 
 # gateway health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

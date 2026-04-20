@@ -1,6 +1,6 @@
 ---
-title: "Anthropic Api"
-description: "Documentation for Anthropic Api"
+title: 'Anthropic Api'
+description: 'Documentation for Anthropic Api'
 ---
 
 # Anthropic Api
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

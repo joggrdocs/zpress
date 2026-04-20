@@ -1,6 +1,6 @@
 ---
-title: "scheduler troubleshooting"
-description: "Documentation for scheduler troubleshooting"
+title: 'scheduler troubleshooting'
+description: 'Documentation for scheduler troubleshooting'
 ---
 
 # scheduler troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

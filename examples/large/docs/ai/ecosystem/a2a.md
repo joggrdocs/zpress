@@ -1,6 +1,6 @@
 ---
-title: "A2a"
-description: "Documentation for A2a"
+title: 'A2a'
+description: 'Documentation for A2a'
 ---
 
 # A2a
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

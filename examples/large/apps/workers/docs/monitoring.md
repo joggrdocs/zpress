@@ -1,6 +1,6 @@
 ---
-title: "workers monitoring"
-description: "Documentation for workers monitoring"
+title: 'workers monitoring'
+description: 'Documentation for workers monitoring'
 ---
 
 # workers monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

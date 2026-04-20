@@ -1,6 +1,6 @@
 ---
-title: "database migration-guide"
-description: "Documentation for database migration-guide"
+title: 'database migration-guide'
+description: 'Documentation for database migration-guide'
 ---
 
 # database migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "scout overview"
-description: "Documentation for scout overview"
+title: 'scout overview'
+description: 'Documentation for scout overview'
 ---
 
 # scout overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

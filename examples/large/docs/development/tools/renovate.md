@@ -1,6 +1,6 @@
 ---
-title: "Renovate"
-description: "Documentation for Renovate"
+title: 'Renovate'
+description: 'Documentation for Renovate'
 ---
 
 # Renovate
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

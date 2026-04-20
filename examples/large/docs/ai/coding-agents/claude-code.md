@@ -1,6 +1,6 @@
 ---
-title: "Claude Code"
-description: "Documentation for Claude Code"
+title: 'Claude Code'
+description: 'Documentation for Claude Code'
 ---
 
 # Claude Code
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

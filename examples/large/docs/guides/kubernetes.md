@@ -1,6 +1,6 @@
 ---
-title: "Kubernetes"
-description: "Documentation for Kubernetes"
+title: 'Kubernetes'
+description: 'Documentation for Kubernetes'
 ---
 
 # Kubernetes
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

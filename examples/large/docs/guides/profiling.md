@@ -1,6 +1,6 @@
 ---
-title: "Profiling"
-description: "Documentation for Profiling"
+title: 'Profiling'
+description: 'Documentation for Profiling'
 ---
 
 # Profiling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

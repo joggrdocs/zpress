@@ -1,6 +1,6 @@
 ---
-title: "analytics database"
-description: "Documentation for analytics database"
+title: 'analytics database'
+description: 'Documentation for analytics database'
 ---
 
 # analytics database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

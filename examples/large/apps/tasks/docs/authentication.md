@@ -1,6 +1,6 @@
 ---
-title: "tasks authentication"
-description: "Documentation for tasks authentication"
+title: 'tasks authentication'
+description: 'Documentation for tasks authentication'
 ---
 
 # tasks authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

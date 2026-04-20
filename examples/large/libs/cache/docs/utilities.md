@@ -1,6 +1,6 @@
 ---
-title: "cache utilities"
-description: "Documentation for cache utilities"
+title: 'cache utilities'
+description: 'Documentation for cache utilities'
 ---
 
 # cache utilities
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "queue api-reference"
-description: "Documentation for queue api-reference"
+title: 'queue api-reference'
+description: 'Documentation for queue api-reference'
 ---
 
 # queue api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

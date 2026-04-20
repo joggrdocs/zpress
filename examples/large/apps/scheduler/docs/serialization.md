@@ -1,6 +1,6 @@
 ---
-title: "scheduler serialization"
-description: "Documentation for scheduler serialization"
+title: 'scheduler serialization'
+description: 'Documentation for scheduler serialization'
 ---
 
 # scheduler serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

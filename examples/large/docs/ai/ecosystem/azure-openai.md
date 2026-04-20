@@ -1,6 +1,6 @@
 ---
-title: "Azure Openai"
-description: "Documentation for Azure Openai"
+title: 'Azure Openai'
+description: 'Documentation for Azure Openai'
 ---
 
 # Azure Openai
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

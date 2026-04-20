@@ -1,6 +1,6 @@
 ---
-title: "shell contributing"
-description: "Documentation for shell contributing"
+title: 'shell contributing'
+description: 'Documentation for shell contributing'
 ---
 
 # shell contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

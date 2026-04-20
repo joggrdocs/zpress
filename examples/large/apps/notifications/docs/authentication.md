@@ -1,6 +1,6 @@
 ---
-title: "notifications authentication"
-description: "Documentation for notifications authentication"
+title: 'notifications authentication'
+description: 'Documentation for notifications authentication'
 ---
 
 # notifications authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

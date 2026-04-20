@@ -1,6 +1,6 @@
 ---
-title: "analytics testing"
-description: "Documentation for analytics testing"
+title: 'analytics testing'
+description: 'Documentation for analytics testing'
 ---
 
 # analytics testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

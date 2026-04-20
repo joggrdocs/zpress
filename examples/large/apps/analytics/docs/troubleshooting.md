@@ -1,6 +1,6 @@
 ---
-title: "analytics troubleshooting"
-description: "Documentation for analytics troubleshooting"
+title: 'analytics troubleshooting'
+description: 'Documentation for analytics troubleshooting'
 ---
 
 # analytics troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "workers rate-limiting"
-description: "Documentation for workers rate-limiting"
+title: 'workers rate-limiting'
+description: 'Documentation for workers rate-limiting'
 ---
 
 # workers rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

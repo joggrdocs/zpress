@@ -1,6 +1,6 @@
 ---
-title: "fp examples"
-description: "Documentation for fp examples"
+title: 'fp examples'
+description: 'Documentation for fp examples'
 ---
 
 # fp examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

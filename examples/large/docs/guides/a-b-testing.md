@@ -1,6 +1,6 @@
 ---
-title: "A B Testing"
-description: "Documentation for A B Testing"
+title: 'A B Testing'
+description: 'Documentation for A B Testing'
 ---
 
 # A B Testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

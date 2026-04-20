@@ -1,6 +1,6 @@
 ---
-title: "config api-reference"
-description: "Documentation for config api-reference"
+title: 'config api-reference'
+description: 'Documentation for config api-reference'
 ---
 
 # config api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

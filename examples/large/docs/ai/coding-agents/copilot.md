@@ -1,6 +1,6 @@
 ---
-title: "Copilot"
-description: "Documentation for Copilot"
+title: 'Copilot'
+description: 'Documentation for Copilot'
 ---
 
 # Copilot
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

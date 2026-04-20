@@ -1,6 +1,6 @@
 ---
-title: "notifications middleware"
-description: "Documentation for notifications middleware"
+title: 'notifications middleware'
+description: 'Documentation for notifications middleware'
 ---
 
 # notifications middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

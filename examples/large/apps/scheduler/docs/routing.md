@@ -1,6 +1,6 @@
 ---
-title: "scheduler routing"
-description: "Documentation for scheduler routing"
+title: 'scheduler routing'
+description: 'Documentation for scheduler routing'
 ---
 
 # scheduler routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

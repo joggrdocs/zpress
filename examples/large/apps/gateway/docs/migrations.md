@@ -1,6 +1,6 @@
 ---
-title: "gateway migrations"
-description: "Documentation for gateway migrations"
+title: 'gateway migrations'
+description: 'Documentation for gateway migrations'
 ---
 
 # gateway migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

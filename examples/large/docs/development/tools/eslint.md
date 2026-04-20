@@ -1,6 +1,6 @@
 ---
-title: "Eslint"
-description: "Documentation for Eslint"
+title: 'Eslint'
+description: 'Documentation for Eslint'
 ---
 
 # Eslint
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

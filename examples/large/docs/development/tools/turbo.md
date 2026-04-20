@@ -1,6 +1,6 @@
 ---
-title: "Turbo"
-description: "Documentation for Turbo"
+title: 'Turbo'
+description: 'Documentation for Turbo'
 ---
 
 # Turbo
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

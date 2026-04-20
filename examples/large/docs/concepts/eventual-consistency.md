@@ -1,6 +1,6 @@
 ---
-title: "Eventual Consistency"
-description: "Documentation for Eventual Consistency"
+title: 'Eventual Consistency'
+description: 'Documentation for Eventual Consistency'
 ---
 
 # Eventual Consistency
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

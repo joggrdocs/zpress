@@ -1,6 +1,6 @@
 ---
-title: "Introduction"
-description: "Documentation for Introduction"
+title: 'Introduction'
+description: 'Documentation for Introduction'
 ---
 
 # Introduction
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Typescript"
-description: "Documentation for Typescript"
+title: 'Typescript'
+description: 'Documentation for Typescript'
 ---
 
 # Typescript
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-
