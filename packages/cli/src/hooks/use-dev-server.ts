@@ -55,27 +55,27 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
 
   const { log, pushLog, clearLog } = useActivityLog()
 
-  const watcherRef = useRef<WatcherHandle | null>(null)
-  const serverCloseRef = useRef<(() => Promise<void>) | null>(null)
-  const openapiCacheRef = useRef(new Map<string, unknown>())
-  const cancelledRef = useRef(false)
-  const lastFileRef = useRef<string | null>(null)
+  const watcher = useRef<WatcherHandle | null>(null)
+  const serverClose = useRef<(() => Promise<void>) | null>(null)
+  const openapiCache = useRef(new Map<string, unknown>())
+  const disposed = useRef(false)
+  const pendingFile = useRef<string | null>(null)
 
   const resync = useCallback(() => {
-    if (watcherRef.current) {
-      watcherRef.current.resync()
+    if (watcher.current) {
+      watcher.current.resync()
     }
   }, [])
 
   const close = useCallback(async () => {
-    // oxlint-disable-next-line functional/immutable-data -- cancel in-flight init
-    cancelledRef.current = true
-    if (watcherRef.current) {
-      watcherRef.current.close()
+    // oxlint-disable-next-line functional/immutable-data -- mark disposed to cancel in-flight init
+    disposed.current = true
+    if (watcher.current) {
+      watcher.current.close()
     }
-    if (serverCloseRef.current) {
+    if (serverClose.current) {
       try {
-        await serverCloseRef.current()
+        await serverClose.current()
       } catch {
         // Server may already be closed
       }
@@ -83,13 +83,14 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }, [])
 
   useEffect(() => {
-    function guard<T>(setter: (value: T) => void): (value: T) => void {
-      return (value: T) => {
-        if (!cancelledRef.current) {
-          setter(value)
-        }
-      }
-    }
+    const set = createGuardedSetters(disposed, {
+      phase: setPhase,
+      error: setError,
+      status: setStatus,
+      lastSync: setLastSync,
+      port: setPort,
+      pushLog,
+    })
 
     async function init() {
       const paths = createPaths(process.cwd())
@@ -100,116 +101,100 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
 
       const [configErr, config] = await loadConfig(paths.repoRoot)
       if (configErr) {
-        guard(setError)(configErr.message)
-        guard(setPhase)('error')
+        set.error(configErr.message)
+        set.phase('error')
         return
       }
 
-      const openapiCache = openapiCacheRef.current
+      const syncResult = await attemptSync(config, {
+        paths,
+        quiet: props.quiet ?? true,
+        openapiCache: openapiCache.current,
+      })
 
-      try {
-        const initialResult = await sync(config, {
-          paths,
-          quiet: props.quiet ?? true,
-          openapiCache,
-        })
-        if (cancelledRef.current) {
-          return
-        }
-        if (initialResult.error) {
-          guard(setError)(`Sync failed: ${initialResult.error}`)
-          guard(setPhase)('error')
-          return
-        }
-        guard(setLastSync)(initialResult)
-      } catch (error) {
-        guard(setError)(`Initial sync failed: ${toError(error).message}`)
-        guard(setPhase)('error')
+      if (disposed.current) {
         return
       }
 
-      try {
-        const {
-          onConfigReload,
-          port: resolvedPort,
-          close: serverClose,
-        } = await startDevServer({
-          config,
-          paths,
-          port: props.port,
-          theme: props.theme,
-          colorMode: props.colorMode,
-          vscode: props.vscode,
-        })
+      if (syncResult.error) {
+        set.error(syncResult.error)
+        set.phase('error')
+        return
+      }
 
-        if (cancelledRef.current) {
-          await serverClose()
-          return
+      set.lastSync(syncResult)
+
+      const server = await attemptStartServer(props, config, paths)
+
+      if (disposed.current) {
+        if (server.close) {
+          await server.close()
         }
+        return
+      }
 
-        // oxlint-disable-next-line functional/immutable-data -- ref assignment for cleanup
-        serverCloseRef.current = serverClose
-        guard(setPort)(resolvedPort)
+      if (server.error) {
+        set.error(server.error)
+        set.phase('error')
+        return
+      }
 
-        const guardedPushLog = guard(pushLog)
+      // oxlint-disable-next-line functional/immutable-data -- ref assignment for cleanup
+      serverClose.current = server.close
+      set.port(server.port)
 
-        const callbacks: WatcherCallbacks = {
-          onStatusChange: guard(setStatus),
-          onError: guard(setError),
-          onSyncComplete: (result) => {
-            guard(setLastSync)(result)
-            const file = lastFileRef.current
-            if (file) {
-              guardedPushLog({
-                timestamp: formatTime(new Date()),
-                action: 'synced',
-                file,
-                elapsed: result.elapsed,
-              })
-            }
-          },
-          onFileChange: (filename) => {
-            // oxlint-disable-next-line functional/immutable-data -- ref tracking for log entries
-            lastFileRef.current = filename
-          },
-          onConfigReloaded: () => {
-            guardedPushLog({
+      const callbacks: WatcherCallbacks = {
+        onStatusChange: set.status,
+        onError: set.error,
+        onSyncComplete: (result) => {
+          set.lastSync(result)
+          const file = pendingFile.current
+          if (file) {
+            set.pushLog({
               timestamp: formatTime(new Date()),
-              action: 'restarted',
-              file: 'zpress.config.ts',
-              elapsed: 0,
+              action: 'synced',
+              file,
+              elapsed: result.elapsed,
             })
-          },
-        }
-
-        const watcher = createWatcher({
-          initialConfig: config,
-          paths,
-          callbacks,
-          onConfigReload,
-          openapiCache,
-        })
-
-        // oxlint-disable-next-line functional/immutable-data -- assigning ref for teardown
-        watcherRef.current = watcher
-        guard(setPhase)('ready')
-      } catch (error) {
-        guard(setError)(`Dev server failed: ${toError(error).message}`)
-        guard(setPhase)('error')
+          }
+        },
+        onFileChange: (filename) => {
+          // oxlint-disable-next-line functional/immutable-data -- tracks file for log attribution
+          pendingFile.current = filename
+        },
+        onConfigReloaded: () => {
+          set.pushLog({
+            timestamp: formatTime(new Date()),
+            action: 'restarted',
+            file: 'zpress.config.ts',
+            elapsed: 0,
+          })
+        },
       }
+
+      // oxlint-disable-next-line functional/immutable-data -- ref assignment for teardown
+      watcher.current = createWatcher({
+        initialConfig: config,
+        paths,
+        callbacks,
+        onConfigReload: server.onConfigReload,
+        openapiCache: openapiCache.current,
+      })
+
+      set.phase('ready')
     }
 
     init()
 
     return () => {
-      // oxlint-disable-next-line functional/immutable-data -- ref mutation for unmount guard
-      cancelledRef.current = true
-      if (watcherRef.current) {
-        watcherRef.current.close()
+      // oxlint-disable-next-line functional/immutable-data -- mark disposed on unmount
+      disposed.current = true
+      if (watcher.current) {
+        watcher.current.close()
       }
-      if (serverCloseRef.current) {
-        // oxlint-disable-next-line no-empty-function -- best-effort cleanup; rejection is non-fatal
-        serverCloseRef.current().catch(() => {})
+      if (serverClose.current) {
+        // oxlint-disable-next-line no-empty-function -- best-effort cleanup
+        serverClose.current().catch(() => {})
       }
     }
   }, [])
@@ -221,7 +206,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
 }
 
 // ---------------------------------------------------------------------------
-// Private
+// Private hooks
 // ---------------------------------------------------------------------------
 
 const MAX_LOG_ENTRIES = 50
@@ -248,6 +233,152 @@ function useActivityLog(): {
   }, [])
 
   return { log, pushLog, clearLog }
+}
+
+// ---------------------------------------------------------------------------
+// Private helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Guarded setters keyed by name. Each setter is a no-op when
+ * the disposed ref is true, preventing state updates after teardown.
+ *
+ * @private
+ */
+interface GuardedSetters {
+  readonly phase: (value: DevPhase) => void
+  readonly error: (value: string | null) => void
+  readonly status: (value: WatcherStatus) => void
+  readonly lastSync: (value: SyncResult) => void
+  readonly port: (value: number) => void
+  readonly pushLog: (entry: LogEntry) => void
+}
+
+/**
+ * Wrap state setters so they become no-ops after disposal.
+ *
+ * @private
+ * @param disposed - Ref that indicates the hook has been torn down
+ * @param setters - Raw React state setters to guard
+ * @returns Guarded setters safe to call from async callbacks
+ */
+function createGuardedSetters(
+  disposed: React.RefObject<boolean>,
+  setters: {
+    readonly phase: (value: DevPhase) => void
+    readonly error: (value: string | null) => void
+    readonly status: (value: WatcherStatus) => void
+    readonly lastSync: (value: SyncResult | null) => void
+    readonly port: (value: number) => void
+    readonly pushLog: (entry: LogEntry) => void
+  }
+): GuardedSetters {
+  function guard<T>(setter: (value: T) => void): (value: T) => void {
+    return (value: T) => {
+      if (!disposed.current) {
+        setter(value)
+      }
+    }
+  }
+
+  return {
+    phase: guard(setters.phase),
+    error: guard(setters.error),
+    status: guard(setters.status),
+    lastSync: guard(setters.lastSync),
+    port: guard(setters.port),
+    pushLog: guard(setters.pushLog),
+  }
+}
+
+/**
+ * Result from attempting an initial sync.
+ *
+ * @private
+ */
+interface SyncAttemptResult {
+  readonly pagesWritten: number
+  readonly pagesSkipped: number
+  readonly pagesRemoved: number
+  readonly elapsed: number
+  readonly error?: string
+}
+
+/**
+ * Run the initial content sync, catching unexpected rejections.
+ *
+ * @private
+ * @param config - Validated zpress config
+ * @param options - Sync options
+ * @returns Sync result, with error field set on failure
+ */
+async function attemptSync(
+  config: Parameters<typeof sync>[0],
+  options: Parameters<typeof sync>[1]
+): Promise<SyncAttemptResult> {
+  try {
+    return await sync(config, options)
+  } catch (error) {
+    return {
+      pagesWritten: 0,
+      pagesSkipped: 0,
+      pagesRemoved: 0,
+      elapsed: 0,
+      error: `Initial sync failed: ${toError(error).message}`,
+    }
+  }
+}
+
+/**
+ * Result from attempting to start the dev server.
+ *
+ * @private
+ */
+interface ServerAttemptResult {
+  readonly port: number
+  readonly close: () => Promise<void>
+  readonly onConfigReload: (config: Parameters<typeof sync>[0]) => Promise<void>
+  readonly error?: string
+}
+
+/**
+ * Start the Rspress dev server, catching unexpected rejections.
+ *
+ * @private
+ * @param props - Hook props for server configuration
+ * @param config - Validated zpress config
+ * @param paths - Resolved project paths
+ * @returns Server handles, with error field set on failure
+ */
+async function attemptStartServer(
+  props: UseDevServerProps,
+  config: Parameters<typeof sync>[0],
+  paths: ReturnType<typeof createPaths>
+): Promise<ServerAttemptResult> {
+  try {
+    const result = await startDevServer({
+      config,
+      paths,
+      port: props.port,
+      theme: props.theme,
+      colorMode: props.colorMode,
+      vscode: props.vscode,
+    })
+    return {
+      port: result.port,
+      close: result.close,
+      onConfigReload: result.onConfigReload,
+    }
+  } catch (error) {
+    return {
+      port: 0,
+      // oxlint-disable-next-line no-empty-function -- noop close when server never started
+      close: async () => {},
+      // oxlint-disable-next-line no-empty-function -- noop reload when server never started
+      onConfigReload: async () => {},
+      error: `Dev server failed: ${toError(error).message}`,
+    }
+  }
 }
 
 /**
