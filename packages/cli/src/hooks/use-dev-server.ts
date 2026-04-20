@@ -10,12 +10,11 @@ import type {
   LogEntry,
   WatcherCallbacks,
   WatcherHandle,
+  WatcherStatus,
 } from '../lib/dev-types.ts'
 import { toError } from '../lib/error.ts'
 import { startDevServer } from '../lib/rspress.ts'
 import { createWatcher } from '../lib/watcher.ts'
-
-const MAX_LOG_ENTRIES = 50
 
 /**
  * Props accepted by the useDevServer hook.
@@ -41,27 +40,51 @@ export interface UseDevServerResult {
  * Manages the full dev server lifecycle: config loading, content sync,
  * Rspress dev server, and file watcher.
  *
- * Encapsulates all mutable state (refs) and side effects (init, teardown)
- * so the consuming component can be a pure render function.
+ * Composes `useActivityLog` (log state) and `useServerLifecycle` (everything else)
+ * into a single public API.
  *
  * @param props - Dev server configuration from CLI options
  * @returns Read-only state snapshot and action handles
  */
 export function useDevServer(props: UseDevServerProps): UseDevServerResult {
-  const [phase, setPhase] = useState<DevPhase>('loading')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [watcherStatus, setWatcherStatus] = useState<DevServerState['watcherStatus']>({
-    _tag: 'idle',
-  })
-  const [lastSync, setLastSync] = useState<SyncResult | null>(null)
-  const [log, setLog] = useState<readonly LogEntry[]>([])
-  const [port, setPort] = useState(0)
+  const { log, pushLog, clearLog } = useActivityLog()
+  const lifecycle = useServerLifecycle(props, pushLog)
 
-  const watcherRef = useRef<WatcherHandle | null>(null)
-  const serverCloseRef = useRef<(() => Promise<void>) | null>(null)
-  const openapiCacheRef = useRef(new Map<string, unknown>())
-  const cancelledRef = useRef(false)
-  const lastFileRef = useRef<string | null>(null)
+  return {
+    state: {
+      phase: lifecycle.phase,
+      error: lifecycle.error,
+      status: lifecycle.status,
+      lastSync: lifecycle.lastSync,
+      log,
+      port: lifecycle.port,
+    },
+    actions: {
+      resync: lifecycle.resync,
+      clearLog,
+      close: lifecycle.close,
+    },
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Private hooks
+// ---------------------------------------------------------------------------
+
+const MAX_LOG_ENTRIES = 50
+
+/**
+ * Manages the activity log — a bounded list of recent events.
+ *
+ * @private
+ * @returns Log state, push function, and clear action
+ */
+function useActivityLog(): {
+  readonly log: readonly LogEntry[]
+  readonly pushLog: (entry: LogEntry) => void
+  readonly clearLog: () => void
+} {
+  const [log, setLog] = useState<readonly LogEntry[]>([])
 
   const pushLog = useCallback((entry: LogEntry) => {
     setLog((prev) => [entry, ...prev].slice(0, MAX_LOG_ENTRIES))
@@ -71,13 +94,58 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
     setLog([])
   }, [])
 
+  return { log, pushLog, clearLog }
+}
+
+/**
+ * Result from the server lifecycle hook.
+ *
+ * @private
+ */
+interface ServerLifecycleResult {
+  readonly phase: DevPhase
+  readonly error: string | null
+  readonly status: WatcherStatus
+  readonly lastSync: SyncResult | null
+  readonly port: number
+  readonly resync: () => void
+  readonly close: () => Promise<void>
+}
+
+/**
+ * Manages config loading, sync, dev server, and watcher lifecycle.
+ *
+ * All actions (resync, close) are stable functions that are safe to call
+ * at any time — they are noops when the underlying resource isn't ready.
+ *
+ * @private
+ * @param props - Dev server configuration from CLI options
+ * @param pushLog - Callback to push entries into the activity log
+ * @returns Lifecycle state and stable action handles
+ */
+function useServerLifecycle(
+  props: UseDevServerProps,
+  pushLog: (entry: LogEntry) => void
+): ServerLifecycleResult {
+  const [phase, setPhase] = useState<DevPhase>('loading')
+  const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<WatcherStatus>('idle')
+  const [lastSync, setLastSync] = useState<SyncResult | null>(null)
+  const [port, setPort] = useState(0)
+
+  const watcherRef = useRef<WatcherHandle | null>(null)
+  const serverCloseRef = useRef<(() => Promise<void>) | null>(null)
+  const openapiCacheRef = useRef(new Map<string, unknown>())
+  const cancelledRef = useRef(false)
+  const lastFileRef = useRef<string | null>(null)
+
   const resync = useCallback(() => {
     if (watcherRef.current) {
       watcherRef.current.resync()
     }
   }, [])
 
-  const closeAll = useCallback(async () => {
+  const close = useCallback(async () => {
     // oxlint-disable-next-line functional/immutable-data -- cancel in-flight init
     cancelledRef.current = true
     if (watcherRef.current) {
@@ -117,7 +185,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
 
       const [configErr, config] = await loadConfig(paths.repoRoot)
       if (configErr) {
-        guard(setErrorMessage)(configErr.message)
+        guard(setError)(configErr.message)
         guard(setPhase)('error')
         return
       }
@@ -134,13 +202,13 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
           return
         }
         if (initialResult.error) {
-          guard(setErrorMessage)(`Sync failed: ${initialResult.error}`)
+          guard(setError)(`Sync failed: ${initialResult.error}`)
           guard(setPhase)('error')
           return
         }
         guard(setLastSync)(initialResult)
       } catch (error) {
-        guard(setErrorMessage)(`Initial sync failed: ${toError(error).message}`)
+        guard(setError)(`Initial sync failed: ${toError(error).message}`)
         guard(setPhase)('error')
         return
       }
@@ -149,7 +217,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
         const {
           onConfigReload,
           port: resolvedPort,
-          close,
+          close: serverClose,
         } = await startDevServer({
           config,
           paths,
@@ -160,18 +228,19 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
         })
 
         if (cancelledRef.current) {
-          await close()
+          await serverClose()
           return
         }
 
         // oxlint-disable-next-line functional/immutable-data -- ref assignment for cleanup
-        serverCloseRef.current = close
+        serverCloseRef.current = serverClose
         guard(setPort)(resolvedPort)
 
         const guardedPushLog = guard(pushLog)
 
         const callbacks: WatcherCallbacks = {
-          onStatusChange: guard(setWatcherStatus),
+          onStatusChange: guard(setStatus),
+          onError: guard(setError),
           onSyncComplete: (result) => {
             guard(setLastSync)(result)
             const file = lastFileRef.current
@@ -210,7 +279,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
         watcherRef.current = watcher
         guard(setPhase)('ready')
       } catch (error) {
-        guard(setErrorMessage)(`Dev server failed: ${toError(error).message}`)
+        guard(setError)(`Dev server failed: ${toError(error).message}`)
         guard(setPhase)('error')
       }
     }
@@ -230,10 +299,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
     }
   }, [])
 
-  return {
-    state: { phase, error: errorMessage, watcherStatus, lastSync, log, port },
-    actions: { resync, clearLog, close: closeAll },
-  }
+  return { phase, error, status, lastSync, port, resync, close }
 }
 
 // ---------------------------------------------------------------------------

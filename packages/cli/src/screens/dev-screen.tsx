@@ -107,8 +107,6 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     )
   }
 
-  const watcherTag = state.watcherStatus._tag
-
   return (
     <Box flexDirection="column" padding={1}>
       {/* Banner + URL */}
@@ -118,16 +116,11 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
           http://localhost:<Text color="cyan">{state.port}</Text>
         </Text>
         <Spacer />
-        {match(watcherTag)
+        {match(state.status)
           .with('idle', () => <Text color="green">● Ready</Text>)
           .with('syncing', () => <Spinner label="Syncing" type="dots" />)
           .with('restarting', () => <Spinner label="Restarting" type="dots" />)
-          .with('error', () => {
-            if (state.watcherStatus._tag === 'error') {
-              return <Text color="red">● Error: {state.watcherStatus.message}</Text>
-            }
-            return <Text color="red">● Error</Text>
-          })
+          .with('error', () => <Text color="red">● Error: {state.error}</Text>)
           .exhaustive()}
       </Box>
 
