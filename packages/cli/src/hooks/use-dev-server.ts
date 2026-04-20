@@ -173,7 +173,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
           set.pushLog({
             timestamp: formatTime(new Date()),
             action: 'restarted',
-            file: 'zpress.config.ts',
+            file: pendingFile.current ?? 'zpress.config.ts',
             elapsed: 0,
           })
         },
