@@ -1,6 +1,6 @@
 ---
-title: "fp api-reference"
-description: "Documentation for fp api-reference"
+title: 'fp api-reference'
+description: 'Documentation for fp api-reference'
 ---
 
 # fp api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

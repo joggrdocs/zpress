@@ -1,6 +1,6 @@
 ---
-title: "api database"
-description: "Documentation for api database"
+title: 'api database'
+description: 'Documentation for api database'
 ---
 
 # api database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

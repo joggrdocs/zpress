@@ -1,6 +1,6 @@
 ---
-title: "cache contributing"
-description: "Documentation for cache contributing"
+title: 'cache contributing'
+description: 'Documentation for cache contributing'
 ---
 
 # cache contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

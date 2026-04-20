@@ -1,6 +1,6 @@
 ---
-title: "config contributing"
-description: "Documentation for config contributing"
+title: 'config contributing'
+description: 'Documentation for config contributing'
 ---
 
 # config contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

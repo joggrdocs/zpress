@@ -1,6 +1,6 @@
 ---
-title: "Agentic Patterns"
-description: "Documentation for Agentic Patterns"
+title: 'Agentic Patterns'
+description: 'Documentation for Agentic Patterns'
 ---
 
 # Agentic Patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "gateway logging"
-description: "Documentation for gateway logging"
+title: 'gateway logging'
+description: 'Documentation for gateway logging'
 ---
 
 # gateway logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

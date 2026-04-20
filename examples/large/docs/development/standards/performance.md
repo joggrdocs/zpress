@@ -1,6 +1,6 @@
 ---
-title: "Performance"
-description: "Documentation for Performance"
+title: 'Performance'
+description: 'Documentation for Performance'
 ---
 
 # Performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

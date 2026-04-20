@@ -1,6 +1,6 @@
 ---
-title: "Dependency Updates"
-description: "Documentation for Dependency Updates"
+title: 'Dependency Updates'
+description: 'Documentation for Dependency Updates'
 ---
 
 # Dependency Updates
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

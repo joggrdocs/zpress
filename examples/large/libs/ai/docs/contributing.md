@@ -1,6 +1,6 @@
 ---
-title: "ai contributing"
-description: "Documentation for ai contributing"
+title: 'ai contributing'
+description: 'Documentation for ai contributing'
 ---
 
 # ai contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

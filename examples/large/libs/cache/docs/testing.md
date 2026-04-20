@@ -1,6 +1,6 @@
 ---
-title: "cache testing"
-description: "Documentation for cache testing"
+title: 'cache testing'
+description: 'Documentation for cache testing'
 ---
 
 # cache testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

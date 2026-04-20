@@ -1,6 +1,6 @@
 ---
-title: "scout api-reference"
-description: "Documentation for scout api-reference"
+title: 'scout api-reference'
+description: 'Documentation for scout api-reference'
 ---
 
 # scout api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Safety"
-description: "Documentation for Safety"
+title: 'Safety'
+description: 'Documentation for Safety'
 ---
 
 # Safety
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

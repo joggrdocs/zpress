@@ -1,6 +1,6 @@
 ---
-title: "api monitoring"
-description: "Documentation for api monitoring"
+title: 'api monitoring'
+description: 'Documentation for api monitoring'
 ---
 
 # api monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

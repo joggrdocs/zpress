@@ -1,6 +1,6 @@
 ---
-title: "Consensus"
-description: "Documentation for Consensus"
+title: 'Consensus'
+description: 'Documentation for Consensus'
 ---
 
 # Consensus
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

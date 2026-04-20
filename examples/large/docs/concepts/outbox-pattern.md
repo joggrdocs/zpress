@@ -1,6 +1,6 @@
 ---
-title: "Outbox Pattern"
-description: "Documentation for Outbox Pattern"
+title: 'Outbox Pattern'
+description: 'Documentation for Outbox Pattern'
 ---
 
 # Outbox Pattern
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

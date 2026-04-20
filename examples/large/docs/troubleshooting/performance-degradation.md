@@ -1,6 +1,6 @@
 ---
-title: "Performance Degradation"
-description: "Documentation for Performance Degradation"
+title: 'Performance Degradation'
+description: 'Documentation for Performance Degradation'
 ---
 
 # Performance Degradation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

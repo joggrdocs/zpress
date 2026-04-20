@@ -1,6 +1,6 @@
 ---
-title: "Multi Agent"
-description: "Documentation for Multi Agent"
+title: 'Multi Agent'
+description: 'Documentation for Multi Agent'
 ---
 
 # Multi Agent
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

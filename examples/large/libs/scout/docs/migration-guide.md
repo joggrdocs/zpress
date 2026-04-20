@@ -1,6 +1,6 @@
 ---
-title: "scout migration-guide"
-description: "Documentation for scout migration-guide"
+title: 'scout migration-guide'
+description: 'Documentation for scout migration-guide'
 ---
 
 # scout migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

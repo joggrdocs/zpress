@@ -1,6 +1,6 @@
 ---
-title: "console architecture"
-description: "Documentation for console architecture"
+title: 'console architecture'
+description: 'Documentation for console architecture'
 ---
 
 # console architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

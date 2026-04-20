@@ -1,6 +1,6 @@
 ---
-title: "gateway caching"
-description: "Documentation for gateway caching"
+title: 'gateway caching'
+description: 'Documentation for gateway caching'
 ---
 
 # gateway caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "auth troubleshooting"
-description: "Documentation for auth troubleshooting"
+title: 'auth troubleshooting'
+description: 'Documentation for auth troubleshooting'
 ---
 
 # auth troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

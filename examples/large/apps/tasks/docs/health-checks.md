@@ -1,6 +1,6 @@
 ---
-title: "tasks health-checks"
-description: "Documentation for tasks health-checks"
+title: 'tasks health-checks'
+description: 'Documentation for tasks health-checks'
 ---
 
 # tasks health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

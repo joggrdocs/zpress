@@ -1,6 +1,6 @@
 ---
-title: "gateway architecture"
-description: "Documentation for gateway architecture"
+title: 'gateway architecture'
+description: 'Documentation for gateway architecture'
 ---
 
 # gateway architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

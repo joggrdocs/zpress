@@ -1,6 +1,6 @@
 ---
-title: "Prompting"
-description: "Documentation for Prompting"
+title: 'Prompting'
+description: 'Documentation for Prompting'
 ---
 
 # Prompting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Api Errors"
-description: "Documentation for Api Errors"
+title: 'Api Errors'
+description: 'Documentation for Api Errors'
 ---
 
 # Api Errors
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

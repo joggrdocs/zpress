@@ -1,6 +1,6 @@
 ---
-title: "ai migration-guide"
-description: "Documentation for ai migration-guide"
+title: 'ai migration-guide'
+description: 'Documentation for ai migration-guide'
 ---
 
 # ai migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

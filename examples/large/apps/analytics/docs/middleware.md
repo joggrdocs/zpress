@@ -1,6 +1,6 @@
 ---
-title: "analytics middleware"
-description: "Documentation for analytics middleware"
+title: 'analytics middleware'
+description: 'Documentation for analytics middleware'
 ---
 
 # analytics middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

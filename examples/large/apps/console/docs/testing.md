@@ -1,6 +1,6 @@
 ---
-title: "console testing"
-description: "Documentation for console testing"
+title: 'console testing'
+description: 'Documentation for console testing'
 ---
 
 # console testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

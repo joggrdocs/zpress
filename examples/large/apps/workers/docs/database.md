@@ -1,6 +1,6 @@
 ---
-title: "workers database"
-description: "Documentation for workers database"
+title: 'workers database'
+description: 'Documentation for workers database'
 ---
 
 # workers database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

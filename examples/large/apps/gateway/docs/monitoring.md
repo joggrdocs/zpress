@@ -1,6 +1,6 @@
 ---
-title: "gateway monitoring"
-description: "Documentation for gateway monitoring"
+title: 'gateway monitoring'
+description: 'Documentation for gateway monitoring'
 ---
 
 # gateway monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

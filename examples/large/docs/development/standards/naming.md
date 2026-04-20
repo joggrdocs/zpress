@@ -1,6 +1,6 @@
 ---
-title: "Naming"
-description: "Documentation for Naming"
+title: 'Naming'
+description: 'Documentation for Naming'
 ---
 
 # Naming
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

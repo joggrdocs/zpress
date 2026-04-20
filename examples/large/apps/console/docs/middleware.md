@@ -1,6 +1,6 @@
 ---
-title: "console middleware"
-description: "Documentation for console middleware"
+title: 'console middleware'
+description: 'Documentation for console middleware'
 ---
 
 # console middleware
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

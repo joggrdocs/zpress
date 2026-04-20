@@ -1,6 +1,6 @@
 ---
-title: "Monitoring"
-description: "Documentation for Monitoring"
+title: 'Monitoring'
+description: 'Documentation for Monitoring'
 ---
 
 # Monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

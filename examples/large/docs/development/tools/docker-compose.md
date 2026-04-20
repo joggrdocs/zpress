@@ -1,6 +1,6 @@
 ---
-title: "Docker Compose"
-description: "Documentation for Docker Compose"
+title: 'Docker Compose'
+description: 'Documentation for Docker Compose'
 ---
 
 # Docker Compose
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

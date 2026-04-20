@@ -1,6 +1,6 @@
 ---
-title: "Cpu Spikes"
-description: "Documentation for Cpu Spikes"
+title: 'Cpu Spikes'
+description: 'Documentation for Cpu Spikes'
 ---
 
 # Cpu Spikes
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

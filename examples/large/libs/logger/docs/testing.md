@@ -1,6 +1,6 @@
 ---
-title: "logger testing"
-description: "Documentation for logger testing"
+title: 'logger testing'
+description: 'Documentation for logger testing'
 ---
 
 # logger testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

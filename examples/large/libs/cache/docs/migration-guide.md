@@ -1,6 +1,6 @@
 ---
-title: "cache migration-guide"
-description: "Documentation for cache migration-guide"
+title: 'cache migration-guide'
+description: 'Documentation for cache migration-guide'
 ---
 
 # cache migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

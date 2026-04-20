@@ -1,6 +1,6 @@
 ---
-title: "console rate-limiting"
-description: "Documentation for console rate-limiting"
+title: 'console rate-limiting'
+description: 'Documentation for console rate-limiting'
 ---
 
 # console rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

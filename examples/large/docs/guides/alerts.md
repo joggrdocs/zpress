@@ -1,6 +1,6 @@
 ---
-title: "Alerts"
-description: "Documentation for Alerts"
+title: 'Alerts'
+description: 'Documentation for Alerts'
 ---
 
 # Alerts
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

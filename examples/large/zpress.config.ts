@@ -240,7 +240,11 @@ export default defineConfig({
       icon: 'pixelarticons:android',
       path: '/development',
       items: [
-        { title: 'Overview', path: '/development/overview', include: 'docs/development/overview.md' },
+        {
+          title: 'Overview',
+          path: '/development/overview',
+          include: 'docs/development/overview.md',
+        },
         {
           title: 'Standards',
           path: '/development/standards',
@@ -293,9 +297,7 @@ export default defineConfig({
     { title: 'Packages', link: '/packages' },
   ],
 
-  socialLinks: [
-    { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
-  ],
+  socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/acme' }],
 
   footer: {
     message: 'Built with zpress',

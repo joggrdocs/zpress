@@ -1,6 +1,6 @@
 ---
-title: "database security"
-description: "Documentation for database security"
+title: 'database security'
+description: 'Documentation for database security'
 ---
 
 # database security
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

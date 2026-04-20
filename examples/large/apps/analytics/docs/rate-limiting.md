@@ -1,6 +1,6 @@
 ---
-title: "analytics rate-limiting"
-description: "Documentation for analytics rate-limiting"
+title: 'analytics rate-limiting'
+description: 'Documentation for analytics rate-limiting'
 ---
 
 # analytics rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

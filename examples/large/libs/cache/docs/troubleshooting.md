@@ -1,6 +1,6 @@
 ---
-title: "cache troubleshooting"
-description: "Documentation for cache troubleshooting"
+title: 'cache troubleshooting'
+description: 'Documentation for cache troubleshooting'
 ---
 
 # cache troubleshooting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

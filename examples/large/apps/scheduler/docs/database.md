@@ -1,6 +1,6 @@
 ---
-title: "scheduler database"
-description: "Documentation for scheduler database"
+title: 'scheduler database'
+description: 'Documentation for scheduler database'
 ---
 
 # scheduler database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

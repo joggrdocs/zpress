@@ -1,6 +1,6 @@
 ---
-title: "console validation"
-description: "Documentation for console validation"
+title: 'console validation'
+description: 'Documentation for console validation'
 ---
 
 # console validation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

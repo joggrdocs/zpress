@@ -1,6 +1,6 @@
 ---
-title: "Terraform"
-description: "Documentation for Terraform"
+title: 'Terraform'
+description: 'Documentation for Terraform'
 ---
 
 # Terraform
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

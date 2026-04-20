@@ -1,6 +1,6 @@
 ---
-title: "Agents"
-description: "Documentation for Agents"
+title: 'Agents'
+description: 'Documentation for Agents'
 ---
 
 # Agents
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

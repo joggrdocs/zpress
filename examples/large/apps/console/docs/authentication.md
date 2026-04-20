@@ -1,6 +1,6 @@
 ---
-title: "console authentication"
-description: "Documentation for console authentication"
+title: 'console authentication'
+description: 'Documentation for console authentication'
 ---
 
 # console authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

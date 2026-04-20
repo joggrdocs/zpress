@@ -1,6 +1,6 @@
 ---
-title: "logger performance"
-description: "Documentation for logger performance"
+title: 'logger performance'
+description: 'Documentation for logger performance'
 ---
 
 # logger performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

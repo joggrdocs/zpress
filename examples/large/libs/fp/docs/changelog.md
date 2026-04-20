@@ -1,6 +1,6 @@
 ---
-title: "fp changelog"
-description: "Documentation for fp changelog"
+title: 'fp changelog'
+description: 'Documentation for fp changelog'
 ---
 
 # fp changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

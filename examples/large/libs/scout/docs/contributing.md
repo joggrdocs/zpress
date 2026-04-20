@@ -1,6 +1,6 @@
 ---
-title: "scout contributing"
-description: "Documentation for scout contributing"
+title: 'scout contributing'
+description: 'Documentation for scout contributing'
 ---
 
 # scout contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

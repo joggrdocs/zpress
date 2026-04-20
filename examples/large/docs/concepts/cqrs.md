@@ -1,6 +1,6 @@
 ---
-title: "Cqrs"
-description: "Documentation for Cqrs"
+title: 'Cqrs'
+description: 'Documentation for Cqrs'
 ---
 
 # Cqrs
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

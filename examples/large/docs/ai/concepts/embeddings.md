@@ -1,6 +1,6 @@
 ---
-title: "Embeddings"
-description: "Documentation for Embeddings"
+title: 'Embeddings'
+description: 'Documentation for Embeddings'
 ---
 
 # Embeddings
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

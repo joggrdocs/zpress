@@ -1,6 +1,6 @@
 ---
-title: "Deployment Issues"
-description: "Documentation for Deployment Issues"
+title: 'Deployment Issues'
+description: 'Documentation for Deployment Issues'
 ---
 
 # Deployment Issues
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

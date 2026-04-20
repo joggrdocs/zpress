@@ -1,6 +1,6 @@
 ---
-title: "workers health-checks"
-description: "Documentation for workers health-checks"
+title: 'workers health-checks'
+description: 'Documentation for workers health-checks'
 ---
 
 # workers health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

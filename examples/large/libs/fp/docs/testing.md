@@ -1,6 +1,6 @@
 ---
-title: "fp testing"
-description: "Documentation for fp testing"
+title: 'fp testing'
+description: 'Documentation for fp testing'
 ---
 
 # fp testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

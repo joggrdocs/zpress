@@ -1,6 +1,6 @@
 ---
-title: "api validation"
-description: "Documentation for api validation"
+title: 'api validation'
+description: 'Documentation for api validation'
 ---
 
 # api validation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

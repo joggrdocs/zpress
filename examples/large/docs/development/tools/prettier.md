@@ -1,6 +1,6 @@
 ---
-title: "Prettier"
-description: "Documentation for Prettier"
+title: 'Prettier'
+description: 'Documentation for Prettier'
 ---
 
 # Prettier
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

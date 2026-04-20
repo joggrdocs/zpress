@@ -1,6 +1,6 @@
 ---
-title: "Settings"
-description: "Documentation for Settings"
+title: 'Settings'
+description: 'Documentation for Settings'
 ---
 
 # Settings
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

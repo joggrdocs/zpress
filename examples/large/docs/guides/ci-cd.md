@@ -1,6 +1,6 @@
 ---
-title: "Ci Cd"
-description: "Documentation for Ci Cd"
+title: 'Ci Cd'
+description: 'Documentation for Ci Cd'
 ---
 
 # Ci Cd
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

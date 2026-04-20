@@ -1,6 +1,6 @@
 ---
-title: "shell types"
-description: "Documentation for shell types"
+title: 'shell types'
+description: 'Documentation for shell types'
 ---
 
 # shell types
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

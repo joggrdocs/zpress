@@ -1,6 +1,6 @@
 ---
-title: "Database Ops"
-description: "Documentation for Database Ops"
+title: 'Database Ops'
+description: 'Documentation for Database Ops'
 ---
 
 # Database Ops
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

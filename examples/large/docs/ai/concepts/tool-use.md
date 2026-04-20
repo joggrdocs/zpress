@@ -1,6 +1,6 @@
 ---
-title: "Tool Use"
-description: "Documentation for Tool Use"
+title: 'Tool Use'
+description: 'Documentation for Tool Use'
 ---
 
 # Tool Use
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

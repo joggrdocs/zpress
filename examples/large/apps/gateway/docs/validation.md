@@ -1,6 +1,6 @@
 ---
-title: "gateway validation"
-description: "Documentation for gateway validation"
+title: 'gateway validation'
+description: 'Documentation for gateway validation'
 ---
 
 # gateway validation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

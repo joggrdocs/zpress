@@ -1,6 +1,6 @@
 ---
-title: "Security"
-description: "Documentation for Security"
+title: 'Security'
+description: 'Documentation for Security'
 ---
 
 # Security
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

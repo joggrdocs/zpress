@@ -1,6 +1,6 @@
 ---
-title: "Encryption"
-description: "Documentation for Encryption"
+title: 'Encryption'
+description: 'Documentation for Encryption'
 ---
 
 # Encryption
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "tasks monitoring"
-description: "Documentation for tasks monitoring"
+title: 'tasks monitoring'
+description: 'Documentation for tasks monitoring'
 ---
 
 # tasks monitoring
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

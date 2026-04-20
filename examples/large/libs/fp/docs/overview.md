@@ -1,6 +1,6 @@
 ---
-title: "fp overview"
-description: "Documentation for fp overview"
+title: 'fp overview'
+description: 'Documentation for fp overview'
 ---
 
 # fp overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

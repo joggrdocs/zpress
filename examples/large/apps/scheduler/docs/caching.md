@@ -1,6 +1,6 @@
 ---
-title: "scheduler caching"
-description: "Documentation for scheduler caching"
+title: 'scheduler caching'
+description: 'Documentation for scheduler caching'
 ---
 
 # scheduler caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

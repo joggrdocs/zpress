@@ -1,6 +1,6 @@
 ---
-title: "queue testing"
-description: "Documentation for queue testing"
+title: 'queue testing'
+description: 'Documentation for queue testing'
 ---
 
 # queue testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

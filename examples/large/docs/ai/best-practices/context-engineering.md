@@ -1,6 +1,6 @@
 ---
-title: "Context Engineering"
-description: "Documentation for Context Engineering"
+title: 'Context Engineering'
+description: 'Documentation for Context Engineering'
 ---
 
 # Context Engineering
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Fine Tuning"
-description: "Documentation for Fine Tuning"
+title: 'Fine Tuning'
+description: 'Documentation for Fine Tuning'
 ---
 
 # Fine Tuning
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Service Mesh"
-description: "Documentation for Service Mesh"
+title: 'Service Mesh'
+description: 'Documentation for Service Mesh'
 ---
 
 # Service Mesh
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

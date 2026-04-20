@@ -1,6 +1,6 @@
 ---
-title: "shell patterns"
-description: "Documentation for shell patterns"
+title: 'shell patterns'
+description: 'Documentation for shell patterns'
 ---
 
 # shell patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

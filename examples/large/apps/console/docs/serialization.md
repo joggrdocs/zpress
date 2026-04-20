@@ -1,6 +1,6 @@
 ---
-title: "console serialization"
-description: "Documentation for console serialization"
+title: 'console serialization'
+description: 'Documentation for console serialization'
 ---
 
 # console serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

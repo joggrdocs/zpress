@@ -1,6 +1,6 @@
 ---
-title: "logger changelog"
-description: "Documentation for logger changelog"
+title: 'logger changelog'
+description: 'Documentation for logger changelog'
 ---
 
 # logger changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

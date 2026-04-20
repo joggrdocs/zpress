@@ -1,6 +1,6 @@
 ---
-title: "queue types"
-description: "Documentation for queue types"
+title: 'queue types'
+description: 'Documentation for queue types'
 ---
 
 # queue types
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

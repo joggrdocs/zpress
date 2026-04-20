@@ -1,6 +1,6 @@
 ---
-title: "database contributing"
-description: "Documentation for database contributing"
+title: 'database contributing'
+description: 'Documentation for database contributing'
 ---
 
 # database contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

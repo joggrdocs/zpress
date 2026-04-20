@@ -1,6 +1,6 @@
 ---
-title: "fp security"
-description: "Documentation for fp security"
+title: 'fp security'
+description: 'Documentation for fp security'
 ---
 
 # fp security
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

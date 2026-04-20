@@ -1,6 +1,6 @@
 ---
-title: "Function Calling"
-description: "Documentation for Function Calling"
+title: 'Function Calling'
+description: 'Documentation for Function Calling'
 ---
 
 # Function Calling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

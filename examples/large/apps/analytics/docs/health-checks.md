@@ -1,6 +1,6 @@
 ---
-title: "analytics health-checks"
-description: "Documentation for analytics health-checks"
+title: 'analytics health-checks'
+description: 'Documentation for analytics health-checks'
 ---
 
 # analytics health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

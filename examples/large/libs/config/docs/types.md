@@ -1,6 +1,6 @@
 ---
-title: "config types"
-description: "Documentation for config types"
+title: 'config types'
+description: 'Documentation for config types'
 ---
 
 # config types
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

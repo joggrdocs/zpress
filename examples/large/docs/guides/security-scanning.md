@@ -1,6 +1,6 @@
 ---
-title: "Security Scanning"
-description: "Documentation for Security Scanning"
+title: 'Security Scanning'
+description: 'Documentation for Security Scanning'
 ---
 
 # Security Scanning
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

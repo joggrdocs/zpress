@@ -1,6 +1,6 @@
 ---
-title: "Event Sourcing"
-description: "Documentation for Event Sourcing"
+title: 'Event Sourcing'
+description: 'Documentation for Event Sourcing'
 ---
 
 # Event Sourcing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

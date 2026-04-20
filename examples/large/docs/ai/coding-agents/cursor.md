@@ -1,6 +1,6 @@
 ---
-title: "Cursor"
-description: "Documentation for Cursor"
+title: 'Cursor'
+description: 'Documentation for Cursor'
 ---
 
 # Cursor
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

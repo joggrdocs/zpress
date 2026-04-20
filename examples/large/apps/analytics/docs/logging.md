@@ -1,6 +1,6 @@
 ---
-title: "analytics logging"
-description: "Documentation for analytics logging"
+title: 'analytics logging'
+description: 'Documentation for analytics logging'
 ---
 
 # analytics logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

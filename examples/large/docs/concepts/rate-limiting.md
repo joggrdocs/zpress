@@ -1,6 +1,6 @@
 ---
-title: "Rate Limiting"
-description: "Documentation for Rate Limiting"
+title: 'Rate Limiting'
+description: 'Documentation for Rate Limiting'
 ---
 
 # Rate Limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

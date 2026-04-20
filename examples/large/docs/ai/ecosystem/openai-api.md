@@ -1,6 +1,6 @@
 ---
-title: "Openai Api"
-description: "Documentation for Openai Api"
+title: 'Openai Api'
+description: 'Documentation for Openai Api'
 ---
 
 # Openai Api
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

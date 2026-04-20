@@ -1,6 +1,6 @@
 ---
-title: "scheduler logging"
-description: "Documentation for scheduler logging"
+title: 'scheduler logging'
+description: 'Documentation for scheduler logging'
 ---
 
 # scheduler logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

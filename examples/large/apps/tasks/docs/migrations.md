@@ -1,6 +1,6 @@
 ---
-title: "tasks migrations"
-description: "Documentation for tasks migrations"
+title: 'tasks migrations'
+description: 'Documentation for tasks migrations'
 ---
 
 # tasks migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

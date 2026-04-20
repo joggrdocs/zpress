@@ -1,6 +1,6 @@
 ---
-title: "gateway testing"
-description: "Documentation for gateway testing"
+title: 'gateway testing'
+description: 'Documentation for gateway testing'
 ---
 
 # gateway testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

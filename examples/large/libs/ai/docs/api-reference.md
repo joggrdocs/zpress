@@ -1,6 +1,6 @@
 ---
-title: "ai api-reference"
-description: "Documentation for ai api-reference"
+title: 'ai api-reference'
+description: 'Documentation for ai api-reference'
 ---
 
 # ai api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

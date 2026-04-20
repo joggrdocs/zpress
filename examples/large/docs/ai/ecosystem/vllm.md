@@ -1,6 +1,6 @@
 ---
-title: "Vllm"
-description: "Documentation for Vllm"
+title: 'Vllm'
+description: 'Documentation for Vllm'
 ---
 
 # Vllm
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

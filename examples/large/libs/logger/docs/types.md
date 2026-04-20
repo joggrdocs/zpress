@@ -1,6 +1,6 @@
 ---
-title: "logger types"
-description: "Documentation for logger types"
+title: 'logger types'
+description: 'Documentation for logger types'
 ---
 
 # logger types
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

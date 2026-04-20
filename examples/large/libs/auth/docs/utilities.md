@@ -1,6 +1,6 @@
 ---
-title: "auth utilities"
-description: "Documentation for auth utilities"
+title: 'auth utilities'
+description: 'Documentation for auth utilities'
 ---
 
 # auth utilities
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Errors"
-description: "Documentation for Errors"
+title: 'Errors'
+description: 'Documentation for Errors'
 ---
 
 # Errors
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

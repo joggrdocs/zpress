@@ -1,6 +1,6 @@
 ---
-title: "fp migration-guide"
-description: "Documentation for fp migration-guide"
+title: 'fp migration-guide'
+description: 'Documentation for fp migration-guide'
 ---
 
 # fp migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

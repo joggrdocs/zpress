@@ -1,6 +1,6 @@
 ---
-title: "queue contributing"
-description: "Documentation for queue contributing"
+title: 'queue contributing'
+description: 'Documentation for queue contributing'
 ---
 
 # queue contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

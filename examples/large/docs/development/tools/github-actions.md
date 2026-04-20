@@ -1,6 +1,6 @@
 ---
-title: "Github Actions"
-description: "Documentation for Github Actions"
+title: 'Github Actions'
+description: 'Documentation for Github Actions'
 ---
 
 # Github Actions
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

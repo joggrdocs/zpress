@@ -1,6 +1,6 @@
 ---
-title: "notifications logging"
-description: "Documentation for notifications logging"
+title: 'notifications logging'
+description: 'Documentation for notifications logging'
 ---
 
 # notifications logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

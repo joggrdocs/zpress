@@ -1,6 +1,6 @@
 ---
-title: "scheduler migrations"
-description: "Documentation for scheduler migrations"
+title: 'scheduler migrations'
+description: 'Documentation for scheduler migrations'
 ---
 
 # scheduler migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

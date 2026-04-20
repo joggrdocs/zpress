@@ -1,6 +1,6 @@
 ---
-title: "api health-checks"
-description: "Documentation for api health-checks"
+title: 'api health-checks'
+description: 'Documentation for api health-checks'
 ---
 
 # api health-checks
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

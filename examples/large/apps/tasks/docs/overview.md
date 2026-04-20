@@ -1,6 +1,6 @@
 ---
-title: "tasks overview"
-description: "Documentation for tasks overview"
+title: 'tasks overview'
+description: 'Documentation for tasks overview'
 ---
 
 # tasks overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

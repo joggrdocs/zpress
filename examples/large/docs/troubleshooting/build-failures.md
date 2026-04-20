@@ -1,6 +1,6 @@
 ---
-title: "Build Failures"
-description: "Documentation for Build Failures"
+title: 'Build Failures'
+description: 'Documentation for Build Failures'
 ---
 
 # Build Failures
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

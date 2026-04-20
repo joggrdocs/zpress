@@ -1,6 +1,6 @@
 ---
-title: "notifications database"
-description: "Documentation for notifications database"
+title: 'notifications database'
+description: 'Documentation for notifications database'
 ---
 
 # notifications database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

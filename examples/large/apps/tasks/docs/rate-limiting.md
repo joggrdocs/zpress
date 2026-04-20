@@ -1,6 +1,6 @@
 ---
-title: "tasks rate-limiting"
-description: "Documentation for tasks rate-limiting"
+title: 'tasks rate-limiting'
+description: 'Documentation for tasks rate-limiting'
 ---
 
 # tasks rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

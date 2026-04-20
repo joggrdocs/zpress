@@ -1,6 +1,6 @@
 ---
-title: "logger migration-guide"
-description: "Documentation for logger migration-guide"
+title: 'logger migration-guide'
+description: 'Documentation for logger migration-guide'
 ---
 
 # logger migration-guide
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

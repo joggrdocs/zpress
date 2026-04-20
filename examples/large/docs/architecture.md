@@ -1,6 +1,6 @@
 ---
-title: "Architecture"
-description: "Documentation for Architecture"
+title: 'Architecture'
+description: 'Documentation for Architecture'
 ---
 
 # Architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

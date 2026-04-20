@@ -1,6 +1,6 @@
 ---
-title: "Augment"
-description: "Documentation for Augment"
+title: 'Augment'
+description: 'Documentation for Augment'
 ---
 
 # Augment
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

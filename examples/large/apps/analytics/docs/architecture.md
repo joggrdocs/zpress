@@ -1,6 +1,6 @@
 ---
-title: "analytics architecture"
-description: "Documentation for analytics architecture"
+title: 'analytics architecture'
+description: 'Documentation for analytics architecture'
 ---
 
 # analytics architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

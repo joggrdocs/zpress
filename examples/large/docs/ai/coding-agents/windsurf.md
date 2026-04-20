@@ -1,6 +1,6 @@
 ---
-title: "Windsurf"
-description: "Documentation for Windsurf"
+title: 'Windsurf'
+description: 'Documentation for Windsurf'
 ---
 
 # Windsurf
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

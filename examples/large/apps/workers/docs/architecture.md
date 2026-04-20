@@ -1,6 +1,6 @@
 ---
-title: "workers architecture"
-description: "Documentation for workers architecture"
+title: 'workers architecture'
+description: 'Documentation for workers architecture'
 ---
 
 # workers architecture
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "auth security"
-description: "Documentation for auth security"
+title: 'auth security'
+description: 'Documentation for auth security'
 ---
 
 # auth security
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

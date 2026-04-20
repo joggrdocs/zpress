@@ -1,6 +1,6 @@
 ---
-title: "Evaluation"
-description: "Documentation for Evaluation"
+title: 'Evaluation'
+description: 'Documentation for Evaluation'
 ---
 
 # Evaluation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

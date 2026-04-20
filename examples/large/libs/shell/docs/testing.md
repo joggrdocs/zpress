@@ -1,6 +1,6 @@
 ---
-title: "shell testing"
-description: "Documentation for shell testing"
+title: 'shell testing'
+description: 'Documentation for shell testing'
 ---
 
 # shell testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

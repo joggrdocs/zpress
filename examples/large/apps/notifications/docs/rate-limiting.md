@@ -1,6 +1,6 @@
 ---
-title: "notifications rate-limiting"
-description: "Documentation for notifications rate-limiting"
+title: 'notifications rate-limiting'
+description: 'Documentation for notifications rate-limiting'
 ---
 
 # notifications rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

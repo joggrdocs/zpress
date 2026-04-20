@@ -1,6 +1,6 @@
 ---
-title: "Ollama"
-description: "Documentation for Ollama"
+title: 'Ollama'
+description: 'Documentation for Ollama'
 ---
 
 # Ollama
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Feature Flags"
-description: "Documentation for Feature Flags"
+title: 'Feature Flags'
+description: 'Documentation for Feature Flags'
 ---
 
 # Feature Flags
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

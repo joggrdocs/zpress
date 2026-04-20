@@ -107,7 +107,9 @@ export function createWatcher(params: {
       if (pendingReloadConfig !== null) {
         if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
           callbacks.onStatusChange('error')
-          callbacks.onError(`Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`)
+          callbacks.onError(
+            `Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`
+          )
           pendingReloadConfig = null
           consecutiveFailures = 0
         } else {

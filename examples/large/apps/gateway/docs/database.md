@@ -1,6 +1,6 @@
 ---
-title: "gateway database"
-description: "Documentation for gateway database"
+title: 'gateway database'
+description: 'Documentation for gateway database'
 ---
 
 # gateway database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

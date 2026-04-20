@@ -1,6 +1,6 @@
 ---
-title: "analytics caching"
-description: "Documentation for analytics caching"
+title: 'analytics caching'
+description: 'Documentation for analytics caching'
 ---
 
 # analytics caching
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

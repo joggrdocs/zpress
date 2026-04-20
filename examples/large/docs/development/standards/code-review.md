@@ -1,6 +1,6 @@
 ---
-title: "Code Review"
-description: "Documentation for Code Review"
+title: 'Code Review'
+description: 'Documentation for Code Review'
 ---
 
 # Code Review
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "queue patterns"
-description: "Documentation for queue patterns"
+title: 'queue patterns'
+description: 'Documentation for queue patterns'
 ---
 
 # queue patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

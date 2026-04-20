@@ -1,6 +1,6 @@
 ---
-title: "Code Style"
-description: "Documentation for Code Style"
+title: 'Code Style'
+description: 'Documentation for Code Style'
 ---
 
 # Code Style
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

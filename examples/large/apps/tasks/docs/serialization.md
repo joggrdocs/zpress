@@ -1,6 +1,6 @@
 ---
-title: "tasks serialization"
-description: "Documentation for tasks serialization"
+title: 'tasks serialization'
+description: 'Documentation for tasks serialization'
 ---
 
 # tasks serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

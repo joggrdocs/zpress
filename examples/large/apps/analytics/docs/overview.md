@@ -1,6 +1,6 @@
 ---
-title: "analytics overview"
-description: "Documentation for analytics overview"
+title: 'analytics overview'
+description: 'Documentation for analytics overview'
 ---
 
 # analytics overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

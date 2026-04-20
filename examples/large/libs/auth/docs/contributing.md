@@ -1,6 +1,6 @@
 ---
-title: "auth contributing"
-description: "Documentation for auth contributing"
+title: 'auth contributing'
+description: 'Documentation for auth contributing'
 ---
 
 # auth contributing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "api authentication"
-description: "Documentation for api authentication"
+title: 'api authentication'
+description: 'Documentation for api authentication'
 ---
 
 # api authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Auth Failures"
-description: "Documentation for Auth Failures"
+title: 'Auth Failures'
+description: 'Documentation for Auth Failures'
 ---
 
 # Auth Failures
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

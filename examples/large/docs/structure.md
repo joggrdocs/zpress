@@ -1,6 +1,6 @@
 ---
-title: "Repository Structure"
-description: "Documentation for Repository Structure"
+title: 'Repository Structure'
+description: 'Documentation for Repository Structure'
 ---
 
 # Repository Structure
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "shell performance"
-description: "Documentation for shell performance"
+title: 'shell performance'
+description: 'Documentation for shell performance'
 ---
 
 # shell performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

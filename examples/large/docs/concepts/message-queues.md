@@ -1,6 +1,6 @@
 ---
-title: "Message Queues"
-description: "Documentation for Message Queues"
+title: 'Message Queues'
+description: 'Documentation for Message Queues'
 ---
 
 # Message Queues
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

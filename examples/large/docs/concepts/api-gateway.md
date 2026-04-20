@@ -1,6 +1,6 @@
 ---
-title: "Api Gateway"
-description: "Documentation for Api Gateway"
+title: 'Api Gateway'
+description: 'Documentation for Api Gateway'
 ---
 
 # Api Gateway
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

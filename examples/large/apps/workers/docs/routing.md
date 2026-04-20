@@ -1,6 +1,6 @@
 ---
-title: "workers routing"
-description: "Documentation for workers routing"
+title: 'workers routing'
+description: 'Documentation for workers routing'
 ---
 
 # workers routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

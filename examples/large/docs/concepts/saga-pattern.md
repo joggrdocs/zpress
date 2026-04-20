@@ -1,6 +1,6 @@
 ---
-title: "Saga Pattern"
-description: "Documentation for Saga Pattern"
+title: 'Saga Pattern'
+description: 'Documentation for Saga Pattern'
 ---
 
 # Saga Pattern
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

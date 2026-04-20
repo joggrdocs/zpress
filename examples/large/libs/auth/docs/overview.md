@@ -1,6 +1,6 @@
 ---
-title: "auth overview"
-description: "Documentation for auth overview"
+title: 'auth overview'
+description: 'Documentation for auth overview'
 ---
 
 # auth overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

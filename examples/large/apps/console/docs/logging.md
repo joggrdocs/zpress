@@ -1,6 +1,6 @@
 ---
-title: "console logging"
-description: "Documentation for console logging"
+title: 'console logging'
+description: 'Documentation for console logging'
 ---
 
 # console logging
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

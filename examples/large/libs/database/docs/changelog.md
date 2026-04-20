@@ -1,6 +1,6 @@
 ---
-title: "database changelog"
-description: "Documentation for database changelog"
+title: 'database changelog'
+description: 'Documentation for database changelog'
 ---
 
 # database changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "cache changelog"
-description: "Documentation for cache changelog"
+title: 'cache changelog'
+description: 'Documentation for cache changelog'
 ---
 
 # cache changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "queue performance"
-description: "Documentation for queue performance"
+title: 'queue performance'
+description: 'Documentation for queue performance'
 ---
 
 # queue performance
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

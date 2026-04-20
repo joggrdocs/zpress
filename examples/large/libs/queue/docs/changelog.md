@@ -1,6 +1,6 @@
 ---
-title: "queue changelog"
-description: "Documentation for queue changelog"
+title: 'queue changelog'
+description: 'Documentation for queue changelog'
 ---
 
 # queue changelog
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

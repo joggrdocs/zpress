@@ -1,6 +1,6 @@
 ---
-title: "Backups"
-description: "Documentation for Backups"
+title: 'Backups'
+description: 'Documentation for Backups'
 ---
 
 # Backups
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

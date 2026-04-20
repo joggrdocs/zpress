@@ -1,6 +1,6 @@
 ---
-title: "Cline"
-description: "Documentation for Cline"
+title: 'Cline'
+description: 'Documentation for Cline'
 ---
 
 # Cline
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

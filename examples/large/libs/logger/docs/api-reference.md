@@ -1,6 +1,6 @@
 ---
-title: "logger api-reference"
-description: "Documentation for logger api-reference"
+title: 'logger api-reference'
+description: 'Documentation for logger api-reference'
 ---
 
 # logger api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "tasks database"
-description: "Documentation for tasks database"
+title: 'tasks database'
+description: 'Documentation for tasks database'
 ---
 
 # tasks database
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

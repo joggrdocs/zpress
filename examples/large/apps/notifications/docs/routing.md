@@ -1,6 +1,6 @@
 ---
-title: "notifications routing"
-description: "Documentation for notifications routing"
+title: 'notifications routing'
+description: 'Documentation for notifications routing'
 ---
 
 # notifications routing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Playwright"
-description: "Documentation for Playwright"
+title: 'Playwright'
+description: 'Documentation for Playwright'
 ---
 
 # Playwright
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

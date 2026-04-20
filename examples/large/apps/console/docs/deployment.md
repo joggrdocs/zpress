@@ -1,6 +1,6 @@
 ---
-title: "console deployment"
-description: "Documentation for console deployment"
+title: 'console deployment'
+description: 'Documentation for console deployment'
 ---
 
 # console deployment
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

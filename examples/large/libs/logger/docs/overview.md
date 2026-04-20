@@ -1,6 +1,6 @@
 ---
-title: "logger overview"
-description: "Documentation for logger overview"
+title: 'logger overview'
+description: 'Documentation for logger overview'
 ---
 
 # logger overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

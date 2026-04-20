@@ -1,6 +1,6 @@
 ---
-title: "workers authentication"
-description: "Documentation for workers authentication"
+title: 'workers authentication'
+description: 'Documentation for workers authentication'
 ---
 
 # workers authentication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

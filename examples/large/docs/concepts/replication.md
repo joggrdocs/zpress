@@ -1,6 +1,6 @@
 ---
-title: "Replication"
-description: "Documentation for Replication"
+title: 'Replication'
+description: 'Documentation for Replication'
 ---
 
 # Replication
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

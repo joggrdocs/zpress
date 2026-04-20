@@ -1,6 +1,6 @@
 ---
-title: "ai examples"
-description: "Documentation for ai examples"
+title: 'ai examples'
+description: 'Documentation for ai examples'
 ---
 
 # ai examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

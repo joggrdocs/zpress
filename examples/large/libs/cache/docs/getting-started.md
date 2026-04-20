@@ -1,6 +1,6 @@
 ---
-title: "cache getting-started"
-description: "Documentation for cache getting-started"
+title: 'cache getting-started'
+description: 'Documentation for cache getting-started'
 ---
 
 # cache getting-started
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "database testing"
-description: "Documentation for database testing"
+title: 'database testing'
+description: 'Documentation for database testing'
 ---
 
 # database testing
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "database examples"
-description: "Documentation for database examples"
+title: 'database examples'
+description: 'Documentation for database examples'
 ---
 
 # database examples
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "database configuration"
-description: "Documentation for database configuration"
+title: 'database configuration'
+description: 'Documentation for database configuration'
 ---
 
 # database configuration
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

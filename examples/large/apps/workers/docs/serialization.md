@@ -1,6 +1,6 @@
 ---
-title: "workers serialization"
-description: "Documentation for workers serialization"
+title: 'workers serialization'
+description: 'Documentation for workers serialization'
 ---
 
 # workers serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

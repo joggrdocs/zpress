@@ -1,6 +1,6 @@
 ---
-title: "Commands"
-description: "Documentation for Commands"
+title: 'Commands'
+description: 'Documentation for Commands'
 ---
 
 # Commands
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

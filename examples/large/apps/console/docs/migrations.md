@@ -1,6 +1,6 @@
 ---
-title: "console migrations"
-description: "Documentation for console migrations"
+title: 'console migrations'
+description: 'Documentation for console migrations'
 ---
 
 # console migrations
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

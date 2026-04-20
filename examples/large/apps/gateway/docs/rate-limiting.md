@@ -1,6 +1,6 @@
 ---
-title: "gateway rate-limiting"
-description: "Documentation for gateway rate-limiting"
+title: 'gateway rate-limiting'
+description: 'Documentation for gateway rate-limiting'
 ---
 
 # gateway rate-limiting
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

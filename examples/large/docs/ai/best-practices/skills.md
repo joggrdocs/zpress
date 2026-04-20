@@ -1,6 +1,6 @@
 ---
-title: "Skills"
-description: "Documentation for Skills"
+title: 'Skills'
+description: 'Documentation for Skills'
 ---
 
 # Skills
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

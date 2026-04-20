@@ -1,6 +1,6 @@
 ---
-title: "database api-reference"
-description: "Documentation for database api-reference"
+title: 'database api-reference'
+description: 'Documentation for database api-reference'
 ---
 
 # database api-reference
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "Database Problems"
-description: "Documentation for Database Problems"
+title: 'Database Problems'
+description: 'Documentation for Database Problems'
 ---
 
 # Database Problems
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

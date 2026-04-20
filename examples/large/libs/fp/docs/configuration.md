@@ -1,6 +1,6 @@
 ---
-title: "fp configuration"
-description: "Documentation for fp configuration"
+title: 'fp configuration'
+description: 'Documentation for fp configuration'
 ---
 
 # fp configuration
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

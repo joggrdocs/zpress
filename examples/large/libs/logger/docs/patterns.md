@@ -1,6 +1,6 @@
 ---
-title: "logger patterns"
-description: "Documentation for logger patterns"
+title: 'logger patterns'
+description: 'Documentation for logger patterns'
 ---
 
 # logger patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

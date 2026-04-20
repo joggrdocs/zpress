@@ -1,6 +1,6 @@
 ---
-title: "Idempotency"
-description: "Documentation for Idempotency"
+title: 'Idempotency'
+description: 'Documentation for Idempotency'
 ---
 
 # Idempotency
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

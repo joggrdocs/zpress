@@ -1,6 +1,6 @@
 ---
-title: "Gemini Cli"
-description: "Documentation for Gemini Cli"
+title: 'Gemini Cli'
+description: 'Documentation for Gemini Cli'
 ---
 
 # Gemini Cli
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "database patterns"
-description: "Documentation for database patterns"
+title: 'database patterns'
+description: 'Documentation for database patterns'
 ---
 
 # database patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

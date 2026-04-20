@@ -1,6 +1,6 @@
 ---
-title: "analytics serialization"
-description: "Documentation for analytics serialization"
+title: 'analytics serialization'
+description: 'Documentation for analytics serialization'
 ---
 
 # analytics serialization
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

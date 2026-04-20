@@ -1,6 +1,6 @@
 ---
-title: "notifications overview"
-description: "Documentation for notifications overview"
+title: 'notifications overview'
+description: 'Documentation for notifications overview'
 ---
 
 # notifications overview
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

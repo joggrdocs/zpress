@@ -1,6 +1,6 @@
 ---
-title: "config utilities"
-description: "Documentation for config utilities"
+title: 'config utilities'
+description: 'Documentation for config utilities'
 ---
 
 # config utilities
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

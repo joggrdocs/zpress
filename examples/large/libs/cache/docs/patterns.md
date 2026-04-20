@@ -1,6 +1,6 @@
 ---
-title: "cache patterns"
-description: "Documentation for cache patterns"
+title: 'cache patterns'
+description: 'Documentation for cache patterns'
 ---
 
 # cache patterns
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

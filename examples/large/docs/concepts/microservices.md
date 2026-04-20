@@ -1,6 +1,6 @@
 ---
-title: "Microservices"
-description: "Documentation for Microservices"
+title: 'Microservices'
+description: 'Documentation for Microservices'
 ---
 
 # Microservices
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

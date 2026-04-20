@@ -1,6 +1,6 @@
 ---
-title: "Cache Invalidation"
-description: "Documentation for Cache Invalidation"
+title: 'Cache Invalidation'
+description: 'Documentation for Cache Invalidation'
 ---
 
 # Cache Invalidation
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-

@@ -1,6 +1,6 @@
 ---
-title: "analytics error-handling"
-description: "Documentation for analytics error-handling"
+title: 'analytics error-handling'
+description: 'Documentation for analytics error-handling'
 ---
 
 # analytics error-handling
@@ -19,4 +19,3 @@ const config = {
   enabled: true,
 }
 ```
-
