@@ -184,7 +184,7 @@ describe(buildRootMeta, () => {
 
     const result = buildRootMeta([rootWithHidden])
 
-    expect(result).toEqual([{ type: 'dir', name: 'api', label: 'API' }])
+    expect(result).toEqual([{ type: 'file', name: 'api', label: 'API' }])
   })
 })
 

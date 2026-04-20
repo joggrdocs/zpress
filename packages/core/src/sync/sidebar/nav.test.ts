@@ -53,6 +53,7 @@ describe(generateNav, () => {
     const refItem = nav.find((item) => item.text === 'Reference')
 
     expect(refItem).toBeDefined()
+    expect(refItem && 'items' in refItem).toBe(true)
     if (refItem && 'items' in refItem) {
       const childTexts = (refItem.items as readonly { readonly text: string }[]).map((c) => c.text)
       expect(childTexts).toEqual(['API', 'CLI'])
