@@ -1,5 +1,17 @@
 # @zpress/cli
 
+## 0.8.4
+
+### Patch Changes
+
+- c9a2cc8: perf: reduce @zpress/ui bundle from 15MB to 767KB by externalizing ts-morph
+
+  fix: close Rspress dev server on quit (no more double ctrl+c / blank screen)
+
+- Updated dependencies [4c04f9d]
+- Updated dependencies [c9a2cc8]
+  - @zpress/ui@0.9.0
+
 ## 0.8.3
 
 ### Patch Changes

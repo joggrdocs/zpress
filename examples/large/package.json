@@ -1,0 +1,8 @@
+{
+  "name": "example-large",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@zpress/kit": "workspace:*"
+  }
+}

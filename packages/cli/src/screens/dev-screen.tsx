@@ -9,31 +9,16 @@ import {
   useHotkey,
   useInput,
 } from '@kidd-cli/core/ui'
-import type { SyncResult } from '@zpress/core'
-import { createPaths, loadConfig, sync } from '@zpress/core'
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
 
-import { clean } from '../commands/clean.ts'
 import { Banner } from '../components/banner.tsx'
-import type { WatcherCallbacks, WatcherHandle, WatcherStatus } from '../lib/dev-types.ts'
-import { toError } from '../lib/error.ts'
-import { openBrowser, startDevServer } from '../lib/rspress.ts'
-import { createWatcher } from '../lib/watcher.ts'
+import { useDevServer } from '../hooks/use-dev-server.ts'
+import type { LogEntry } from '../lib/dev-types.ts'
+import { openBrowser } from '../lib/rspress.ts'
+
+export type { LogEntry } from '../lib/dev-types.ts'
 
 const isTTY = Boolean(process.stdin.isTTY)
-
-const MAX_LOG_ENTRIES = 50
-
-/**
- * A single entry in the activity log.
- */
-export interface LogEntry {
-  readonly timestamp: string
-  readonly action: 'synced' | 'removed' | 'restarted' | 'error'
-  readonly file: string
-  readonly elapsed: number
-}
 
 /**
  * Props passed to the DevScreen component by the screen() runtime.
@@ -52,7 +37,8 @@ interface DevScreenProps {
  * React/Ink TUI for the `zpress dev` command.
  *
  * Renders a fullscreen status display with styled banner, activity log,
- * sync stats, and hotkey bar.
+ * sync stats, and hotkey bar. All lifecycle logic is delegated to
+ * the `useDevServer` hook.
  *
  * @param props - Parsed CLI options
  * @returns React element tree for the dev TUI
@@ -60,181 +46,35 @@ interface DevScreenProps {
 export function DevScreen(props: DevScreenProps): React.ReactElement {
   const { exit } = useApp()
   const { columns } = useFullScreen()
-
-  const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [watcherStatus, setWatcherStatus] = useState<WatcherStatus>({ _tag: 'idle' })
-  const [lastSync, setLastSync] = useState<SyncResult | null>(null)
-  const [log, setLog] = useState<readonly LogEntry[]>([])
-  const [port, setPort] = useState(0)
-
-  const watcherRef = useRef<WatcherHandle | null>(null)
-  const openapiCacheRef = useRef(new Map<string, unknown>())
-  const cancelledRef = useRef(false)
-  const lastFileRef = useRef<string | null>(null)
-
-  const pushLog = useCallback((entry: LogEntry) => {
-    setLog((prev) => [entry, ...prev].slice(0, MAX_LOG_ENTRIES))
-  }, [])
-
-  useEffect(() => {
-    /**
-     * @private
-     * Wraps a state setter so it becomes a no-op after the effect cleanup runs.
-     */
-    function guard<T>(setter: (value: T) => void): (value: T) => void {
-      return (value: T) => {
-        if (!cancelledRef.current) {
-          setter(value)
-        }
-      }
-    }
-
-    async function init() {
-      const paths = createPaths(process.cwd())
-
-      if (props.clean) {
-        await clean(paths)
-      }
-
-      const [configErr, config] = await loadConfig(paths.repoRoot)
-      if (configErr) {
-        guard(setErrorMessage)(configErr.message)
-        guard(setPhase)('error')
-        return
-      }
-
-      const openapiCache = openapiCacheRef.current
-
-      try {
-        const initialResult = await sync(config, {
-          paths,
-          quiet: props.quiet ?? true,
-          openapiCache,
-        })
-        if (cancelledRef.current) {
-          return
-        }
-        if (initialResult.error) {
-          guard(setErrorMessage)(`Sync failed: ${initialResult.error}`)
-          guard(setPhase)('error')
-          return
-        }
-        guard(setLastSync)(initialResult)
-      } catch (error) {
-        guard(setErrorMessage)(`Initial sync failed: ${toError(error).message}`)
-        guard(setPhase)('error')
-        return
-      }
-
-      try {
-        const { onConfigReload, port: resolvedPort } = await startDevServer({
-          config,
-          paths,
-          port: props.port,
-          theme: props.theme,
-          colorMode: props.colorMode,
-          vscode: props.vscode,
-        })
-
-        if (cancelledRef.current) {
-          return
-        }
-
-        guard(setPort)(resolvedPort)
-
-        const guardedPushLog = guard(pushLog)
-
-        const callbacks: WatcherCallbacks = {
-          onStatusChange: guard(setWatcherStatus),
-          onSyncComplete: (result) => {
-            guard(setLastSync)(result)
-            const file = lastFileRef.current
-            if (file) {
-              guardedPushLog({
-                timestamp: formatTime(new Date()),
-                action: 'synced',
-                file,
-                elapsed: result.elapsed,
-              })
-            }
-          },
-          onFileChange: (filename) => {
-            // oxlint-disable-next-line functional/immutable-data -- ref tracking for log entries
-            lastFileRef.current = filename
-          },
-          onConfigReloaded: () => {
-            guardedPushLog({
-              timestamp: formatTime(new Date()),
-              action: 'restarted',
-              file: 'zpress.config.ts',
-              elapsed: 0,
-            })
-          },
-        }
-
-        const watcher = createWatcher({
-          initialConfig: config,
-          paths,
-          callbacks,
-          onConfigReload,
-          openapiCache,
-        })
-
-        // oxlint-disable-next-line functional/immutable-data -- assigning ref for teardown
-        watcherRef.current = watcher
-        guard(setPhase)('ready')
-      } catch (error) {
-        guard(setErrorMessage)(`Dev server failed: ${toError(error).message}`)
-        guard(setPhase)('error')
-      }
-    }
-
-    init()
-
-    return () => {
-      // oxlint-disable-next-line functional/immutable-data -- ref mutation for unmount guard
-      cancelledRef.current = true
-      if (watcherRef.current) {
-        watcherRef.current.close()
-      }
-    }
-  }, [])
+  const { state, actions } = useDevServer(props)
 
   useHotkey({
     keys: ['r'],
-    action: () => {
-      if (watcherRef.current) {
-        watcherRef.current.resync()
-      }
-    },
-    active: phase === 'ready' && isTTY,
+    action: actions.resync,
+    active: state.phase === 'ready' && isTTY,
   })
 
   useHotkey({
     keys: ['c'],
-    action: () => {
-      setLog([])
-    },
-    active: phase === 'ready' && isTTY,
+    action: actions.clearLog,
+    active: state.phase === 'ready' && isTTY,
   })
 
   useHotkey({
     keys: ['o'],
     action: () => {
-      openBrowser(`http://localhost:${port}`)
+      openBrowser(`http://localhost:${state.port}`)
     },
-    active: phase === 'ready' && isTTY,
+    active: state.phase === 'ready' && isTTY,
   })
 
   useInput(
     (input, key) => {
       if (input === 'q' || (key.ctrl && input === 'c')) {
-        if (watcherRef.current) {
-          watcherRef.current.close()
-        }
-        exit()
-        process.exit(0)
+        actions.close().finally(() => {
+          exit()
+          process.exit(0)
+        })
       }
     },
     { isActive: isTTY }
@@ -243,20 +83,20 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   const width = Math.max(Math.min(columns, 80), 2)
   const separatorWidth = Math.max(width - 2, 0)
 
-  if (phase === 'error') {
+  if (state.phase === 'error') {
     return (
       <Box flexDirection="column" padding={1}>
         <Banner />
         <Box marginTop={1}>
           <Alert variant="error" title="Dev Server Error" width={width}>
-            {errorMessage}
+            {state.error ?? 'Unknown error'}
           </Alert>
         </Box>
       </Box>
     )
   }
 
-  if (phase === 'loading') {
+  if (state.phase === 'loading') {
     return (
       <Box flexDirection="column" padding={1}>
         <Banner />
@@ -267,27 +107,20 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     )
   }
 
-  const watcherTag = watcherStatus._tag
-
   return (
     <Box flexDirection="column" padding={1}>
       {/* Banner + URL */}
       <Banner />
       <Box marginTop={1}>
         <Text dimColor>
-          http://localhost:<Text color="cyan">{port}</Text>
+          http://localhost:<Text color="cyan">{state.port}</Text>
         </Text>
         <Spacer />
-        {match(watcherTag)
+        {match(state.status)
           .with('idle', () => <Text color="green">● Ready</Text>)
           .with('syncing', () => <Spinner label="Syncing" type="dots" />)
           .with('restarting', () => <Spinner label="Restarting" type="dots" />)
-          .with('error', () => {
-            if (watcherStatus._tag === 'error') {
-              return <Text color="red">● Error: {watcherStatus.message}</Text>
-            }
-            return <Text color="red">● Error</Text>
-          })
+          .with('error', () => <Text color="red">● Error: {state.error}</Text>)
           .exhaustive()}
       </Box>
 
@@ -298,12 +131,12 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
       {/* Activity log */}
       <Box flexDirection="column" marginTop={0}>
-        {log.length === 0 && (
+        {state.log.length === 0 && (
           <Box paddingLeft={1}>
             <Text dimColor>Waiting for changes...</Text>
           </Box>
         )}
-        {log.slice(0, 12).map((entry, i) => (
+        {state.log.slice(0, 12).map((entry, i) => (
           <LogLine key={`${entry.timestamp}-${entry.file}-${i}`} entry={entry} first={i === 0} />
         ))}
       </Box>
@@ -314,16 +147,16 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
       </Box>
 
       {/* Stats bar */}
-      {lastSync !== null && (
+      {state.lastSync !== null && (
         <Box paddingLeft={1}>
           <Text dimColor>
-            <Text color="green">{lastSync.pagesWritten}</Text> written
+            <Text color="green">{state.lastSync.pagesWritten}</Text> written
             {' · '}
-            <Text color="yellow">{lastSync.pagesSkipped}</Text> skipped
+            <Text color="yellow">{state.lastSync.pagesSkipped}</Text> skipped
             {' · '}
-            <Text color="red">{lastSync.pagesRemoved}</Text> removed
+            <Text color="red">{state.lastSync.pagesRemoved}</Text> removed
             {' · '}
-            {Math.round(lastSync.elapsed)}ms
+            {Math.round(state.lastSync.elapsed)}ms
           </Text>
         </Box>
       )}
@@ -400,19 +233,4 @@ function HotkeyHint(props: {
       <Text dimColor> {props.description}</Text>
     </Text>
   )
-}
-
-/**
- * Format a Date to HH:MM:SS string.
- *
- * @private
- * @param date - Date to format
- * @returns Time string in HH:MM:SS format
- */
-function formatTime(date: Date): string {
-  return [
-    String(date.getHours()).padStart(2, '0'),
-    String(date.getMinutes()).padStart(2, '0'),
-    String(date.getSeconds()).padStart(2, '0'),
-  ].join(':')
 }

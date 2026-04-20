@@ -1,0 +1,16 @@
+{
+  "name": "benchmarks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "vitest bench",
+    "bench:run": "vitest bench --run"
+  },
+  "dependencies": {
+    "@zpress/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@codspeed/vitest-plugin": "^5.0.0",
+    "vitest": "catalog:"
+  }
+}

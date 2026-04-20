@@ -52,6 +52,9 @@ Thumbs.db
 # Superpowers
 .superpowers/
 
+# Benchmark fixtures
+.bench-fixtures/
+
 # Misc
 *.tgz
 *.vsix

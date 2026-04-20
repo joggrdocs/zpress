@@ -1,13 +1,45 @@
 import type { SyncResult } from '@zpress/core'
 
 /**
- * Discriminated union representing the current state of the file watcher.
+ * A single entry in the dev server activity log.
  */
-export type WatcherStatus =
-  | { readonly _tag: 'idle' }
-  | { readonly _tag: 'syncing'; readonly isConfigReload: boolean }
-  | { readonly _tag: 'restarting' }
-  | { readonly _tag: 'error'; readonly message: string }
+export interface LogEntry {
+  readonly timestamp: string
+  readonly action: 'synced' | 'removed' | 'restarted' | 'error'
+  readonly file: string
+  readonly elapsed: number
+}
+
+/**
+ * Lifecycle phase of the dev server.
+ */
+export type DevPhase = 'loading' | 'ready' | 'error'
+
+/**
+ * Watcher status as a flat string.
+ */
+export type WatcherStatus = 'idle' | 'syncing' | 'restarting' | 'error'
+
+/**
+ * Read-only state snapshot exposed by the useDevServer hook.
+ */
+export interface DevServerState {
+  readonly phase: DevPhase
+  readonly error: string | null
+  readonly status: WatcherStatus
+  readonly lastSync: SyncResult | null
+  readonly log: readonly LogEntry[]
+  readonly port: number
+}
+
+/**
+ * Actions exposed by the useDevServer hook for external control.
+ */
+export interface DevServerActions {
+  readonly resync: () => void
+  readonly clearLog: () => void
+  readonly close: () => Promise<void>
+}
 
 /**
  * Callback interface used by the watcher to communicate state changes
@@ -15,6 +47,7 @@ export type WatcherStatus =
  */
 export interface WatcherCallbacks {
   readonly onStatusChange: (status: WatcherStatus) => void
+  readonly onError: (message: string) => void
   readonly onSyncComplete: (result: SyncResult) => void
   readonly onFileChange: (filename: string) => void
   readonly onConfigReloaded: () => void

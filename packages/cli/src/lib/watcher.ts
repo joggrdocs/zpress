@@ -48,7 +48,7 @@ export function createWatcher(params: {
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
 
-  callbacks.onStatusChange({ _tag: 'idle' })
+  callbacks.onStatusChange('idle')
 
   // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
   let syncing = false
@@ -64,7 +64,7 @@ export function createWatcher(params: {
       return
     }
     syncing = true
-    callbacks.onStatusChange({ _tag: 'syncing', isConfigReload: reloadConfig })
+    callbacks.onStatusChange('syncing')
     // oxlint-disable-next-line functional/no-let -- tracks whether this sync included a config reload
     let didReloadConfig = false
     const previousConfig = config
@@ -72,10 +72,8 @@ export function createWatcher(params: {
       if (reloadConfig) {
         const [configErr, newConfig] = await loadConfig(paths.repoRoot)
         if (configErr) {
-          callbacks.onStatusChange({
-            _tag: 'error',
-            message: `Config reload failed: ${configErr.message}`,
-          })
+          callbacks.onStatusChange('error')
+          callbacks.onError(`Config reload failed: ${configErr.message}`)
           return
         }
         config = newConfig
@@ -86,7 +84,8 @@ export function createWatcher(params: {
       }
       const result = await sync(config, { paths, quiet: true, openapiCache })
       if (result.error) {
-        callbacks.onStatusChange({ _tag: 'error', message: `Sync error: ${result.error}` })
+        callbacks.onStatusChange('error')
+        callbacks.onError(`Sync error: ${result.error}`)
         return
       }
       consecutiveFailures = 0
@@ -94,22 +93,23 @@ export function createWatcher(params: {
       // Only restart the dev server when restart-relevant fields changed.
       // Sidebar/nav changes are picked up by Rspress via _meta.json/_nav.json HMR.
       if (didReloadConfig && onConfigReload && needsServerRestart(previousConfig, config)) {
-        callbacks.onStatusChange({ _tag: 'restarting' })
+        callbacks.onStatusChange('restarting')
         await onConfigReload(config)
         callbacks.onConfigReloaded()
       }
-      callbacks.onStatusChange({ _tag: 'idle' })
+      callbacks.onStatusChange('idle')
     } catch (error) {
       consecutiveFailures += 1
-      callbacks.onStatusChange({ _tag: 'error', message: `Sync error: ${toError(error).message}` })
+      callbacks.onStatusChange('error')
+      callbacks.onError(`Sync error: ${toError(error).message}`)
     } finally {
       syncing = false
       if (pendingReloadConfig !== null) {
         if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-          callbacks.onStatusChange({
-            _tag: 'error',
-            message: `Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`,
-          })
+          callbacks.onStatusChange('error')
+          callbacks.onError(
+            `Sync failed ${consecutiveFailures} consecutive times, dropping pending resync. Will retry on next file change.`
+          )
           pendingReloadConfig = null
           consecutiveFailures = 0
         } else {
