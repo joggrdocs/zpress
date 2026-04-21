@@ -139,16 +139,6 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
         }
       }
 
-      if (typeof item.title !== 'string') {
-        return {
-          error: configError(
-            'invalid_field',
-            `Workspace "${String(item.title)}": "title" must be a string (TitleConfig not supported on Workspace)`
-          ),
-          seen: acc.seen,
-        }
-      }
-
       if (!item.description) {
         return {
           error: configError(
@@ -207,13 +197,6 @@ function validateWorkspaceCategories(categories: readonly WorkspaceCategory[]): 
 
     if (!category.title) {
       return configError('missing_field', 'WorkspaceCategory: "title" is required')
-    }
-
-    if (typeof category.title !== 'string') {
-      return configError(
-        'invalid_field',
-        `WorkspaceCategory: "title" must be a string (TitleConfig not supported on WorkspaceCategory)`
-      )
     }
 
     if (!category.icon) {
@@ -391,17 +374,6 @@ function validateFeatures(features: ZpressConfig['features']): ConfigResult<true
 function validateFeature(feature: Feature): ConfigError | null {
   if (!feature.title) {
     return configError('missing_field', 'Feature: "title" is required')
-  }
-
-  const titleStr = match(feature.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Feature')
-
-  if (typeof feature.title !== 'string') {
-    return configError(
-      'invalid_field',
-      `Feature "${titleStr}": "title" must be a string (TitleConfig not supported on Feature)`
-    )
   }
 
   if (!feature.description) {
