@@ -84,7 +84,7 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
       if (entry.root && entry.items) {
         return entry.items
           .filter((child) => !child.hidden)
-          .flatMap((child) => {
+          .flatMap((child): readonly (MetaDirItem | MetaFileItem)[] => {
             const name = resolveDirName(child)
             if (name === null) {
               return []
