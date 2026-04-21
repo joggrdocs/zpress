@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // We need to mock os.tmpdir() to control the log directory
 vi.mock(import('node:os'), async (importOriginal) => {
   const original = await importOriginal()
-  return { ...original, tmpdir: vi.fn(original.tmpdir) }
+  return { ...original, tmpdir: vi.fn<typeof original.tmpdir>(original.tmpdir) }
 })
 
 const os = await import('node:os')
@@ -48,7 +48,7 @@ describe('reportCrash()', () => {
     })
 
     expect(result.logPath).not.toBeNull()
-    const contents = readFileSync(result.logPath as string, 'utf-8')
+    const contents = readFileSync(result.logPath as string, 'utf8')
     const report = JSON.parse(contents)
 
     expect(report.level).toBe('fatal')
@@ -74,7 +74,7 @@ describe('reportCrash()', () => {
     })
 
     expect(result.logPath).not.toBeNull()
-    const report = JSON.parse(readFileSync(result.logPath as string, 'utf-8'))
+    const report = JSON.parse(readFileSync(result.logPath as string, 'utf8'))
     expect(report.command).toBe('build')
     expect(report.args).toEqual({ clean: true, check: false })
   })
@@ -87,7 +87,7 @@ describe('reportCrash()', () => {
     })
 
     expect(result.logPath).not.toBeNull()
-    const report = JSON.parse(readFileSync(result.logPath as string, 'utf-8'))
+    const report = JSON.parse(readFileSync(result.logPath as string, 'utf8'))
     expect(report.command).toBeNull()
     expect(report.args).toBeNull()
   })
@@ -103,7 +103,7 @@ describe('reportCrash()', () => {
     expect(result.message).toBe('string error')
 
     expect(result.logPath).not.toBeNull()
-    const report = JSON.parse(readFileSync(result.logPath as string, 'utf-8'))
+    const report = JSON.parse(readFileSync(result.logPath as string, 'utf8'))
     expect(report.error.name).toBe('Error')
     expect(report.error.message).toBe('string error')
   })

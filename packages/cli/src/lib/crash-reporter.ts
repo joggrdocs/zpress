@@ -97,8 +97,8 @@ function buildReport(error: Error, options: CrashReportOptions): CrashReport {
     },
     env: {
       node: nodeVersion,
-      platform: platform,
-      arch: arch,
+      platform,
+      arch,
       zpress: options.version,
     },
   }
@@ -120,14 +120,14 @@ function writeCrashLog(report: CrashReport, message: string): CrashResult {
     const dir = join(tmpdir(), 'zpress')
     mkdirSync(dir, { recursive: true })
 
-    const timestamp = report.timestamp.replace(/[:.]/g, '-')
+    const timestamp = report.timestamp.replaceAll(/[:.]/g, '-')
     const filename = `error-${timestamp}-${randomUUID()}.log`
     const logPath = join(dir, filename)
 
-    writeFileSync(logPath, JSON.stringify(report, null, 2), 'utf-8')
+    writeFileSync(logPath, JSON.stringify(report, null, 2), 'utf8')
 
     return { ok: true, message, logPath, error: null }
-  } catch (caught) {
-    return { ok: false, message, logPath: null, error: toError(caught) }
+  } catch (error) {
+    return { ok: false, message, logPath: null, error: toError(error) }
   }
 }
