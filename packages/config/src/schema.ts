@@ -116,6 +116,7 @@ const entrySchema: z.ZodType<Section> = z.lazy(() =>
       icon: iconConfigSchema.optional(),
       card: cardConfigSchema.optional(),
       standalone: z.boolean().optional(),
+      root: z.boolean().optional(),
     })
     .strict()
 )
@@ -131,7 +132,7 @@ const openapiConfigSchema = z
 
 const workspaceItemSchema = z
   .object({
-    title: titleConfigSchema,
+    title: z.string(),
     icon: iconConfigSchema.optional(),
     description: z.string(),
     tags: z.array(z.string()).optional(),
@@ -150,7 +151,7 @@ const workspaceItemSchema = z
 
 const workspaceGroupSchema = z
   .object({
-    title: titleConfigSchema,
+    title: z.string(),
     description: z.string().optional(),
     icon: iconIdSchema,
     items: z.array(workspaceItemSchema).min(1),
@@ -160,7 +161,7 @@ const workspaceGroupSchema = z
 
 const featureSchema = z
   .object({
-    title: titleConfigSchema,
+    title: z.string(),
     description: z.string(),
     link: z.string().optional(),
     icon: iconConfigSchema.optional(),

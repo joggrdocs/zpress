@@ -98,30 +98,7 @@
             "type": "object",
             "properties": {
               "title": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "from": {
-                        "type": "string",
-                        "enum": [
-                          "auto",
-                          "filename",
-                          "heading",
-                          "frontmatter"
-                        ]
-                      },
-                      "transform": {}
-                    },
-                    "required": [
-                      "from"
-                    ],
-                    "additionalProperties": false
-                  }
-                ]
+                "type": "string"
               },
               "icon": {
                 "anyOf": [
@@ -193,7 +170,30 @@
                   "type": "object",
                   "properties": {
                     "title": {
-                      "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "from": {
+                              "type": "string",
+                              "enum": [
+                                "auto",
+                                "filename",
+                                "heading",
+                                "frontmatter"
+                              ]
+                            },
+                            "transform": {}
+                          },
+                          "required": [
+                            "from"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
                     },
                     "description": {
                       "type": "string"
@@ -392,6 +392,9 @@
                     },
                     "standalone": {
                       "type": "boolean"
+                    },
+                    "root": {
+                      "type": "boolean"
                     }
                   },
                   "required": [
@@ -478,7 +481,7 @@
             "type": "object",
             "properties": {
               "title": {
-                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
+                "type": "string"
               },
               "description": {
                 "type": "string"
@@ -511,7 +514,7 @@
             "type": "object",
             "properties": {
               "title": {
-                "$ref": "#/definitions/ZpressConfig/properties/apps/items/properties/title"
+                "type": "string"
               },
               "description": {
                 "type": "string"

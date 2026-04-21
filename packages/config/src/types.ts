@@ -264,6 +264,7 @@ export interface Section {
   readonly icon?: IconConfig
   readonly card?: CardConfig
   readonly standalone?: boolean
+  readonly root?: boolean
 }
 
 /**
@@ -285,7 +286,7 @@ export interface Section {
  * ```
  */
 export interface Workspace {
-  readonly title: TitleConfig
+  readonly title: string
   readonly icon?: IconConfig
   readonly description: string
   readonly tags?: readonly string[]
@@ -324,7 +325,7 @@ export interface Workspace {
  * ```
  */
 export interface WorkspaceCategory {
-  readonly title: TitleConfig
+  readonly title: string
   readonly description?: string
   readonly icon: IconId
   readonly items: readonly Workspace[]
@@ -395,7 +396,7 @@ export interface OpenAPIConfig {
  * ```
  */
 export interface Feature {
-  readonly title: TitleConfig
+  readonly title: string
   readonly description: string
   readonly link?: string
   readonly icon?: IconConfig

@@ -141,6 +141,26 @@ export default defineConfig({
         },
       ],
     },
+    {
+      title: 'Reference',
+      icon: 'pixelarticons:book-open',
+      path: '/references',
+      root: true,
+      items: [
+        {
+          title: 'API',
+          path: '/references/api',
+          include: 'docs/references/api/*.md',
+          sort: 'alpha',
+        },
+        {
+          title: 'CLI',
+          path: '/references/cli',
+          include: 'docs/references/cli/*.md',
+          sort: 'alpha',
+        },
+      ],
+    },
   ],
   sidebar: {
     above: [

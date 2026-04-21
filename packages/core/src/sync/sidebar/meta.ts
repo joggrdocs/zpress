@@ -81,6 +81,21 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
   return entries
     .filter((e) => !e.hidden)
     .flatMap((entry) => {
+      if (entry.root && entry.items) {
+        return entry.items
+          .filter((child) => !child.hidden)
+          .flatMap((child): readonly (MetaDirItem | MetaFileItem)[] => {
+            const name = resolveDirName(child)
+            if (name === null) {
+              return []
+            }
+            if (hasChildren(child)) {
+              return [{ type: 'dir' as const, name, label: child.title }]
+            }
+            return [{ type: 'file' as const, name, label: child.title }]
+          })
+      }
+
       const name = resolveDirName(entry)
       if (name === null) {
         return []
@@ -108,8 +123,21 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
  * @returns Flat array of directories needing `_meta.json` files
  */
 export function buildMetaDirectories(entries: readonly ResolvedEntry[]): readonly MetaDirectory[] {
-  const { placements } = flattenToPlacements(entries, 0)
-  return groupPlacementsByDir(placements)
+  const visibleEntries = entries.filter((entry) => !entry.hidden)
+  const rootParentDirs = new Set(
+    visibleEntries
+      .filter((entry) => entry.root && entry.link)
+      .map((entry) => stripLeadingSlash(entry.link ?? ''))
+      .filter(Boolean)
+  )
+  const expanded = visibleEntries.flatMap((entry) => {
+    if (entry.root && entry.items) {
+      return entry.items.filter((child) => !child.hidden)
+    }
+    return [entry]
+  })
+  const { placements } = flattenToPlacements(expanded, 0)
+  return groupPlacementsByDir(placements).filter((dir) => !rootParentDirs.has(dir.dirPath))
 }
 
 // ---------------------------------------------------------------------------

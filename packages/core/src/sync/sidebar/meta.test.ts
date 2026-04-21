@@ -77,6 +77,36 @@ const packagesRoot: ResolvedEntry = {
   ],
 }
 
+const referenceRoot: ResolvedEntry = {
+  title: 'Reference',
+  link: '/references',
+  root: true,
+  items: [
+    {
+      title: 'API',
+      link: '/references/api',
+      items: [
+        {
+          title: 'Auth',
+          link: '/references/api/auth',
+          page: { outputPath: 'references/api/auth.md', frontmatter: {} },
+        },
+      ],
+    },
+    {
+      title: 'CLI',
+      link: '/references/cli',
+      items: [
+        {
+          title: 'Commands',
+          link: '/references/cli/commands',
+          page: { outputPath: 'references/cli/commands.md', frontmatter: {} },
+        },
+      ],
+    },
+  ],
+}
+
 // ---------------------------------------------------------------------------
 // buildRootMeta
 // ---------------------------------------------------------------------------
@@ -110,6 +140,51 @@ describe(buildRootMeta, () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toMatchObject({ name: 'visible' })
+  })
+
+  it('should promote root section children to top-level meta items', () => {
+    const entries: readonly ResolvedEntry[] = [
+      { title: 'Getting Started', link: '/getting-started', items: [] },
+      referenceRoot,
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toEqual([
+      { type: 'dir', name: 'getting-started', label: 'Getting Started' },
+      { type: 'dir', name: 'api', label: 'API' },
+      { type: 'dir', name: 'cli', label: 'CLI' },
+    ])
+  })
+
+  it('should not include root section parent as a meta item', () => {
+    const entries: readonly ResolvedEntry[] = [referenceRoot]
+
+    const result = buildRootMeta(entries)
+
+    const names = result
+      .filter(
+        (item): item is { readonly type: string; readonly name: string; readonly label: string } =>
+          'name' in item
+      )
+      .map((item) => item.name)
+    expect(names).not.toContain('references')
+  })
+
+  it('should exclude hidden children from root section promotion', () => {
+    const rootWithHidden: ResolvedEntry = {
+      title: 'Reference',
+      link: '/references',
+      root: true,
+      items: [
+        { title: 'API', link: '/references/api', items: [] },
+        { title: 'Internal', link: '/references/internal', hidden: true, items: [] },
+      ],
+    }
+
+    const result = buildRootMeta([rootWithHidden])
+
+    expect(result).toEqual([{ type: 'file', name: 'api', label: 'API' }])
   })
 })
 
@@ -212,6 +287,39 @@ describe(buildMetaDirectories, () => {
       expect(names).toContain('core')
       expect(names).toContain('ui')
     }
+  })
+
+  it('should flatten root section children without emitting parent directory group', () => {
+    const directories = buildMetaDirectories([referenceRoot])
+
+    const dirPaths = directories.map((d) => d.dirPath)
+    expect(dirPaths).not.toContain('references')
+  })
+
+  it('should emit subdirectories for root section children', () => {
+    const directories = buildMetaDirectories([referenceRoot])
+
+    const apiDir = directories.find((d) => d.dirPath === 'references/api')
+    expect(apiDir).toBeDefined()
+    if (apiDir) {
+      expect(apiDir.items).toContainEqual({ type: 'file', name: 'auth', label: 'Auth' })
+    }
+
+    const cliDir = directories.find((d) => d.dirPath === 'references/cli')
+    expect(cliDir).toBeDefined()
+    if (cliDir) {
+      expect(cliDir.items).toContainEqual({ type: 'file', name: 'commands', label: 'Commands' })
+    }
+  })
+
+  it('should handle mix of root and non-root sections', () => {
+    const directories = buildMetaDirectories([packagesRoot, referenceRoot])
+
+    const dirPaths = directories.map((d) => d.dirPath)
+    expect(dirPaths).toContain('packages')
+    expect(dirPaths).not.toContain('references')
+    expect(dirPaths).toContain('references/api')
+    expect(dirPaths).toContain('references/cli')
   })
 
   it('should preserve leaf-before-section order when names do not collide', () => {

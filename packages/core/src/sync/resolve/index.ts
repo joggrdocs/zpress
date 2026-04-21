@@ -244,6 +244,7 @@ async function resolveNestedSection(
       card: section.card,
       landing: section.landing,
       standalone: section.standalone,
+      root: section.root,
       autoLink,
       items: sorted,
       page: sectionPage,
