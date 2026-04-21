@@ -10,7 +10,7 @@ describe('defineTemplate()', () => {
       hint: 'Architecture decision record',
       body: '# {{title}}\n\n## Context\n',
     })
-    expect(template).toEqual({
+    expect(template).toStrictEqual({
       type: 'adr',
       label: 'ADR',
       hint: 'Architecture decision record',
@@ -27,6 +27,6 @@ describe('defineTemplate()', () => {
     } as const
     const template = defineTemplate(input)
     expect(template).not.toBe(input)
-    expect(template).toEqual(input)
+    expect(template).toStrictEqual(input)
   })
 })

@@ -28,7 +28,7 @@ describe('configError()', () => {
 describe('configErrorFromZod()', () => {
   it('should return object with _tag ConfigError', () => {
     const parseResult = z.string().safeParse(123)
-    expect(parseResult.success).toBeFalsy()
+    expect(parseResult.success).toBe(false)
     if (parseResult.success) {
       return
     }
@@ -38,7 +38,7 @@ describe('configErrorFromZod()', () => {
 
   it('should return type validation_failed', () => {
     const parseResult = z.string().safeParse(123)
-    expect(parseResult.success).toBeFalsy()
+    expect(parseResult.success).toBe(false)
     if (parseResult.success) {
       return
     }
@@ -48,7 +48,7 @@ describe('configErrorFromZod()', () => {
 
   it('should return message Configuration validation failed', () => {
     const parseResult = z.string().safeParse(123)
-    expect(parseResult.success).toBeFalsy()
+    expect(parseResult.success).toBe(false)
     if (parseResult.success) {
       return
     }
@@ -58,7 +58,7 @@ describe('configErrorFromZod()', () => {
 
   it('should map ZodError issues to errors array with path and message', () => {
     const parseResult = z.object({ name: z.string() }).safeParse({ name: 123 })
-    expect(parseResult.success).toBeFalsy()
+    expect(parseResult.success).toBe(false)
     if (parseResult.success) {
       return
     }

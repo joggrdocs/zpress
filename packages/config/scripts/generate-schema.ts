@@ -3,17 +3,13 @@
  */
 
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
 import { zpressConfigSchema } from '../src/schema.ts'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const packageJsonPath = resolve(__dirname, '../package.json')
+const packageJsonPath = resolve(import.meta.dirname, '../package.json')
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { version: string }
 const currentVersion = packageJson.version
 
@@ -33,7 +29,7 @@ try {
     ...jsonSchema,
   }
 
-  const schemasDir = resolve(__dirname, '../schemas')
+  const schemasDir = resolve(import.meta.dirname, '../schemas')
   mkdirSync(schemasDir, { recursive: true })
 
   const schemaPath = resolve(schemasDir, 'schema.json')
@@ -49,7 +45,7 @@ try {
 /**
  * Extract error message from unknown error value.
  */
-// TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
+// See https://github.com/joggrdocs/zpress/issues/73 — replace with shared toError util
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message

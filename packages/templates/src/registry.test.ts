@@ -7,7 +7,7 @@ import { TEMPLATE_TYPES } from './types'
 describe('createRegistry()', () => {
   it('should include all built-in templates', () => {
     const registry = createRegistry()
-    expect(registry.types()).toEqual(expect.arrayContaining([...TEMPLATE_TYPES]))
+    expect(registry.types()).toStrictEqual(expect.arrayContaining([...TEMPLATE_TYPES]))
   })
 
   it('should return correct template for each type', () => {
@@ -29,21 +29,21 @@ describe('createRegistry()', () => {
 
   it('should report has() correctly', () => {
     const registry = createRegistry()
-    expect(registry.has('guide')).toBeTruthy()
-    expect(registry.has('nonexistent')).toBeFalsy()
+    expect(registry.has('guide')).toBe(true)
+    expect(registry.has('nonexistent')).toBe(false)
   })
 
   it('should list all templates', () => {
     const registry = createRegistry()
-    expect(registry.list().length).toBe(TEMPLATE_TYPES.length)
+    expect(registry.list()).toHaveLength(TEMPLATE_TYPES.length)
   })
 })
 
 describe('createRegistry([])', () => {
   it('should have no templates', () => {
     const registry = createRegistry([])
-    expect(registry.list().length).toBe(0)
-    expect(registry.types().length).toBe(0)
+    expect(registry.list()).toHaveLength(0)
+    expect(registry.types()).toHaveLength(0)
   })
 
   it('should return undefined for any type', () => {
@@ -62,7 +62,7 @@ describe('registry.add()', () => {
       body: '# {{title}}',
     })
     const updated = registry.add(adr)
-    expect(updated.has('adr')).toBeTruthy()
+    expect(updated.has('adr')).toBe(true)
     const result = updated.get('adr')
     expect(result).toBeDefined()
     if (result === undefined) {
@@ -80,7 +80,7 @@ describe('registry.add()', () => {
       body: '# {{title}}',
     })
     registry.add(adr)
-    expect(registry.has('adr')).toBeFalsy()
+    expect(registry.has('adr')).toBe(false)
   })
 
   it('should overwrite an existing template with the same type', () => {
@@ -162,7 +162,7 @@ describe('registry.extend()', () => {
   it('should return unchanged registry when extending nonexistent type', () => {
     const registry = createRegistry()
     const updated = registry.extend('nonexistent', { label: 'Test' })
-    expect(updated.types()).toEqual(registry.types())
+    expect(updated.types()).toStrictEqual(registry.types())
   })
 
   it('should not mutate the original registry', () => {
@@ -192,8 +192,8 @@ describe('registry.merge()', () => {
       defineTemplate({ type: 'rfc', label: 'RFC', hint: 'b', body: '# B' })
     )
     const merged = a.merge(b)
-    expect(merged.has('adr')).toBeTruthy()
-    expect(merged.has('rfc')).toBeTruthy()
+    expect(merged.has('adr')).toBe(true)
+    expect(merged.has('rfc')).toBe(true)
   })
 
   it('should let the other registry win on conflicts', () => {
@@ -220,7 +220,7 @@ describe('registry.merge()', () => {
       defineTemplate({ type: 'rfc', label: 'RFC', hint: 'b', body: '# B' })
     )
     a.merge(b)
-    expect(a.has('rfc')).toBeFalsy()
-    expect(b.has('adr')).toBeFalsy()
+    expect(a.has('rfc')).toBe(false)
+    expect(b.has('adr')).toBe(false)
   })
 })

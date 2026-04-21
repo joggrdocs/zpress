@@ -8,7 +8,7 @@ describe('ICON_COLORS constant', () => {
   })
 
   it('should contain colors in correct order', () => {
-    expect(ICON_COLORS).toEqual([
+    expect(ICON_COLORS).toStrictEqual([
       'purple',
       'blue',
       'green',
@@ -24,12 +24,12 @@ describe('ICON_COLORS constant', () => {
 describe('resolveIcon()', () => {
   it('should return id with default purple color when given a string', () => {
     const result = resolveIcon('devicon:react')
-    expect(result).toEqual({ id: 'devicon:react', color: 'purple' })
+    expect(result).toStrictEqual({ id: 'devicon:react', color: 'purple' })
   })
 
   it('should return id and color passthrough when given an object', () => {
     const result = resolveIcon({ id: 'devicon:react', color: 'blue' })
-    expect(result).toEqual({ id: 'devicon:react', color: 'blue' })
+    expect(result).toStrictEqual({ id: 'devicon:react', color: 'blue' })
   })
 })
 
@@ -42,11 +42,11 @@ describe('resolveOptionalIcon()', () => {
 
   it('should delegate to resolveIcon and return resolved icon when given a string', () => {
     const result = resolveOptionalIcon('devicon:react')
-    expect(result).toEqual({ id: 'devicon:react', color: 'purple' })
+    expect(result).toStrictEqual({ id: 'devicon:react', color: 'purple' })
   })
 
   it('should delegate to resolveIcon and return resolved icon when given an object', () => {
     const result = resolveOptionalIcon({ id: 'devicon:react', color: 'blue' })
-    expect(result).toEqual({ id: 'devicon:react', color: 'blue' })
+    expect(result).toStrictEqual({ id: 'devicon:react', color: 'blue' })
   })
 })

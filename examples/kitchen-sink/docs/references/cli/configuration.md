@@ -20,8 +20,8 @@ export default {
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ACME_TOKEN` | API authentication token | — |
-| `ACME_ORG` | Organization slug | from config |
-| `ACME_LOG_LEVEL` | Log verbosity (`debug`, `info`, `warn`, `error`) | `info` |
+| Variable         | Description                                      | Default     |
+| ---------------- | ------------------------------------------------ | ----------- |
+| `ACME_TOKEN`     | API authentication token                         | —           |
+| `ACME_ORG`       | Organization slug                                | from config |
+| `ACME_LOG_LEVEL` | Log verbosity (`debug`, `info`, `warn`, `error`) | `info`      |

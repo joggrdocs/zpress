@@ -37,7 +37,7 @@ export type {
  * @param error - The unknown value from a catch clause
  * @returns An `Error` instance
  */
-// TODO: replace with shared toError util (https://github.com/joggrdocs/zpress/issues/73)
+// See https://github.com/joggrdocs/zpress/issues/73 — replace with shared toError util
 export function toError(error: unknown): Error {
   if (error instanceof Error) {
     return error

@@ -11,15 +11,15 @@ const LOADER_CSS = '/* mock css/loader-backdrop.css *//* mock css/loader-dots.cs
 
 describe('getThemeCss()', () => {
   it('should return a string for built-in theme base', () => {
-    expect(getThemeCss('base')).toEqual(expect.any(String))
+    expect(getThemeCss('base')).toStrictEqual(expect.any(String))
   })
 
   it('should return a string for built-in theme midnight', () => {
-    expect(getThemeCss('midnight')).toEqual(expect.any(String))
+    expect(getThemeCss('midnight')).toStrictEqual(expect.any(String))
   })
 
   it('should return a string for built-in theme arcade', () => {
-    expect(getThemeCss('arcade')).toEqual(expect.any(String))
+    expect(getThemeCss('arcade')).toStrictEqual(expect.any(String))
   })
 
   it('should return loader CSS for unknown theme name', () => {

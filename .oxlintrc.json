@@ -66,6 +66,8 @@
       }
     ],
     "vitest/prefer-called-times": "off",
+    "vitest/prefer-to-be-truthy": "off",
+    "vitest/prefer-to-be-falsy": "off",
     "sort-keys": "off",
     "id-length": "off",
     "no-magic-numbers": "off",
@@ -95,7 +97,16 @@
         "functional/no-classes": "off",
         "security/detect-object-injection": "off",
         "security/detect-non-literal-fs-filename": "off",
-        "vitest/no-importing-vitest-globals": "off"
+        "vitest/no-importing-vitest-globals": "off",
+        "typescript/no-non-null-assertion": "off",
+        "jest/no-hooks": "off",
+        "jest/no-conditional-in-test": "off",
+        "jest/no-conditional-expect": "off",
+        "jest/prefer-ending-with-an-expect": "off",
+        "jest/prefer-lowercase-title": "off",
+        "jest/max-expects": "off",
+        "jest/require-top-level-describe": "off",
+        "jest/prefer-snapshot-hint": "off"
       }
     },
     {
@@ -105,7 +116,7 @@
       }
     },
     {
-      "files": ["scripts/**"],
+      "files": ["scripts/**", "**/scripts/**"],
       "rules": {
         "security/detect-non-literal-fs-filename": "off"
       }

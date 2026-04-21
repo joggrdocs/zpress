@@ -29,19 +29,19 @@ beforeEach(() => {
 describe('runConfigCheck()', () => {
   it('should return passed: false with loadError when loadError is provided', () => {
     const result = runConfigCheck({ config: null, loadError })
-    expect(result.passed).toBeFalsy()
+    expect(result.passed).toBe(false)
     expect(result.errors).toContain(loadError)
   })
 
   it('should return passed: false with empty_sections error when config is null', () => {
     const result = runConfigCheck({ config: null, loadError: null })
-    expect(result.passed).toBeFalsy()
+    expect(result.passed).toBe(false)
     expect(result.errors[0]).toMatchObject({ type: 'empty_sections' })
   })
 
   it('should return passed: true with empty errors when config is valid', () => {
     const result = runConfigCheck({ config: validConfig, loadError: null })
-    expect(result.passed).toBeTruthy()
+    expect(result.passed).toBe(true)
     expect(result.errors).toHaveLength(0)
   })
 })
@@ -53,7 +53,7 @@ describe('presentResults()', () => {
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
-    expect(result).toBeTruthy()
+    expect(result).toBe(true)
   })
 
   it('should return false when config failed', () => {
@@ -62,7 +62,7 @@ describe('presentResults()', () => {
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
-    expect(result).toBeFalsy()
+    expect(result).toBe(false)
   })
 
   it('should return false when build has deadlinks', () => {
@@ -74,7 +74,7 @@ describe('presentResults()', () => {
       },
       logger: mockLogger,
     })
-    expect(result).toBeFalsy()
+    expect(result).toBe(false)
   })
 
   it('should call logger.success when config is valid', () => {

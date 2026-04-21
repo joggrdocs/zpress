@@ -32,9 +32,7 @@ describe('injectLandingPages()', () => {
     injectLandingPages([section], [], [])
 
     expect(section.page).toBeDefined()
-    if (section.page) {
-      expect(section.page.outputPath).toMatch(/\.mdx$/)
-    }
+    expect(section.page!.outputPath).toMatch(/\.mdx$/)
   })
 
   it('should not overwrite an existing page on a section', () => {
@@ -76,8 +74,6 @@ describe('injectLandingPages()', () => {
     injectLandingPages([section], [], [])
 
     expect(nested.page).toBeDefined()
-    if (nested.page) {
-      expect(nested.page.outputPath).toMatch(/\.mdx$/)
-    }
+    expect(nested.page!.outputPath).toMatch(/\.mdx$/)
   })
 })
