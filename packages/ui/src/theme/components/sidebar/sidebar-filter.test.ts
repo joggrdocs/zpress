@@ -54,7 +54,7 @@ const scopes: readonly string[] = ['/packages', '/contributing']
 // resolveScopedSidebar
 // ---------------------------------------------------------------------------
 
-describe(resolveScopedSidebar, () => {
+describe('resolveScopedSidebar()', () => {
   it('should return all items when no scopes are defined', () => {
     const result = resolveScopedSidebar(fullSidebar, '/getting-started', [])
 
@@ -94,7 +94,7 @@ describe(resolveScopedSidebar, () => {
 
     resolveScopedSidebar(fullSidebar, '/packages', scopes)
 
-    expect(fullSidebar).toEqual(original)
+    expect(fullSidebar).toStrictEqual(original)
   })
 
   it('should not match a scope that is only a prefix of the pathname segment', () => {
@@ -109,7 +109,7 @@ describe(resolveScopedSidebar, () => {
 // belongsToScope
 // ---------------------------------------------------------------------------
 
-describe(belongsToScope, () => {
+describe('belongsToScope()', () => {
   it('should match an item whose link equals the scope', () => {
     expect(belongsToScope(packages, '/packages')).toBe(true)
   })

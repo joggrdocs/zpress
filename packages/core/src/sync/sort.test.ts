@@ -32,7 +32,7 @@ describe('sortEntries()', () => {
   it('should apply default sort (pinned first, then alpha) when no sort is provided', () => {
     const entries: readonly ResolvedEntry[] = [leafA, leafB, leafC]
     const result = sortEntries(entries)
-    expect(result.map((e) => e.title)).toEqual(['Apple', 'Mango', 'Zebra'])
+    expect(result.map((e) => e.title)).toStrictEqual(['Apple', 'Mango', 'Zebra'])
     expect(result).not.toBe(entries)
   })
 
@@ -40,7 +40,7 @@ describe('sortEntries()', () => {
     const entries: readonly ResolvedEntry[] = [leafC, section, leafA, leafB]
     const result = sortEntries(entries, 'alpha')
     expect(result[0]).toBe(section)
-    expect(result.slice(1).map((e) => e.title)).toEqual(['Apple', 'Mango', 'Zebra'])
+    expect(result.slice(1).map((e) => e.title)).toStrictEqual(['Apple', 'Mango', 'Zebra'])
   })
 
   it('should sort by outputPath with sections first for filename sort', () => {
@@ -54,12 +54,12 @@ describe('sortEntries()', () => {
         }
         return ''
       })
-    ).toEqual(['a-page.md', 'm-page.md', 'z-page.md'])
+    ).toStrictEqual(['a-page.md', 'm-page.md', 'z-page.md'])
   })
 
   it('should use custom comparator function when provided', () => {
     const entries: readonly ResolvedEntry[] = [leafA, leafB, leafC]
     const result = sortEntries(entries, reverseComparator)
-    expect(result.map((e) => e.title)).toEqual(['Zebra', 'Mango', 'Apple'])
+    expect(result.map((e) => e.title)).toStrictEqual(['Zebra', 'Mango', 'Apple'])
   })
 })

@@ -14,7 +14,7 @@ const autoConfig = { nav: 'auto' } as ZpressConfig
 // generateNav — root sections
 // ---------------------------------------------------------------------------
 
-describe(generateNav, () => {
+describe('generateNav()', () => {
   it('should exclude root sections from non-standalone nav items', () => {
     const entries: readonly ResolvedEntry[] = [
       { title: 'Guide', link: '/guide', items: [{ title: 'Intro', link: '/guide/intro' }] },
@@ -54,8 +54,10 @@ describe(generateNav, () => {
 
     expect(refItem).toBeDefined()
     expect(refItem).toHaveProperty('items')
-    const childTexts = ((refItem as { readonly items: readonly { readonly text: string }[] }).items).map((c) => c.text)
-    expect(childTexts).toEqual(['API', 'CLI'])
+    const childTexts = (
+      refItem as { readonly items: readonly { readonly text: string }[] }
+    ).items.map((c) => c.text)
+    expect(childTexts).toStrictEqual(['API', 'CLI'])
   })
 
   it('should not count root sections toward the 3 non-standalone limit', () => {
@@ -76,7 +78,7 @@ describe(generateNav, () => {
     const texts = nav.map((item) => item.text)
 
     // First 3 non-standalone + root section
-    expect(texts).toEqual(['A', 'B', 'C', 'Ref'])
+    expect(texts).toStrictEqual(['A', 'B', 'C', 'Ref'])
     expect(texts).not.toContain('D')
   })
 })

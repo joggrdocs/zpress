@@ -6,8 +6,8 @@ import { TEMPLATE_TYPES } from './types'
 describe('built-in templates', () => {
   it('should have an entry for every template type', () => {
     const keys = Object.keys(getBuiltInTemplates())
-    expect(keys).toEqual(expect.arrayContaining([...TEMPLATE_TYPES]))
-    expect(keys.length).toBe(TEMPLATE_TYPES.length)
+    expect(keys).toStrictEqual(expect.arrayContaining([...TEMPLATE_TYPES]))
+    expect(keys).toHaveLength(TEMPLATE_TYPES.length)
   })
 
   it('should have matching type field on every template', () => {

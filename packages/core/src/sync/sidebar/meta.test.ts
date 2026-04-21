@@ -111,7 +111,7 @@ const referenceRoot: ResolvedEntry = {
 // buildRootMeta
 // ---------------------------------------------------------------------------
 
-describe(buildRootMeta, () => {
+describe('buildRootMeta()', () => {
   it('should include visible top-level sections', () => {
     const entries: readonly ResolvedEntry[] = [
       {
@@ -124,7 +124,7 @@ describe(buildRootMeta, () => {
 
     const result = buildRootMeta(entries)
 
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       { type: 'dir', name: 'getting-started', label: 'Getting Started' },
       { type: 'dir', name: 'packages', label: 'Packages' },
     ])
@@ -150,7 +150,7 @@ describe(buildRootMeta, () => {
 
     const result = buildRootMeta(entries)
 
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       { type: 'dir', name: 'getting-started', label: 'Getting Started' },
       { type: 'dir', name: 'api', label: 'API' },
       { type: 'dir', name: 'cli', label: 'CLI' },
@@ -184,7 +184,7 @@ describe(buildRootMeta, () => {
 
     const result = buildRootMeta([rootWithHidden])
 
-    expect(result).toEqual([{ type: 'file', name: 'api', label: 'API' }])
+    expect(result).toStrictEqual([{ type: 'file', name: 'api', label: 'API' }])
   })
 })
 
@@ -192,19 +192,17 @@ describe(buildRootMeta, () => {
 // buildMetaDirectories
 // ---------------------------------------------------------------------------
 
-describe(buildMetaDirectories, () => {
+describe('buildMetaDirectories()', () => {
   it('should use the section title when a leaf and section share the same name', () => {
     const directories = buildMetaDirectories([packagesRoot])
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
 
     expect(packagesDir).toBeDefined()
-    if (packagesDir) {
-      const cliItem = packagesDir.items.find(
-        (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
-      )
+    const cliItem = packagesDir!.items.find(
+      (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
+    )
 
-      expect(cliItem).toMatchObject({ type: 'dir', name: 'cli', label: '@zpress/cli' })
-    }
+    expect(cliItem).toMatchObject({ type: 'dir', name: 'cli', label: '@zpress/cli' })
   })
 
   it('should not produce duplicate entries for same-name leaf and section', () => {
@@ -212,13 +210,11 @@ describe(buildMetaDirectories, () => {
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
 
     expect(packagesDir).toBeDefined()
-    if (packagesDir) {
-      const cliItems = packagesDir.items.filter(
-        (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
-      )
+    const cliItems = packagesDir!.items.filter(
+      (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
+    )
 
-      expect(cliItems).toHaveLength(1)
-    }
+    expect(cliItems).toHaveLength(1)
   })
 
   it('should place child leaves in the correct subdirectory', () => {
@@ -226,9 +222,7 @@ describe(buildMetaDirectories, () => {
     const cliDir = directories.find((d) => d.dirPath === 'packages/cli')
 
     expect(cliDir).toBeDefined()
-    if (cliDir) {
-      expect(cliDir.items).toContainEqual({ type: 'file', name: 'changelog', label: 'Changelog' })
-    }
+    expect(cliDir!.items).toContainEqual({ type: 'file', name: 'changelog', label: 'Changelog' })
   })
 
   it('should preserve config order for sections in the same directory', () => {
@@ -236,18 +230,14 @@ describe(buildMetaDirectories, () => {
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
 
     expect(packagesDir).toBeDefined()
-    if (packagesDir) {
-      const names = packagesDir.items
-        .filter(
-          (
-            item
-          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
-            typeof item === 'object' && 'name' in item
-        )
-        .map((item) => item.name)
+    const names = packagesDir!.items
+      .filter(
+        (item): item is { readonly type: string; readonly name: string; readonly label: string } =>
+          typeof item === 'object' && 'name' in item
+      )
+      .map((item) => item.name)
 
-      expect(names).toEqual(['zpress', 'cli', 'config', 'core', 'ui', 'theme', 'templates'])
-    }
+    expect(names).toStrictEqual(['zpress', 'cli', 'config', 'core', 'ui', 'theme', 'templates'])
   })
 
   it('should emit file type with section label when section has no subdirectory content', () => {
@@ -255,17 +245,15 @@ describe(buildMetaDirectories, () => {
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
 
     expect(packagesDir).toBeDefined()
-    if (packagesDir) {
-      const templatesItem = packagesDir.items.find(
-        (item) => typeof item === 'object' && 'name' in item && item.name === 'templates'
-      )
+    const templatesItem = packagesDir!.items.find(
+      (item) => typeof item === 'object' && 'name' in item && item.name === 'templates'
+    )
 
-      expect(templatesItem).toMatchObject({
-        type: 'file',
-        name: 'templates',
-        label: '@zpress/templates',
-      })
-    }
+    expect(templatesItem).toMatchObject({
+      type: 'file',
+      name: 'templates',
+      label: '@zpress/templates',
+    })
   })
 
   it('should preserve all package sections in the packages directory', () => {
@@ -273,20 +261,16 @@ describe(buildMetaDirectories, () => {
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
 
     expect(packagesDir).toBeDefined()
-    if (packagesDir) {
-      const names = packagesDir.items
-        .filter(
-          (
-            item
-          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
-            typeof item === 'object' && 'name' in item
-        )
-        .map((item) => item.name)
+    const names = packagesDir!.items
+      .filter(
+        (item): item is { readonly type: string; readonly name: string; readonly label: string } =>
+          typeof item === 'object' && 'name' in item
+      )
+      .map((item) => item.name)
 
-      expect(names).toContain('cli')
-      expect(names).toContain('core')
-      expect(names).toContain('ui')
-    }
+    expect(names).toContain('cli')
+    expect(names).toContain('core')
+    expect(names).toContain('ui')
   })
 
   it('should flatten root section children without emitting parent directory group', () => {
@@ -301,15 +285,11 @@ describe(buildMetaDirectories, () => {
 
     const apiDir = directories.find((d) => d.dirPath === 'references/api')
     expect(apiDir).toBeDefined()
-    if (apiDir) {
-      expect(apiDir.items).toContainEqual({ type: 'file', name: 'auth', label: 'Auth' })
-    }
+    expect(apiDir!.items).toContainEqual({ type: 'file', name: 'auth', label: 'Auth' })
 
     const cliDir = directories.find((d) => d.dirPath === 'references/cli')
     expect(cliDir).toBeDefined()
-    if (cliDir) {
-      expect(cliDir.items).toContainEqual({ type: 'file', name: 'commands', label: 'Commands' })
-    }
+    expect(cliDir!.items).toContainEqual({ type: 'file', name: 'commands', label: 'Commands' })
   })
 
   it('should handle mix of root and non-root sections', () => {
@@ -355,17 +335,13 @@ describe(buildMetaDirectories, () => {
     const mixedDir = directories.find((d) => d.dirPath === 'mixed')
 
     expect(mixedDir).toBeDefined()
-    if (mixedDir) {
-      const names = mixedDir.items
-        .filter(
-          (
-            item
-          ): item is { readonly type: string; readonly name: string; readonly label: string } =>
-            typeof item === 'object' && 'name' in item
-        )
-        .map((item) => item.name)
+    const names = mixedDir!.items
+      .filter(
+        (item): item is { readonly type: string; readonly name: string; readonly label: string } =>
+          typeof item === 'object' && 'name' in item
+      )
+      .map((item) => item.name)
 
-      expect(names).toEqual(['intro', 'faq', 'api'])
-    }
+    expect(names).toStrictEqual(['intro', 'faq', 'api'])
   })
 })

@@ -68,6 +68,6 @@ describe('renderPixelText (RubiFont)', () => {
   it('should fall back to space for unknown characters', () => {
     const result = renderPixelText('A1B')
     const known = renderPixelText('A B')
-    expect(result.lines).toEqual(known.lines)
+    expect(result.lines).toStrictEqual(known.lines)
   })
 })

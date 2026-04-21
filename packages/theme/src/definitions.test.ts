@@ -11,7 +11,7 @@ import {
 
 describe('THEME_NAMES constant', () => {
   it('should contain exactly the built-in theme names', () => {
-    expect(THEME_NAMES).toEqual(['base', 'midnight', 'arcade'])
+    expect(THEME_NAMES).toStrictEqual(['base', 'midnight', 'arcade'])
   })
 
   it('should have exactly 3 entries', () => {
@@ -21,7 +21,7 @@ describe('THEME_NAMES constant', () => {
 
 describe('COLOR_MODES constant', () => {
   it('should contain exactly the supported color modes', () => {
-    expect(COLOR_MODES).toEqual(['dark', 'light', 'toggle'])
+    expect(COLOR_MODES).toStrictEqual(['dark', 'light', 'toggle'])
   })
 
   it('should have exactly 3 entries', () => {
@@ -31,7 +31,7 @@ describe('COLOR_MODES constant', () => {
 
 describe('ICON_COLORS constant', () => {
   it('should contain exactly the 8 built-in icon colors', () => {
-    expect(ICON_COLORS).toEqual([
+    expect(ICON_COLORS).toStrictEqual([
       'purple',
       'blue',
       'green',
@@ -50,65 +50,65 @@ describe('ICON_COLORS constant', () => {
 
 describe('isBuiltInTheme()', () => {
   it('should return true for base', () => {
-    expect(isBuiltInTheme('base')).toBeTruthy()
+    expect(isBuiltInTheme('base')).toBe(true)
   })
 
   it('should return true for midnight', () => {
-    expect(isBuiltInTheme('midnight')).toBeTruthy()
+    expect(isBuiltInTheme('midnight')).toBe(true)
   })
 
   it('should return true for arcade', () => {
-    expect(isBuiltInTheme('arcade')).toBeTruthy()
+    expect(isBuiltInTheme('arcade')).toBe(true)
   })
 
   it('should return false for an unknown theme name', () => {
-    expect(isBuiltInTheme('unknown')).toBeFalsy()
+    expect(isBuiltInTheme('unknown')).toBe(false)
   })
 
   it('should return false for an empty string', () => {
-    expect(isBuiltInTheme('')).toBeFalsy()
+    expect(isBuiltInTheme('')).toBe(false)
   })
 })
 
 describe('isBuiltInIconColor()', () => {
   it('should return true for purple', () => {
-    expect(isBuiltInIconColor('purple')).toBeTruthy()
+    expect(isBuiltInIconColor('purple')).toBe(true)
   })
 
   it('should return true for blue', () => {
-    expect(isBuiltInIconColor('blue')).toBeTruthy()
+    expect(isBuiltInIconColor('blue')).toBe(true)
   })
 
   it('should return true for green', () => {
-    expect(isBuiltInIconColor('green')).toBeTruthy()
+    expect(isBuiltInIconColor('green')).toBe(true)
   })
 
   it('should return true for amber', () => {
-    expect(isBuiltInIconColor('amber')).toBeTruthy()
+    expect(isBuiltInIconColor('amber')).toBe(true)
   })
 
   it('should return true for cyan', () => {
-    expect(isBuiltInIconColor('cyan')).toBeTruthy()
+    expect(isBuiltInIconColor('cyan')).toBe(true)
   })
 
   it('should return true for red', () => {
-    expect(isBuiltInIconColor('red')).toBeTruthy()
+    expect(isBuiltInIconColor('red')).toBe(true)
   })
 
   it('should return true for pink', () => {
-    expect(isBuiltInIconColor('pink')).toBeTruthy()
+    expect(isBuiltInIconColor('pink')).toBe(true)
   })
 
   it('should return true for slate', () => {
-    expect(isBuiltInIconColor('slate')).toBeTruthy()
+    expect(isBuiltInIconColor('slate')).toBe(true)
   })
 
   it('should return false for an unknown color', () => {
-    expect(isBuiltInIconColor('orange')).toBeFalsy()
+    expect(isBuiltInIconColor('orange')).toBe(false)
   })
 
   it('should return false for an empty string', () => {
-    expect(isBuiltInIconColor('')).toBeFalsy()
+    expect(isBuiltInIconColor('')).toBe(false)
   })
 })
 
