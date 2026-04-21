@@ -1,6 +1,6 @@
 {
   "name": "@zpress/core",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "Sync engine and asset utilities for zpress",
   "keywords": [
     "config",

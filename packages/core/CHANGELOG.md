@@ -1,5 +1,17 @@
 # @zpress/core
 
+## 0.11.0
+
+### Minor Changes
+
+- ca4f487: feat: support root sections that promote children to top-level sidebar and nav
+
+### Patch Changes
+
+- f26cf74: fix: resolve SWC decorator panic by upgrading rsbuild to 2.0.0-rc.1
+- Updated dependencies [f26cf74]
+  - @zpress/config@0.5.2
+
 ## 0.10.2
 
 ### Patch Changes
