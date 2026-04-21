@@ -64,7 +64,7 @@
     "katex": "^0.16.45",
     "mermaid": "^10.9.5",
     "openapi-sampler": "^1.7.2",
-    "react-aria-components": "^1.16.0",
+    "react-aria-components": "^1.17.0",
     "ts-morph": "^27.0.2",
     "ts-pattern": "catalog:",
     "unist-util-visit": "^5.1.0"
@@ -79,8 +79,8 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "rspress-plugin-devkit": "^1.0.0",
-    "rspress-plugin-file-tree": "^1.0.4",
-    "rspress-plugin-katex": "^1.0.0",
+    "rspress-plugin-file-tree": "^1.0.5",
+    "rspress-plugin-katex": "^1.0.1",
     "rspress-plugin-supersub": "^1.0.0",
     "typescript": "catalog:",
     "vitest": "catalog:"

@@ -32,7 +32,7 @@
     "@zpress/kit": "workspace:*"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.30.0",
+    "@changesets/cli": "^2.31.0",
     "@iconify-json/catppuccin": "^1.2.17",
     "@iconify-json/devicon": "^1.2.62",
     "@iconify-json/logos": "^1.2.11",
@@ -42,17 +42,17 @@
     "@iconify-json/simple-icons": "^1.2.77",
     "@iconify-json/skill-icons": "^1.2.4",
     "@iconify-json/vscode-icons": "^1.2.45",
-    "@microsoft/api-extractor": "^7.58.2",
-    "@types/node": "^25.5.2",
+    "@microsoft/api-extractor": "^7.58.7",
+    "@types/node": "^25.6.0",
     "@typescript/native-preview": "catalog:",
     "eslint-plugin-functional": "^9.0.4",
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-security": "^4.0.0",
     "laufen": "^1.3.1",
-    "oxfmt": "^0.44.0",
-    "oxlint": "^1.59.0",
+    "oxfmt": "^0.46.0",
+    "oxlint": "^1.61.0",
     "rimraf": "^6.1.3",
-    "turbo": "^2.9.5",
+    "turbo": "^2.9.6",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
@@ -65,7 +65,7 @@
       "esbuild"
     ],
     "overrides": {
-      "@rsbuild/core": "2.0.0-beta.9"
+      "@rsbuild/core": "2.0.0-rc.1"
     },
     "packageExtensions": {
       "ink-gradient": {
