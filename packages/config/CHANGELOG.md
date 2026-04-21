@@ -1,5 +1,11 @@
 # @zpress/config
 
+## 0.5.2
+
+### Patch Changes
+
+- f26cf74: fix: resolve SWC decorator panic by upgrading rsbuild to 2.0.0-rc.1
+
 ## 0.5.1
 
 ### Patch Changes

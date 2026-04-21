@@ -1,5 +1,15 @@
 # @zpress/ui
 
+## 0.9.1
+
+### Patch Changes
+
+- f26cf74: fix: resolve SWC decorator panic by upgrading rsbuild to 2.0.0-rc.1
+- Updated dependencies [ca4f487]
+- Updated dependencies [f26cf74]
+  - @zpress/core@0.11.0
+  - @zpress/config@0.5.2
+
 ## 0.9.0
 
 ### Minor Changes
