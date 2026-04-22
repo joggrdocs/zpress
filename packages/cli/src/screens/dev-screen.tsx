@@ -1,3 +1,6 @@
+import { execSync } from 'node:child_process'
+import { platform } from 'node:os'
+
 import {
   Alert,
   Box,
@@ -10,6 +13,7 @@ import {
   useInput,
 } from '@kidd-cli/core/ui'
 import { match } from 'ts-pattern'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { Banner } from '../components/banner.tsx'
 import { useDevServer } from '../hooks/use-dev-server.ts'
@@ -83,14 +87,75 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   const width = Math.max(Math.min(columns, 80), 2)
   const separatorWidth = Math.max(width - 2, 0)
 
+  const [copied, setCopied] = useState(false)
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleCopy = useCallback(() => {
+    if (!state.crashLogPath) {
+      return
+    }
+    copyToClipboard(state.crashLogPath)
+    setCopied(true)
+    if (copiedTimer.current) {
+      clearTimeout(copiedTimer.current)
+    }
+    // oxlint-disable-next-line functional/immutable-data -- timer ref for auto-clear
+    copiedTimer.current = setTimeout(() => {
+      setCopied(false)
+    }, 2000)
+  }, [state.crashLogPath])
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimer.current) {
+        clearTimeout(copiedTimer.current)
+      }
+    }
+  }, [])
+
+  useInput(
+    (input, key) => {
+      if (state.phase === 'error') {
+        if (input === 'c' && state.crashLogPath) {
+          handleCopy()
+        }
+        if (input === 'q' || (key.ctrl && input === 'c')) {
+          exit()
+          process.exit(1)
+        }
+      }
+    },
+    { isActive: state.phase === 'error' }
+  )
+
   if (state.phase === 'error') {
     return (
       <Box flexDirection="column" padding={1}>
         <Banner />
         <Box marginTop={1}>
-          <Alert variant="error" title="Dev Server Error" width={width}>
+          <Alert variant="error" title="Fatal Error" width={width}>
             {state.error ?? 'Unknown error'}
           </Alert>
+        </Box>
+        {state.crashLogPath && (
+          <Box marginTop={1} paddingLeft={1} flexDirection="column">
+            <Text dimColor>Full log:</Text>
+            <Text color="cyan">{state.crashLogPath}</Text>
+          </Box>
+        )}
+        {copied && (
+          <Box marginTop={1} paddingLeft={1}>
+            <Text color="green">✓ Copied to clipboard</Text>
+          </Box>
+        )}
+        <Box marginTop={1} paddingLeft={1}>
+          {state.crashLogPath && (
+            <>
+              <HotkeyHint label="c" description="copy log path" />
+              <Text dimColor> · </Text>
+            </>
+          )}
+          <HotkeyHint label="q" description="quit" />
         </Box>
       </Box>
     )
@@ -233,4 +298,23 @@ function HotkeyHint(props: {
       <Text dimColor> {props.description}</Text>
     </Text>
   )
+}
+
+/**
+ * Copy text to the system clipboard.
+ *
+ * @private
+ * @param text - The text to copy
+ */
+function copyToClipboard(text: string): void {
+  const cmd = match(platform())
+    .with('darwin', () => 'pbcopy')
+    .with('win32', () => 'clip')
+    .otherwise(() => 'xclip -selection clipboard')
+
+  try {
+    execSync(cmd, { input: text, stdio: ['pipe', 'ignore', 'ignore'] })
+  } catch {
+    // Clipboard not available — silently ignore
+  }
 }

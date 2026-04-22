@@ -4,6 +4,8 @@ import { attemptAsync, mapValues } from 'es-toolkit'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { clean } from '../commands/clean.ts'
+import { reportCrash } from '../lib/crash-reporter.ts'
+import { toError } from '../lib/error.ts'
 import type {
   DevPhase,
   DevServerActions,
@@ -49,6 +51,7 @@ export interface UseDevServerResult {
 export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   const [phase, setPhase] = useState<DevPhase>('loading')
   const [error, setError] = useState<string | null>(null)
+  const [crashLogPath, setCrashLogPath] = useState<string | null>(null)
   const [status, setStatus] = useState<WatcherStatus>('idle')
   const [lastSync, setLastSync] = useState<SyncResult | null>(null)
   const [port, setPort] = useState(0)
@@ -83,6 +86,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
     const set = guardSetters(disposed, {
       phase: setPhase,
       error: setError,
+      crashLogPath: setCrashLogPath,
       status: setStatus,
       lastSync: setLastSync,
       port: setPort,
@@ -194,7 +198,23 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
       set.phase('ready')
     }
 
-    init()
+    init().catch((caught: unknown) => {
+      if (disposed.current) {
+        return
+      }
+      const normalized = toError(caught)
+      const result = reportCrash({
+        error: normalized,
+        source: 'middleware',
+        command: 'dev',
+        version: 'unknown',
+      })
+      set.error(normalized.message)
+      if (result.ok) {
+        set.crashLogPath(result.logPath)
+      }
+      set.phase('error')
+    })
 
     return () => {
       // oxlint-disable-next-line functional/immutable-data -- mark disposed on unmount
@@ -210,7 +230,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }, [])
 
   return {
-    state: { phase, error, status, lastSync, log, port },
+    state: { phase, error, crashLogPath, status, lastSync, log, port },
     actions: { resync, clearLog, close },
   }
 }

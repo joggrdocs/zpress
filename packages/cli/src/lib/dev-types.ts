@@ -26,6 +26,7 @@ export type WatcherStatus = 'idle' | 'syncing' | 'restarting' | 'error'
 export interface DevServerState {
   readonly phase: DevPhase
   readonly error: string | null
+  readonly crashLogPath: string | null
   readonly status: WatcherStatus
   readonly lastSync: SyncResult | null
   readonly log: readonly LogEntry[]
