@@ -198,11 +198,11 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
       set.phase('ready')
     }
 
-    init().catch((caught: unknown) => {
+    init().catch((error: unknown) => {
       if (disposed.current) {
         return
       }
-      const normalized = toError(caught)
+      const normalized = toError(error)
       const result = reportCrash({
         error: normalized,
         source: 'middleware',

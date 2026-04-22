@@ -105,13 +105,14 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     }, 2000)
   }, [state.crashLogPath])
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (copiedTimer.current) {
         clearTimeout(copiedTimer.current)
       }
-    }
-  }, [])
+    },
+    []
+  )
 
   useInput(
     (input, key) => {
