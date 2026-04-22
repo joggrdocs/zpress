@@ -85,4 +85,3 @@ function resolveVersion(): string {
   }
   return 'unknown'
 }
-

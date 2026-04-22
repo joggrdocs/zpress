@@ -1,5 +1,12 @@
 # @zpress/kit
 
+## 0.2.22
+
+### Patch Changes
+
+- Updated dependencies [d26e7f6]
+  - @zpress/cli@0.9.0
+
 ## 0.2.21
 
 ### Patch Changes
