@@ -81,7 +81,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
         })
       }
     },
-    { isActive: isTTY }
+    { isActive: isTTY && state.phase !== 'error' }
   )
 
   const width = Math.max(Math.min(columns, 80), 2)
@@ -94,7 +94,9 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     if (!state.crashLogPath) {
       return
     }
-    copyToClipboard(state.crashLogPath)
+    if (!copyToClipboard(state.crashLogPath)) {
+      return
+    }
     setCopied(true)
     if (copiedTimer.current) {
       clearTimeout(copiedTimer.current)
@@ -306,8 +308,9 @@ function HotkeyHint(props: {
  *
  * @private
  * @param text - The text to copy
+ * @returns Whether the copy succeeded
  */
-function copyToClipboard(text: string): void {
+function copyToClipboard(text: string): boolean {
   const cmd = match(platform())
     .with('darwin', () => 'pbcopy')
     .with('win32', () => 'clip')
@@ -315,7 +318,8 @@ function copyToClipboard(text: string): void {
 
   try {
     execSync(cmd, { input: text, stdio: ['pipe', 'ignore', 'ignore'] })
+    return true
   } catch {
-    // Clipboard not available — silently ignore
+    return false
   }
 }
