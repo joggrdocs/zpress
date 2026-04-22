@@ -22,8 +22,7 @@ import dump from './commands/dump.ts'
 import serve from './commands/serve.ts'
 import setup from './commands/setup.ts'
 import sync from './commands/sync.ts'
-import { reportCrash } from './lib/crash-reporter.ts'
-import type { CrashResult } from './lib/crash-reporter.ts'
+import { reportCrash, writeFatalToStderr } from './lib/crash-reporter.ts'
 import { errorBoundary } from './middleware/error-boundary.ts'
 
 declare const __KIDD_VERSION__: string
@@ -88,16 +87,3 @@ function resolveVersion(): string {
   return 'unknown'
 }
 
-/**
- * Write a fatal error message to stderr based on the crash result.
- *
- * @private
- * @param result - The CrashResult from reportCrash
- */
-function writeFatalToStderr(result: CrashResult): void {
-  if (result.ok) {
-    process.stderr.write(`\n✖ Fatal Error: ${result.message}\n  Full log: ${result.logPath}\n\n`)
-  } else {
-    process.stderr.write(`\n✖ Fatal Error: ${result.message}\n\n`)
-  }
-}

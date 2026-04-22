@@ -43,6 +43,25 @@ export interface CrashResult {
  * @param options - Crash context including the caught error, source, and optional command info
  * @returns A CrashResult indicating whether the log was written and where
  */
+/**
+ * Write a fatal error message to stderr based on the crash result.
+ *
+ * @param result - The CrashResult from reportCrash
+ */
+export function writeFatalToStderr(result: CrashResult): void {
+  if (result.ok) {
+    process.stderr.write(`\n✖ Fatal Error: ${result.message}\n  Full log: ${result.logPath}\n\n`)
+  } else {
+    process.stderr.write(`\n✖ Fatal Error: ${result.message}\n\n`)
+  }
+}
+
+/**
+ * Report a fatal crash: build a structured report and write it to disk.
+ *
+ * @param options - Crash context including the caught error, source, and optional command info
+ * @returns A CrashResult indicating whether the log was written and where
+ */
 export function reportCrash(options: CrashReportOptions): CrashResult {
   const normalized = toError(options.error)
   const report = buildReport(normalized, options)
@@ -118,13 +137,13 @@ function buildReport(error: Error, options: CrashReportOptions): CrashReport {
 function writeCrashLog(report: CrashReport, message: string): CrashResult {
   try {
     const dir = join(tmpdir(), 'zpress')
-    mkdirSync(dir, { recursive: true })
+    mkdirSync(dir, { recursive: true, mode: 0o700 })
 
     const timestamp = report.timestamp.replaceAll(/[:.]/g, '-')
     const filename = `error-${timestamp}-${randomUUID()}.log`
     const logPath = join(dir, filename)
 
-    writeFileSync(logPath, JSON.stringify(report, null, 2), 'utf8')
+    writeFileSync(logPath, JSON.stringify(report, null, 2), { encoding: 'utf8', mode: 0o600 })
 
     return { ok: true, message, logPath, error: null }
   } catch (error) {

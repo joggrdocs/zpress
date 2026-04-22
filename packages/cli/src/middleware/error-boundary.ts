@@ -1,7 +1,6 @@
 import { middleware } from '@kidd-cli/core'
 
-import { reportCrash } from '../lib/crash-reporter.ts'
-import type { CrashResult } from '../lib/crash-reporter.ts'
+import { reportCrash, writeFatalToStderr } from '../lib/crash-reporter.ts'
 
 /**
  * Create an error boundary middleware that catches unhandled exceptions
@@ -30,20 +29,4 @@ export function errorBoundary(): ReturnType<typeof middleware> {
       process.exit(1)
     }
   })
-}
-
-// ---------------------------------------------------------------------------
-
-/**
- * Write a fatal error message to stderr based on the crash result.
- *
- * @private
- * @param result - The CrashResult from reportCrash
- */
-function writeFatalToStderr(result: CrashResult): void {
-  if (result.ok) {
-    process.stderr.write(`\n✖ Fatal Error: ${result.message}\n  Full log: ${result.logPath}\n\n`)
-  } else {
-    process.stderr.write(`\n✖ Fatal Error: ${result.message}\n\n`)
-  }
 }
