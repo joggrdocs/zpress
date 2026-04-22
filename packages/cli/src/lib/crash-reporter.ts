@@ -38,12 +38,6 @@ export interface CrashResult {
 }
 
 /**
- * Report a fatal crash: build a structured report and write it to disk.
- *
- * @param options - Crash context including the caught error, source, and optional command info
- * @returns A CrashResult indicating whether the log was written and where
- */
-/**
  * Write a fatal error message to stderr based on the crash result.
  *
  * @param result - The CrashResult from reportCrash
@@ -64,8 +58,8 @@ export function writeFatalToStderr(result: CrashResult): void {
  */
 export function reportCrash(options: CrashReportOptions): CrashResult {
   const normalized = toError(options.error)
-  const report = buildReport(normalized, options)
-  return writeCrashLog(report, normalized.message)
+  const report = buildReport({ error: normalized, options })
+  return writeCrashLog({ report, message: normalized.message })
 }
 
 // ---------------------------------------------------------------------------
@@ -98,11 +92,14 @@ interface CrashReport {
  * Assemble a CrashReport from the normalized error and options.
  *
  * @private
- * @param error - The normalized Error instance
- * @param options - Original crash report options
+ * @param params - The error and original crash report options
  * @returns A structured CrashReport object
  */
-function buildReport(error: Error, options: CrashReportOptions): CrashReport {
+function buildReport(params: {
+  readonly error: Error
+  readonly options: CrashReportOptions
+}): CrashReport {
+  const { error, options } = params
   return {
     timestamp: new Date().toISOString(),
     level: 'fatal',
@@ -130,11 +127,14 @@ function buildReport(error: Error, options: CrashReportOptions): CrashReport {
  * filename based on the current timestamp and a random suffix.
  *
  * @private
- * @param report - The structured crash report to serialize
- * @param message - The original error message (returned in the result)
+ * @param params - The report to serialize and the original error message
  * @returns A CrashResult with the write outcome
  */
-function writeCrashLog(report: CrashReport, message: string): CrashResult {
+function writeCrashLog(params: {
+  readonly report: CrashReport
+  readonly message: string
+}): CrashResult {
+  const { report, message } = params
   try {
     const dir = join(tmpdir(), 'zpress')
     mkdirSync(dir, { recursive: true, mode: 0o700 })

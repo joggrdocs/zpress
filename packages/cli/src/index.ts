@@ -32,11 +32,11 @@ declare const __KIDD_VERSION__: string
 // ---------------------------------------------------------------------------
 
 process.on('uncaughtException', (error) => {
-  handleProcessCrash(error, 'uncaughtException')
+  handleProcessCrash({ error, source: 'uncaughtException' })
 })
 
 process.on('unhandledRejection', (reason) => {
-  handleProcessCrash(reason, 'unhandledRejection')
+  handleProcessCrash({ error: reason, source: 'unhandledRejection' })
 })
 
 await cli({
@@ -56,16 +56,15 @@ await cli({
  * Handle a process-level crash (uncaughtException / unhandledRejection).
  *
  * @private
- * @param error - The caught error or rejection reason
- * @param source - Which process event caught it
+ * @param params - The caught error and which process event caught it
  */
-function handleProcessCrash(
-  error: unknown,
-  source: 'uncaughtException' | 'unhandledRejection'
-): void {
+function handleProcessCrash(params: {
+  readonly error: unknown
+  readonly source: 'uncaughtException' | 'unhandledRejection'
+}): void {
   const result = reportCrash({
-    error,
-    source,
+    error: params.error,
+    source: params.source,
     version: resolveVersion(),
   })
 
