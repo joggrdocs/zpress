@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { clean } from '../commands/clean.ts'
 import { reportCrash } from '../lib/crash-reporter.ts'
-import { toError } from '../lib/error.ts'
 import type {
   DevPhase,
   DevServerActions,
@@ -15,6 +14,7 @@ import type {
   WatcherHandle,
   WatcherStatus,
 } from '../lib/dev-types.ts'
+import { toError } from '../lib/error.ts'
 import { startDevServer } from '../lib/rspress.ts'
 import { createWatcher } from '../lib/watcher.ts'
 

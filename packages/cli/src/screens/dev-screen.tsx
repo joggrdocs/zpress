@@ -12,8 +12,8 @@ import {
   useHotkey,
   useInput,
 } from '@kidd-cli/core/ui'
-import { match } from 'ts-pattern'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { match } from 'ts-pattern'
 
 import { Banner } from '../components/banner.tsx'
 import { useDevServer } from '../hooks/use-dev-server.ts'
