@@ -1,5 +1,11 @@
 # @zpress/cli
 
+## 0.9.0
+
+### Minor Changes
+
+- d26e7f6: Add crash reporter and error boundary — every CLI crash now writes a structured JSON log to a temp file and prints a one-liner fatal message pointing to it
+
 ## 0.8.5
 
 ### Patch Changes
