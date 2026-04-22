@@ -118,17 +118,15 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   useInput(
     (input, key) => {
-      if (state.phase === 'error') {
-        if (input === 'c' && state.crashLogPath) {
-          handleCopy()
-        }
-        if (input === 'q' || (key.ctrl && input === 'c')) {
-          exit()
-          process.exit(1)
-        }
+      if (input === 'q' || (key.ctrl && input === 'c')) {
+        exit()
+        process.exit(1)
+      }
+      if (input === 'c' && !key.ctrl && state.crashLogPath) {
+        handleCopy()
       }
     },
-    { isActive: state.phase === 'error' }
+    { isActive: isTTY && state.phase === 'error' }
   )
 
   if (state.phase === 'error') {
